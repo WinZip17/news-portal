@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, useRoutes } from 'react-router-dom';
-import { ConfigProvider, App as AntApp, theme as antTheme } from 'antd';
+import { ConfigProvider, App as AntApp, theme as antTheme, message } from 'antd';
 import { Provider } from 'react-redux';
 import { store, useAppSelector, selectTheme } from './store';
 import { useAuth } from './hooks/useAuth';
@@ -15,12 +15,24 @@ const AppRoutes: React.FC = () => {
 
 const AppContent: React.FC = () => {
     const theme = useAppSelector(selectTheme);
-    const { fetchCurrentUser, isAuthenticated } = useAuth();
+    const { fetchCurrentUser, isAuthenticated, logout, clearError } = useAuth();
 
     useEffect(() => {
         const token = localStorage.getItem('accessToken');
         if (token && !isAuthenticated) {
-            fetchCurrentUser();
+            fetchCurrentUser()
+                .catch((error: any) => {
+                    // Если ошибка 401 (Unauthorized) — токен недействителен
+                    if (error?.status === 401 || error?.response?.status === 401) {
+                        logout();
+                        message.error('Сессия истекла. Пожалуйста, войдите снова.');
+                    } else {
+                        // Другие ошибки (сеть, сервер и т.д.)
+                        console.error('Ошибка при получении пользователя:', error);
+                        message.error('Не удалось загрузить профиль. Проверьте подключение.');
+                    }
+                    clearError();
+                });
         }
     }, []);
 
