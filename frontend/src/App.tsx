@@ -1,25 +1,17 @@
-import React, { useEffect, useMemo } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, useRoutes } from 'react-router-dom';
 import { ConfigProvider, App as AntApp, theme as antTheme } from 'antd';
 import { Provider } from 'react-redux';
 import { store, useAppSelector, selectTheme } from './store';
 import { useAuth } from './hooks/useAuth';
+import AppErrorBoundary from './components/common/ErrorBoundary';
+import { routes } from './config/routes';
 import ruRU from 'antd/locale/ru_RU';
 
-// Layouts
-import MainLayout from './components/layout/MainLayout';
-import AuthLayout from './components/layout/AuthLayout';
-
-// Auth components
-import ProtectedRoute from './components/auth/ProtectedRoute';
-import PublicRoute from './components/auth/PublicRoute';
-
-// Pages
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import NewsList from './pages/NewsList';
-import NewsDetail from './pages/NewsDetail';
+const AppRoutes: React.FC = () => {
+    const element = useRoutes(routes);
+    return element;
+};
 
 const AppContent: React.FC = () => {
     const theme = useAppSelector(selectTheme);
@@ -32,80 +24,22 @@ const AppContent: React.FC = () => {
         }
     }, []);
 
-    // Правильное использование темы Ant Design
-    const themeConfig = useMemo(() => ({
-        algorithm: theme === 'dark' ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
-        token: {
-            colorPrimary: '#1677ff',
-        },
-    }), [theme]);
-
     return (
         <ConfigProvider
             locale={ruRU}
-            theme={themeConfig}
+            theme={{
+                algorithm: theme === 'dark' ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
+                token: {
+                    colorPrimary: '#1677ff',
+                },
+            }}
         >
             <AntApp>
-                <Router>
-                    <Routes>
-                        {/* Публичные роуты (авторизация) */}
-                        <Route element={<AuthLayout />}>
-                            <Route
-                                path="/login"
-                                element={
-                                    <PublicRoute>
-                                        <Login />
-                                    </PublicRoute>
-                                }
-                            />
-                            <Route
-                                path="/register"
-                                element={
-                                    <PublicRoute>
-                                        <Register />
-                                    </PublicRoute>
-                                }
-                            />
-                        </Route>
-
-                        {/* Основные роуты */}
-                        <Route element={<MainLayout />}>
-                            <Route path="/" element={<Home />} />
-                            <Route path="/news" element={<NewsList />} />
-                            <Route path="/news/:id" element={<NewsDetail />} />
-                            {/* Защищенные роуты */}
-                            <Route
-                                path="/profile"
-                                element={
-                                    <ProtectedRoute>
-                                        <div>Профиль</div>
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="/settings"
-                                element={
-                                    <ProtectedRoute>
-                                        <div>Настройки</div>
-                                    </ProtectedRoute>
-                                }
-                            />
-
-                            {/* Админ роуты */}
-                            <Route
-                                path="/admin"
-                                element={
-                                    <ProtectedRoute requiredRoles={['admin', 'moderator']}>
-                                        <div>Админ панель</div>
-                                    </ProtectedRoute>
-                                }
-                            />
-                        </Route>
-
-                        {/* 404 */}
-                        <Route path="*" element={<div>Страница не найдена</div>} />
-                    </Routes>
-                </Router>
+                <AppErrorBoundary>
+                    <Router>
+                        <AppRoutes />
+                    </Router>
+                </AppErrorBoundary>
             </AntApp>
         </ConfigProvider>
     );

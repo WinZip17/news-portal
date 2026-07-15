@@ -18,7 +18,6 @@ export const login = createAsyncThunk(
         try {
             const response = await authService.login(credentials);
 
-            // Сохраняем токены
             localStorage.setItem('accessToken', response.accessToken);
             localStorage.setItem('refreshToken', response.refreshToken);
 
@@ -199,8 +198,8 @@ const authSlice = createSlice({
 export const {
     setTokens,
     logout,
-    clearAuthError,  // Экспортируем с новым именем
-    setUser
+    clearAuthError,
+    setUser,
 } = authSlice.actions;
 
 // Selectors

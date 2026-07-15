@@ -7,13 +7,13 @@ import {
     fetchCurrentUser,
     updateProfile,
     updatePreferences,
-    clearAuthError,  // Обновленное имя
+    clearAuthError,
     selectAuth,
     selectUser,
     selectIsAuthenticated,
     selectAuthLoading,
     selectAuthError,
-} from '../store';
+} from '../store/auth/authSlice';
 import { LoginCredentials, RegisterData, User } from '../types/auth';
 
 export const useAuth = () => {
@@ -61,7 +61,7 @@ export const useAuth = () => {
     );
 
     const handleClearError = useCallback(() => {
-        dispatch(clearAuthError());  // Используем новое имя
+        dispatch(clearAuthError());
     }, [dispatch]);
 
     return {
