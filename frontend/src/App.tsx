@@ -1,77 +1,112 @@
-import React, { useEffect } from 'react';
-import { ConfigProvider, Layout, theme as antTheme } from 'antd';
+import React, { useEffect, useMemo } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ConfigProvider, App as AntApp, theme as antTheme } from 'antd';
 import { Provider } from 'react-redux';
 import { store, useAppSelector, selectTheme } from './store';
 import { useAuth } from './hooks/useAuth';
 import ruRU from 'antd/locale/ru_RU';
 
-const { Header, Content, Footer } = Layout;
+// Layouts
+import MainLayout from './components/layout/MainLayout';
+import AuthLayout from './components/layout/AuthLayout';
+
+// Auth components
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import PublicRoute from './components/auth/PublicRoute';
+
+// Pages
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import NewsList from './pages/NewsList';
 
 const AppContent: React.FC = () => {
     const theme = useAppSelector(selectTheme);
-    const { user, isAuthenticated, fetchCurrentUser } = useAuth();
+    const { fetchCurrentUser, isAuthenticated } = useAuth();
 
     useEffect(() => {
-        // При загрузке приложения проверяем авторизацию
         const token = localStorage.getItem('accessToken');
         if (token && !isAuthenticated) {
             fetchCurrentUser();
         }
     }, []);
 
+    // Правильное использование темы Ant Design
+    const themeConfig = useMemo(() => ({
+        algorithm: theme === 'dark' ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
+        token: {
+            colorPrimary: '#1677ff',
+        },
+    }), [theme]);
+
     return (
         <ConfigProvider
             locale={ruRU}
-            theme={{
-                algorithm: theme === 'dark' ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
-                token: {
-                    colorPrimary: '#1677ff',
-                },
-            }}
+            theme={themeConfig}
         >
-            <Layout style={{ minHeight: '100vh' }}>
-                <Header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ color: 'white', fontSize: '20px', fontWeight: 'bold' }}>
-                        📰 News Portal
-                    </div>
-                    <div style={{ color: 'white' }}>
-                        {isAuthenticated && user ? (
-                            <span>👋 Привет, {user.username}!</span>
-                        ) : (
-                            <span>Гость</span>
-                        )}
-                    </div>
-                </Header>
+            <AntApp>
+                <Router>
+                    <Routes>
+                        {/* Публичные роуты (авторизация) */}
+                        <Route element={<AuthLayout />}>
+                            <Route
+                                path="/login"
+                                element={
+                                    <PublicRoute>
+                                        <Login />
+                                    </PublicRoute>
+                                }
+                            />
+                            <Route
+                                path="/register"
+                                element={
+                                    <PublicRoute>
+                                        <Register />
+                                    </PublicRoute>
+                                }
+                            />
+                        </Route>
 
-                <Content style={{ padding: '24px 50px' }}>
-                    <div
-                        style={{
-                            background: theme === 'dark' ? '#141414' : '#fff',
-                            padding: 24,
-                            minHeight: 280,
-                            borderRadius: 8,
-                        }}
-                    >
-                        <h1>Добро пожаловать на News Portal!</h1>
-                        <p>Ваш персонализированный источник новостей с AI-генерацией контента.</p>
+                        {/* Основные роуты */}
+                        <Route element={<MainLayout />}>
+                            <Route path="/" element={<Home />} />
+                            <Route path="/news" element={<NewsList />} />
+                            <Route path="/news/:id" element={<div>Детальная новость</div>} />
 
-                        {isAuthenticated ? (
-                            <div style={{ marginTop: 16 }}>
-                                <h3>Ваши настройки:</h3>
-                                <pre>{JSON.stringify(user?.preferences, null, 2)}</pre>
-                            </div>
-                        ) : (
-                            <div style={{ marginTop: 16 }}>
-                                <p>Войдите в систему для персонализации новостной ленты</p>
-                            </div>
-                        )}
-                    </div>
-                </Content>
+                            {/* Защищенные роуты */}
+                            <Route
+                                path="/profile"
+                                element={
+                                    <ProtectedRoute>
+                                        <div>Профиль</div>
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/settings"
+                                element={
+                                    <ProtectedRoute>
+                                        <div>Настройки</div>
+                                    </ProtectedRoute>
+                                }
+                            />
 
-                <Footer style={{ textAlign: 'center' }}>
-                    News Portal ©{new Date().getFullYear()} - Создано с ❤️ и AI
-                </Footer>
-            </Layout>
+                            {/* Админ роуты */}
+                            <Route
+                                path="/admin"
+                                element={
+                                    <ProtectedRoute requiredRoles={['admin', 'moderator']}>
+                                        <div>Админ панель</div>
+                                    </ProtectedRoute>
+                                }
+                            />
+                        </Route>
+
+                        {/* 404 */}
+                        <Route path="*" element={<div>Страница не найдена</div>} />
+                    </Routes>
+                </Router>
+            </AntApp>
         </ConfigProvider>
     );
 };
