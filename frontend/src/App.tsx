@@ -19,6 +19,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import NewsList from './pages/NewsList';
+import NewsDetail from './pages/NewsDetail';
 
 const AppContent: React.FC = () => {
     const theme = useAppSelector(selectTheme);
@@ -71,8 +72,7 @@ const AppContent: React.FC = () => {
                         <Route element={<MainLayout />}>
                             <Route path="/" element={<Home />} />
                             <Route path="/news" element={<NewsList />} />
-                            <Route path="/news/:id" element={<div>Детальная новость</div>} />
-
+                            <Route path="/news/:id" element={<NewsDetail />} />
                             {/* Защищенные роуты */}
                             <Route
                                 path="/profile"

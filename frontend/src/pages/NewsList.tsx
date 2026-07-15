@@ -1,8 +1,6 @@
-import React, {useEffect, useCallback} from 'react';
+import React, { useEffect, useCallback } from 'react';
 import {
-    Card,
-    Row,
-    Col,
+    List,
     Input,
     Select,
     Tag,
@@ -12,44 +10,41 @@ import {
     Spin,
     Typography,
     Divider,
-    Badge,
+    Button,
     Tooltip,
-    Button
 } from 'antd';
 import {
     SearchOutlined,
-    FilterOutlined,
-    SortAscendingOutlined,
     ClockCircleOutlined,
     EyeOutlined,
-    HeartOutlined, ReadOutlined,
+    HeartOutlined,
+    LinkOutlined,
+    ClearOutlined,
 } from '@ant-design/icons';
-import {useNavigate, useSearchParams} from 'react-router-dom';
-import {useNews} from '../hooks/useNews';
-import {NewsCategory, NewsFilter} from '../types/news';
+import { useSearchParams } from 'react-router-dom';
+import { useNews } from '../hooks/useNews';
+import { NewsCategory, NewsFilter } from '../types/news';
+import '../assets/styles/news.css';
 
-const {Search} = Input;
-const {Option} = Select;
-const {Title, Text, Paragraph} = Typography;
+const { Search } = Input;
+const { Option } = Select;
+const { Title, Text, Paragraph } = Typography;
 
 const NewsList: React.FC = () => {
-    const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
 
     const {
         news,
         isLoading,
         pagination,
-        filters,
         fetchNews,
         setFilters,
         error,
         clearError,
     } = useNews();
 
-    // Загрузка новостей при монтировании и изменении фильтров
+    // Загрузка новостей
     useEffect(() => {
-        // Синхронизация URL параметров с фильтрами
         const urlFilters: NewsFilter = {};
 
         const category = searchParams.get('category');
@@ -73,10 +68,10 @@ const NewsList: React.FC = () => {
         }
 
         setFilters(urlFilters);
-        fetchNews({...filters, ...urlFilters});
+        fetchNews({ ...pagination, ...urlFilters });
     }, [searchParams]);
 
-    // Обработчик поиска
+    // Обработчики
     const handleSearch = useCallback((value: string) => {
         const newParams = new URLSearchParams(searchParams);
         if (value) {
@@ -84,11 +79,10 @@ const NewsList: React.FC = () => {
         } else {
             newParams.delete('search');
         }
-        newParams.delete('page'); // Сбрасываем страницу при поиске
+        newParams.delete('page');
         setSearchParams(newParams);
     }, [searchParams, setSearchParams]);
 
-    // Обработчик изменения категории
     const handleCategoryChange = useCallback((category: string) => {
         const newParams = new URLSearchParams(searchParams);
         if (category && category !== 'all') {
@@ -100,7 +94,6 @@ const NewsList: React.FC = () => {
         setSearchParams(newParams);
     }, [searchParams, setSearchParams]);
 
-    // Обработчик изменения сортировки
     const handleSortChange = useCallback((sortBy: string) => {
         const newParams = new URLSearchParams(searchParams);
         if (sortBy && sortBy !== 'publishedAt') {
@@ -112,15 +105,13 @@ const NewsList: React.FC = () => {
         setSearchParams(newParams);
     }, [searchParams, setSearchParams]);
 
-    // Обработчик изменения страницы
     const handlePageChange = useCallback((page: number) => {
         const newParams = new URLSearchParams(searchParams);
         newParams.set('page', page.toString());
         setSearchParams(newParams);
-        window.scrollTo({top: 0, behavior: 'smooth'});
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [searchParams, setSearchParams]);
 
-    // Обработчик очистки фильтров
     const handleClearFilters = useCallback(() => {
         setSearchParams({});
     }, [setSearchParams]);
@@ -143,15 +134,15 @@ const NewsList: React.FC = () => {
 
     const getCategoryLabel = (category: string) => {
         const labels: Record<string, string> = {
-            politics: 'Политика',
-            economy: 'Экономика',
-            technology: 'Технологии',
-            science: 'Наука',
-            sports: 'Спорт',
-            entertainment: 'Развлечения',
-            health: 'Здоровье',
-            world: 'Мир',
-            other: 'Другое',
+            politics: '🏛 Политика',
+            economy: '💹 Экономика',
+            technology: '💻 Технологии',
+            science: '🔬 Наука',
+            sports: '⚽ Спорт',
+            entertainment: '🎬 Развлечения',
+            health: '🏥 Здоровье',
+            world: '🌍 Мир',
+            other: '📋 Другое',
         };
         return labels[category] || category;
     };
@@ -164,48 +155,46 @@ const NewsList: React.FC = () => {
         const diffHours = Math.floor(diffMs / 3600000);
         const diffDays = Math.floor(diffMs / 86400000);
 
-        if (diffMins < 60) {
-            return `${diffMins} мин. назад`;
-        } else if (diffHours < 24) {
-            return `${diffHours} ч. назад`;
-        } else if (diffDays < 7) {
-            return `${diffDays} дн. назад`;
-        } else {
-            return date.toLocaleDateString('ru-RU', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-            });
-        }
+        if (diffMins < 1) return 'только что';
+        if (diffMins < 60) return `${diffMins} мин. назад`;
+        if (diffHours < 24) return `${diffHours} ч. назад`;
+        if (diffDays < 7) return `${diffDays} дн. назад`;
+
+        return date.toLocaleDateString('ru-RU', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
     };
 
     const hasActiveFilters = searchParams.toString().length > 0;
 
     return (
-        <div>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
             {/* Заголовок и фильтры */}
-            <div style={{marginBottom: 24}}>
-                <Title level={2} style={{marginBottom: 16}}>
-                    <ReadOutlined/> Новости
+            <div style={{ marginBottom: 24 }}>
+                <Title level={2} style={{ marginBottom: 16 }}>
+                    📰 Лента новостей
                 </Title>
 
-                <Space wrap size="middle" style={{width: '100%'}}>
+                <Space wrap size="middle" style={{ width: '100%' }}>
                     <Search
-                        placeholder="Поиск новостей..."
+                        placeholder="Поиск по заголовкам..."
                         allowClear
                         onSearch={handleSearch}
                         defaultValue={searchParams.get('search') || ''}
-                        style={{minWidth: 250}}
-                        prefix={<SearchOutlined/>}
+                        style={{ minWidth: 250 }}
+                        prefix={<SearchOutlined />}
                     />
 
                     <Select
                         value={searchParams.get('category') || 'all'}
-                        style={{minWidth: 180}}
+                        style={{ minWidth: 180 }}
                         onChange={handleCategoryChange}
-                        prefix={<FilterOutlined/>}
                     >
-                        <Option value="all">Все категории</Option>
+                        <Option value="all">📂 Все категории</Option>
                         <Option value={NewsCategory.POLITICS}>🏛 Политика</Option>
                         <Option value={NewsCategory.ECONOMY}>💹 Экономика</Option>
                         <Option value={NewsCategory.TECHNOLOGY}>💻 Технологии</Option>
@@ -218,161 +207,143 @@ const NewsList: React.FC = () => {
 
                     <Select
                         value={searchParams.get('sortBy') || 'publishedAt'}
-                        style={{minWidth: 180}}
+                        style={{ minWidth: 180 }}
                         onChange={handleSortChange}
-                        prefix={<SortAscendingOutlined/>}
                     >
-                        <Option value="publishedAt">По дате</Option>
-                        <Option value="views">По просмотрам</Option>
-                        <Option value="likes">По лайкам</Option>
+                        <Option value="publishedAt">🕒 По дате</Option>
+                        <Option value="views">👁 По просмотрам</Option>
+                        <Option value="likes">❤️ По лайкам</Option>
                     </Select>
 
                     {hasActiveFilters && (
-                        <Text
-                            type="secondary"
-                            style={{cursor: 'pointer', textDecoration: 'underline'}}
+                        <Button
+                            icon={<ClearOutlined />}
                             onClick={handleClearFilters}
+                            size="small"
                         >
                             Сбросить фильтры
-                        </Text>
+                        </Button>
                     )}
                 </Space>
+
+                {hasActiveFilters && (
+                    <Text type="secondary" style={{ display: 'block', marginTop: 8 }}>
+                        Показаны результаты с фильтрами
+                    </Text>
+                )}
             </div>
 
-            <Divider/>
+            <Divider style={{ margin: '12px 0' }} />
 
             {/* Список новостей */}
             <Spin spinning={isLoading} tip="Загрузка новостей...">
                 {error ? (
                     <Empty
-                        description={
-                            <Text type="danger">
-                                Ошибка загрузки новостей: {error}
-                            </Text>
-                        }
+                        description={<Text type="danger">Ошибка загрузки: {error}</Text>}
                     >
                         <Space>
-                            <Button onClick={() => fetchNews(filters)}>
-                                Повторить попытку
-                            </Button>
-                            <Button type="link" onClick={clearError}>
-                                Закрыть
-                            </Button>
+                            <Button onClick={() => fetchNews(pagination)}>Повторить</Button>
+                            <Button type="link" onClick={clearError}>Закрыть</Button>
                         </Space>
                     </Empty>
                 ) : news.length > 0 ? (
                     <>
-                        <Row gutter={[24, 24]}>
-                            {news.map((item) => (
-                                <Col xs={24} sm={12} lg={8} xl={6} key={item.id}>
-                                    <Badge.Ribbon
-                                        text={item.isAiGenerated ? 'AI' : null}
-                                        color="blue"
-                                        style={{display: item.isAiGenerated ? 'block' : 'none'}}
+                        <List
+                            itemLayout="vertical"
+                            size="large"
+                            dataSource={news}
+                            renderItem={(item) => (
+                                <List.Item
+                                    key={item.id}
+                                    style={{
+                                        cursor: 'pointer',
+                                        padding: '16px 0',
+                                        transition: 'background-color 0.2s',
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.02)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.backgroundColor = 'transparent';
+                                    }}
+                                >
+                                    <div
+                                        onClick={() => window.open(`/news/${item.id}`, '_blank')}
+                                        style={{ width: '100%' }}
                                     >
-                                        <Card
-                                            hoverable
-                                            cover={
-                                                item.imageUrl ? (
-                                                    <img
-                                                        alt={item.title}
-                                                        src={item.imageUrl}
-                                                        style={{height: 200, objectFit: 'cover'}}
-                                                        loading="lazy"
-                                                    />
-                                                ) : (
-                                                    <div
-                                                        style={{
-                                                            height: 200,
-                                                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            color: 'white',
-                                                            fontSize: '48px',
-                                                        }}
-                                                    >
-                                                        📰
-                                                    </div>
-                                                )
-                                            }
-                                            onClick={() => navigate(`/news/${item.id}`)}
-                                            actions={[
-                                                <Tooltip title="Просмотры" key="views">
-                                                    <Space size="small">
-                                                        <EyeOutlined/>
-                                                        {item.views || 0}
-                                                    </Space>
-                                                </Tooltip>,
-                                                <Tooltip title="Лайки" key="likes">
-                                                    <Space size="small">
-                                                        <HeartOutlined/>
-                                                        {item.likes || 0}
-                                                    </Space>
-                                                </Tooltip>,
-                                            ]}
-                                        >
-                                            <Card.Meta
-                                                title={
-                                                    <Text ellipsis={{tooltip: item.title}}>
+                                        <List.Item.Meta
+                                            title={
+                                                <Space align="start" style={{ width: '100%', justifyContent: 'space-between' }}>
+                                                    <Text strong style={{ fontSize: '16px' }}>
+                                                        {item.isAiGenerated && (
+                                                            <Tag color="blue" style={{ marginRight: 8 }}>AI</Tag>
+                                                        )}
                                                         {item.title}
                                                     </Text>
-                                                }
-                                                description={
-                                                    <>
-                                                        <Paragraph
-                                                            ellipsis={{rows: 3}}
-                                                            style={{marginBottom: 12}}
-                                                        >
-                                                            {item.summary || 'Описание отсутствует'}
-                                                        </Paragraph>
+                                                    <Space size="middle" style={{ flexShrink: 0, marginLeft: 16 }}>
+                                                        <Tooltip title="Просмотры">
+                                                            <Text type="secondary" style={{ fontSize: '13px' }}>
+                                                                <EyeOutlined /> {item.views || 0}
+                                                            </Text>
+                                                        </Tooltip>
+                                                        <Tooltip title="Лайки">
+                                                            <Text type="secondary" style={{ fontSize: '13px' }}>
+                                                                <HeartOutlined /> {item.likes || 0}
+                                                            </Text>
+                                                        </Tooltip>
+                                                    </Space>
+                                                </Space>
+                                            }
+                                            description={
+                                                <div>
+                                                    <Paragraph
+                                                        ellipsis={{ rows: 2 }}
+                                                        style={{
+                                                            marginBottom: 8,
+                                                            color: '#666',
+                                                            fontSize: '14px',
+                                                            lineHeight: '1.6'
+                                                        }}
+                                                    >
+                                                        {item.summary || item.content?.substring(0, 200) || 'Описание отсутствует'}
+                                                    </Paragraph>
 
-                                                        <Space wrap size={[0, 8]} style={{marginBottom: 8}}>
-                                                            <Tag color={getCategoryColor(item.category)}>
-                                                                {getCategoryLabel(item.category)}
+                                                    <Space wrap size={[8, 8]} style={{ marginTop: 8 }}>
+                                                        <Tag color={getCategoryColor(item.category)}>
+                                                            {getCategoryLabel(item.category)}
+                                                        </Tag>
+
+                                                        {item.tags?.slice(0, 3).map((tag) => (
+                                                            <Tag key={tag} style={{ fontSize: '11px' }}>{tag}</Tag>
+                                                        ))}
+
+                                                        {item.source && (
+                                                            <Tag icon={<LinkOutlined />} color="green">
+                                                                {item.source}
                                                             </Tag>
-                                                            {item.tags?.slice(0, 2).map((tag) => (
-                                                                <Tag key={tag} style={{fontSize: '11px'}}>
-                                                                    {tag}
-                                                                </Tag>
-                                                            ))}
-                                                        </Space>
+                                                        )}
 
-                                                        <div
-                                                            style={{
-                                                                display: 'flex',
-                                                                justifyContent: 'space-between',
-                                                                alignItems: 'center',
-                                                                color: '#999',
-                                                                fontSize: '12px',
-                                                            }}
-                                                        >
-                                                            <Tooltip
-                                                                title={new Date(item.publishedAt).toLocaleString('ru-RU')}>
-                                                                <Space size="small">
-                                                                    <ClockCircleOutlined/>
-                                                                    {formatDate(item.publishedAt)}
-                                                                </Space>
-                                                            </Tooltip>
+                                                        <Text type="secondary" style={{ fontSize: '12px' }}>
+                                                            <ClockCircleOutlined /> {formatDate(item.publishedAt)}
+                                                        </Text>
 
-                                                            {item.author && (
-                                                                <Text type="secondary" style={{fontSize: '12px'}}>
-                                                                    {item.author}
-                                                                </Text>
-                                                            )}
-                                                        </div>
-                                                    </>
-                                                }
-                                            />
-                                        </Card>
-                                    </Badge.Ribbon>
-                                </Col>
-                            ))}
-                        </Row>
+                                                        {item.author && (
+                                                            <Text type="secondary" style={{ fontSize: '12px' }}>
+                                                                • {item.author}
+                                                            </Text>
+                                                        )}
+                                                    </Space>
+                                                </div>
+                                            }
+                                        />
+                                    </div>
+                                </List.Item>
+                            )}
+                        />
 
                         {/* Пагинация */}
                         {pagination.totalPages > 1 && (
-                            <div style={{textAlign: 'center', marginTop: 32, marginBottom: 24}}>
+                            <div style={{ textAlign: 'center', marginTop: 32, marginBottom: 24 }}>
                                 <Pagination
                                     current={pagination.page}
                                     total={pagination.total}
@@ -394,20 +365,15 @@ const NewsList: React.FC = () => {
                                 ? 'Новости по вашему запросу не найдены'
                                 : 'Новости пока не добавлены'
                         }
-                        style={{padding: '40px 0'}}
+                        style={{ padding: '40px 0' }}
                     >
                         {hasActiveFilters ? (
-                            <Space>
-                                <Button onClick={handleClearFilters}>
-                                    Сбросить фильтры
-                                </Button>
-                                <Button type="primary" onClick={() => fetchNews({})}>
-                                    Показать все новости
-                                </Button>
-                            </Space>
+                            <Button onClick={handleClearFilters}>
+                                Сбросить фильтры и показать все
+                            </Button>
                         ) : (
                             <Button onClick={() => fetchNews()}>
-                                Обновить
+                                Обновить список
                             </Button>
                         )}
                     </Empty>
