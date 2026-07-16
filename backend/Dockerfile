@@ -7,8 +7,7 @@ RUN apk add --no-cache python3 make g++
 
 COPY package*.json ./
 
-# Используем npm install вместо npm ci
-RUN npm install --legacy-peer-deps
+RUN npm install
 
 COPY . .
 
