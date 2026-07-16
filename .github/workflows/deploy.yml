@@ -52,61 +52,6 @@ jobs:
             ENVEOF
             fi
             
-            # Исправляем tsconfig для сборки
-            echo "🔧 Fixing TypeScript configs..."
-            
-            # Обновляем tsconfig.json для фронтенда
-            cat > frontend/tsconfig.json << TSCEOF
-            {
-              "compilerOptions": {
-                "target": "ES2020",
-                "useDefineForClassFields": true,
-                "lib": ["ES2020", "DOM", "DOM.Iterable"],
-                "module": "ESNext",
-                "skipLibCheck": true,
-                "moduleResolution": "bundler",
-                "allowImportingTsExtensions": true,
-                "resolveJsonModule": true,
-                "isolatedModules": true,
-                "noEmit": true,
-                "jsx": "react-jsx",
-                "strict": false,
-                "noUnusedLocals": false,
-                "noUnusedParameters": false,
-                "noFallthroughCasesInSwitch": true,
-                "ignoreDeprecations": "6.0",
-                "baseUrl": ".",
-                "paths": {
-                  "@/*": ["src/*"]
-                }
-              },
-              "include": ["src"]
-            }
-            TSCEOF
-            
-            # Обновляем tsconfig.node.json
-            cat > frontend/tsconfig.node.json << TSCEOF
-            {
-              "compilerOptions": {
-                "composite": true,
-                "skipLibCheck": true,
-                "module": "ESNext",
-                "moduleResolution": "bundler",
-                "allowSyntheticDefaultImports": true,
-                "noEmit": false
-              },
-              "include": ["vite.config.ts"]
-            }
-            TSCEOF
-            
-            # Фиксим скрипт сборки в package.json
-            cd frontend
-            sed -i 's/"build": *"vite build"/"build": "vite build"/' package.json
-            sed -i 's/"build": *"vite build"/"build": "vite build"/' package.json
-            cd ..
-            
-            echo "✅ Configs updated"
-            
             # Останавливаем старые контейнеры
             echo "🛑 Stopping old containers..."
             docker compose down || true
