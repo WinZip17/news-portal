@@ -2,20 +2,22 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
+# Копируем package.json
+COPY package.json ./
 
+# Используем npm install вместо npm ci
+RUN npm install --legacy-peer-deps
+
+# Копируем остальные файлы
 COPY . .
 
-ARG VITE_API_URL=/api
-ENV VITE_API_URL=$VITE_API_URL
-
+# Собираем приложение
 RUN npm run build
 
+# Production образ
 FROM nginx:alpine
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
+# Копируем собранное приложение
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80
