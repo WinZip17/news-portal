@@ -31,6 +31,7 @@ import {
     WarningOutlined,
 } from '@ant-design/icons';
 import { useNews } from '../hooks/useNews';
+import {getCategoryLabel} from "../utils/getCategoryLabel.ts";
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -99,21 +100,6 @@ const NewsDetail: React.FC = () => {
             other: 'default',
         };
         return colors[category] || 'default';
-    };
-
-    const getCategoryLabel = (category: string) => {
-        const labels: Record<string, string> = {
-            politics: 'Политика',
-            economy: 'Экономика',
-            technology: 'Технологии',
-            science: 'Наука',
-            sports: 'Спорт',
-            entertainment: 'Развлечения',
-            health: 'Здоровье',
-            world: 'Мир',
-            other: 'Другое',
-        };
-        return labels[category] || category;
     };
 
     const getStatusColor = (status: string) => {
@@ -217,6 +203,49 @@ const NewsDetail: React.FC = () => {
                 <Title level={1} style={{ marginBottom: 16, fontSize: '2.5em' }}>
                     {currentNews.title}
                 </Title>
+
+                <Card
+                    size="small"
+                    style={{
+                        marginBottom: 16,
+                        backgroundColor: currentNews.isAiGenerated ? '#f0f5ff' : '#f6ffed',
+                        border: currentNews.isAiGenerated ? '1px solid #d6e4ff' : '1px solid #b7eb8f'
+                    }}
+                >
+                    <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                        <Space>
+                            {currentNews.isAiGenerated ? (
+                                <>
+                                    <RobotOutlined style={{ color: '#1677ff' }} />
+                                    <Text strong>AI-рерайт новости</Text>
+                                </>
+                            ) : (
+                                <>
+                                    <LinkOutlined style={{ color: '#52c41a' }} />
+                                    <Text strong>Оригинальная новость</Text>
+                                </>
+                            )}
+                        </Space>
+
+                        <Text type="secondary">
+                            {currentNews.isAiGenerated
+                                ? 'Эта новость создана с помощью искусственного интеллекта на основе реальных данных из новостных источников. Факты сохранены, формулировки изменены.'
+                                : 'Оригинальная новость из новостного источника.'
+                            }
+                        </Text>
+
+                        {currentNews.source && (
+                            <Text type="secondary">
+                                Источник: {currentNews.source}
+                                {currentNews.sourceUrl && (
+                                    <> • <a href={currentNews.sourceUrl} target="_blank" rel="noopener noreferrer">
+                                        Оригинал статьи
+                                    </a></>
+                                )}
+                            </Text>
+                        )}
+                    </Space>
+                </Card>
 
                 {/* Мета-информация */}
                 <Space wrap size="middle" style={{ color: '#666', marginBottom: 20 }}>

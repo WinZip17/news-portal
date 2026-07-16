@@ -1,11 +1,20 @@
 import React, { useEffect } from 'react';
-import { Card, Row, Col, Typography, Button, Space, Statistic, Spin, Empty } from 'antd';
-import { ReadOutlined, TeamOutlined, RocketOutlined, ArrowRightOutlined } from '@ant-design/icons';
+import { Card, Row, Col, Typography, Button, Space, Statistic, Spin, Empty, Tag } from 'antd';
+import {
+    ReadOutlined,
+    TeamOutlined,
+    RocketOutlined,
+    ArrowRightOutlined,
+    RobotOutlined,
+    LinkOutlined,
+    ClockCircleOutlined,
+} from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useNews } from '../hooks/useNews';
+import {getCategoryLabel} from "../utils/getCategoryLabel.ts";
 
-const { Title, Paragraph } = Typography;
+const { Title, Paragraph, Text } = Typography;
 
 const Home: React.FC = () => {
     const navigate = useNavigate();
@@ -16,18 +25,43 @@ const Home: React.FC = () => {
         fetchNews({
             limit: 6,
             sortBy: 'publishedAt',
-            sortOrder: 'DESC'
+            sortOrder: 'DESC',
         });
     }, []);
 
     const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('ru-RU', {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffMs = now.getTime() - date.getTime();
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+
+        if (diffMins < 1) return 'только что';
+        if (diffMins < 60) return `${diffMins} мин. назад`;
+        if (diffHours < 24) return `${diffHours} ч. назад`;
+        if (diffDays < 7) return `${diffDays} дн. назад`;
+
+        return date.toLocaleDateString('ru-RU', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
         });
+    };
+
+    const getCategoryColor = (category: string) => {
+        const colors: Record<string, string> = {
+            politics: 'blue',
+            economy: 'green',
+            technology: 'purple',
+            science: 'cyan',
+            sports: 'orange',
+            entertainment: 'magenta',
+            health: 'red',
+            world: 'geekblue',
+            other: 'default',
+        };
+        return colors[category] || 'default';
     };
 
     return (
@@ -44,17 +78,19 @@ const Home: React.FC = () => {
                 }}
             >
                 <Title level={1} style={{ color: 'white', fontSize: '3em', marginBottom: 16 }}>
-                    📰 Добро пожаловать на News Portal
+                    📰 News Portal
                 </Title>
                 <Paragraph
                     style={{
                         color: 'rgba(255,255,255,0.9)',
                         fontSize: '1.2em',
                         marginBottom: 32,
+                        maxWidth: 600,
+                        margin: '0 auto 32px',
                     }}
                 >
-                    Актуальные новости, созданные с помощью искусственного интеллекта.
-                    Персонализированная лента, умные рекомендации и многое другое!
+                    Актуальные новости с AI-рерайтом из проверенных источников.
+                    Персонализированная лента, факты без искажений, свежий взгляд на события.
                 </Paragraph>
                 <Space size="large">
                     {!isAuthenticated ? (
@@ -128,10 +164,10 @@ const Home: React.FC = () => {
                 <Col xs={24} sm={8}>
                     <Card hoverable>
                         <Statistic
-                            title="AI-новостей"
+                            title="AI-рерайт"
                             value={856}
-                            prefix={<RocketOutlined />}
-                            suffix="сгенерировано"
+                            prefix={<RobotOutlined />}
+                            suffix="новостей"
                         />
                     </Card>
                 </Col>
@@ -182,42 +218,38 @@ const Home: React.FC = () => {
                                                 </div>
                                             )
                                         }
-                                        onClick={() => navigate(`/news/${item.id}`)}
+                                        onClick={() => window.open(`/news/${item.id}`, '_blank')}
                                         actions={[
                                             <span key="views">👁 {item.views || 0}</span>,
                                             <span key="likes">❤️ {item.likes || 0}</span>,
-                                            <span key="comments">💬 {0}</span>,
                                         ]}
                                     >
                                         <Card.Meta
                                             title={item.title}
                                             description={
                                                 <>
-                                                    <p>{item.summary?.substring(0, 120)}...</p>
-                                                    <div
-                                                        style={{
-                                                            marginTop: 12,
-                                                            display: 'flex',
-                                                            justifyContent: 'space-between',
-                                                            alignItems: 'center',
-                                                            color: '#999',
-                                                            fontSize: '12px',
-                                                        }}
-                                                    >
-                                                        <span>{formatDate(item.publishedAt)}</span>
-                                                        {item.isAiGenerated && (
-                                                            <span
-                                                                style={{
-                                                                    background: '#f0f5ff',
-                                                                    color: '#2f54eb',
-                                                                    padding: '2px 8px',
-                                                                    borderRadius: 4,
-                                                                    fontSize: '11px',
-                                                                }}
-                                                            >
-                                AI
-                              </span>
+                                                    <Paragraph ellipsis={{ rows: 2 }} style={{ marginBottom: 12 }}>
+                                                        {item.summary?.substring(0, 120) || 'Описание отсутствует'}...
+                                                    </Paragraph>
+
+                                                    <Space wrap size={[4, 4]}>
+                                                        <Tag color={getCategoryColor(item.category)}>
+                                                            {getCategoryLabel(item.category)}
+                                                        </Tag>
+
+                                                        {item.isAiGenerated ? (
+                                                            <Tag icon={<RobotOutlined />} color="blue">AI-рерайт</Tag>
+                                                        ) : (
+                                                            <Tag icon={<LinkOutlined />} color="green">Оригинал</Tag>
                                                         )}
+
+                                                        {item.source && (
+                                                            <Tag color="purple">{item.source}</Tag>
+                                                        )}
+                                                    </Space>
+
+                                                    <div style={{ marginTop: 8, color: '#999', fontSize: '12px' }}>
+                                                        <ClockCircleOutlined /> {formatDate(item.publishedAt)}
                                                     </div>
                                                 </>
                                             }
@@ -241,32 +273,32 @@ const Home: React.FC = () => {
                 </Spin>
             </div>
 
-            {/* Дополнительная информация */}
+            {/* Информация о сервисе */}
             <Row gutter={[24, 24]} style={{ marginTop: 48 }}>
                 <Col xs={24} md={8}>
                     <Card hoverable style={{ textAlign: 'center' }}>
-                        <Title level={4}>🤖 AI-генерация</Title>
+                        <Title level={4}>🤖 AI-рерайт</Title>
                         <Paragraph>
-                            Новости создаются и обновляются каждый час с помощью
-                            передовых алгоритмов искусственного интеллекта
+                            Мы используем искусственный интеллект для переработки новостей из проверенных источников.
+                            Факты сохраняются, формулировки становятся уникальными.
                         </Paragraph>
                     </Card>
                 </Col>
                 <Col xs={24} md={8}>
                     <Card hoverable style={{ textAlign: 'center' }}>
-                        <Title level={4}>👤 Персонализация</Title>
+                        <Title level={4}>📰 Реальные источники</Title>
                         <Paragraph>
-                            Настройте свою ленту новостей под ваши интересы и
-                            получайте только то, что вам действительно важно
+                            Все новости основаны на материалах ведущих информационных агентств:
+                            РИА Новости, ТАСС, Интерфакс, РБК и других.
                         </Paragraph>
                     </Card>
                 </Col>
                 <Col xs={24} md={8}>
                     <Card hoverable style={{ textAlign: 'center' }}>
-                        <Title level={4}>🛡 Модерация</Title>
+                        <Title level={4}>⚡ Каждый час</Title>
                         <Paragraph>
-                            Каждая новость проходит проверку модераторами для
-                            обеспечения высокого качества контента
+                            Новости обновляются автоматически каждый час. Вы всегда в курсе
+                            последних событий в мире политики, экономики, технологий и науки.
                         </Paragraph>
                     </Card>
                 </Col>

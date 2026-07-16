@@ -63,3 +63,23 @@
 .news-detail-enter {
     animation: fadeIn 0.5s ease-out;
 }
+
+.ai-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.source-badge {
+    background: #f6ffed;
+    color: #52c41a;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    border: 1px solid #b7eb8f;
+}

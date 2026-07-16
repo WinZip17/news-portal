@@ -15,22 +15,26 @@ import {
 } from 'antd';
 import {
     SearchOutlined,
+    FilterOutlined,
+    SortAscendingOutlined,
     ClockCircleOutlined,
     EyeOutlined,
     HeartOutlined,
     LinkOutlined,
+    RobotOutlined,
     ClearOutlined,
 } from '@ant-design/icons';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useNews } from '../hooks/useNews';
 import { NewsCategory, NewsFilter } from '../types/news';
-import '../assets/styles/news.css';
+import {getCategoryLabel} from "../utils/getCategoryLabel.ts";
 
 const { Search } = Input;
 const { Option } = Select;
 const { Title, Text, Paragraph } = Typography;
 
 const NewsList: React.FC = () => {
+    const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
 
     const {
@@ -65,6 +69,11 @@ const NewsList: React.FC = () => {
         const sortBy = searchParams.get('sortBy');
         if (sortBy) {
             urlFilters.sortBy = sortBy as any;
+        }
+
+        const isAiGenerated = searchParams.get('isAiGenerated');
+        if (isAiGenerated !== null && isAiGenerated !== 'all') {
+            urlFilters.isAiGenerated = isAiGenerated === 'true';
         }
 
         setFilters(urlFilters);
@@ -105,6 +114,17 @@ const NewsList: React.FC = () => {
         setSearchParams(newParams);
     }, [searchParams, setSearchParams]);
 
+    const handleAiFilterChange = useCallback((value: string) => {
+        const newParams = new URLSearchParams(searchParams);
+        if (value && value !== 'all') {
+            newParams.set('isAiGenerated', value);
+        } else {
+            newParams.delete('isAiGenerated');
+        }
+        newParams.delete('page');
+        setSearchParams(newParams);
+    }, [searchParams, setSearchParams]);
+
     const handlePageChange = useCallback((page: number) => {
         const newParams = new URLSearchParams(searchParams);
         newParams.set('page', page.toString());
@@ -130,21 +150,6 @@ const NewsList: React.FC = () => {
             other: 'default',
         };
         return colors[category] || 'default';
-    };
-
-    const getCategoryLabel = (category: string) => {
-        const labels: Record<string, string> = {
-            politics: '🏛 Политика',
-            economy: '💹 Экономика',
-            technology: '💻 Технологии',
-            science: '🔬 Наука',
-            sports: '⚽ Спорт',
-            entertainment: '🎬 Развлечения',
-            health: '🏥 Здоровье',
-            world: '🌍 Мир',
-            other: '📋 Другое',
-        };
-        return labels[category] || category;
     };
 
     const formatDate = (dateString: string) => {
@@ -215,6 +220,16 @@ const NewsList: React.FC = () => {
                         <Option value="likes">❤️ По лайкам</Option>
                     </Select>
 
+                    <Select
+                        value={searchParams.get('isAiGenerated') || 'all'}
+                        style={{ minWidth: 180 }}
+                        onChange={handleAiFilterChange}
+                    >
+                        <Option value="all">📋 Все новости</Option>
+                        <Option value="true">🤖 AI-рерайт</Option>
+                        <Option value="false">📄 Оригиналы</Option>
+                    </Select>
+
                     {hasActiveFilters && (
                         <Button
                             icon={<ClearOutlined />}
@@ -275,9 +290,6 @@ const NewsList: React.FC = () => {
                                             title={
                                                 <Space align="start" style={{ width: '100%', justifyContent: 'space-between' }}>
                                                     <Text strong style={{ fontSize: '16px' }}>
-                                                        {item.isAiGenerated && (
-                                                            <Tag color="blue" style={{ marginRight: 8 }}>AI</Tag>
-                                                        )}
                                                         {item.title}
                                                     </Text>
                                                     <Space size="middle" style={{ flexShrink: 0, marginLeft: 16 }}>
@@ -302,7 +314,7 @@ const NewsList: React.FC = () => {
                                                             marginBottom: 8,
                                                             color: '#666',
                                                             fontSize: '14px',
-                                                            lineHeight: '1.6'
+                                                            lineHeight: '1.6',
                                                         }}
                                                     >
                                                         {item.summary || item.content?.substring(0, 200) || 'Описание отсутствует'}
@@ -313,15 +325,19 @@ const NewsList: React.FC = () => {
                                                             {getCategoryLabel(item.category)}
                                                         </Tag>
 
+                                                        {item.isAiGenerated ? (
+                                                            <Tag icon={<RobotOutlined />} color="blue">AI-рерайт</Tag>
+                                                        ) : (
+                                                            <Tag icon={<LinkOutlined />} color="green">Оригинал</Tag>
+                                                        )}
+
+                                                        {item.source && (
+                                                            <Tag color="purple">{item.source}</Tag>
+                                                        )}
+
                                                         {item.tags?.slice(0, 3).map((tag) => (
                                                             <Tag key={tag} style={{ fontSize: '11px' }}>{tag}</Tag>
                                                         ))}
-
-                                                        {item.source && (
-                                                            <Tag icon={<LinkOutlined />} color="green">
-                                                                {item.source}
-                                                            </Tag>
-                                                        )}
 
                                                         <Text type="secondary" style={{ fontSize: '12px' }}>
                                                             <ClockCircleOutlined /> {formatDate(item.publishedAt)}

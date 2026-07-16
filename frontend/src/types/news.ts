@@ -5,6 +5,7 @@ export interface News {
     summary: string;
     imageUrl?: string;
     source?: string;
+    sourceUrl?: string;
     author?: string;
     category: NewsCategory;
     tags: string[];
