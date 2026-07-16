@@ -46,6 +46,19 @@ services:
       - /app/node_modules
     command: npm run start:dev
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: news-portal-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - news-portal-network
+    restart: unless-stopped
+
 volumes:
   postgres_data:
 
