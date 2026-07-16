@@ -1,3 +1,15 @@
+# Environment
+.env
+.env.local
+.env.production
+
+# Docker
+docker-compose.override.yml
+
+# SSH
+*.pem
+*.key
+
 # Logs
 logs
 *.log
