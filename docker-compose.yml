@@ -3,18 +3,17 @@ services:
     image: postgres:15-alpine
     container_name: news-portal-db
     environment:
-      POSTGRES_DB: news_portal
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: ${DB_DATABASE:-news_portal}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - news-portal-network
+    restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres}"]
+      interval: 10s
       timeout: 5s
       retries: 5
 
@@ -26,25 +25,20 @@ services:
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgres
-      DB_DATABASE: news_portal
-      JWT_SECRET: your-secret-key
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE:-news_portal}
+      JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: 1d
       JWT_REFRESH_EXPIRES_IN: 7d
+      NODE_ENV: production
       PORT: 3001
-      NODE_ENV: development
-    ports:
-      - "3001:3001"
     depends_on:
       postgres:
         condition: service_healthy
     networks:
       - news-portal-network
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-    command: npm run start:dev
+    restart: unless-stopped
 
   frontend:
     build:
