@@ -37,7 +37,10 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - news-portal-network
+      news-portal-network:
+        aliases:
+          - backend
+          - api
     restart: unless-stopped
 
   frontend:
