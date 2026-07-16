@@ -1,29 +1,19 @@
-FROM node:20-alpine AS builder
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm ci
-
-COPY . .
-RUN npm run build
-
 FROM node:20-alpine
 
 WORKDIR /app
 
-RUN apk add --no-cache dumb-init
+# Устанавливаем необходимые системные зависимости
+RUN apk add --no-cache python3 make g++
 
 COPY package*.json ./
-RUN npm ci --only=production
 
-COPY --from=builder /app/dist ./dist
+# Используем npm install вместо npm ci
+RUN npm install --legacy-peer-deps
 
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nestjs -u 1001
+COPY . .
 
-USER nestjs
+RUN npm run build
 
 EXPOSE 3001
 
-CMD ["dumb-init", "node", "dist/main"]
+CMD ["node", "dist/main"]
