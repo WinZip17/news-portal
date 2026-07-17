@@ -42,6 +42,11 @@ export class AiService {
         if (this.aiConfig.apiKey) {
             this.openai = new OpenAI({
                 apiKey: this.aiConfig.apiKey,
+                baseURL: 'https://openrouter.ai/api/v1',
+                defaultHeaders: {
+                    'HTTP-Referer': 'http://short-news.ru',
+                    'X-Title': 'News Portal',
+                },
             });
         }
     }
