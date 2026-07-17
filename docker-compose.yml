@@ -62,7 +62,16 @@ services:
     networks:
       - news-portal-network
     restart: unless-stopped
-
+  openai-proxy:
+    image: ghcr.io/stulzq/azure-openai-proxy:latest
+    container_name: openai-proxy
+    ports:
+      - "8080:8080"
+    environment:
+      PROXY_MODE: openai
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    networks:
+      - news-portal-network
 volumes:
   postgres_data:
 
