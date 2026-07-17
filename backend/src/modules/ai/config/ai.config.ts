@@ -10,7 +10,7 @@ export class AiConfig {
     }
 
     get model(): string {
-        return this.configService.get<string>('OPENAI_MODEL', 'gpt-3.5-turbo');
+        return this.configService.get<string>('OPENAI_MODEL', 'deepseek-v4-flash');
     }
 
     get temperature(): number {
