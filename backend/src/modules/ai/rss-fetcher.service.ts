@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import axios from 'axios';
-import * as RssParser from 'rss-parser';
+import RssParser from 'rss-parser';
 
 @Injectable()
 export class RssFetcherService {

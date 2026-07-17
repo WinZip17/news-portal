@@ -239,7 +239,12 @@ export class NewsService {
                 status: NewsStatus.PENDING,
                 createdAt: LessThan(oneHourAgo),
             },
-            select: ['id', 'title', 'createdAt', 'status'],
+            select: {
+                id: true,
+                title: true,
+                createdAt: true,
+                status: true,
+            },
         });
 
         if (pendingNews.length > 0) {
