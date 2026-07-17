@@ -47,7 +47,7 @@ export class AiService {
         }
     }
 
-    @Cron(CronExpression.EVERY_DAY_AT_10PM, {
+    @Cron(CronExpression.EVERY_4_HOURS, {
         timeZone: 'Europe/Moscow'
     })
     async autoGenerateNews() {
@@ -82,17 +82,20 @@ export class AiService {
 
         for (let i = 0; i < count; i++) {
             try {
+                // Берем РАЗНЫЕ RSS статьи для каждой генерации
                 const news = await this.generateFromRss(dto.category, dto.topic);
                 if (news) {
                     generatedNews.push(news);
                 }
+                // Задержка между запросами
+                await this.delay(2000);
             } catch (error) {
                 this.logger.error(`Failed to generate news ${i + 1}:`, error.message);
             }
         }
 
         return {
-            message: `Generated ${generatedNews.length} news articles`,
+            message: `Generated ${generatedNews.length} of ${count} news articles`,
             news: generatedNews,
         };
     }
@@ -104,25 +107,30 @@ export class AiService {
 
         const selectedCategory = category || this.getRandomCategory();
 
-        const rssArticle = await this.rssFetcher.fetchRandomNews(selectedCategory);
+        // Получаем НЕСКОЛЬКО статей и выбираем случайную
+        const articles = await this.rssFetcher.fetchNewsByCategory(selectedCategory, 10);
 
-        if (!rssArticle) {
-            this.logger.warn(`No RSS articles found for ${selectedCategory}, generating from scratch`);
-            return this.generateSingleNews(selectedCategory, topic);
-        }
-
-        const duplicateCheck = await this.deduplicationService.checkDuplicate(
-            rssArticle.title,
-            rssArticle.content,
-            rssArticle.source
-        );
-
-        if (duplicateCheck.isDuplicate) {
-            this.logger.warn(`⚠️ Duplicate: "${rssArticle.title}" - ${duplicateCheck.reason}`);
+        if (!articles || articles.length === 0) {
+            this.logger.warn(`No RSS articles found for ${selectedCategory}`);
             return null;
         }
 
-        return this.rewriteArticle(rssArticle, selectedCategory);
+        // Выбираем случайную статью из полученных
+        const article = articles[Math.floor(Math.random() * articles.length)];
+
+        // Проверяем на дубликат
+        const duplicateCheck = await this.deduplicationService.checkDuplicate(
+            article.title,
+            article.content,
+            article.source
+        );
+
+        if (duplicateCheck.isDuplicate) {
+            this.logger.warn(`⚠️ Duplicate: "${article.title}"`);
+            return null;
+        }
+
+        return this.rewriteArticle(article, selectedCategory);
     }
 
     private async rewriteArticle(article: RssArticle, category: NewsCategory) {
