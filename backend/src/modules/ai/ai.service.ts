@@ -42,15 +42,12 @@ export class AiService {
         if (this.aiConfig.apiKey) {
             this.openai = new OpenAI({
                 apiKey: this.aiConfig.apiKey,
-                baseURL: 'https://api.proxyapi.ru/openai/v1',
-                defaultHeaders: {
-                    'Authorization': `Bearer ${this.aiConfig.apiKey}`,
-                },
+                baseURL: 'https://api.deepseek.com/v1',
             });
         }
     }
 
-    @Cron(CronExpression.EVERY_3_HOURS, {
+    @Cron(CronExpression.EVERY_DAY_AT_10PM, {
         timeZone: 'Europe/Moscow'
     })
     async autoGenerateNews() {
@@ -129,10 +126,7 @@ export class AiService {
     }
 
     private async rewriteArticle(article: RssArticle, category: NewsCategory) {
-        const prompt = `
-    Сделай рерайт следующей новости на русском языке. 
-    Сохрани все факты, но полностью измени формулировки и структуру текста.
-    
+        const prompt = `Сделай рерайт новости на русском языке. Сохрани все факты, но полностью измени формулировки и структуру текста.
     ОРИГИНАЛЬНАЯ НОВОСТЬ:
     Заголовок: ${article.title}
     Источник: ${article.source}
@@ -151,8 +145,7 @@ export class AiService {
     - Измени структуру и формулировки
     - Добавь контекст и анализ
     - Используй профессиональный журналистский стиль
-    - Ответ должен быть в формате JSON
-    `;
+    - Ответ строго в формате JSON`;
 
         try {
             const completion = await this.openai.chat.completions.create({
@@ -160,7 +153,7 @@ export class AiService {
                 messages: [
                     {
                         role: 'system',
-                        content: 'Ты профессиональный журналист и редактор. Отвечай строго в формате JSON.',
+                        content: 'Ты профессиональный журналист и редактор. Твоя задача - делать качественный рерайт новостей на русском языке, сохраняя факты и добавляя аналитику. Отвечай строго в формате JSON.',
                     },
                     {
                         role: 'user',
@@ -195,6 +188,7 @@ export class AiService {
         } catch (error) {
             this.logger.error('Failed to rewrite article:', error.message);
 
+            // Если AI не сработал - сохраняем оригинальную новость
             const news = this.newsRepository.create({
                 title: article.title,
                 content: article.content,
