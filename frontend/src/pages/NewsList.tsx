@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import {
     List,
     Input,
@@ -12,11 +12,10 @@ import {
     Divider,
     Button,
     Tooltip,
+    Modal,
 } from 'antd';
 import {
     SearchOutlined,
-    FilterOutlined,
-    SortAscendingOutlined,
     ClockCircleOutlined,
     EyeOutlined,
     HeartOutlined,
@@ -24,18 +23,19 @@ import {
     RobotOutlined,
     ClearOutlined,
 } from '@ant-design/icons';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useNews } from '../hooks/useNews';
 import { NewsCategory, NewsFilter } from '../types/news';
-import {getCategoryLabel} from "../utils/getCategoryLabel.ts";
+import NewsDetailModal from '../components/NewsDetailModal';
 
 const { Search } = Input;
 const { Option } = Select;
 const { Title, Text, Paragraph } = Typography;
 
 const NewsList: React.FC = () => {
-    const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
+    const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null);
+    const [modalVisible, setModalVisible] = useState(false);
 
     const {
         news,
@@ -80,7 +80,7 @@ const NewsList: React.FC = () => {
         fetchNews({ ...pagination, ...urlFilters });
     }, [searchParams]);
 
-    // Обработчики
+    // Обработчики фильтров
     const handleSearch = useCallback((value: string) => {
         const newParams = new URLSearchParams(searchParams);
         if (value) {
@@ -136,6 +136,17 @@ const NewsList: React.FC = () => {
         setSearchParams({});
     }, [setSearchParams]);
 
+    // Открытие модального окна
+    const handleOpenNews = (newsId: string) => {
+        setSelectedNewsId(newsId);
+        setModalVisible(true);
+    };
+
+    const handleCloseModal = () => {
+        setModalVisible(false);
+        setSelectedNewsId(null);
+    };
+
     // Вспомогательные функции
     const getCategoryColor = (category: string) => {
         const colors: Record<string, string> = {
@@ -150,6 +161,21 @@ const NewsList: React.FC = () => {
             other: 'default',
         };
         return colors[category] || 'default';
+    };
+
+    const getCategoryLabel = (category: string) => {
+        const labels: Record<string, string> = {
+            politics: 'Политика',
+            economy: 'Экономика',
+            technology: 'Технологии',
+            science: 'Наука',
+            sports: 'Спорт',
+            entertainment: 'Развлечения',
+            health: 'Здоровье',
+            world: 'Мир',
+            other: 'Другое',
+        };
+        return labels[category] || category;
     };
 
     const formatDate = (dateString: string) => {
@@ -281,78 +307,74 @@ const NewsList: React.FC = () => {
                                     onMouseLeave={(e) => {
                                         e.currentTarget.style.backgroundColor = 'transparent';
                                     }}
+                                    onClick={() => handleOpenNews(item.id)}
                                 >
-                                    <div
-                                        onClick={() => window.open(`/news/${item.id}`, '_blank')}
-                                        style={{ width: '100%' }}
-                                    >
-                                        <List.Item.Meta
-                                            title={
-                                                <Space align="start" style={{ width: '100%', justifyContent: 'space-between' }}>
-                                                    <Text strong style={{ fontSize: '16px' }}>
-                                                        {item.title}
-                                                    </Text>
-                                                    <Space size="middle" style={{ flexShrink: 0, marginLeft: 16 }}>
-                                                        <Tooltip title="Просмотры">
-                                                            <Text type="secondary" style={{ fontSize: '13px' }}>
-                                                                <EyeOutlined /> {item.views || 0}
-                                                            </Text>
-                                                        </Tooltip>
-                                                        <Tooltip title="Лайки">
-                                                            <Text type="secondary" style={{ fontSize: '13px' }}>
-                                                                <HeartOutlined /> {item.likes || 0}
-                                                            </Text>
-                                                        </Tooltip>
-                                                    </Space>
-                                                </Space>
-                                            }
-                                            description={
-                                                <div>
-                                                    <Paragraph
-                                                        ellipsis={{ rows: 2 }}
-                                                        style={{
-                                                            marginBottom: 8,
-                                                            color: '#666',
-                                                            fontSize: '14px',
-                                                            lineHeight: '1.6',
-                                                        }}
-                                                    >
-                                                        {item.summary || item.content?.substring(0, 200) || 'Описание отсутствует'}
-                                                    </Paragraph>
-
-                                                    <Space wrap size={[8, 8]} style={{ marginTop: 8 }}>
-                                                        <Tag color={getCategoryColor(item.category)}>
-                                                            {getCategoryLabel(item.category)}
-                                                        </Tag>
-
-                                                        {item.isAiGenerated ? (
-                                                            <Tag icon={<RobotOutlined />} color="blue">AI-рерайт</Tag>
-                                                        ) : (
-                                                            <Tag icon={<LinkOutlined />} color="green">Оригинал</Tag>
-                                                        )}
-
-                                                        {item.source && (
-                                                            <Tag color="purple">{item.source}</Tag>
-                                                        )}
-
-                                                        {item.tags?.slice(0, 3).map((tag) => (
-                                                            <Tag key={tag} style={{ fontSize: '11px' }}>{tag}</Tag>
-                                                        ))}
-
-                                                        <Text type="secondary" style={{ fontSize: '12px' }}>
-                                                            <ClockCircleOutlined /> {formatDate(item.publishedAt)}
+                                    <List.Item.Meta
+                                        title={
+                                            <Space align="start" style={{ width: '100%', justifyContent: 'space-between' }}>
+                                                <Text strong style={{ fontSize: '16px' }}>
+                                                    {item.title}
+                                                </Text>
+                                                <Space size="middle" style={{ flexShrink: 0, marginLeft: 16 }}>
+                                                    <Tooltip title="Просмотры">
+                                                        <Text type="secondary" style={{ fontSize: '13px' }}>
+                                                            <EyeOutlined /> {item.views || 0}
                                                         </Text>
+                                                    </Tooltip>
+                                                    <Tooltip title="Лайки">
+                                                        <Text type="secondary" style={{ fontSize: '13px' }}>
+                                                            <HeartOutlined /> {item.likes || 0}
+                                                        </Text>
+                                                    </Tooltip>
+                                                </Space>
+                                            </Space>
+                                        }
+                                        description={
+                                            <div>
+                                                <Paragraph
+                                                    ellipsis={{ rows: 2 }}
+                                                    style={{
+                                                        marginBottom: 8,
+                                                        color: '#666',
+                                                        fontSize: '14px',
+                                                        lineHeight: '1.6',
+                                                    }}
+                                                >
+                                                    {item.summary || item.content?.substring(0, 200) || 'Описание отсутствует'}
+                                                </Paragraph>
 
-                                                        {item.author && (
-                                                            <Text type="secondary" style={{ fontSize: '12px' }}>
-                                                                • {item.author}
-                                                            </Text>
-                                                        )}
-                                                    </Space>
-                                                </div>
-                                            }
-                                        />
-                                    </div>
+                                                <Space wrap size={[8, 8]} style={{ marginTop: 8 }}>
+                                                    <Tag color={getCategoryColor(item.category)}>
+                                                        {getCategoryLabel(item.category)}
+                                                    </Tag>
+
+                                                    {item.isAiGenerated ? (
+                                                        <Tag icon={<RobotOutlined />} color="blue">AI-рерайт</Tag>
+                                                    ) : (
+                                                        <Tag icon={<LinkOutlined />} color="green">Оригинал</Tag>
+                                                    )}
+
+                                                    {item.source && (
+                                                        <Tag color="purple">{item.source}</Tag>
+                                                    )}
+
+                                                    {item.tags?.slice(0, 3).map((tag) => (
+                                                        <Tag key={tag} style={{ fontSize: '11px' }}>{tag}</Tag>
+                                                    ))}
+
+                                                    <Text type="secondary" style={{ fontSize: '12px' }}>
+                                                        <ClockCircleOutlined /> {formatDate(item.publishedAt)}
+                                                    </Text>
+
+                                                    {item.author && (
+                                                        <Text type="secondary" style={{ fontSize: '12px' }}>
+                                                            • {item.author}
+                                                        </Text>
+                                                    )}
+                                                </Space>
+                                            </div>
+                                        }
+                                    />
                                 </List.Item>
                             )}
                         />
@@ -395,6 +417,19 @@ const NewsList: React.FC = () => {
                     </Empty>
                 )}
             </Spin>
+
+            {/* Модальное окно с новостью */}
+            <Modal
+                open={modalVisible}
+                onCancel={handleCloseModal}
+                footer={null}
+                width={900}
+                centered
+                destroyOnClose
+                style={{ top: 20 }}
+            >
+                {selectedNewsId && <NewsDetailModal newsId={selectedNewsId} />}
+            </Modal>
         </div>
     );
 };

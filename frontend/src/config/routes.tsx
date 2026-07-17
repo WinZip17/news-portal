@@ -14,7 +14,6 @@ const Home = lazy(() => import('../pages/Home'));
 const Login = lazy(() => import('../pages/Login'));
 const Register = lazy(() => import('../pages/Register'));
 const NewsList = lazy(() => import('../pages/NewsList'));
-const NewsDetail = lazy(() => import('../pages/NewsDetail'));
 
 const PageLoader: React.FC = () => (
     <div style={{
@@ -69,14 +68,6 @@ export const routes = [
                 element: (
                     <Suspense fallback={<PageLoader />}>
                         <NewsList />
-                    </Suspense>
-                ),
-            },
-            {
-                path: '/news/:id',
-                element: (
-                    <Suspense fallback={<PageLoader />}>
-                        <NewsDetail />
                     </Suspense>
                 ),
             },
