@@ -38,7 +38,7 @@ export class AuthController {
 
     @Post('logout')
     @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiBearerAuth('JWT-auth')
     @ApiOperation({ summary: 'Выход из системы' })
     logout(@Request() req) {
         return this.authService.logout(req.user.id);
@@ -46,7 +46,7 @@ export class AuthController {
 
     @Get('me')
     @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiBearerAuth('JWT-auth')
     @ApiOperation({ summary: 'Получение текущего пользователя' })
     getCurrentUser(@Request() req) {
         return this.authService.getCurrentUser(req.user.id);
@@ -54,7 +54,7 @@ export class AuthController {
 
     @Put('profile')
     @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiBearerAuth('JWT-auth')
     @ApiOperation({ summary: 'Обновление профиля' })
     updateProfile(@Request() req, @Body() updateData: any) {
         return this.authService.updateProfile(req.user.id, updateData);
@@ -62,7 +62,7 @@ export class AuthController {
 
     @Put('preferences')
     @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiBearerAuth('JWT-auth')
     @ApiOperation({ summary: 'Обновление настроек' })
     updatePreferences(@Request() req, @Body() preferences: any) {
         return this.authService.updatePreferences(req.user.id, preferences);

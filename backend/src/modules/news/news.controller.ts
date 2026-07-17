@@ -38,7 +38,7 @@ export class NewsController {
     @Post()
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('admin', 'moderator', 'user')
-    @ApiBearerAuth()
+    @ApiBearerAuth('JWT-auth')
     @ApiOperation({ summary: 'Создание новости' })
     create(@Body() createNewsDto: CreateNewsDto, @Request() req) {
         return this.newsService.create(createNewsDto, req.user.id);
@@ -47,7 +47,7 @@ export class NewsController {
     @Put(':id')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('admin', 'moderator')
-    @ApiBearerAuth()
+    @ApiBearerAuth('JWT-auth')
     @ApiOperation({ summary: 'Обновление новости' })
     update(@Param('id') id: string, @Body() updateData: any) {
         return this.newsService.update(id, updateData);
@@ -56,7 +56,7 @@ export class NewsController {
     @Delete(':id')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('admin')
-    @ApiBearerAuth()
+    @ApiBearerAuth('JWT-auth')
     @ApiOperation({ summary: 'Удаление новости' })
     delete(@Param('id') id: string) {
         return this.newsService.delete(id);
@@ -65,7 +65,7 @@ export class NewsController {
     @Patch(':id/moderate')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('admin', 'moderator')
-    @ApiBearerAuth()
+    @ApiBearerAuth('JWT-auth')
     @ApiOperation({ summary: 'Модерация новости' })
     moderate(
         @Param('id') id: string,
@@ -82,7 +82,7 @@ export class NewsController {
 
     @Post(':id/like')
     @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiBearerAuth('JWT-auth')
     @ApiOperation({ summary: 'Лайк новости' })
     like(@Param('id') id: string) {
         return this.newsService.like(id);
@@ -90,7 +90,7 @@ export class NewsController {
 
     @Post('personalized')
     @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiBearerAuth('JWT-auth')
     @ApiOperation({ summary: 'Получение персонализированных новостей' })
     findPersonalized(@Body('preferences') preferences: string[]) {
         return this.newsService.findPersonalized(preferences);

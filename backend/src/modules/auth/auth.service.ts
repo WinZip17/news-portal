@@ -3,12 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { User } from '../../entities/user.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
 // Импортируем типы
 import { AuthResponse, TokenResponse, UserResponse, JwtPayload } from '../../types';
+import { User } from "../../entities";
 
 @Injectable()
 export class AuthService {
