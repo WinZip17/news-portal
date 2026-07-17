@@ -30,39 +30,14 @@ export class DeduplicationService {
             };
         }
 
-        // 2. Частичное совпадение заголовка (70%+)
+        // 2. Частичное совпадение заголовка (90%+)
         const partialMatch = await this.findPartialMatch(title);
         if (partialMatch) {
             return {
                 isDuplicate: true,
-                reason: 'Частичное совпадение заголовка (>70%)',
+                reason: 'Частичное совпадение заголовка (>90%)',
                 originalNews: partialMatch,
             };
-        }
-
-        // 3. Совпадение по источнику и дате
-        if (source) {
-            const sourceMatch = await this.findSourceMatch(source, title);
-            if (sourceMatch) {
-                return {
-                    isDuplicate: true,
-                    reason: 'Совпадение по источнику',
-                    originalNews: sourceMatch,
-                };
-            }
-        }
-
-        // 4. Проверка по ключевым словам
-        if (content) {
-            const keywords = this.extractKeywords(title + ' ' + content);
-            const keywordMatch = await this.findKeywordMatch(keywords);
-            if (keywordMatch) {
-                return {
-                    isDuplicate: true,
-                    reason: 'Совпадение по ключевым словам',
-                    originalNews: keywordMatch,
-                };
-            }
         }
 
         return { isDuplicate: false };
