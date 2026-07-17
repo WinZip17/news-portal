@@ -188,11 +188,27 @@ export class AiService {
         } catch (error) {
             this.logger.error('Failed to rewrite article:', error.message);
 
-            // Если AI не сработал - сохраняем оригинальную новость
+            // Сохраняем оригинал если AI не сработал
+            // Очищаем HTML-теги и форматируем текст
+            let cleanContent = article.content || article.summary || '';
+
+            // Удаляем все HTML-теги
+            cleanContent = cleanContent.replace(/<[^>]*>/g, '');
+
+            // Удаляем множественные пробелы и переносы
+            cleanContent = cleanContent.replace(/\s+/g, ' ').trim();
+
+            // Разбиваем на абзацы по точкам
+            const paragraphs = cleanContent
+                .split(/\.\s+/)
+                .filter(p => p.trim().length > 10)
+                .map(p => `<p>${p.trim()}.</p>`)
+                .join('');
+
             const news = this.newsRepository.create({
-                title: article.title,
-                content: article.content,
-                summary: article.summary,
+                title: article.title.replace(/<[^>]*>/g, '').trim(),
+                content: paragraphs || `<p>${cleanContent}</p>`,
+                summary: (article.summary || '').replace(/<[^>]*>/g, '').trim().substring(0, 200),
                 category: category,
                 tags: article.categories || [],
                 imageUrl: article.imageUrl || this.generateImageUrl(category),
@@ -354,7 +370,7 @@ export class AiService {
 
         try {
             const completion = await this.openai.chat.completions.create({
-                model: 'gpt-3.5-turbo',
+                model: 'deepseek-v4-flash',
                 messages: [{ role: 'user', content: 'Test' }],
                 max_tokens: 5,
             });
