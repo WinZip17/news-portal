@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOptionsWhere, ILike, Between } from 'typeorm';
+import { Repository, LessThan, ILike, Between, In } from 'typeorm';
 import { News, NewsStatus } from '../../entities/news.entity';
 import { CreateNewsDto } from './dto/create-news.dto';
 
@@ -225,5 +225,83 @@ export class NewsService {
         }
 
         return { archived: oldNews.length };
+    }
+
+    /**
+     * Автоматическое подтверждение новостей старше 1 часа
+     */
+    async autoApproveOldNews(): Promise<{ approved: number; news: any[] }> {
+        const oneHourAgo = new Date();
+        oneHourAgo.setHours(oneHourAgo.getHours() - 1);
+
+        const pendingNews = await this.newsRepository.find({
+            where: {
+                status: NewsStatus.PENDING,
+                createdAt: LessThan(oneHourAgo),
+            },
+            select: ['id', 'title', 'createdAt', 'status'],
+        });
+
+        if (pendingNews.length > 0) {
+            // Логируем какие новости будут подтверждены
+            console.log(`📋 Auto-approving ${pendingNews.length} news:`);
+            pendingNews.forEach(news => {
+                console.log(`  - ${news.title} (created: ${news.createdAt})`);
+            });
+
+            // Подтверждаем
+            await this.newsRepository.update(
+                { id: In(pendingNews.map(n => n.id)) },
+                {
+                    status: NewsStatus.PUBLISHED,
+                    moderatedBy: 'system',
+                    moderatedAt: new Date(),
+                    moderationComment: 'Автоматическое подтверждение (ожидание более 1 часа)',
+                }
+            );
+        }
+
+        return {
+            approved: pendingNews.length,
+            news: pendingNews.map(n => ({ id: n.id, title: n.title }))
+        };
+    }
+    /**
+     * Проверка на дубликат новости по заголовку
+     */
+    async isDuplicate(title: string, source?: string): Promise<boolean> {
+        const query = this.newsRepository.createQueryBuilder('news')
+            .where('news.title ILIKE :title', { title: `%${title.substring(0, 50)}%` });
+
+        if (source) {
+            query.orWhere('news.source = :source AND news.title ILIKE :title', {
+                source,
+                title: `%${title.substring(0, 30)}%`
+            });
+        }
+
+        // Проверяем за последние 7 дней
+        query.andWhere('news.createdAt > :date', {
+            date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+        });
+
+        const count = await query.getCount();
+        return count > 0;
+    }
+
+    /**
+     * Поиск похожих новостей
+     */
+    async findSimilar(title: string, threshold: number = 0.6): Promise<News[]> {
+        // Поиск по первым 3 словам заголовка
+        const words = title.split(' ').slice(0, 3).join(' ');
+
+        return this.newsRepository.find({
+            where: {
+                title: ILike(`%${words}%`),
+            },
+            take: 5,
+            order: { createdAt: 'DESC' },
+        });
     }
 }
