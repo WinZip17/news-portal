@@ -46,7 +46,9 @@ export class AiService {
         }
     }
 
-    @Cron(CronExpression.EVERY_DAY_AT_6PM)
+    @Cron(CronExpression.EVERY_DAY_AT_7PM, {
+        timeZone: 'Europe/Moscow'
+    })
     async autoGenerateNews() {
         this.logger.log('🚀 Starting automatic news generation from RSS...');
 
