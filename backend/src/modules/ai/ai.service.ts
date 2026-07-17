@@ -42,6 +42,7 @@ export class AiService {
         if (this.aiConfig.apiKey) {
             this.openai = new OpenAI({
                 apiKey: this.aiConfig.apiKey,
+                baseURL: 'https://api.proxyapi.ru/openai/v1'
             });
         }
     }
