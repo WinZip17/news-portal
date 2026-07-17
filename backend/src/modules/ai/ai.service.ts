@@ -42,12 +42,15 @@ export class AiService {
         if (this.aiConfig.apiKey) {
             this.openai = new OpenAI({
                 apiKey: this.aiConfig.apiKey,
-                baseURL: 'https://api.proxyapi.ru/openai/v1'
+                baseURL: 'https://api.proxyapi.ru/openai/v1',
+                defaultHeaders: {
+                    'Authorization': `Bearer ${this.aiConfig.apiKey}`,
+                },
             });
         }
     }
 
-    @Cron(CronExpression.EVERY_DAY_AT_7PM, {
+    @Cron(CronExpression.EVERY_3_HOURS, {
         timeZone: 'Europe/Moscow'
     })
     async autoGenerateNews() {
