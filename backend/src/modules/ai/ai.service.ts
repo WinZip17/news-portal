@@ -78,19 +78,57 @@ export class AiService {
         }
 
         const count = dto.count || 1;
-        const generatedNews = [];
+        const selectedCategory = dto.category || this.getRandomCategory();
 
-        for (let i = 0; i < count; i++) {
+        this.logger.log(`📰 Fetching RSS articles for category: ${selectedCategory}`);
+
+        // 1. ОДИН запрос RSS — получаем в 2 раза больше статей
+        const articles = await this.rssFetcher.fetchNewsByCategory(
+            selectedCategory,
+            count * 2
+        );
+
+        if (!articles || articles.length === 0) {
+            this.logger.warn(`No RSS articles found for ${selectedCategory}`);
+            return {
+                message: 'No articles found in RSS sources',
+                news: [],
+            };
+        }
+
+        this.logger.log(`📥 Got ${articles.length} articles from RSS`);
+
+        // 2. Фильтруем дубликаты
+        const uniqueArticles: RssArticle[] = [];
+        for (const article of articles) {
+            const isDuplicate = await this.deduplicationService.checkDuplicate(
+                article.title,
+                article.content,
+                article.source
+            );
+
+            if (!isDuplicate.isDuplicate) {
+                uniqueArticles.push(article);
+            } else {
+                this.logger.warn(`⏭️ Skipping duplicate: "${article.title.substring(0, 50)}..."`);
+            }
+
+            if (uniqueArticles.length >= count) break;
+        }
+
+        this.logger.log(`🔍 ${uniqueArticles.length} unique articles after dedup`);
+
+        // 3. Генерируем новости из уникальных статей
+        const generatedNews = [];
+        for (const article of uniqueArticles) {
             try {
-                // Берем РАЗНЫЕ RSS статьи для каждой генерации
-                const news = await this.generateFromRss(dto.category, dto.topic);
+                const news = await this.rewriteArticle(article, selectedCategory);
                 if (news) {
                     generatedNews.push(news);
                 }
-                // Задержка между запросами
                 await this.delay(2000);
             } catch (error) {
-                this.logger.error(`Failed to generate news ${i + 1}:`, error.message);
+                this.logger.error(`Failed to generate: ${error.message}`);
             }
         }
 
@@ -107,30 +145,29 @@ export class AiService {
 
         const selectedCategory = category || this.getRandomCategory();
 
-        // Получаем НЕСКОЛЬКО статей и выбираем случайную
-        const articles = await this.rssFetcher.fetchNewsByCategory(selectedCategory, 10);
+        // Получаем 3 статьи, выбираем одну
+        const articles = await this.rssFetcher.fetchNewsByCategory(selectedCategory, 3);
 
         if (!articles || articles.length === 0) {
             this.logger.warn(`No RSS articles found for ${selectedCategory}`);
             return null;
         }
 
-        // Выбираем случайную статью из полученных
-        const article = articles[Math.floor(Math.random() * articles.length)];
+        // Ищем первую не дубликат
+        for (const article of articles) {
+            const isDuplicate = await this.deduplicationService.checkDuplicate(
+                article.title,
+                article.content,
+                article.source
+            );
 
-        // Проверяем на дубликат
-        const duplicateCheck = await this.deduplicationService.checkDuplicate(
-            article.title,
-            article.content,
-            article.source
-        );
-
-        if (duplicateCheck.isDuplicate) {
-            this.logger.warn(`⚠️ Duplicate: "${article.title}"`);
-            return null;
+            if (!isDuplicate.isDuplicate) {
+                return this.rewriteArticle(article, selectedCategory);
+            }
         }
 
-        return this.rewriteArticle(article, selectedCategory);
+        this.logger.warn(`All ${articles.length} articles are duplicates`);
+        return null;
     }
 
     private async rewriteArticle(article: RssArticle, category: NewsCategory) {
