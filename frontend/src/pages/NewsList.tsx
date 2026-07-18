@@ -52,7 +52,7 @@ const NewsList: React.FC = () => {
     const urlFilters: NewsFilter = {};
 
     const category = searchParams.get('category');
-    if (category && Object.values(NewsCategory).includes(category as NewsCategory)) {
+    if (category && category !== 'all') {
       urlFilters.category = category as NewsCategory;
     }
 
@@ -72,12 +72,12 @@ const NewsList: React.FC = () => {
     }
 
     const isAiGenerated = searchParams.get('isAiGenerated');
-    if (isAiGenerated !== null && isAiGenerated !== 'all') {
+    if (isAiGenerated && isAiGenerated !== 'all') {
       urlFilters.isAiGenerated = isAiGenerated === 'true';
     }
 
     setFilters(urlFilters);
-    fetchNews({ ...pagination, ...urlFilters });
+    fetchNews(urlFilters);
   }, [searchParams]);
 
   // Обработчики фильтров
