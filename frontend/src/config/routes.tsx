@@ -8,14 +8,15 @@ import AuthLayout from '../components/layout/AuthLayout';
 // Auth components
 import ProtectedRoute from '../components/auth/ProtectedRoute';
 import PublicRoute from '../components/auth/PublicRoute';
-import AdminDashboard from "../pages/admin/AdminDashboard.tsx";
-import UsersManagement from "../pages/admin/UsersManagement.tsx";
 
 // Lazy loaded pages
 const Home = lazy(() => import('../pages/Home'));
 const Login = lazy(() => import('../pages/Login'));
 const Register = lazy(() => import('../pages/Register'));
 const NewsList = lazy(() => import('../pages/NewsList'));
+const Profile = lazy(() => import('../pages/Profile'));
+const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'));
+const NotFound = lazy(() => import('../pages/NotFound.tsx'));
 
 const PageLoader: React.FC = () => (
   <div style={{
@@ -73,11 +74,14 @@ export const routes = [
           </Suspense>
         ),
       },
+      // Защищенные маршруты
       {
         path: '/profile',
         element: (
           <ProtectedRoute>
-            <div>Профиль</div>
+            <Suspense fallback={<PageLoader/>}>
+              <Profile/>
+            </Suspense>
           </ProtectedRoute>
         ),
       },
@@ -85,10 +89,13 @@ export const routes = [
         path: '/settings',
         element: (
           <ProtectedRoute>
-            <div>Настройки</div>
+            <Suspense fallback={<PageLoader/>}>
+              <Profile/>
+            </Suspense>
           </ProtectedRoute>
         ),
       },
+      // Админ-панель
       {
         path: '/admin',
         element: (
@@ -98,8 +105,16 @@ export const routes = [
             </Suspense>
           </ProtectedRoute>
         ),
-      }
+      },
     ],
+  },
+  {
+    path: '*',
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <NotFound />
+      </Suspense>
+    ),
   },
   {
     path: '*',
