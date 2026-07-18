@@ -6,12 +6,18 @@ import {
     Get,
     Put,
     Request,
+    Query,
+    Delete,
+    Param
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import {RolesGuard} from "./guards/roles.guard";
+import {Roles} from "./decorators/roles.decorator";
+import {UpdateUserDto} from "./dto/update-user.dto";
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -72,5 +78,32 @@ export class AuthController {
     @ApiOperation({ summary: 'Количество пользователей' })
     async getUsersCount() {
         return { totalUsers: await this.authService.getTotalUsers() };
+    }
+
+    @Get('users')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('admin')
+    @ApiBearerAuth('JWT-auth')
+    @ApiOperation({ summary: 'Список пользователей (только для админов)' })
+    async getUsers(@Query('page') page = 1, @Query('limit') limit = 20) {
+        return this.authService.getAllUsers(page, limit);
+    }
+
+    @Put('users/:id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('admin')
+    @ApiBearerAuth('JWT-auth')
+    @ApiOperation({ summary: 'Обновление пользователя (только для админов)' })
+    async updateUser(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+        return this.authService.updateUser(id, dto);
+    }
+
+    @Delete('users/:id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('admin')
+    @ApiBearerAuth('JWT-auth')
+    @ApiOperation({ summary: 'Удаление пользователя (только для админов)' })
+    async deleteUser(@Param('id') id: string) {
+        return this.authService.deleteUser(id);
     }
 }

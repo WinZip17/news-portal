@@ -8,6 +8,8 @@ import AuthLayout from '../components/layout/AuthLayout';
 // Auth components
 import ProtectedRoute from '../components/auth/ProtectedRoute';
 import PublicRoute from '../components/auth/PublicRoute';
+import AdminDashboard from "../pages/admin/Dashboard.tsx";
+import UsersManagement from "../pages/admin/UsersManagement.tsx";
 
 // Lazy loaded pages
 const Home = lazy(() => import('../pages/Home'));
@@ -91,10 +93,22 @@ export const routes = [
                 path: '/admin',
                 element: (
                     <ProtectedRoute requiredRoles={['admin', 'moderator']}>
-                        <div>Админ панель</div>
+                        <Suspense fallback={<PageLoader />}>
+                            <AdminDashboard />
+                        </Suspense>
                     </ProtectedRoute>
                 ),
             },
+            {
+                path: '/admin/users',
+                element: (
+                    <ProtectedRoute requiredRoles={['admin']}>
+                        <Suspense fallback={<PageLoader />}>
+                            <UsersManagement />
+                        </Suspense>
+                    </ProtectedRoute>
+                ),
+            }
         ],
     },
     {

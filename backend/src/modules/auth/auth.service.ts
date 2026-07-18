@@ -9,6 +9,7 @@ import { RegisterDto } from './dto/register.dto';
 // Импортируем типы
 import { AuthResponse, TokenResponse, UserResponse, JwtPayload } from '../../types';
 import { User } from "../../entities";
+import {UpdateUserDto} from "./dto/update-user.dto";
 
 @Injectable()
 export class AuthService {
@@ -198,5 +199,44 @@ export class AuthService {
 
     async getTotalUsers(): Promise<number> {
         return this.userRepository.count();
+    }
+
+    async getAllUsers(page = 1, limit = 20): Promise<{ data: User[], total: number }> {
+        const [data, total] = await this.userRepository.findAndCount({
+            select: {
+                id: true,
+                email: true,
+                username: true,
+                role: true,
+                isActive: true,
+                createdAt: true,
+                lastLoginAt: true,
+            },
+            order: { createdAt: 'DESC' },
+            skip: (page - 1) * limit,
+            take: limit,
+        });
+
+        return { data, total };
+    }
+
+    async updateUser(id: string, dto: UpdateUserDto): Promise<User> {
+        await this.userRepository.update(id, dto);
+        return this.userRepository.findOne({
+            where: { id },
+            select: {
+                id: true,
+                email: true,
+                username: true,
+                role: true,
+                isActive: true,
+                createdAt: true,
+                lastLoginAt: true,
+            },
+        });
+    }
+
+    async deleteUser(id: string): Promise<void> {
+        await this.userRepository.delete(id);
     }
 }

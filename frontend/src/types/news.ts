@@ -48,7 +48,7 @@ export interface NewsFilter {
     isAiGenerated?: boolean;
     page?: number;
     limit?: number;
-    sortBy?: 'publishedAt' | 'views' | 'likes';
+    sortBy?: 'publishedAt' | 'views' | 'likes' | 'createdAt';
     sortOrder?: 'ASC' | 'DESC';
 }
 

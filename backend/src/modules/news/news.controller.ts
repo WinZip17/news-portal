@@ -100,7 +100,7 @@ export class NewsController {
         return this.newsService.findPersonalized(preferences);
     }
 
-    @Get('stats')
+    @Get('stats-news')
     @ApiOperation({ summary: 'Статистика новостей' })
     async getNewsStats() {
         return this.newsService.getStats();
