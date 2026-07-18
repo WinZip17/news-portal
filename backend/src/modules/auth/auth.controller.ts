@@ -95,7 +95,7 @@ export class AuthController {
     @ApiBearerAuth('JWT-auth')
     @ApiOperation({ summary: 'Обновление пользователя (только для админов)' })
     async updateUser(@Param('id') id: string, @Body() dto: UpdateUserDto) {
-        return this.authService.updateUser(id, dto);
+        return this.authService.adminUpdateUser(id, dto);
     }
 
     @Delete('users/:id')

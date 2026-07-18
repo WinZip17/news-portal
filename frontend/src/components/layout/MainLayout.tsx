@@ -70,23 +70,6 @@ const MainLayout: React.FC = () => {
                             key: '/admin',
                             icon: <DashboardOutlined />,
                             label: 'Админ панель',
-                            children: [
-                                {
-                                    key: '/admin/news',
-                                    icon: <ReadOutlined />,
-                                    label: 'Управление новостями',
-                                },
-                                {
-                                    key: '/admin/users',
-                                    icon: <TeamOutlined />,
-                                    label: 'Пользователи',
-                                },
-                                {
-                                    key: '/admin/settings',
-                                    icon: <SettingOutlined />,
-                                    label: 'Настройки',
-                                },
-                            ],
                         },
                     ]
                     : []),

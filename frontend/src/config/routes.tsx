@@ -8,7 +8,7 @@ import AuthLayout from '../components/layout/AuthLayout';
 // Auth components
 import ProtectedRoute from '../components/auth/ProtectedRoute';
 import PublicRoute from '../components/auth/PublicRoute';
-import AdminDashboard from "../pages/admin/Dashboard.tsx";
+import AdminDashboard from "../pages/admin/AdminDashboard.tsx";
 import UsersManagement from "../pages/admin/UsersManagement.tsx";
 
 // Lazy loaded pages
@@ -95,16 +95,6 @@ export const routes = [
                     <ProtectedRoute requiredRoles={['admin', 'moderator']}>
                         <Suspense fallback={<PageLoader />}>
                             <AdminDashboard />
-                        </Suspense>
-                    </ProtectedRoute>
-                ),
-            },
-            {
-                path: '/admin/users',
-                element: (
-                    <ProtectedRoute requiredRoles={['admin']}>
-                        <Suspense fallback={<PageLoader />}>
-                            <UsersManagement />
                         </Suspense>
                     </ProtectedRoute>
                 ),

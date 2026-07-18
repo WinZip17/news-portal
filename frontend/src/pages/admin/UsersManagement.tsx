@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Tag, Button, Space, Modal, Select, Switch, message, Popconfirm } from 'antd';
+import {Table, Tag, Button, Space, Modal, Select, Switch, message, Popconfirm, Input} from 'antd';
 import { TeamOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { userService } from '../../services/userService';
 import { User, UserRole } from '../../types/auth';
@@ -38,8 +38,13 @@ const UsersManagement: React.FC = () => {
         if (!editUser) return;
         try {
             await userService.updateUser(editUser.id, {
+                email: editUser.email,
+                username: editUser.username,
+                firstName: editUser.firstName,
+                lastName: editUser.lastName,
                 role: editUser.role,
                 isActive: editUser.isActive,
+                preferences: editUser.preferences,
             });
             message.success('Пользователь обновлен');
             setModalVisible(false);
@@ -152,38 +157,43 @@ const UsersManagement: React.FC = () => {
             />
 
             {/* Модальное окно редактирования */}
-            <Modal
-                title="Редактирование пользователя"
-                open={modalVisible}
-                onOk={handleSave}
-                onCancel={() => setModalVisible(false)}
-            >
+            <Modal title="Редактирование пользователя" open={modalVisible} onOk={handleSave} onCancel={() => setModalVisible(false)} width={500}>
                 {editUser && (
                     <Space direction="vertical" style={{ width: '100%' }}>
-                        <p><strong>ID:</strong> {editUser.id}</p>
-                        <p><strong>Имя:</strong> {editUser.username}</p>
-                        <p><strong>Email:</strong> {editUser.email}</p>
-
+                        <div>
+                            <strong>Email:</strong>
+                            <Input value={editUser.email} onChange={(e) => setEditUser({ ...editUser, email: e.target.value })} />
+                        </div>
+                        <div>
+                            <strong>Имя пользователя:</strong>
+                            <Input value={editUser.username} onChange={(e) => setEditUser({ ...editUser, username: e.target.value })} />
+                        </div>
+                        <div>
+                            <strong>Имя:</strong>
+                            <Input value={editUser.firstName} onChange={(e) => setEditUser({ ...editUser, firstName: e.target.value })} />
+                        </div>
+                        <div>
+                            <strong>Фамилия:</strong>
+                            <Input value={editUser.lastName} onChange={(e) => setEditUser({ ...editUser, lastName: e.target.value })} />
+                        </div>
                         <div>
                             <strong>Роль:</strong>
-                            <Select
-                                value={editUser.role}
-                                onChange={(value) => setEditUser({ ...editUser, role: value })}
-                                style={{ width: '100%', marginTop: 8 }}
-                            >
+                            <Select value={editUser.role} onChange={(value) => setEditUser({ ...editUser, role: value })} style={{ width: '100%' }}>
                                 <Select.Option value="user">Пользователь</Select.Option>
                                 <Select.Option value="moderator">Модератор</Select.Option>
                                 <Select.Option value="admin">Администратор</Select.Option>
                             </Select>
                         </div>
-
-                        <div style={{ marginTop: 16 }}>
+                        <div>
                             <strong>Активен:</strong>
-                            <Switch
-                                checked={editUser.isActive}
-                                onChange={(checked) => setEditUser({ ...editUser, isActive: checked })}
-                                style={{ marginLeft: 16 }}
-                            />
+                            <Switch checked={editUser.isActive} onChange={(checked) => setEditUser({ ...editUser, isActive: checked })} />
+                        </div>
+                        <div>
+                            <strong>Тема:</strong>
+                            <Select value={editUser.preferences?.theme || 'light'} onChange={(value) => setEditUser({ ...editUser, preferences: { ...editUser.preferences, theme: value } })} style={{ width: '100%' }}>
+                                <Select.Option value="light">Светлая</Select.Option>
+                                <Select.Option value="dark">Темная</Select.Option>
+                            </Select>
                         </div>
                     </Space>
                 )}

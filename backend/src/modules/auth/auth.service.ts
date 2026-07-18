@@ -1,14 +1,14 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { JwtService } from '@nestjs/jwt';
+import {Injectable, UnauthorizedException, ConflictException, NotFoundException} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
+import {Repository} from 'typeorm';
+import {JwtService} from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { LoginDto } from './dto/login.dto';
-import { RegisterDto } from './dto/register.dto';
+import {LoginDto} from './dto/login.dto';
+import {RegisterDto} from './dto/register.dto';
 
 // Импортируем типы
-import { AuthResponse, TokenResponse, UserResponse, JwtPayload } from '../../types';
-import { User } from "../../entities";
+import {AuthResponse, TokenResponse, UserResponse, JwtPayload} from '../../types';
+import {User} from "../../entities";
 import {UpdateUserDto} from "./dto/update-user.dto";
 
 @Injectable()
@@ -17,14 +17,15 @@ export class AuthService {
         @InjectRepository(User)
         private userRepository: Repository<User>,
         private jwtService: JwtService,
-    ) {}
+    ) {
+    }
 
     async register(registerDto: RegisterDto): Promise<AuthResponse> {
-        const { email, username, password, firstName, lastName } = registerDto;
+        const {email, username, password, firstName, lastName} = registerDto;
 
         // Проверка существующего пользователя
         const existingUser = await this.userRepository.findOne({
-            where: [{ email }, { username }],
+            where: [{email}, {username}],
         });
 
         if (existingUser) {
@@ -63,9 +64,9 @@ export class AuthService {
     }
 
     async login(loginDto: LoginDto): Promise<AuthResponse> {
-        const { email, password } = loginDto;
+        const {email, password} = loginDto;
 
-        const user = await this.userRepository.findOne({ where: { email } });
+        const user = await this.userRepository.findOne({where: {email}});
 
         if (!user) {
             throw new UnauthorizedException('Неверный email или пароль');
@@ -100,7 +101,7 @@ export class AuthService {
             });
 
             const user = await this.userRepository.findOne({
-                where: { id: payload.sub }
+                where: {id: payload.sub}
             });
 
             if (!user || user.refreshToken !== refreshToken) {
@@ -116,11 +117,11 @@ export class AuthService {
     }
 
     async logout(userId: string): Promise<void> {
-        await this.userRepository.update(userId, { refreshToken: null });
+        await this.userRepository.update(userId, {refreshToken: null});
     }
 
     async getCurrentUser(userId: string): Promise<UserResponse> {
-        const user = await this.userRepository.findOne({ where: { id: userId } });
+        const user = await this.userRepository.findOne({where: {id: userId}});
 
         if (!user) {
             throw new UnauthorizedException('Пользователь не найден');
@@ -144,7 +145,7 @@ export class AuthService {
             await this.userRepository.update(userId, filteredData);
         }
 
-        const updatedUser = await this.userRepository.findOne({ where: { id: userId } });
+        const updatedUser = await this.userRepository.findOne({where: {id: userId}});
 
         if (!updatedUser) {
             throw new UnauthorizedException('Пользователь не найден');
@@ -154,7 +155,7 @@ export class AuthService {
     }
 
     async updatePreferences(userId: string, preferences: any): Promise<UserResponse> {
-        const user = await this.userRepository.findOne({ where: { id: userId } });
+        const user = await this.userRepository.findOne({where: {id: userId}});
 
         if (!user) {
             throw new UnauthorizedException('Пользователь не найден');
@@ -182,7 +183,7 @@ export class AuthService {
         const refreshToken = this.jwtService.sign(payload);
 
         // Сохраняем refresh token
-        await this.userRepository.update(user.id, { refreshToken });
+        await this.userRepository.update(user.id, {refreshToken});
 
         return {
             accessToken,
@@ -193,7 +194,7 @@ export class AuthService {
 
     private sanitizeUser(user: User): UserResponse {
         // Деструктурируем и возвращаем без пароля и refreshToken
-        const { password, refreshToken, ...sanitizedUser } = user;
+        const {password, refreshToken, ...sanitizedUser} = user;
         return sanitizedUser as unknown as UserResponse;
     }
 
@@ -212,18 +213,18 @@ export class AuthService {
                 createdAt: true,
                 lastLoginAt: true,
             },
-            order: { createdAt: 'DESC' },
+            order: {createdAt: 'DESC'},
             skip: (page - 1) * limit,
             take: limit,
         });
 
-        return { data, total };
+        return {data, total};
     }
 
     async updateUser(id: string, dto: UpdateUserDto): Promise<User> {
         await this.userRepository.update(id, dto);
         return this.userRepository.findOne({
-            where: { id },
+            where: {id},
             select: {
                 id: true,
                 email: true,
@@ -238,5 +239,38 @@ export class AuthService {
 
     async deleteUser(id: string): Promise<void> {
         await this.userRepository.delete(id);
+    }
+
+    async adminUpdateUser(id: string, dto: UpdateUserDto): Promise<User> {
+        const user = await this.userRepository.findOne({where: {id}});
+
+        if (!user) {
+            throw new NotFoundException('Пользователь не найден');
+        }
+
+        // Разрешённые для редактирования поля
+        const allowedFields = ['email', 'username', 'firstName', 'lastName', 'role', 'isActive', 'preferences'];
+
+        for (const field of allowedFields) {
+            if (dto[field] !== undefined) {
+                user[field] = dto[field];
+            }
+        }
+
+        await this.userRepository.save(user);
+
+        return this.userRepository.findOne({
+            where: {id},
+            select: {
+                'id': true,
+                'email': true,
+                'username': true,
+                'firstName': true,
+                'lastName': true,
+                'role': true,
+                'isActive': true,
+                'preferences': true
+            },
+        });
     }
 }
