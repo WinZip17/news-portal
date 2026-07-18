@@ -225,7 +225,25 @@ export class AiService {
                 status: NewsStatus.PENDING,
                 publishedAt: new Date(),
             });
+            const minContentLength = 50;
+            const contentText = (result.content || article.content || '').replace(/<[^>]*>/g, '').trim();
+            if (contentText.length < minContentLength) {
+                this.logger.warn(`⏭️ Content too short (${contentText.length} chars): "${contentText.substring(0, 50)}..."`);
+                return null;
+            }
 
+            // Проверяем что заголовок не пустой и не фолбэк
+            const title = result.title || article.title || '';
+            if (!title || title.includes('Контент находится в процессе генерации') || title.includes('Актуальные новости')) {
+                this.logger.warn(`⏭️ Invalid title: "${title}"`);
+                return null;
+            }
+
+            // Проверяем что контент не фолбэк
+            if (contentText.includes('Контент находится в процессе генерации') || contentText.includes('временно недоступен')) {
+                this.logger.warn('⏭️ Fallback content detected');
+                return null;
+            }
             const saved = await this.newsRepository.save(news);
             this.logger.log(`✅ News generated: ${saved.title}`);
             return saved;
@@ -263,7 +281,10 @@ export class AiService {
                 status: NewsStatus.PENDING,
                 publishedAt: new Date(),
             });
-
+            if (cleanContent.length < 50) {
+                this.logger.warn(`⏭️ Original content too short (${cleanContent.length} chars), skipping`);
+                return null;
+            }
             return this.newsRepository.save(news);
         }
     }
