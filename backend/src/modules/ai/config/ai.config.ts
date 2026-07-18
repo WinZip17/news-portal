@@ -18,7 +18,8 @@ export class AiConfig {
     }
 
     get maxTokens(): number {
-        return this.configService.get<number>('AI_MAX_TOKENS', 1000);
+        const value = this.configService.get('AI_MAX_TOKENS', 1000);
+        return typeof value === 'string' ? parseInt(value, 10) : value;
     }
 
     get generationInterval(): number {
