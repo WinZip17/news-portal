@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import {
     List,
     Input,
@@ -27,6 +27,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useNews } from '../hooks/useNews';
 import { NewsCategory, NewsFilter } from '../types/news';
 import NewsDetailModal from '../components/NewsDetailModal';
+import {useNewsModal} from "../hooks/useNewsModal.ts";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -34,8 +35,7 @@ const { Title, Text, Paragraph } = Typography;
 
 const NewsList: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
-    const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null);
-    const [modalVisible, setModalVisible] = useState(false);
+    const { selectedNewsId, modalVisible, openNews, closeNews } = useNewsModal();
 
     const {
         news,
@@ -135,17 +135,6 @@ const NewsList: React.FC = () => {
     const handleClearFilters = useCallback(() => {
         setSearchParams({});
     }, [setSearchParams]);
-
-    // Открытие модального окна
-    const handleOpenNews = (newsId: string) => {
-        setSelectedNewsId(newsId);
-        setModalVisible(true);
-    };
-
-    const handleCloseModal = () => {
-        setModalVisible(false);
-        setSelectedNewsId(null);
-    };
 
     // Вспомогательные функции
     const getCategoryColor = (category: string) => {
@@ -307,7 +296,7 @@ const NewsList: React.FC = () => {
                                     onMouseLeave={(e) => {
                                         e.currentTarget.style.backgroundColor = 'transparent';
                                     }}
-                                    onClick={() => handleOpenNews(item.id)}
+                                    onClick={() => openNews(item.id)}
                                 >
                                     <List.Item.Meta
                                         title={
@@ -421,7 +410,7 @@ const NewsList: React.FC = () => {
             {/* Модальное окно с новостью */}
             <Modal
                 open={modalVisible}
-                onCancel={handleCloseModal}
+                onCancel={closeNews}
                 footer={null}
                 width={900}
                 centered

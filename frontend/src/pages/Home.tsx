@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useNews } from '../hooks/useNews';
 import NewsDetailModal from '../components/NewsDetailModal';
+import {useNewsModal} from "../hooks/useNewsModal.ts";
 
 const { Title, Paragraph } = Typography;
 
@@ -20,9 +21,7 @@ const Home: React.FC = () => {
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
     const { news, fetchNews, isLoading } = useNews();
-    const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null);
-    const [modalVisible, setModalVisible] = useState(false);
-
+    const { selectedNewsId, modalVisible, openNews, closeNews } = useNewsModal();
     useEffect(() => {
         fetchNews({
             limit: 6,
@@ -30,16 +29,6 @@ const Home: React.FC = () => {
             sortOrder: 'DESC',
         });
     }, []);
-
-    const handleOpenNews = (newsId: string) => {
-        setSelectedNewsId(newsId);
-        setModalVisible(true);
-    };
-
-    const handleCloseModal = () => {
-        setModalVisible(false);
-        setSelectedNewsId(null);
-    };
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -141,7 +130,7 @@ const Home: React.FC = () => {
                                         ) : (
                                             <div style={{ height: 200, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '48px' }}>📰</div>
                                         )}
-                                        onClick={() => handleOpenNews(item.id)}
+                                        onClick={() => openNews(item.id)}
                                         actions={[
                                             <span key="views">👁 {item.views || 0}</span>,
                                             <span key="likes">❤️ {item.likes || 0}</span>,
@@ -186,7 +175,7 @@ const Home: React.FC = () => {
             {/* Модальное окно */}
             <Modal
                 open={modalVisible}
-                onCancel={handleCloseModal}
+                onCancel={closeNews}
                 footer={null}
                 width={900}
                 centered
