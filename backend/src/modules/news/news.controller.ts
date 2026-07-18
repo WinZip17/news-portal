@@ -17,8 +17,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { AuthService } from "../auth/auth.service";
-
+import { AuthService } from '../auth/auth.service';
 
 @ApiTags('News')
 @Controller('news')
@@ -26,8 +25,7 @@ export class NewsController {
   constructor(
     private newsService: NewsService,
     private authService: AuthService,
-  ) {
-  }
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'Получение списка новостей' })
@@ -59,12 +57,6 @@ export class NewsController {
     return this.newsService.getFavorites(req.user.id, page, limit);
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Получение новости по ID' })
-  findOne(@Param('id') id: string) {
-    return this.newsService.findOne(id);
-  }
-
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'moderator', 'user')
@@ -72,6 +64,28 @@ export class NewsController {
   @ApiOperation({ summary: 'Создание новости' })
   create(@Body() createNewsDto: CreateNewsDto, @Request() req) {
     return this.newsService.create(createNewsDto, req.user.id);
+  }
+
+  @Post('personalized')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Получение персонализированных новостей' })
+  findPersonalized(@Body('preferences') preferences: string[]) {
+    return this.newsService.findPersonalized(preferences);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Получение новости по ID' })
+  findOne(@Param('id') id: string) {
+    return this.newsService.findOne(id);
+  }
+
+  @Get(':id/favorite/check')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  async checkFavorite(@Param('id') id: string, @Request() req) {
+    const favorited = await this.newsService.isFavorited(req.user.id, id);
+    return { favorited };
   }
 
   @Put(':id')
@@ -110,14 +124,6 @@ export class NewsController {
     );
   }
 
-  @Post('personalized')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Получение персонализированных новостей' })
-  findPersonalized(@Body('preferences') preferences: string[]) {
-    return this.newsService.findPersonalized(preferences);
-  }
-
   @Post(':id/favorite')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
@@ -125,13 +131,6 @@ export class NewsController {
     return this.newsService.toggleFavorite(req.user.id, id);
   }
 
-  @Get(':id/favorite/check')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('JWT-auth')
-  async checkFavorite(@Param('id') id: string, @Request() req) {
-    const favorited = await this.newsService.isFavorited(req.user.id, id);
-    return { favorited };
-  }
   @Post(':id/like')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
@@ -139,6 +138,4 @@ export class NewsController {
   like(@Param('id') id: string) {
     return this.newsService.like(id);
   }
-
-
 }

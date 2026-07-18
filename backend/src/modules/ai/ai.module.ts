@@ -7,13 +7,14 @@ import { AiController } from './ai.controller';
 import { AiConfig } from './config/ai.config';
 import { RssFetcherService } from './rss-fetcher.service';
 import { DeduplicationService } from './deduplication.service';
+import { News } from '../../entities';
+import { Favorite } from '../../entities/favorite.entity';
 import { NewsService } from '../news/news.service';
 import { AuthModule } from '../auth/auth.module';
-import { News } from "../../entities";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([News]),
+    TypeOrmModule.forFeature([News, Favorite]),
     ScheduleModule.forRoot(),
     ConfigModule,
     AuthModule,
@@ -28,5 +29,4 @@ import { News } from "../../entities";
   ],
   exports: [AiService],
 })
-export class AiModule {
-}
+export class AiModule {}
