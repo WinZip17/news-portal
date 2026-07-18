@@ -35,6 +35,23 @@ export class NewsController {
     return this.newsService.findAll(filters);
   }
 
+  @Get('stats-news')
+  @ApiOperation({ summary: 'Статистика новостей' })
+  async getNewsStats() {
+    return this.newsService.getStats();
+  }
+
+  @Get('stats')
+  @ApiOperation({ summary: 'Полная статистика для главной' })
+  async getStats() {
+    const [newsStats, totalUsers] = await Promise.all([
+      this.newsService.getStats(),
+      this.authService.getTotalUsers(),
+    ]);
+    newsStats.totalUsers = totalUsers;
+    return newsStats;
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Получение новости по ID' })
   findOne(@Param('id') id: string) {
@@ -102,20 +119,4 @@ export class NewsController {
     return this.newsService.findPersonalized(preferences);
   }
 
-  @Get('stats-news')
-  @ApiOperation({ summary: 'Статистика новостей' })
-  async getNewsStats() {
-    return this.newsService.getStats();
-  }
-
-  @Get('stats')
-  @ApiOperation({ summary: 'Полная статистика для главной' })
-  async getStats() {
-    const [newsStats, totalUsers] = await Promise.all([
-      this.newsService.getStats(),
-      this.authService.getTotalUsers(),
-    ]);
-    newsStats.totalUsers = totalUsers;
-    return newsStats;
-  }
 }

@@ -10,8 +10,7 @@ const AdminDashboard: React.FC = () => {
       key: 'news',
       label: (
         <span>
-          <ReadOutlined/>
-          Управление новостями
+          <ReadOutlined/> Управление новостями
         </span>
       ),
       children: <NewsManagement/>,
@@ -20,8 +19,7 @@ const AdminDashboard: React.FC = () => {
       key: 'users',
       label: (
         <span>
-          <TeamOutlined/>
-          Пользователи
+          <TeamOutlined/> Пользователи
         </span>
       ),
       children: <UsersManagement/>,
