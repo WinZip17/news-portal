@@ -8,35 +8,35 @@ import { User } from '../../../entities';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    constructor(
-        private configService: ConfigService,
-        @InjectRepository(User)
-        private userRepository: Repository<User>,
-    ) {
-        super({
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            ignoreExpiration: false,
-            secretOrKey: configService.get('JWT_SECRET', 'your-secret-key'),
-        });
+  constructor(
+    private configService: ConfigService,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) {
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
+      secretOrKey: configService.get('JWT_SECRET', 'your-secret-key'),
+    });
+  }
+
+  async validate(payload: any) {
+    const user = await this.userRepository.findOne({
+      where: { id: payload.sub },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Пользователь не найден');
     }
 
-    async validate(payload: any) {
-        const user = await this.userRepository.findOne({
-            where: { id: payload.sub },
-        });
-
-        if (!user) {
-            throw new UnauthorizedException('Пользователь не найден');
-        }
-
-        if (!user.isActive) {
-            throw new UnauthorizedException('Пользователь деактивирован');
-        }
-
-        return {
-            id: user.id,
-            email: user.email,
-            role: user.role,
-        };
+    if (!user.isActive) {
+      throw new UnauthorizedException('Пользователь деактивирован');
     }
+
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    };
+  }
 }

@@ -5,19 +5,19 @@ import newsReducer from './news/newsSlice';
 import uiReducer from './ui/uiSlice';
 
 export const store = configureStore({
-    reducer: {
-        auth: authReducer,
-        news: newsReducer,
-        ui: uiReducer,
-    },
-    middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware({
-            serializableCheck: {
-                // Игнорируем некоторые actions для non-serializable данных
-                ignoredActions: ['auth/setUser'],
-            },
-        }),
-    devTools: !!import.meta.env.DEV,
+  reducer: {
+    auth: authReducer,
+    news: newsReducer,
+    ui: uiReducer,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Игнорируем некоторые actions для non-serializable данных
+        ignoredActions: ['auth/setUser'],
+      },
+    }),
+  devTools: !!import.meta.env.DEV,
 });
 
 export type RootState = ReturnType<typeof store.getState>;

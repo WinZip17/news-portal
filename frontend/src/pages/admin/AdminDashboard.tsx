@@ -5,35 +5,35 @@ import UsersManagement from './UsersManagement';
 import NewsManagement from "./NewsManagement.tsx";
 
 const AdminDashboard: React.FC = () => {
-    const items = [
-        {
-            key: 'news',
-            label: (
-                <span>
-          <ReadOutlined />
+  const items = [
+    {
+      key: 'news',
+      label: (
+        <span>
+          <ReadOutlined/>
           Управление новостями
         </span>
-            ),
-            children: <NewsManagement />,
-        },
-        {
-            key: 'users',
-            label: (
-                <span>
-          <TeamOutlined />
+      ),
+      children: <NewsManagement/>,
+    },
+    {
+      key: 'users',
+      label: (
+        <span>
+          <TeamOutlined/>
           Пользователи
         </span>
-            ),
-            children: <UsersManagement />,
-        },
-    ];
+      ),
+      children: <UsersManagement/>,
+    },
+  ];
 
-    return (
-        <div>
-            <h1>Админ-панель</h1>
-            <Tabs defaultActiveKey="news" items={items} />
-        </div>
-    );
+  return (
+    <div>
+      <h1>Админ-панель</h1>
+      <Tabs defaultActiveKey="news" items={items}/>
+    </div>
+  );
 };
 
 export default AdminDashboard;

@@ -1,15 +1,15 @@
 import {
-    Controller,
-    Get,
-    Post,
-    Put,
-    Delete,
-    Body,
-    Param,
-    Query,
-    UseGuards,
-    Request,
-    Patch,
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  Request,
+  Patch,
 } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { CreateNewsDto } from './dto/create-news.dto';
@@ -23,97 +23,99 @@ import { AuthService } from "../auth/auth.service";
 @ApiTags('News')
 @Controller('news')
 export class NewsController {
-    constructor(
-        private newsService: NewsService,
-        private authService: AuthService,
-    ) {}
-    @Get()
-    @ApiOperation({ summary: 'Получение списка новостей' })
-    findAll(@Query() filters: any) {
-        return this.newsService.findAll(filters);
-    }
+  constructor(
+    private newsService: NewsService,
+    private authService: AuthService,
+  ) {
+  }
 
-    @Get(':id')
-    @ApiOperation({ summary: 'Получение новости по ID' })
-    findOne(@Param('id') id: string) {
-        return this.newsService.findOne(id);
-    }
+  @Get()
+  @ApiOperation({ summary: 'Получение списка новостей' })
+  findAll(@Query() filters: any) {
+    return this.newsService.findAll(filters);
+  }
 
-    @Post()
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('admin', 'moderator', 'user')
-    @ApiBearerAuth('JWT-auth')
-    @ApiOperation({ summary: 'Создание новости' })
-    create(@Body() createNewsDto: CreateNewsDto, @Request() req) {
-        return this.newsService.create(createNewsDto, req.user.id);
-    }
+  @Get(':id')
+  @ApiOperation({ summary: 'Получение новости по ID' })
+  findOne(@Param('id') id: string) {
+    return this.newsService.findOne(id);
+  }
 
-    @Put(':id')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('admin', 'moderator')
-    @ApiBearerAuth('JWT-auth')
-    @ApiOperation({ summary: 'Обновление новости' })
-    update(@Param('id') id: string, @Body() updateData: any) {
-        return this.newsService.update(id, updateData);
-    }
+  @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'moderator', 'user')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Создание новости' })
+  create(@Body() createNewsDto: CreateNewsDto, @Request() req) {
+    return this.newsService.create(createNewsDto, req.user.id);
+  }
 
-    @Delete(':id')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('admin')
-    @ApiBearerAuth('JWT-auth')
-    @ApiOperation({ summary: 'Удаление новости' })
-    delete(@Param('id') id: string) {
-        return this.newsService.delete(id);
-    }
+  @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'moderator')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Обновление новости' })
+  update(@Param('id') id: string, @Body() updateData: any) {
+    return this.newsService.update(id, updateData);
+  }
 
-    @Patch(':id/moderate')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('admin', 'moderator')
-    @ApiBearerAuth('JWT-auth')
-    @ApiOperation({ summary: 'Модерация новости' })
-    moderate(
-        @Param('id') id: string,
-        @Body() moderationData: any,
-        @Request() req,
-    ) {
-        return this.newsService.moderate(
-            id,
-            moderationData.status,
-            req.user.id,
-            moderationData.comment,
-        );
-    }
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Удаление новости' })
+  delete(@Param('id') id: string) {
+    return this.newsService.delete(id);
+  }
 
-    @Post(':id/like')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth('JWT-auth')
-    @ApiOperation({ summary: 'Лайк новости' })
-    like(@Param('id') id: string) {
-        return this.newsService.like(id);
-    }
+  @Patch(':id/moderate')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'moderator')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Модерация новости' })
+  moderate(
+    @Param('id') id: string,
+    @Body() moderationData: any,
+    @Request() req,
+  ) {
+    return this.newsService.moderate(
+      id,
+      moderationData.status,
+      req.user.id,
+      moderationData.comment,
+    );
+  }
 
-    @Post('personalized')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth('JWT-auth')
-    @ApiOperation({ summary: 'Получение персонализированных новостей' })
-    findPersonalized(@Body('preferences') preferences: string[]) {
-        return this.newsService.findPersonalized(preferences);
-    }
+  @Post(':id/like')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Лайк новости' })
+  like(@Param('id') id: string) {
+    return this.newsService.like(id);
+  }
 
-    @Get('stats-news')
-    @ApiOperation({ summary: 'Статистика новостей' })
-    async getNewsStats() {
-        return this.newsService.getStats();
-    }
+  @Post('personalized')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Получение персонализированных новостей' })
+  findPersonalized(@Body('preferences') preferences: string[]) {
+    return this.newsService.findPersonalized(preferences);
+  }
 
-    @Get('stats')
-    @ApiOperation({ summary: 'Полная статистика для главной' })
-    async getStats() {
-        const [newsStats, totalUsers] = await Promise.all([
-            this.newsService.getStats(),
-            this.authService.getTotalUsers(),
-        ]);
-        newsStats.totalUsers = totalUsers;
-        return newsStats;
-    }
+  @Get('stats-news')
+  @ApiOperation({ summary: 'Статистика новостей' })
+  async getNewsStats() {
+    return this.newsService.getStats();
+  }
+
+  @Get('stats')
+  @ApiOperation({ summary: 'Полная статистика для главной' })
+  async getStats() {
+    const [newsStats, totalUsers] = await Promise.all([
+      this.newsService.getStats(),
+      this.authService.getTotalUsers(),
+    ]);
+    newsStats.totalUsers = totalUsers;
+    return newsStats;
+  }
 }

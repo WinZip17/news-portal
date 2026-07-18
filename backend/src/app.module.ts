@@ -5,7 +5,6 @@ import { AuthModule } from './modules/auth/auth.module';
 import { NewsModule } from './modules/news/news.module';
 import { AiModule } from './modules/ai/ai.module';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -38,6 +37,6 @@ import { AppService } from './app.service';
     AiModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+}

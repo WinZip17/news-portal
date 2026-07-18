@@ -4,8 +4,9 @@ import { DatabaseInitService } from './database-init.service';
 
 @Global()
 @Module({
-    imports: [ConfigModule],
-    providers: [DatabaseInitService],
-    exports: [DatabaseInitService],
+  imports: [ConfigModule],
+  providers: [DatabaseInitService],
+  exports: [DatabaseInitService],
 })
-export class DatabaseModule {}
+export class DatabaseModule {
+}
