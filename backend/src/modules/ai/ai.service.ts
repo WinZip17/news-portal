@@ -439,18 +439,104 @@ export class AiService {
     }
 
     private generateImageUrl(category: NewsCategory): string {
-        const images: Record<string, string> = {
-            [NewsCategory.TECHNOLOGY]: 'https://picsum.photos/seed/tech/800/400',
-            [NewsCategory.SCIENCE]: 'https://picsum.photos/seed/science/800/400',
-            [NewsCategory.POLITICS]: 'https://picsum.photos/seed/politics/800/400',
-            [NewsCategory.ECONOMY]: 'https://picsum.photos/seed/economy/800/400',
-            [NewsCategory.SPORTS]: 'https://picsum.photos/seed/sports/800/400',
-            [NewsCategory.ENTERTAINMENT]: 'https://picsum.photos/seed/entertainment/800/400',
-            [NewsCategory.HEALTH]: 'https://picsum.photos/seed/health/800/400',
-            [NewsCategory.WORLD]: 'https://picsum.photos/seed/world/800/400',
-            [NewsCategory.OTHER]: 'https://picsum.photos/seed/news/800/400',
+        // SVG иконки в base64 для каждой категории
+        const icons: Record<string, string> = {
+            [NewsCategory.TECHNOLOGY]: 'data:image/svg+xml;base64,' + Buffer.from(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
+          <rect width="400" height="200" fill="#1a1a2e"/>
+          <rect x="80" y="60" width="240" height="100" rx="8" fill="#16213e" stroke="#0f3460" stroke-width="2"/>
+          <rect x="100" y="70" width="200" height="8" rx="4" fill="#0f3460"/>
+          <rect x="100" y="85" width="160" height="8" rx="4" fill="#0f3460"/>
+          <rect x="100" y="100" width="180" height="8" rx="4" fill="#0f3460"/>
+          <rect x="100" y="115" width="140" height="8" rx="4" fill="#0f3460"/>
+          <circle cx="320" cy="160" r="20" fill="#e94560"/>
+          <text x="310" y="167" font-size="16" fill="white" font-family="Arial">⚡</text>
+        </svg>
+      `).toString('base64'),
+
+            [NewsCategory.POLITICS]: 'data:image/svg+xml;base64,' + Buffer.from(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
+          <rect width="400" height="200" fill="#1a1a2e"/>
+          <rect x="60" y="30" width="280" height="140" rx="4" fill="#16213e" stroke="#0f3460" stroke-width="2"/>
+          <rect x="80" y="50" width="240" height="100" rx="2" fill="#1a1a2e"/>
+          <text x="200" y="110" text-anchor="middle" font-size="40" fill="#e94560" font-family="Arial">🏛</text>
+        </svg>
+      `).toString('base64'),
+
+            [NewsCategory.ECONOMY]: 'data:image/svg+xml;base64,' + Buffer.from(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
+          <rect width="400" height="200" fill="#1a1a2e"/>
+          <polyline points="60,150 140,90 220,130 300,50 340,70" stroke="#00b894" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <circle cx="300" cy="50" r="6" fill="#00b894"/>
+          <line x1="60" y1="160" x2="340" y2="160" stroke="#0f3460" stroke-width="2"/>
+          <line x1="60" y1="160" x2="60" y2="30" stroke="#0f3460" stroke-width="2"/>
+        </svg>
+      `).toString('base64'),
+
+            [NewsCategory.SCIENCE]: 'data:image/svg+xml;base64,' + Buffer.from(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
+          <rect width="400" height="200" fill="#1a1a2e"/>
+          <circle cx="200" cy="100" r="50" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-dasharray="8,4"/>
+          <circle cx="180" cy="85" r="8" fill="#6c5ce7"/>
+          <circle cx="220" cy="80" r="4" fill="#a29bfe"/>
+          <circle cx="210" cy="110" r="5" fill="#a29bfe"/>
+          <circle cx="170" cy="110" r="3" fill="#6c5ce7"/>
+          <line x1="200" y1="140" x2="200" y2="170" stroke="#6c5ce7" stroke-width="2"/>
+          <line x1="170" y1="155" x2="230" y2="155" stroke="#6c5ce7" stroke-width="2"/>
+        </svg>
+      `).toString('base64'),
+
+            [NewsCategory.SPORTS]: 'data:image/svg+xml;base64,' + Buffer.from(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
+          <rect width="400" height="200" fill="#1a1a2e"/>
+          <circle cx="200" cy="100" r="45" fill="#16213e" stroke="#e17055" stroke-width="3"/>
+          <line x1="200" y1="55" x2="200" y2="145" stroke="#e17055" stroke-width="2"/>
+          <line x1="155" y1="100" x2="245" y2="100" stroke="#e17055" stroke-width="2"/>
+          <circle cx="200" cy="100" r="8" fill="#e17055"/>
+        </svg>
+      `).toString('base64'),
+
+            [NewsCategory.ENTERTAINMENT]: 'data:image/svg+xml;base64,' + Buffer.from(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
+          <rect width="400" height="200" fill="#1a1a2e"/>
+          <rect x="100" y="40" width="200" height="120" rx="4" fill="#16213e" stroke="#fdcb6e" stroke-width="2"/>
+          <polygon points="175,70 225,90 175,110" fill="#fdcb6e"/>
+          <rect x="120" y="130" width="160" height="6" rx="3" fill="#2d3436"/>
+        </svg>
+      `).toString('base64'),
+
+            [NewsCategory.HEALTH]: 'data:image/svg+xml;base64,' + Buffer.from(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
+          <rect width="400" height="200" fill="#1a1a2e"/>
+          <rect x="170" y="50" width="60" height="100" rx="30" fill="#16213e" stroke="#e74c3c" stroke-width="3"/>
+          <rect x="150" y="70" width="100" height="60" rx="30" fill="#16213e" stroke="#e74c3c" stroke-width="3"/>
+          <circle cx="200" cy="100" r="15" fill="#e74c3c"/>
+        </svg>
+      `).toString('base64'),
+
+            [NewsCategory.WORLD]: 'data:image/svg+xml;base64,' + Buffer.from(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
+          <rect width="400" height="200" fill="#1a1a2e"/>
+          <circle cx="200" cy="100" r="55" fill="#16213e" stroke="#0984e3" stroke-width="2"/>
+          <ellipse cx="200" cy="100" rx="30" ry="55" fill="none" stroke="#0984e3" stroke-width="1" opacity="0.5"/>
+          <line x1="145" y1="100" x2="255" y2="100" stroke="#0984e3" stroke-width="1" opacity="0.5"/>
+          <line x1="200" y1="45" x2="200" y2="155" stroke="#0984e3" stroke-width="1" opacity="0.5"/>
+        </svg>
+      `).toString('base64'),
+
+            [NewsCategory.OTHER]: 'data:image/svg+xml;base64,' + Buffer.from(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
+          <rect width="400" height="200" fill="#1a1a2e"/>
+          <rect x="100" y="60" width="200" height="100" rx="8" fill="#16213e" stroke="#636e72" stroke-width="2"/>
+          <line x1="130" y1="80" x2="270" y2="80" stroke="#636e72" stroke-width="2" stroke-linecap="round"/>
+          <line x1="130" y1="95" x2="250" y2="95" stroke="#636e72" stroke-width="2" stroke-linecap="round"/>
+          <line x1="130" y1="110" x2="230" y2="110" stroke="#636e72" stroke-width="2" stroke-linecap="round"/>
+          <line x1="130" y1="125" x2="210" y2="125" stroke="#636e72" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      `).toString('base64'),
         };
-        return images[category] || images[NewsCategory.OTHER];
+
+        return icons[category] || icons[NewsCategory.OTHER];
     }
 
     private getRandomCategory(): NewsCategory {
