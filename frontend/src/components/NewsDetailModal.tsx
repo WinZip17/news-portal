@@ -1,14 +1,17 @@
-import React, { useEffect } from 'react';
-import { Spin, Typography, Tag, Space, Divider, Image, Alert } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Spin, Typography, Tag, Space, Divider, Image, Alert, Button, message } from 'antd';
 import {
   ClockCircleOutlined,
   EyeOutlined,
   HeartOutlined,
+  HeartFilled,
   RobotOutlined,
   LinkOutlined,
   UserOutlined,
+  ShareAltOutlined,
 } from '@ant-design/icons';
 import { useNews } from '../hooks/useNews';
+import { newsService } from '../services/newsService';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -17,18 +20,61 @@ interface Props {
 }
 
 const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
-  const { currentNews, isLoading, fetchNewsById, clearError } = useNews();
+  const { currentNews, isLoading, fetchNewsById, likeNews } = useNews();
+  const [isFavorited, setIsFavorited] = useState(false);
 
   useEffect(() => {
     if (newsId) {
       fetchNewsById(newsId);
+      checkFavorite();
     }
   }, [newsId]);
+
+  const checkFavorite = async () => {
+    try {
+      const favorited = await newsService.isFavorited(newsId);
+      setIsFavorited(favorited);
+    } catch {
+      // Не авторизован — не показываем избранное
+    }
+  };
+
+  const handleToggleFavorite = async () => {
+    try {
+      const result = await newsService.toggleFavorite(newsId);
+      setIsFavorited(result.favorited);
+      message.success(result.favorited ? 'Добавлено в избранное' : 'Удалено из избранного');
+    } catch {
+      message.error('Ошибка');
+    }
+  };
+
+  const handleLike = () => {
+    if (currentNews) {
+      likeNews(currentNews.id);
+    }
+  };
+
+  const handleShare = async () => {
+    if (currentNews) {
+      const url = `${window.location.origin}/?news=${currentNews.id}`;
+      try {
+        await navigator.share({
+          title: currentNews.title,
+          text: currentNews.summary,
+          url,
+        });
+      } catch {
+        await navigator.clipboard.writeText(url);
+        message.success('Ссылка скопирована');
+      }
+    }
+  };
 
   if (isLoading) {
     return (
       <div style={{ textAlign: 'center', padding: '40px 0' }}>
-        <Spin size="large" tip="Загрузка новости..."/>
+        <Spin size="large" tip="Загрузка новости..." />
       </div>
     );
   }
@@ -100,19 +146,46 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
       {/* Мета-информация */}
       <Space wrap size="middle" style={{ marginBottom: 16, color: '#666' }}>
         <Text type="secondary">
-          <ClockCircleOutlined/> {formatDate(currentNews.publishedAt)}
+          <ClockCircleOutlined /> {formatDate(currentNews.publishedAt)}
         </Text>
         <Text type="secondary">
-          <EyeOutlined/> {currentNews.views || 0} просмотров
+          <EyeOutlined /> {currentNews.views || 0} просмотров
         </Text>
         <Text type="secondary">
-          <HeartOutlined/> {currentNews.likes || 0} лайков
+          <HeartOutlined /> {currentNews.likes || 0} лайков
         </Text>
         {currentNews.author && (
           <Text type="secondary">
-            <UserOutlined/> {currentNews.author}
+            <UserOutlined /> {currentNews.author}
           </Text>
         )}
+      </Space>
+
+      {/* Кнопки действий */}
+      <Space style={{ marginBottom: 16 }}>
+        <Button
+          icon={<HeartOutlined />}
+          onClick={handleLike}
+          size="small"
+        >
+          Нравится
+        </Button>
+        <Button
+          icon={isFavorited ? <HeartFilled /> : <HeartOutlined />}
+          onClick={handleToggleFavorite}
+          size="small"
+          type={isFavorited ? 'primary' : 'default'}
+          danger={isFavorited}
+        >
+          {isFavorited ? 'В избранном' : 'В избранное'}
+        </Button>
+        <Button
+          icon={<ShareAltOutlined />}
+          onClick={handleShare}
+          size="small"
+        >
+          Поделиться
+        </Button>
       </Space>
 
       {/* Теги */}
@@ -121,9 +194,9 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
           {getCategoryLabel(currentNews.category)}
         </Tag>
         {currentNews.isAiGenerated ? (
-          <Tag icon={<RobotOutlined/>} color="blue">AI-рерайт</Tag>
+          <Tag icon={<RobotOutlined />} color="blue">AI-рерайт</Tag>
         ) : (
-          <Tag icon={<LinkOutlined/>} color="green">Оригинал</Tag>
+          <Tag icon={<LinkOutlined />} color="green">Оригинал</Tag>
         )}
         {currentNews.source && (
           <Tag color="purple">{currentNews.source}</Tag>
@@ -133,7 +206,7 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
         ))}
       </Space>
 
-      <Divider/>
+      <Divider />
 
       {/* Изображение */}
       {currentNews.imageUrl && (

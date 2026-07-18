@@ -50,5 +50,20 @@ export const newsService = {
   async getStats(): Promise<NewsStats> {
     const response = await apiService.get<NewsStats>('/news/stats');
     return response.data;
-  }
+  },
+
+  async toggleFavorite(id: string): Promise<{ favorited: boolean }> {
+    const response = await apiService.post<{ favorited: boolean }>(`/news/${id}/favorite`);
+    return response.data;
+  },
+
+  async isFavorited(id: string): Promise<boolean> {
+    const response = await apiService.get<{ favorited: boolean }>(`/news/${id}/favorite/check`);
+    return response.data.favorited;
+  },
+
+  async getFavorites(page = 1, limit = 20): Promise<NewsResponse> {
+    const response = await apiService.get<NewsResponse>('/news/favorites', { params: { page, limit } });
+    return response.data;
+  },
 };

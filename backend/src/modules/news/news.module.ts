@@ -6,10 +6,11 @@ import { NewsController } from './news.controller';
 import { NewsSchedulerService } from './news-scheduler.service';
 import { News } from '../../entities';
 import { AuthModule } from '../auth/auth.module';
+import { Favorite } from '../../entities/favorite.entity'
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([News]),
+    TypeOrmModule.forFeature([News, Favorite]),
     ScheduleModule.forRoot(),
     AuthModule,
   ],

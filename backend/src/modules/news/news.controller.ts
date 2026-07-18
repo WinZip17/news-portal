@@ -52,6 +52,13 @@ export class NewsController {
     return newsStats;
   }
 
+  @Get('favorites')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  async getFavorites(@Request() req, @Query('page') page = 1, @Query('limit') limit = 20) {
+    return this.newsService.getFavorites(req.user.id, page, limit);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Получение новости по ID' })
   findOne(@Param('id') id: string) {
@@ -103,6 +110,28 @@ export class NewsController {
     );
   }
 
+  @Post('personalized')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Получение персонализированных новостей' })
+  findPersonalized(@Body('preferences') preferences: string[]) {
+    return this.newsService.findPersonalized(preferences);
+  }
+
+  @Post(':id/favorite')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  async toggleFavorite(@Param('id') id: string, @Request() req) {
+    return this.newsService.toggleFavorite(req.user.id, id);
+  }
+
+  @Get(':id/favorite/check')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  async checkFavorite(@Param('id') id: string, @Request() req) {
+    const favorited = await this.newsService.isFavorited(req.user.id, id);
+    return { favorited };
+  }
   @Post(':id/like')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
@@ -111,12 +140,5 @@ export class NewsController {
     return this.newsService.like(id);
   }
 
-  @Post('personalized')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Получение персонализированных новостей' })
-  findPersonalized(@Body('preferences') preferences: string[]) {
-    return this.newsService.findPersonalized(preferences);
-  }
 
 }

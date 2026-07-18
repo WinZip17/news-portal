@@ -2,11 +2,12 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, useRoutes } from 'react-router-dom';
 import { ConfigProvider, App as AntApp, theme as antTheme, message } from 'antd';
 import { Provider } from 'react-redux';
-import { store, useAppSelector, selectTheme } from './store';
+import { store, useAppSelector, selectTheme, setTheme } from './store';
 import { useAuth } from './hooks/useAuth';
 import AppErrorBoundary from './components/common/ErrorBoundary';
 import { routes } from './config/routes';
 import ruRU from 'antd/locale/ru_RU';
+import enUS from 'antd/locale/en_US';
 
 const AppRoutes: React.FC = () => {
   const element = useRoutes(routes);
@@ -15,7 +16,7 @@ const AppRoutes: React.FC = () => {
 
 const AppContent: React.FC = () => {
   const theme = useAppSelector(selectTheme);
-  const { fetchCurrentUser, isAuthenticated, logout, clearError } = useAuth();
+  const { fetchCurrentUser, isAuthenticated, logout, clearError, user } = useAuth();
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
@@ -35,9 +36,21 @@ const AppContent: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (user?.preferences?.theme) {
+      const userTheme = user.preferences.theme;
+      const currentTheme = localStorage.getItem('theme');
+      if (userTheme !== currentTheme) {
+        store.dispatch(setTheme(userTheme));
+      }
+    }
+  }, [user]);
+
+  const getLocale = (lang: string) => lang === 'ru' ? ruRU : enUS;
+
   return (
     <ConfigProvider
-      locale={ruRU}
+      locale={getLocale(user?.preferences?.language || 'ru')}
       theme={{
         algorithm: theme === 'dark' ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
         token: {

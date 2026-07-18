@@ -13,9 +13,10 @@ import {
   selectUser,
   selectIsAuthenticated,
   selectAuthLoading,
-  selectAuthError,
+  selectAuthError, store, setTheme,
 } from '../store';
 import { LoginCredentials, RegisterData, User } from '../types/auth';
+import { message } from 'antd'
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
@@ -54,12 +55,22 @@ export const useAuth = () => {
     [dispatch]
   );
 
-  const handleUpdatePreferences = useCallback(
-    (preferences: any) => {
-      return dispatch(updatePreferences(preferences)).unwrap();
-    },
-    [dispatch]
-  );
+  const handleUpdatePreferences = useCallback(async (preferences: any) => {
+    try {
+      const user = await dispatch(updatePreferences(preferences)).unwrap();
+
+      // Применяем тему сразу
+      if (preferences.theme) {
+        store.dispatch(setTheme(preferences.theme));
+      }
+
+      message.success('Настройки сохранены');
+      return user;
+    } catch (error) {
+      message.error('Ошибка сохранения настроек');
+      throw error;
+    }
+  }, [dispatch]);
 
   const handleClearError = useCallback(() => {
     dispatch(clearAuthError());

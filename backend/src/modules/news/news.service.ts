@@ -4,12 +4,15 @@ import { Repository, LessThan, ILike, Between, In, MoreThanOrEqual } from 'typeo
 import { News, NewsCategory, NewsStatus } from '../../entities';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { NewsStatsDto } from "./dto/stats.dto";
+import { Favorite } from '../../entities/favorite.entity'
 
 @Injectable()
 export class NewsService {
   constructor(
     @InjectRepository(News)
     private newsRepository: Repository<News>,
+    @InjectRepository(Favorite)
+    private favoriteRepository: Repository<Favorite>,
   ) {
   }
 
@@ -355,5 +358,55 @@ export class NewsService {
       activeSources: 0,
       categoriesCount: Object.keys(NewsCategory).length,
     };
+  }
+
+  /**
+   * Переключение избранного
+   */
+  async toggleFavorite(userId: string, newsId: string): Promise<{ favorited: boolean }> {
+    const existing = await this.favoriteRepository.findOne({
+      where: { userId, newsId },
+    });
+
+    if (existing) {
+      await this.favoriteRepository.remove(existing);
+      return { favorited: false };
+    }
+
+    await this.favoriteRepository.save({ userId, newsId });
+    return { favorited: true };
+  }
+
+  /**
+   * Получение избранного
+   */
+  async getFavorites(userId: string, page = 1, limit = 20): Promise<{ data: News[]; total: number; page: number; limit: number; totalPages: number }> {
+    const [data, total] = await this.favoriteRepository.findAndCount({
+      where: { userId },
+      relations: {
+        news: {
+          author: true,
+        },
+      },
+      order: { createdAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return {
+      data: data.map(f => f.news),
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  /**
+   * Проверка избранного
+   */
+  async isFavorited(userId: string, newsId: string): Promise<boolean> {
+    const count = await this.favoriteRepository.count({ where: { userId, newsId } });
+    return count > 0;
   }
 }
