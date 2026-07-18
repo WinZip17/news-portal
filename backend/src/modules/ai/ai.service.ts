@@ -198,7 +198,7 @@ export class AiService {
                 messages: [
                     {
                         role: 'system',
-                        content: 'Ты профессиональный журналист и редактор. Твоя задача - делать качественный рерайт новостей на русском языке, сохраняя факты и добавляя аналитику. Отвечай строго в формате JSON.',
+                        content: 'Ты профессиональный журналист и редактор. Твоя задача - делать качественный рерайт новостей на русском языке, сохраняя факты и добавляя аналитику. Отвечай только валидным JSON без переносов строк внутри строк.',
                     },
                     {
                         role: 'user',
@@ -206,12 +206,40 @@ export class AiService {
                     },
                 ],
                 temperature: 0.7,
-                max_tokens: this.aiConfig.maxTokens,
+                max_completion_tokens: this.aiConfig.maxTokens,
                 response_format: { type: 'json_object' },
             });
+            const rawContent = completion.choices[0]?.message?.content || '{}';
+            let result: any = {};
+            try {
+                result = JSON.parse(rawContent);
+            } catch (parseError) {
+                this.logger.error('Failed to parse AI response, trying to fix...');
 
-            const result = JSON.parse(completion.choices[0]?.message?.content || '{}');
+                // Пробуем исправить незакрытые строки
+                let fixedContent = rawContent
+                    .replace(/\n/g, ' ')           // Убираем переносы строк
+                    .replace(/\\/g, '\\\\')        // Экранируем обратные слеши
+                    .replace(/\r/g, '');           // Убираем carriage return
 
+                try {
+                    result = JSON.parse(fixedContent);
+                } catch {
+                    // Извлекаем что можем через регулярки
+                    const titleMatch = rawContent.match(/"title"\s*:\s*"([^"]+)"/);
+                    const summaryMatch = rawContent.match(/"summary"\s*:\s*"([^"]+)"/);
+                    const tagsMatch = rawContent.match(/"tags"\s*:\s*\[(.*?)\]/);
+
+                    result = {
+                        title: titleMatch?.[1] || article.title,
+                        summary: summaryMatch?.[1] || article.summary,
+                        content: article.content || article.summary,
+                        tags: tagsMatch ? tagsMatch[1].split(',').map((t: string) => t.replace(/"/g, '').trim()) : [],
+                    };
+
+                    this.logger.warn('Using fallback extraction from malformed JSON');
+                }
+            }
             const news = this.newsRepository.create({
                 title: result.title || article.title,
                 content: result.content || article.content,
