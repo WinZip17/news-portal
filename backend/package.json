@@ -2,9 +2,9 @@
   "name": "backend",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "WinZip",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "prebuild": "npx rimraf dist",
     "build": "nest build",

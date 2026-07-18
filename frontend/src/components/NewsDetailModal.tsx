@@ -31,25 +31,44 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
   }, [newsId]);
 
   const checkFavorite = async () => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return;
+
     try {
       const favorited = await newsService.isFavorited(newsId);
       setIsFavorited(favorited);
     } catch {
-      // Не авторизован — не показываем избранное
+      // Не авторизован — не показываем
     }
   };
 
   const handleToggleFavorite = async () => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      message.info('Войдите, чтобы добавлять в избранное');
+      return;
+    }
+
     try {
       const result = await newsService.toggleFavorite(newsId);
       setIsFavorited(result.favorited);
       message.success(result.favorited ? 'Добавлено в избранное' : 'Удалено из избранного');
-    } catch {
-      message.error('Ошибка');
+    } catch (error: any) {
+      if (error?.response?.status === 401) {
+        message.info('Войдите, чтобы добавлять в избранное');
+      } else {
+        message.error('Ошибка');
+      }
     }
   };
 
   const handleLike = () => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      message.info('Войдите, чтобы ставить лайки');
+      return;
+    }
+
     if (currentNews) {
       likeNews(currentNews.id);
     }

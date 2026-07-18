@@ -1,7 +1,9 @@
 {
   "name": "news-portal",
   "version": "1.0.0",
+  "author": "WinZip",
   "private": true,
+  "license": "MIT",
   "description": "News portal with AI-generated content",
   "workspaces": [
     "frontend",
