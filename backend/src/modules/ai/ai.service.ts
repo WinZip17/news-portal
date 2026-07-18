@@ -1,19 +1,3 @@
-// Каждый час
-// @Cron(CronExpression.EVERY_HOUR)
-
-// Каждые 30 минут
-// @Cron('*/30 * * * *')
-
-// Каждый день в 9:00 и 20:00
-// @Cron('0 9,20 * * *')
-
-// Каждые 2 часа
-// @Cron('0 */2 * * *')
-
-// Каждый день в полночь
-// @Cron('0 0 * * *')
-
-// @Cron('0 0 * * *')
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -203,7 +187,8 @@ export class AiService {
       "title": "Новый заголовок (до 100 символов)",
       "summary": "Краткое описание (2-3 предложения)",
       "content": "Полный текст новости в формате HTML с абзацами <p> (500-800 слов)",
-      "tags": ["тег1", "тег2", "тег3"]
+      "tags": ["тег1", "тег2", "тег3"],
+      "category": "politics|economy|technology|science|sports|entertainment|health|world"
     }
     
     Важно:
@@ -211,6 +196,7 @@ export class AiService {
     - Измени структуру и формулировки
     - Добавь контекст и анализ
     - Используй профессиональный журналистский стиль
+    - Подбери подходящую категорию из оригинально источника
     - Ответ строго в формате JSON`;
 
         try {
@@ -261,11 +247,14 @@ export class AiService {
                     this.logger.warn('Using fallback extraction from malformed JSON');
                 }
             }
+            // Определяем категорию: сначала из ответа AI, потом из переданной
+            const certainCategory = this.validateCategory(result.category) || category;
+
             const news = this.newsRepository.create({
                 title: result.title || article.title,
                 content: result.content || article.content,
                 summary: result.summary || article.summary,
-                category: category,
+                category: certainCategory,
                 tags: result.tags || article.categories || [],
                 imageUrl: article.imageUrl || this.generateImageUrl(category),
                 source: article.source,
@@ -336,6 +325,12 @@ export class AiService {
             }
             return this.newsRepository.save(news);
         }
+    }
+
+    private validateCategory(cat?: string): NewsCategory | null {
+        if (!cat) return null;
+        const valid = Object.values(NewsCategory);
+        return valid.includes(cat as NewsCategory) ? (cat as NewsCategory) : null;
     }
 
     private async generateSingleNews(category?: NewsCategory, topic?: string) {
