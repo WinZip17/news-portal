@@ -1,8 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, LessThan, ILike, Between, In } from 'typeorm';
-import { News, NewsStatus } from '../../entities/news.entity';
+import {Repository, LessThan, ILike, Between, In, MoreThanOrEqual} from 'typeorm';
+import {News, NewsCategory, NewsStatus} from '../../entities/news.entity';
 import { CreateNewsDto } from './dto/create-news.dto';
+import {NewsStatsDto} from "./dto/stats.dto";
 
 @Injectable()
 export class NewsService {
@@ -308,5 +309,49 @@ export class NewsService {
             take: 5,
             order: { createdAt: 'DESC' },
         });
+    }
+
+    /**
+     * Статистика новостей
+     */
+    async getStats(): Promise<NewsStatsDto> {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const [
+            newsToday,
+            totalNews,
+            totalAiNews,
+            pendingNews,
+            newsLastHour,
+            totalViews,
+        ] = await Promise.all([
+            this.newsRepository.count({
+                where: { createdAt: MoreThanOrEqual(today) },
+            }),
+            this.newsRepository.count(),
+            this.newsRepository.count({
+                where: { isAiGenerated: true },
+            }),
+            this.newsRepository.count({
+                where: { status: NewsStatus.PENDING },
+            }),
+            this.newsRepository.count({
+                where: { createdAt: MoreThanOrEqual(new Date(Date.now() - 3600000)) },
+            }),
+            this.newsRepository.sum('views'),
+        ]);
+
+        return {
+            newsToday,
+            totalNews,
+            totalAiNews,
+            pendingNews,
+            newsLastHour,
+            totalViews: totalViews || 0,
+            totalUsers: 0, // Будет заполнено ниже
+            activeSources: 0,
+            categoriesCount: Object.keys(NewsCategory).length,
+        };
     }
 }

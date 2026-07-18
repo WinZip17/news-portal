@@ -1,5 +1,5 @@
 import { apiService } from './api';
-import { News, NewsFilter, NewsResponse } from '../types/news';
+import {News, NewsFilter, NewsResponse, NewsStats} from '../types/news';
 
 export const newsService = {
     async getNews(filters?: NewsFilter): Promise<NewsResponse> {
@@ -46,4 +46,9 @@ export const newsService = {
         });
         return response.data;
     },
+
+    async getStats(): Promise<NewsStats> {
+        const response = await apiService.get<NewsStats>('/news/stats');
+        return response.data;
+    }
 };

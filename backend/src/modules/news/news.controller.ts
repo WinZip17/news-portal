@@ -17,12 +17,16 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { AuthService } from "../auth/auth.service";
+
 
 @ApiTags('News')
 @Controller('news')
 export class NewsController {
-    constructor(private readonly newsService: NewsService) {}
-
+    constructor(
+        private newsService: NewsService,
+        private authService: AuthService,
+    ) {}
     @Get()
     @ApiOperation({ summary: 'Получение списка новостей' })
     findAll(@Query() filters: any) {
@@ -94,5 +98,22 @@ export class NewsController {
     @ApiOperation({ summary: 'Получение персонализированных новостей' })
     findPersonalized(@Body('preferences') preferences: string[]) {
         return this.newsService.findPersonalized(preferences);
+    }
+
+    @Get('stats')
+    @ApiOperation({ summary: 'Статистика новостей' })
+    async getNewsStats() {
+        return this.newsService.getStats();
+    }
+
+    @Get('stats')
+    @ApiOperation({ summary: 'Полная статистика для главной' })
+    async getStats() {
+        const [newsStats, totalUsers] = await Promise.all([
+            this.newsService.getStats(),
+            this.authService.getTotalUsers(),
+        ]);
+        newsStats.totalUsers = totalUsers;
+        return newsStats;
     }
 }

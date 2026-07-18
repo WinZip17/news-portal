@@ -59,3 +59,15 @@ export interface NewsResponse {
     limit: number;
     totalPages: number;
 }
+
+export interface NewsStats {
+    newsToday: number;
+    totalUsers: number;
+    totalAiNews: number;
+    pendingNews: number;
+    newsLastHour: number;
+    activeSources: number;
+    totalNews: number;
+    totalViews: number;
+    categoriesCount: number;
+}

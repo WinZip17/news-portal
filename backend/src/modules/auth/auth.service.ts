@@ -195,4 +195,8 @@ export class AuthService {
         const { password, refreshToken, ...sanitizedUser } = user;
         return sanitizedUser as unknown as UserResponse;
     }
+
+    async getTotalUsers(): Promise<number> {
+        return this.userRepository.count();
+    }
 }

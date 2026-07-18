@@ -67,4 +67,10 @@ export class AuthController {
     updatePreferences(@Request() req, @Body() preferences: any) {
         return this.authService.updatePreferences(req.user.id, preferences);
     }
+
+    @Get('stats/users')
+    @ApiOperation({ summary: 'Количество пользователей' })
+    async getUsersCount() {
+        return { totalUsers: await this.authService.getTotalUsers() };
+    }
 }

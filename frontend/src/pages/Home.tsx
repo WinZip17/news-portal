@@ -7,13 +7,15 @@ import {
     ArrowRightOutlined,
     RobotOutlined,
     LinkOutlined,
-    ClockCircleOutlined,
+    ClockCircleOutlined, EyeOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useNews } from '../hooks/useNews';
 import NewsDetailModal from '../components/NewsDetailModal';
 import {useNewsModal} from "../hooks/useNewsModal.ts";
+import {newsService} from "../services/newsService.ts";
+import {NewsStats} from "../types";
 
 const { Title, Paragraph } = Typography;
 
@@ -21,14 +23,8 @@ const Home: React.FC = () => {
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
     const { news, fetchNews, isLoading } = useNews();
+    const [stats, setStats] = useState<NewsStats | null>(null);
     const { selectedNewsId, modalVisible, openNews, closeNews } = useNewsModal();
-    useEffect(() => {
-        fetchNews({
-            limit: 6,
-            sortBy: 'publishedAt',
-            sortOrder: 'DESC',
-        });
-    }, []);
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -67,7 +63,22 @@ const Home: React.FC = () => {
         };
         return labels[category] || category;
     };
-
+    const loadStats = async () => {
+        try {
+            const data = await newsService.getStats();
+            setStats(data);
+        } catch (error) {
+            console.error('Failed to load stats:', error);
+        }
+    };
+    useEffect(() => {
+        fetchNews({
+            limit: 9,
+            sortBy: 'publishedAt',
+            sortOrder: 'DESC',
+        });
+        loadStats();
+    }, []);
     return (
         <div>
             {/* Hero секция */}
@@ -100,14 +111,41 @@ const Home: React.FC = () => {
 
             {/* Статистика */}
             <Row gutter={[24, 24]} style={{ marginBottom: 48 }}>
-                <Col xs={24} sm={8}>
-                    <Card hoverable><Statistic title="Новостей сегодня" value={news.length} prefix={<ReadOutlined />} loading={isLoading} /></Card>
+                <Col xs={12} sm={8} md={4}>
+                    <Card hoverable>
+                        <Statistic title="Сегодня" value={stats?.newsToday || 0} prefix={<ReadOutlined />} loading={!stats} />
+                    </Card>
                 </Col>
-                <Col xs={24} sm={8}>
-                    <Card hoverable><Statistic title="Пользователей" value={1523} prefix={<TeamOutlined />} /></Card>
+                <Col xs={12} sm={8} md={4}>
+                    <Card hoverable>
+                        <Statistic title="Пользователей" value={stats?.totalUsers || 0} prefix={<TeamOutlined />} loading={!stats} />
+                    </Card>
                 </Col>
-                <Col xs={24} sm={8}>
-                    <Card hoverable><Statistic title="AI-рерайт" value={856} prefix={<RobotOutlined />} /></Card>
+                <Col xs={12} sm={8} md={4}>
+                    <Card hoverable>
+                        <Statistic title="AI-рерайт" value={stats?.totalAiNews || 0} prefix={<RobotOutlined />} loading={!stats} />
+                    </Card>
+                </Col>
+                <Col xs={12} sm={8} md={4}>
+                    <Card hoverable>
+                        <Statistic title="Всего новостей" value={stats?.totalNews || 0} prefix={<ReadOutlined />} loading={!stats} />
+                    </Card>
+                </Col>
+                <Col xs={12} sm={8} md={4}>
+                    <Card hoverable>
+                        <Statistic title="Просмотров" value={stats?.totalViews || 0} prefix={<EyeOutlined />} loading={!stats} />
+                    </Card>
+                </Col>
+                <Col xs={12} sm={8} md={4}>
+                    <Card hoverable>
+                        <Statistic
+                            title="На модерации"
+                            value={stats?.pendingNews || 0}
+                            prefix={<ClockCircleOutlined />}
+                            valueStyle={stats?.pendingNews ? { color: '#faad14' } : undefined}
+                            loading={!stats}
+                        />
+                    </Card>
                 </Col>
             </Row>
 
