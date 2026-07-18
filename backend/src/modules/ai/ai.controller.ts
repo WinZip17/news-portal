@@ -35,4 +35,20 @@ export class AiController {
     checkStatus() {
         return this.aiService.checkAvailability();
     }
+
+    @Post('auto-generate')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('admin', 'moderator')
+    @ApiBearerAuth('JWT-auth')
+    @ApiOperation({
+        summary: 'Ручной запуск авто-генерации по всем категориям',
+        description: 'Генерирует новости для всех категорий. Можно указать количество на категорию.'
+    })
+    @ApiResponse({ status: 201, description: 'Генерация завершена' })
+    async autoGenerate(
+        @Body('countPerCategory') countPerCategory?: number,
+    ) {
+        const count = countPerCategory || 1;
+        return this.aiService.autoGenerateManually(count);
+    }
 }

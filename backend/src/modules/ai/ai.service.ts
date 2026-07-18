@@ -47,29 +47,50 @@ export class AiService {
         }
     }
 
-    @Cron(CronExpression.EVERY_4_HOURS, {
+    /**
+     * Ручной запуск генерации по всем категориям
+     */
+    async autoGenerateManually(countPerCategory: number = 1) {
+        this.logger.log(`🚀 Manual generation: ${countPerCategory} news per category`);
+
+        const categories = this.aiConfig.categories;
+        const results: any = {};
+        let totalGenerated = 0;
+
+        for (const category of categories) {
+            try {
+                this.logger.log(`📰 Generating ${countPerCategory} news for: ${category}`);
+
+                const result = await this.generateNews({
+                    category: category as NewsCategory,
+                    count: countPerCategory,
+                });
+
+                results[category] = result.news.length;
+                totalGenerated += result.news.length;
+
+                this.logger.log(`✅ ${category}: ${result.news.length} news generated`);
+                await this.delay(5000);
+
+            } catch (error) {
+                this.logger.error(`Failed for ${category}: ${error.message}`);
+                results[category] = 0;
+            }
+        }
+
+        return {
+            message: `Generated ${totalGenerated} news across ${categories.length} categories`,
+            totalGenerated,
+            byCategory: results,
+        };
+    }
+
+    @Cron(CronExpression.EVERY_DAY_AT_6AM, {
         timeZone: 'Europe/Moscow'
     })
     async autoGenerateNews() {
-        this.logger.log('🚀 Starting automatic news generation from RSS...');
-
-        try {
-            const categories = this.aiConfig.categories;
-            const randomCategories = this.shuffleArray(categories).slice(0, 2);
-
-            for (const category of randomCategories) {
-                try {
-                    await this.generateFromRss(category as NewsCategory);
-                    await this.delay(5000);
-                } catch (error) {
-                    this.logger.error(`Failed to generate news for ${category}:`, error.message);
-                }
-            }
-
-            this.logger.log('✅ Automatic news generation completed');
-        } catch (error) {
-            this.logger.error('Failed to auto generate news:', error.message);
-        }
+        this.logger.log('🚀 Starting automatic news generation...');
+        return this.autoGenerateManually(2); // По 2 новости на категорию
     }
 
     async generateNews(dto: GenerateNewsDto) {
