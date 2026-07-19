@@ -78,9 +78,9 @@ jobs:
             
             echo "✅ Database is ready"
             
-#            echo "📦 Starting Redis..."
-#            docker compose up -d redis
-#            sleep 5
+            # echo "📦 Starting Redis..."
+            # docker compose up -d redis
+            # sleep 5
             
             # Собираем и запускаем backend
             echo "🔨 Building and starting backend..."
@@ -113,8 +113,8 @@ jobs:
               exit 1
             fi
             echo "✅ Frontend is running"
-#            echo "📊 Starting monitoring..."
-#            docker compose up -d prometheus grafana
+            # echo "📊 Starting monitoring..."
+            # docker compose up -d prometheus grafana
 
             # Проверяем API
             echo "🔍 Checking API..."
