@@ -31,9 +31,7 @@ class ApiService {
 
         return config;
       },
-      (error) => {
-        return Promise.reject(error);
-      }
+      (error) => Promise.reject(error)
     );
 
     // Response interceptor
@@ -41,6 +39,13 @@ class ApiService {
       (response) => response,
       async (error) => {
         const originalRequest = error.config;
+
+        // Не пытаемся обновить токен для запросов логина и регистрации
+        if (originalRequest.url?.includes('/auth/login') ||
+          originalRequest.url?.includes('/auth/register') ||
+          originalRequest.url?.includes('/auth/refresh')) {
+          return Promise.reject(error);
+        }
 
         if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
