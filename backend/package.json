@@ -15,7 +15,11 @@
     "start:prod": "npm run db:ensure && node dist/main",
     "db:ensure": "ts-node src/database/pre-init.ts",
     "db:create": "ts-node src/database/create-database.ts",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

@@ -21,7 +21,11 @@
     "build": "npm -w frontend run build && npm -w backend run build",
     "start:prod": "docker-compose up --build",
     "stop": "docker-compose down",
-    "lint": "npm -w frontend run lint && npm -w backend run lint"
+    "lint": "npm -w frontend run lint && npm -w backend run lint",
+    "test": "npm -w backend run test && npm -w frontend run test",
+    "test:backend": "npm -w backend run test",
+    "test:frontend": "npm -w frontend run test",
+    "test:e2e": "npm -w backend run test:e2e"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
