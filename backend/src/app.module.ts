@@ -5,6 +5,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { NewsModule } from './modules/news/news.module';
 import { AiModule } from './modules/ai/ai.module';
 import { AppController } from './app.controller';
+import { MetricsModule } from './modules/metrics/metrics.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { AppController } from './app.controller';
     AuthModule,
     NewsModule,
     AiModule,
+    MetricsModule,
   ],
   controllers: [AppController],
 })
