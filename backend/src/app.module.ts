@@ -17,13 +17,11 @@ import { redisStore } from 'cache-manager-redis-yet';
     }),
     CacheModule.registerAsync({
       isGlobal: true,
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: async () => ({
         store: redisStore,
-        url: `redis://${configService.get('REDIS_HOST', 'redis')}:${configService.get('REDIS_PORT', 6379)}`,
-        ttl: configService.get('CACHE_TTL', 300000),
+        url: 'redis://redis:6379',
+        ttl: 300000,
       }),
-      inject: [ConfigService],
     }),
 
     TypeOrmModule.forRootAsync({
