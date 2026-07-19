@@ -61,7 +61,7 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - backend
-      - grafana
+#      - grafana
     networks:
       - news-portal-network
     restart: unless-stopped
