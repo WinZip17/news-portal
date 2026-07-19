@@ -69,7 +69,7 @@ export class AiService {
     };
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_6AM, {
+  @Cron(CronExpression.EVERY_4_HOURS, {
     timeZone: 'Europe/Moscow'
   })
   async autoGenerateNews() {
