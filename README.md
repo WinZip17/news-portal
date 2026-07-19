@@ -47,6 +47,6 @@ npm run build - Сборка проекта
 npm run lint - Проверка кода
 
 ## 🔗 Порты
-Frontend: http://localhost:5173 (dev) / http://localhost (prod)
+Frontend: http://localhost:5173 (dev) / http://short-news.ru/ (prod)
 Backend API: http://localhost:3001
 База данных: localhost:5432

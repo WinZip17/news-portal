@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Alert, Typography, Space, Steps } from 'antd';
-import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons';
+import { UserOutlined, MailOutlined, LockOutlined, HomeOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
@@ -51,6 +51,17 @@ const Register: React.FC = () => {
 
   return (
     <div>
+      <div style={{ textAlign: 'center', marginBottom: 16 }}>
+        <Button
+          icon={<HomeOutlined />}
+          onClick={() => navigate('/')}
+          type="text"
+          size="small"
+        >
+          На главную
+        </Button>
+      </div>
+
       <Title level={3} style={{ textAlign: 'center', marginBottom: 24 }}>
         Регистрация
       </Title>

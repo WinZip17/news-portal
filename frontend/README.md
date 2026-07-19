@@ -1,75 +1,87 @@
-# React + TypeScript + Vite
+# 📰 News Portal - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Фронтенд для новостного портала с AI-рерайтом. Быстрые и короткие новости без манипуляций.
 
-Currently, two official plugins are available:
+## 🛠 Технологии
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **React 18** + **TypeScript**
+- **Vite** — быстрая сборка
+- **Redux Toolkit** — управление состоянием
+- **Ant Design 5** — UI компоненты
+- **Axios** — HTTP клиент
+- **React Router 6** — маршрутизация
 
-## React Compiler
+## 🚀 Быстрый старт
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```text
+npm install — установка зависимостей
+npm run dev — запуск в режиме разработки
+npm run build — сборка для продакшена
+npm run preview — предпросмотр сборки
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+Приложение будет доступно на http://localhost:5173
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 📁 Структура проекта
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```text
+frontend/
+├── public/
+│   ├── favicon.svg          # Иконка сайта
+│   └── manifest.json        # PWA манифест
+├── src/
+│   ├── components/          # Переиспользуемые компоненты
+│   │   ├── auth/            # Компоненты авторизации
+│   │   ├── common/          # Общие компоненты (ErrorBoundary)
+│   │   └── layout/          # Layout компоненты
+│   ├── config/              # Конфигурация (роуты)
+│   ├── hooks/               # Пользовательские хуки
+│   ├── pages/               # Страницы
+│   │   └── admin/           # Админ-панель
+│   ├── services/            # API сервисы
+│   ├── store/               # Redux хранилище
+│   │   ├── auth/            # Авторизация
+│   │   ├── news/            # Новости
+│   │   └── ui/              # UI состояние
+│   ├── types/               # TypeScript типы
+│   ├── App.tsx              # Главный компонент
+│   ├── main.tsx             # Точка входа
+│   └── index.css            # Глобальные стили
+├── .env                     # Переменные окружения
+├── Dockerfile               # Docker образ
+├── nginx.conf               # Nginx конфиг
+├── tsconfig.json            # TypeScript конфиг
+├── vite.config.ts           # Vite конфиг
+└── package.json             # Зависимости
 ```
+
+## 📄 Страницы
+
+| Путь | Страница | Доступ |
+|------|----------|--------|
+| / | Главная | Все |
+| /news | Лента новостей | Все |
+| /news?news=id | Новость в модалке | Все |
+| /login | Вход | Гость |
+| /register | Регистрация | Гость |
+| /profile | Личный кабинет | 🔒 |
+| /admin | Админ-панель | 🔒 Админ/Модер |
+
+## 🔧 Разработка
+
+```text
+npm run dev — запуск в dev режиме
+npm run lint — линтинг
+npm run build — сборка
+```
+
+## 🐳 Docker
+
+```text
+docker build -t news-portal-frontend . — сборка образа
+docker run -p 80:80 news-portal-frontend — запуск контейнера
+```
+
+## 📝 Лицензия
+
+MIT

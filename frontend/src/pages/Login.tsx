@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Checkbox, Alert, Typography, Space } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, HomeOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
@@ -34,6 +34,17 @@ const Login: React.FC = () => {
 
   return (
     <div>
+      <div style={{ textAlign: 'center', marginBottom: 16 }}>
+        <Button
+          icon={<HomeOutlined />}
+          onClick={() => navigate('/')}
+          type="text"
+          size="small"
+        >
+          На главную
+        </Button>
+      </div>
+
       <Title level={3} style={{ textAlign: 'center', marginBottom: 24 }}>
         Вход в аккаунт
       </Title>
