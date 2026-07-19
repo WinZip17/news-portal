@@ -109,7 +109,8 @@ jobs:
               exit 1
             fi
             echo "✅ Frontend is running"
-            
+            echo "📊 Starting monitoring..."
+            docker compose up -d prometheus grafana
             # Проверяем API
             echo "🔍 Checking API..."
             sleep 5
