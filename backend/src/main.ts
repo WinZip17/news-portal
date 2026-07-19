@@ -39,6 +39,7 @@ async function bootstrap() {
       .addTag('Auth', 'Аутентификация и авторизация')
       .addTag('News', 'Управление новостями')
       .addTag('Users', 'Управление пользователями')
+      .addTag('Ai', 'Ai генерация')
       .addBearerAuth(
         {
           type: 'http',
