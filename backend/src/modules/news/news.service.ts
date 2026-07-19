@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan, ILike, Between, In, MoreThanOrEqual } from 'typeorm';
 import { News, NewsCategory, NewsStatus } from '../../entities';
@@ -6,6 +6,7 @@ import { CreateNewsDto } from './dto/create-news.dto';
 import { NewsStatsDto } from "./dto/stats.dto";
 import { Favorite } from '../../entities/favorite.entity'
 import { Like } from '../../entities/like.entity'
+import { CACHE_MANAGER } from '@nestjs/cache-manager'
 
 @Injectable()
 export class NewsService {
@@ -16,6 +17,7 @@ export class NewsService {
     private favoriteRepository: Repository<Favorite>,
     @InjectRepository(Like)
     private likeRepository: Repository<Like>,
+    @Inject(CACHE_MANAGER) private cacheManager: any,
   ) {
   }
 
@@ -33,7 +35,11 @@ export class NewsService {
       isAiGenerated,
       authorId,
     } = filters;
-
+    const cacheKey = `news:list:${JSON.stringify(filters)}`;
+    const cached = await this.cacheManager.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
     const where: any = {};
 
     if (status) where.status = status;
@@ -73,17 +79,23 @@ export class NewsService {
       }
       return news;
     });
-
-    return {
+    const result = {
       data: sanitizedData,
       total,
       page: Number(page),
       limit: Number(limit),
       totalPages: Math.ceil(total / limit),
-    };
+    }
+    await this.cacheManager.wrap(cacheKey, result, 300000);
+    return result;
   }
 
   async findOne(id: string) {
+    const cacheKey = `news:detail:${id}`;
+    const cached = await this.cacheManager.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
     const news = await this.newsRepository.findOne({
       where: { id },
       relations: {
@@ -107,7 +119,7 @@ export class NewsService {
         author: authorWithoutSensitive,
       };
     }
-
+    await this.cacheManager.set(cacheKey, news, 600000);
     return news;
   }
 
@@ -118,7 +130,7 @@ export class NewsService {
       status: authorId ? NewsStatus.PUBLISHED : NewsStatus.PENDING,
       publishedAt: new Date(),
     });
-
+    await this.cacheManager.del('news:stats');
     return this.newsRepository.save(news);
   }
 
@@ -165,6 +177,7 @@ export class NewsService {
     await this.likeRepository.save({ userId, newsId });
     await this.newsRepository.increment({ id: newsId }, 'likes', 1);
     const news = await this.newsRepository.findOne({ where: { id: newsId } });
+    await this.cacheManager.del(`news:detail:${newsId}`);
     return { liked: true, likes: news?.likes || 0 };
   }
 
@@ -342,6 +355,11 @@ export class NewsService {
    * Статистика новостей
    */
   async getStats(): Promise<NewsStatsDto> {
+    const cacheKey = 'news:stats';
+    const cached = await this.cacheManager.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -369,7 +387,7 @@ export class NewsService {
       this.newsRepository.sum('views'),
     ]);
 
-    return {
+    const result = {
       newsToday,
       totalNews,
       totalAiNews,
@@ -380,6 +398,8 @@ export class NewsService {
       activeSources: 0,
       categoriesCount: Object.keys(NewsCategory).length,
     };
+    await this.cacheManager.set(cacheKey, result, 60000);
+    return result;
   }
 
   /**
@@ -402,7 +422,13 @@ export class NewsService {
   /**
    * Получение избранного
    */
-  async getFavorites(userId: string, page = 1, limit = 20): Promise<{ data: News[]; total: number; page: number; limit: number; totalPages: number }> {
+  async getFavorites(userId: string, page = 1, limit = 20): Promise<{
+    data: News[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number
+  }> {
     const [data, total] = await this.favoriteRepository.findAndCount({
       where: { userId },
       relations: {

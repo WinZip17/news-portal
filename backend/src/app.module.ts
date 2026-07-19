@@ -6,9 +6,22 @@ import { NewsModule } from './modules/news/news.module';
 import { AiModule } from './modules/ai/ai.module';
 import { AppController } from './app.controller';
 import { MetricsModule } from './modules/metrics/metrics.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { redisStore } from 'cache-manager-redis-yet';
+import type { RedisClientOptions } from 'redis';
 
 @Module({
   imports: [
+    CacheModule.registerAsync<RedisClientOptions>({
+      isGlobal: true,
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        store: redisStore,
+        url: `redis://${configService.get('REDIS_HOST', 'redis')}:${configService.get('REDIS_PORT', 6379)}`,
+        ttl: configService.get('CACHE_TTL', 300000), // 5 минут по умолчанию
+      }),
+      inject: [ConfigService],
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',

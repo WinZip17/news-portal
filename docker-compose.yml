@@ -98,11 +98,24 @@ services:
     networks:
       - news-portal-network
     restart: unless-stopped
-
+  redis:
+    image: redis:7-alpine
+    container_name: news-portal-redis
+    volumes:
+      - redis_data:/data
+    networks:
+      - news-portal-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 volumes:
   postgres_data:
   prometheus_data:
   grafana_data:
+  redis_data:
 
 networks:
   news-portal-network:

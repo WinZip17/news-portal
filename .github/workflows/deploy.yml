@@ -111,6 +111,8 @@ jobs:
             echo "✅ Frontend is running"
             echo "📊 Starting monitoring..."
             docker compose up -d prometheus grafana
+            echo "📦 Starting Redis..."
+            docker compose up -d redis
             # Проверяем API
             echo "🔍 Checking API..."
             sleep 5
