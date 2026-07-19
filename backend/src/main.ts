@@ -52,7 +52,7 @@ async function bootstrap() {
         'JWT-auth',
       )
       .addServer('http://localhost:3001', 'Локальный сервер')
-      .addServer('http://short-news.ru/', 'Продакшн сервер')
+      .addServer('https://short-news.ru/', 'Продакшн сервер')
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
