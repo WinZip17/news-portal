@@ -1,12 +1,13 @@
-import { Controller, Get } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Module } from '@nestjs/common';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 
-@ApiTags('Metrics')
-@Controller('metrics')
-export class MetricsController {
-  @Get()
-  @ApiOperation({ summary: 'Prometheus метрики' })
-  getMetrics(): string {
-    return 'Metrics endpoint';
-  }
-}
+@Module({
+  imports: [
+    PrometheusModule.register({
+      defaultMetrics: {
+        enabled: true,
+      },
+    }),
+  ],
+})
+export class MetricsModule {}
