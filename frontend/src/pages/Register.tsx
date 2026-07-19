@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Alert, Typography } from 'antd';
+import { Form, Input, Button, Alert, Typography, Space, message } from 'antd';
 import { UserOutlined, MailOutlined, LockOutlined, HomeOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
@@ -31,7 +31,8 @@ const Register: React.FC = () => {
         firstName: values.firstName,
         lastName: values.lastName,
       });
-      navigate('/');
+      message.success('Регистрация завершена успешно! Теперь вы можете войти.');
+      navigate('/login');
     } catch (err: any) {
       setRegisterError(err.message || 'Ошибка регистрации');
     }
