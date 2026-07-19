@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Card, Row, Col, Typography, Button, Space, Statistic, Spin, Empty, Tag, Modal } from 'antd';
 import {
   ReadOutlined,
@@ -81,6 +82,11 @@ const Home: React.FC = () => {
   }, []);
   return (
     <div>
+      <Helmet>
+        <title>News Portal — Короткие новости без манипуляций</title>
+        <meta name="description" content="Быстрые и короткие новости с AI-рерайтом. Минимум слов, максимум фактов." />
+        <link rel="canonical" href={window.location.origin} />
+      </Helmet>
       {/* Hero секция */}
       <div style={{
         textAlign: 'center', marginBottom: 48, padding: '48px 24px', borderRadius: 12,

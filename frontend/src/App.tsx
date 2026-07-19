@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter as Router, useRoutes } from 'react-router-dom';
 import { ConfigProvider, App as AntApp, theme as antTheme, message } from 'antd';
 import { Provider } from 'react-redux';
@@ -60,9 +61,11 @@ const AppContent: React.FC = () => {
     >
       <AntApp>
         <AppErrorBoundary>
-          <Router>
-            <AppRoutes/>
-          </Router>
+          <HelmetProvider>
+            <Router>
+              <AppRoutes />
+            </Router>
+          </HelmetProvider>
         </AppErrorBoundary>
       </AntApp>
     </ConfigProvider>

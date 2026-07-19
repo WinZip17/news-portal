@@ -12,6 +12,7 @@ import {
 } from '@ant-design/icons';
 import { useNews } from '../hooks/useNews';
 import { newsService } from '../services/newsService';
+import NewsSEO from './NewsSEO.tsx'
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -20,7 +21,7 @@ interface Props {
 }
 
 const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
-  const { currentNews, isLoading, fetchNewsById, likeNews } = useNews();
+  const { currentNews, isLoading, fetchNewsById } = useNews();
   const [isFavorited, setIsFavorited] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
@@ -162,6 +163,16 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
 
   return (
     <div>
+      <NewsSEO
+        title={currentNews.title}
+        summary={currentNews.summary}
+        imageUrl={currentNews.imageUrl}
+        publishedAt={currentNews.publishedAt}
+        category={currentNews.category}
+        tags={currentNews.tags}
+        author={currentNews.author}
+        url={`${window.location.origin}/?news=${currentNews.id}`}
+      />
       {/* Тип новости */}
       <Alert
         title={

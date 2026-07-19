@@ -10,6 +10,7 @@ import {
   UseGuards,
   Request,
   Patch,
+  Header,
 } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { CreateNewsDto } from './dto/create-news.dto';
@@ -18,6 +19,10 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from '../auth/auth.service';
+import { NewsStatus } from '../../entities'
+import { escapeXml } from '../../utils/escapeXml'
+
+
 
 @ApiTags('News')
 @Controller('news')
@@ -72,6 +77,51 @@ export class NewsController {
   @ApiOperation({ summary: 'Получение персонализированных новостей' })
   findPersonalized(@Body('preferences') preferences: string[]) {
     return this.newsService.findPersonalized(preferences);
+  }
+
+  @Get('sitemap.xml')
+  @Header('Content-Type', 'application/xml')
+  async getSitemap() {
+    const news = await this.newsService.findAll({
+      status: NewsStatus.PUBLISHED,
+      limit: 1000,
+    });
+
+    const baseUrl = process.env.SITE_URL || 'http://localhost:5173';
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+                <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+                xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+                  <url>
+                    <loc>${baseUrl}</loc>
+                    <changefreq>hourly</changefreq>
+                    <priority>1.0</priority>
+                  </url>
+                  <url>
+                    <loc>${baseUrl}/news</loc>
+                    <changefreq>hourly</changefreq>
+                    <priority>0.9</priority>
+                  </url>
+                    ${news.data.map((item) => `
+                    <url>
+                      <loc>${baseUrl}/?news=${item.id}</loc>
+                      <lastmod>${new Date(item.publishedAt).toISOString()}</lastmod>
+                      <changefreq>daily</changefreq>
+                      <priority>0.8</priority>
+                      <news:news>
+                        <news:publication>
+                          <news:name>News Portal</news:name>
+                          <news:language>ru</news:language>
+                        </news:publication>
+                        <news:publication_date>${new Date(item.publishedAt).toISOString()}</news:publication_date>
+                        <news:title>${escapeXml(item.title)}</news:title>
+                        <news:keywords>${escapeXml(item.tags?.join(', ') || '')}</news:keywords>
+                      </news:news>
+                    </url>
+                    `).join('')}
+                </urlset>`;
+
+    return xml;
   }
 
   @Get(':id')
