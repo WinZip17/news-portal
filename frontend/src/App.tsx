@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter as Router, useRoutes } from 'react-router-dom';
-import { ConfigProvider, App as AntApp, theme as antTheme, message } from 'antd';
+import { ConfigProvider, App as AntApp, theme as antTheme } from 'antd';
 import { Provider } from 'react-redux';
 import { store, useAppSelector, selectTheme, setTheme } from './store';
 import { useAuth } from './hooks/useAuth';
@@ -23,17 +23,6 @@ const AppContent: React.FC = () => {
     const token = localStorage.getItem('accessToken');
     if (token && !isAuthenticated) {
       fetchCurrentUser()
-        .catch((error: any) => {
-          // Если ошибка 401 (Unauthorized) — токен недействителен
-          if (error?.status === 401 || error?.response?.status === 401) {
-            logout();
-            message.error('Сессия истекла. Пожалуйста, войдите снова.');
-          } else {
-            console.error('Ошибка при получении пользователя:', error);
-            message.error('Не удалось загрузить профиль. Проверьте подключение.');
-          }
-          clearError();
-        });
     }
   }, []);
 
