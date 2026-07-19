@@ -66,12 +66,13 @@ const Register: React.FC = () => {
 
       {(registerError || error) && (
         <Alert
-          message={registerError || error}
+          title={registerError || error}
           type="error"
-          closable
-          onClose={() => {
-            setRegisterError(null);
-            clearError();
+          closable={{
+            onClose: () => {
+              setRegisterError(null);
+              clearError();
+            }
           }}
           style={{ marginBottom: 24 }}
         />

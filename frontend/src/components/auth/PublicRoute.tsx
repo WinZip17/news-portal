@@ -19,7 +19,7 @@ const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
         alignItems: 'center',
         height: '100vh'
       }}>
-        <Spin size="large" tip="Загрузка..."/>
+        <Spin size="large" description="Загрузка..."/>
       </div>
     );
   }

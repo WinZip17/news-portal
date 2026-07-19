@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Tabs, Card, Form, Input, Button, Switch, Select, message, List, Tag, Space, Empty } from 'antd';
+import { Tabs, Card, Form, Input, Button, Switch, Select, message, Tag, Space, Empty, Spin, Modal } from 'antd';
 import { UserOutlined, HeartOutlined, SettingOutlined, RobotOutlined, LinkOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { useAuth } from '../hooks/useAuth';
 import { newsService } from '../services/newsService';
 import { News } from '../types';
-import { useNewsModal } from '../hooks/useNewsModal.ts'
+import { useNewsModal } from '../hooks/useNewsModal.ts';
+import NewsDetailModal from '../components/NewsDetailModal';
+import { Typography } from 'antd';
+
+const { Text } = Typography;
 
 const Profile: React.FC = () => {
   const { user, updateProfile, updatePreferences } = useAuth();
-  const { openNews } = useNewsModal();
+  const { selectedNewsId, modalVisible, openNews, closeNews } = useNewsModal();
   const [favorites, setFavorites] = useState<News[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -75,7 +79,7 @@ const Profile: React.FC = () => {
       label: <span><SettingOutlined /> Настройки</span>,
       children: (
         <Card>
-          <Form layout="vertical" initialValues={user?.preferences} onFinish={handleSavePreferences}>
+          <Form layout="vertical" initialValues={user?.preferences || undefined} onFinish={handleSavePreferences}>
             <Form.Item label="Тема" name="theme">
               <Select>
                 <Select.Option value="light">Светлая</Select.Option>
@@ -105,37 +109,47 @@ const Profile: React.FC = () => {
       key: 'favorites',
       label: <span><HeartOutlined /> Избранное</span>,
       children: (
-        <List
-          loading={loading}
-          dataSource={favorites}
-          locale={{ emptyText: <Empty description="Нет избранных новостей" /> }}
-          renderItem={(item) => (
-            <List.Item
-              actions={[
-                <Button type="link" danger onClick={() => handleRemoveFavorite(item.id)}>
-                  Удалить
-                </Button>,
-              ]}
-            >
-              <List.Item.Meta
-                title={
-                  <a onClick={() => openNews(item.id)}>{item.title}</a>
-                }
-                description={
-                  <Space>
+        <Spin spinning={loading}>
+          {favorites.length === 0 ? (
+            <Empty description="Нет избранных новостей" />
+          ) : (
+            favorites.map((item) => (
+              <div
+                key={item.id}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '12px 0',
+                  borderBottom: '1px solid #f0f0f0',
+                }}
+              >
+                <div style={{ flex: 1 }}>
+                  <a
+                    onClick={() => openNews(item.id)}
+                    style={{ fontSize: '16px', fontWeight: 500, marginBottom: 8, display: 'block' }}
+                  >
+                    {item.title}
+                  </a>
+                  <Space wrap size={[4, 4]}>
                     <Tag>{item.category}</Tag>
                     {item.isAiGenerated ? (
                       <Tag icon={<RobotOutlined />} color="blue">AI</Tag>
                     ) : (
                       <Tag icon={<LinkOutlined />} color="green">Оригинал</Tag>
                     )}
-                    <span><ClockCircleOutlined /> {formatDate(item.publishedAt)}</span>
+                    <Typography.Text type="secondary" style={{ fontSize: '12px' }}>
+                      <ClockCircleOutlined /> {formatDate(item.publishedAt)}
+                    </Typography.Text>
                   </Space>
-                }
-              />
-            </List.Item>
+                </div>
+                <Button type="link" danger onClick={() => handleRemoveFavorite(item.id)}>
+                  Удалить
+                </Button>
+              </div>
+            ))
           )}
-        />
+        </Spin>
       ),
     },
   ];
@@ -144,6 +158,18 @@ const Profile: React.FC = () => {
     <div style={{ maxWidth: 800, margin: '0 auto' }}>
       <h1>Личный кабинет</h1>
       <Tabs items={tabItems} />
+
+      <Modal
+        open={modalVisible}
+        onCancel={closeNews}
+        footer={null}
+        width={900}
+        centered
+        destroyOnHidden
+        style={{ top: 20 }}
+      >
+        {selectedNewsId && <NewsDetailModal newsId={selectedNewsId} />}
+      </Modal>
     </div>
   );
 };

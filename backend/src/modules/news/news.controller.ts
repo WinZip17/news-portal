@@ -124,18 +124,26 @@ export class NewsController {
     );
   }
 
+  @Post(':id/like')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Лайк/дизлайк новости' })
+  async like(@Param('id') id: string, @Request() req) {
+    return this.newsService.like(req.user.id, id);
+  }
+
+  @Get(':id/like/check')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  async checkLike(@Param('id') id: string, @Request() req) {
+    const liked = await this.newsService.isLiked(req.user.id, id);
+    return { liked };
+  }
+
   @Post(':id/favorite')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   async toggleFavorite(@Param('id') id: string, @Request() req) {
     return this.newsService.toggleFavorite(req.user.id, id);
-  }
-
-  @Post(':id/like')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Лайк новости' })
-  like(@Param('id') id: string) {
-    return this.newsService.like(id);
   }
 }

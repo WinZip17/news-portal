@@ -148,7 +148,7 @@ const Home: React.FC = () => {
               title="На модерации"
               value={stats?.pendingNews || 0}
               prefix={<ClockCircleOutlined/>}
-              valueStyle={stats?.pendingNews ? { color: '#faad14' } : undefined}
+              styles={stats?.pendingNews ? { content: { color: '#faad14' } } : undefined}
               loading={!stats}
             />
           </Card>
@@ -231,7 +231,7 @@ const Home: React.FC = () => {
         footer={null}
         width={900}
         centered
-        destroyOnClose
+        destroyOnHidden
         style={{ top: 20 }}
       >
         {selectedNewsId && <NewsDetailModal newsId={selectedNewsId}/>}

@@ -2,6 +2,9 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { News, NewsFilter } from '../../types';
 import { newsService } from '../../services/newsService';
 import { RootState } from '../index';
+import { createSelector } from '@reduxjs/toolkit';
+
+const selectNewsState = (state: RootState) => state.news;
 
 interface NewsState {
   news: News[];
@@ -299,12 +302,15 @@ export const selectCurrentNews = (state: RootState) => state.news.currentNews;
 export const selectNewsLoading = (state: RootState) => state.news.isLoading;
 export const selectNewsError = (state: RootState) => state.news.error;
 export const selectNewsFilters = (state: RootState) => state.news.filters;
-export const selectNewsPagination = (state: RootState) => ({
-  total: state.news.total,
-  page: state.news.page,
-  limit: state.news.limit,
-  totalPages: state.news.totalPages,
-});
+export const selectNewsPagination = createSelector(
+  [selectNewsState],
+  (news) => ({
+    total: news.total,
+    page: news.page,
+    limit: news.limit,
+    totalPages: news.totalPages,
+  })
+);
 export const selectPersonalizedNews = (state: RootState) => state.news.personalizedNews;
 
 export default newsSlice.reducer;

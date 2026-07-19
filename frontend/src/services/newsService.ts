@@ -66,4 +66,15 @@ export const newsService = {
     const response = await apiService.get<NewsResponse>('/news/favorites', { params: { page, limit } });
     return response.data;
   },
+
+  async toggleLike(id: string): Promise<{ liked: boolean; likes: number }> {
+    const response = await apiService.post<{ liked: boolean; likes: number }>(`/news/${id}/like`);
+    console.log('Toggle like response:', response); // Добавьте для отладки
+    return response.data;
+  },
+
+  async isLiked(id: string): Promise<boolean> {
+    const response = await apiService.get<{ liked: boolean }>(`/news/${id}/like/check`);
+    return response.data.liked;
+  },
 };

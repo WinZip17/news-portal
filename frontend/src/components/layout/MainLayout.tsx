@@ -163,8 +163,7 @@ const MainLayout: React.FC = () => {
         placement="left"
         onClose={() => setMobileMenuVisible(false)}
         open={mobileMenuVisible}
-        bodyStyle={{ padding: 0 }}
-        width={250}
+        styles={{ body: { padding: 0, width: 250 } }}
       >
         <Menu
           mode="inline"
@@ -216,15 +215,6 @@ const MainLayout: React.FC = () => {
               checked={theme === 'dark'}
               onChange={() => dispatch(toggleTheme())}
             />
-
-            {isAuthenticated && (
-              <Badge count={5} size="small">
-                <Button
-                  type="text"
-                  icon={<BellOutlined style={{ fontSize: '18px' }}/>}
-                />
-              </Badge>
-            )}
 
             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
               <Space style={{ cursor: 'pointer' }}>

@@ -40,12 +40,13 @@ const Login: React.FC = () => {
 
       {(loginError || error) && (
         <Alert
-          message={loginError || error}
+          title={loginError || error}
           type="error"
-          closable
-          onClose={() => {
-            setLoginError(null);
-            clearError();
+          closable={{
+            onClose: () => {
+              setLoginError(null);
+              clearError();
+            }
           }}
           style={{ marginBottom: 24 }}
         />

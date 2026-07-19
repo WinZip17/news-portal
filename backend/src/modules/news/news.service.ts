@@ -5,6 +5,7 @@ import { News, NewsCategory, NewsStatus } from '../../entities';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { NewsStatsDto } from "./dto/stats.dto";
 import { Favorite } from '../../entities/favorite.entity'
+import { Like } from '../../entities/like.entity'
 
 @Injectable()
 export class NewsService {
@@ -13,6 +14,8 @@ export class NewsService {
     private newsRepository: Repository<News>,
     @InjectRepository(Favorite)
     private favoriteRepository: Repository<Favorite>,
+    @InjectRepository(Like)
+    private likeRepository: Repository<Like>,
   ) {
   }
 
@@ -145,10 +148,29 @@ export class NewsService {
     return this.newsRepository.save(news);
   }
 
-  async like(id: string) {
-    const news = await this.findOne(id);
-    news.likes += 1;
-    return this.newsRepository.save(news);
+  async like(userId: string, newsId: string): Promise<{ liked: boolean; likes: number }> {
+    const existing = await this.likeRepository.findOne({
+      where: { userId, newsId },
+    });
+
+    if (existing) {
+      // Уже лайкнул — убираем лайк
+      await this.likeRepository.remove(existing);
+      await this.newsRepository.decrement({ id: newsId }, 'likes', 1);
+      const news = await this.newsRepository.findOne({ where: { id: newsId } });
+      return { liked: false, likes: news?.likes || 0 };
+    }
+
+    // Новый лайк
+    await this.likeRepository.save({ userId, newsId });
+    await this.newsRepository.increment({ id: newsId }, 'likes', 1);
+    const news = await this.newsRepository.findOne({ where: { id: newsId } });
+    return { liked: true, likes: news?.likes || 0 };
+  }
+
+  async isLiked(userId: string, newsId: string): Promise<boolean> {
+    const count = await this.likeRepository.count({ where: { userId, newsId } });
+    return count > 0;
   }
 
   async findPersonalized(preferences: any) {

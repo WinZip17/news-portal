@@ -8,7 +8,7 @@ import {
   RobotOutlined,
   LinkOutlined,
   UserOutlined,
-  ShareAltOutlined,
+  ShareAltOutlined, LikeFilled, LikeOutlined,
 } from '@ant-design/icons';
 import { useNews } from '../hooks/useNews';
 import { newsService } from '../services/newsService';
@@ -22,13 +22,25 @@ interface Props {
 const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
   const { currentNews, isLoading, fetchNewsById, likeNews } = useNews();
   const [isFavorited, setIsFavorited] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
 
   useEffect(() => {
     if (newsId) {
       fetchNewsById(newsId);
       checkFavorite();
+      checkLike();
     }
   }, [newsId]);
+
+  const checkLike = async () => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return;
+    try {
+      const liked = await newsService.isLiked(newsId);
+      setIsLiked(liked);
+    } catch {}
+  };
 
   const checkFavorite = async () => {
     const token = localStorage.getItem('accessToken');
@@ -62,15 +74,23 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
     }
   };
 
-  const handleLike = () => {
+  const handleLike = async () => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
       message.info('Войдите, чтобы ставить лайки');
       return;
     }
-
-    if (currentNews) {
-      likeNews(currentNews.id);
+    try {
+      const result = await newsService.toggleLike(newsId);
+      setIsLiked(result.liked);
+      setLikesCount(result.likes);
+      console.log('result', result)
+      if (currentNews) {
+        // currentNews.likes = result.likes;
+      }
+    } catch (error: any) {
+      console.error('Like error:', error?.response?.data || error);
+      message.error('Ошибка');
     }
   };
 
@@ -93,7 +113,7 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
   if (isLoading) {
     return (
       <div style={{ textAlign: 'center', padding: '40px 0' }}>
-        <Spin size="large" tip="Загрузка новости..." />
+        <Spin size="large" description="Загрузка новости..."/>
       </div>
     );
   }
@@ -144,7 +164,7 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
     <div>
       {/* Тип новости */}
       <Alert
-        message={
+        title={
           currentNews.isAiGenerated
             ? '🤖 AI-рерайт новости'
             : '📄 Оригинальная новость'
@@ -165,32 +185,30 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
       {/* Мета-информация */}
       <Space wrap size="middle" style={{ marginBottom: 16, color: '#666' }}>
         <Text type="secondary">
-          <ClockCircleOutlined /> {formatDate(currentNews.publishedAt)}
+          <ClockCircleOutlined/> {formatDate(currentNews.publishedAt)}
         </Text>
         <Text type="secondary">
-          <EyeOutlined /> {currentNews.views || 0} просмотров
-        </Text>
-        <Text type="secondary">
-          <HeartOutlined /> {currentNews.likes || 0} лайков
+          <EyeOutlined/> {currentNews.views || 0} просмотров
         </Text>
         {currentNews.author && (
           <Text type="secondary">
-            <UserOutlined /> {currentNews.author}
+            <UserOutlined/> {currentNews.author}
           </Text>
         )}
       </Space>
 
       {/* Кнопки действий */}
-      <Space style={{ marginBottom: 16 }}>
+      <Space style={{ marginBottom: 16, marginLeft: 16 }}>
         <Button
-          icon={<HeartOutlined />}
+          icon={isLiked ? <LikeFilled/> : <LikeOutlined/>}
           onClick={handleLike}
           size="small"
+          danger={isLiked}
         >
-          Нравится
+          {likesCount || currentNews?.likes || 0}
         </Button>
         <Button
-          icon={isFavorited ? <HeartFilled /> : <HeartOutlined />}
+          icon={isFavorited ? <HeartFilled/> : <HeartOutlined/>}
           onClick={handleToggleFavorite}
           size="small"
           type={isFavorited ? 'primary' : 'default'}
@@ -199,7 +217,7 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
           {isFavorited ? 'В избранном' : 'В избранное'}
         </Button>
         <Button
-          icon={<ShareAltOutlined />}
+          icon={<ShareAltOutlined/>}
           onClick={handleShare}
           size="small"
         >
@@ -213,9 +231,9 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
           {getCategoryLabel(currentNews.category)}
         </Tag>
         {currentNews.isAiGenerated ? (
-          <Tag icon={<RobotOutlined />} color="blue">AI-рерайт</Tag>
+          <Tag icon={<RobotOutlined/>} color="blue">AI-рерайт</Tag>
         ) : (
-          <Tag icon={<LinkOutlined />} color="green">Оригинал</Tag>
+          <Tag icon={<LinkOutlined/>} color="green">Оригинал</Tag>
         )}
         {currentNews.source && (
           <Tag color="purple">{currentNews.source}</Tag>
@@ -225,7 +243,7 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
         ))}
       </Space>
 
-      <Divider />
+      <Divider/>
 
       {/* Изображение */}
       {currentNews.imageUrl && (

@@ -11,10 +11,11 @@ import { News } from '../../entities';
 import { Favorite } from '../../entities/favorite.entity';
 import { NewsService } from '../news/news.service';
 import { AuthModule } from '../auth/auth.module';
+import { Like } from '../../entities/like.entity'
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([News, Favorite]),
+    TypeOrmModule.forFeature([News, Favorite, Like]),
     ScheduleModule.forRoot(),
     ConfigModule,
     AuthModule,

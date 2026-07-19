@@ -23,7 +23,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         alignItems: 'center',
         height: '100vh'
       }}>
-        <Spin size="large" tip="Проверка авторизации..."/>
+        <Spin size="large" description="Проверка авторизации..."/>
       </div>
     );
   }

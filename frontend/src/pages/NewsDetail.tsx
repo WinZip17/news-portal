@@ -127,7 +127,7 @@ const NewsDetail: React.FC = () => {
   if (isLoading) {
     return (
       <div style={{ textAlign: 'center', padding: '100px 0' }}>
-        <Spin size="large" tip="Загрузка новости..."/>
+        <Spin size="large" description="Загрузка новости..."/>
       </div>
     );
   }
@@ -359,7 +359,7 @@ const NewsDetail: React.FC = () => {
       {/* Ссылка на источник */}
       {currentNews.source && (
         <Alert
-          message="Источник"
+          title="Источник"
           description={
             <div>
               <Text>
