@@ -119,7 +119,7 @@ export class NewsService {
     const news = this.newsRepository.create({
       ...createNewsDto,
       authorId,
-      status: authorId ? NewsStatus.PUBLISHED : NewsStatus.PENDING,
+      status: NewsStatus.PENDING,
       publishedAt: new Date(),
     });
 
