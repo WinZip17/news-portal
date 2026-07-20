@@ -161,6 +161,8 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
     return labels[category] || category;
   };
 
+  const tagStyle = { maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }
+
   return (
     <div>
       <NewsSEO
@@ -238,19 +240,19 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
 
       {/* Теги */}
       <Space wrap style={{ marginBottom: 16 }}>
-        <Tag color={getCategoryColor(currentNews.category)}>
+        <Tag color={getCategoryColor(currentNews.category)} style={tagStyle}>
           {getCategoryLabel(currentNews.category)}
         </Tag>
         {currentNews.isAiGenerated ? (
-          <Tag icon={<RobotOutlined/>} color="blue">AI-рерайт</Tag>
+          <Tag icon={<RobotOutlined/>} color="blue" style={tagStyle}>AI-рерайт</Tag>
         ) : (
-          <Tag icon={<LinkOutlined/>} color="green">Оригинал</Tag>
+          <Tag icon={<LinkOutlined/>} color="green" style={tagStyle}>Оригинал</Tag>
         )}
         {currentNews.source && (
-          <Tag color="purple">{currentNews.source}</Tag>
+          <Tag color="purple" style={tagStyle}>{currentNews.source}</Tag>
         )}
         {currentNews.tags?.map((tag) => (
-          <Tag key={tag}>{tag}</Tag>
+          <Tag key={tag} style={tagStyle}>{tag}</Tag>
         ))}
       </Space>
 
