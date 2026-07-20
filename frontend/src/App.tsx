@@ -9,6 +9,7 @@ import AppErrorBoundary from './components/common/ErrorBoundary';
 import { routes } from './config/routes';
 import ruRU from 'antd/locale/ru_RU';
 import enUS from 'antd/locale/en_US';
+import YandexMetrika from '@/components/YandexMetrika.tsx'
 
 const AppRoutes: React.FC = () => {
   const element = useRoutes(routes);
@@ -51,6 +52,7 @@ const AppContent: React.FC = () => {
       <AntApp>
         <AppErrorBoundary>
           <HelmetProvider>
+            <YandexMetrika counterId={110884229} />
             <Router>
               <AppRoutes />
             </Router>
