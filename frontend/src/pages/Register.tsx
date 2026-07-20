@@ -31,8 +31,8 @@ const Register: React.FC = () => {
         firstName: values.firstName,
         lastName: values.lastName,
       });
-      message.success('Регистрация завершена успешно! Теперь вы можете войти.');
-      navigate('/login');
+      message.success('Регистрация завершена успешно!');
+      navigate('/');
     } catch (err: any) {
       setRegisterError(err.message || 'Ошибка регистрации');
     }
