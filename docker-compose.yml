@@ -38,6 +38,7 @@ services:
       AI_MAX_TOKENS: 1000
       AI_GENERATION_INTERVAL: 3600000
       OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ENABLE_SWAGGER: true
     depends_on:
       postgres:
         condition: service_healthy
