@@ -40,6 +40,7 @@ export default defineConfig({
           },
         ],
       },
+      manifestFilename: 'manifest.json',
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
         runtimeCaching: [
