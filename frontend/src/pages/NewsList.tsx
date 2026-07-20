@@ -140,7 +140,7 @@ const NewsList: React.FC = () => {
           <>
             <Row gutter={[16, 16]}>
               {news.map((item) => (
-                <Col key={item.id}>
+                <Col style={{ width: '100%' }} key={item.id}>
                   <Card
                     hoverable
                     onClick={() => openNews(item.id)}
