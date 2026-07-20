@@ -34,7 +34,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT || 22 }}
           script: |
-            set -e  # Останавливаем скрипт при любой ошибке
+            set -e
             
             echo "========================================"
             echo "🚀 Starting deployment..."
@@ -54,90 +54,35 @@ jobs:
             ENVEOF
             fi
             
-            # Останавливаем старые контейнеры
-            echo "🛑 Stopping old containers..."
-            docker compose down || true
+            # Запускаем инфраструктуру если не запущена
+            echo "📦 Starting services..."
+            docker compose up -d postgres redis prometheus grafana 2>/dev/null
             
-            # Очищаем кэш Docker
-            echo "🧹 Cleaning Docker cache..."
-            docker builder prune -a -f || true
-            
-            # Запускаем базу данных
-            echo "🐘 Starting PostgreSQL..."
-            docker compose up -d postgres
-            
-            # Ждем готовности базы данных
-            echo "⏳ Waiting for database to be ready..."
-            sleep 15
-            
-            # Проверяем готовность базы
+            # Ждем готовности базы
+            echo "⏳ Waiting for database..."
             until docker compose exec -T postgres pg_isready -U postgres 2>/dev/null; do
-              echo "⏳ Still waiting for database..."
-              sleep 5
+              sleep 3
             done
-            
             echo "✅ Database is ready"
             
-            # echo "📦 Starting Redis..."
-            # docker compose up -d redis
-            # sleep 5
+            # Пересобираем только при изменениях
+            echo "🔨 Rebuilding backend..."
+            docker compose up -d --build backend &
+            BACKEND_PID=$!
             
-            # Собираем и запускаем backend
-            echo "🔨 Building and starting backend..."
-            docker compose up -d --build backend
+            echo "🎨 Rebuilding frontend..."
+            docker compose up -d --build frontend &
+            FRONTEND_PID=$!
             
-            # Ждем готовности backend
-            sleep 10
+            # Ждем завершения сборок
+            wait $BACKEND_PID $FRONTEND_PID
             
-            # Проверяем что backend запущен
-            echo "🔍 Checking backend..."
-            if ! docker compose ps backend | grep -q "Up"; then
-              echo "❌ Backend failed to start!"
-              docker compose logs backend --tail=50
-              exit 1
-            fi
-            echo "✅ Backend is running"
-            
-            # Собираем и запускаем frontend
-            echo "🎨 Building and starting frontend..."
-            docker compose up -d --build frontend
-            
-            # Ждем готовности frontend
+            # Быстрая проверка
             sleep 5
+            docker compose ps
             
-            # Проверяем что frontend запущен
-            echo "🔍 Checking frontend..."
-            if ! docker compose ps frontend | grep -q "Up"; then
-              echo "❌ Frontend failed to start!"
-              docker compose logs frontend --tail=50
-              exit 1
-            fi
-            echo "✅ Frontend is running"
-            # echo "📊 Starting monitoring..."
-            # docker compose up -d prometheus grafana
-
-            # Проверяем API
-            echo "🔍 Checking API..."
-            sleep 5
-            if curl -s -o /dev/null -w "%{http_code}" http://localhost:3001/api/health | grep -q "200\|201\|404"; then
-              echo "✅ API is responding"
-            else
-              echo "⚠️ API health check warning (non-critical)"
-            fi
-            
-            # Очистка старых образов
-            echo "🧹 Cleaning up old images..."
-            docker image prune -f || true
-            
-            # Проверка статуса
             echo ""
             echo "========================================"
             echo "✅ Deployment completed!"
             echo "========================================"
-            echo ""
-            echo "📊 Container status:"
             docker compose ps
-            
-            echo ""
-            echo "📋 Recent logs:"
-            docker compose logs --tail=30
