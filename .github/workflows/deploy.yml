@@ -54,6 +54,9 @@ jobs:
             ENVEOF
             fi
             
+            echo "🛑 Stopping old containers..."
+            docker compose down
+            
             # Запускаем инфраструктуру если не запущена
             echo "📦 Starting services..."
             docker compose up -d postgres redis prometheus grafana 2>/dev/null
