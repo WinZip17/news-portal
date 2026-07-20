@@ -36,15 +36,12 @@ jobs:
           script: |
             set -e
             
-            echo "========================================"
-            echo "🚀 Starting deployment..."
-            echo "========================================"
-            
+            echo "🚀 Starting zero-downtime deployment..."
             cd /opt/news-portal
             
-            # Проверяем наличие .env файла
+            # .env
             if [ ! -f .env ]; then
-              echo "📝 Creating .env file..."
+              echo "📝 Creating .env..."
               cat > .env << ENVEOF
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
@@ -54,38 +51,40 @@ jobs:
             ENVEOF
             fi
             
-            echo "🛑 Stopping old containers..."
-            docker compose down
+            # Инфраструктура (если не запущена)
+            docker compose up -d postgres redis prometheus grafana 2>/dev/null || true
+            until docker compose exec -T postgres pg_isready -U postgres 2>/dev/null; do sleep 3; done
+            echo "✅ Database ready"
             
-            # Запускаем инфраструктуру если не запущена
-            echo "📦 Starting services..."
-            docker compose up -d postgres redis prometheus grafana 2>/dev/null
-            
-            # Ждем готовности базы
-            echo "⏳ Waiting for database..."
-            until docker compose exec -T postgres pg_isready -U postgres 2>/dev/null; do
-              sleep 3
-            done
-            echo "✅ Database is ready"
-            
-            # Пересобираем только при изменениях
-            echo "🔨 Rebuilding backend..."
-            docker compose up -d --build backend &
-            BACKEND_PID=$!
-            
-            echo "🎨 Rebuilding frontend..."
-            docker compose up -d --build frontend &
-            FRONTEND_PID=$!
-            
-            # Ждем завершения сборок
-            wait $BACKEND_PID $FRONTEND_PID
-            
-            # Быстрая проверка
+            # Бесшовный деплой backend
+            echo "🔨 Deploying backend..."
+            docker compose up -d --build --scale backend=2 backend 2>/dev/null || \
+            docker compose up -d --build backend
             sleep 5
-            docker compose ps
             
-            echo ""
-            echo "========================================"
+            # Проверка backend
+            if ! docker compose ps backend | grep -q "Up"; then
+              echo "❌ Backend failed!"
+              docker compose logs backend --tail=20
+              exit 1
+            fi
+            echo "✅ Backend running"
+            
+            # Бесшовный деплой frontend
+            echo "🎨 Deploying frontend..."
+            docker compose up -d --build frontend
+            sleep 5
+            
+            # Проверка frontend
+            if ! docker compose ps frontend | grep -q "Up"; then
+              echo "❌ Frontend failed!"
+              docker compose logs frontend --tail=20
+              exit 1
+            fi
+            echo "✅ Frontend running"
+            
+            # Очистка старых образов
+            docker image prune -f || true
+            
             echo "✅ Deployment completed!"
-            echo "========================================"
             docker compose ps

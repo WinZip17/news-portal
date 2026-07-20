@@ -92,8 +92,6 @@ services:
       - ./grafana/dashboards/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
       - ./grafana/dashboards/news-portal-dashboard.json:/etc/grafana/provisioning/dashboards/news-portal-dashboard.json
       - ./grafana/datasources/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
-    ports:
-      - "3000:3000"
     networks:
       - news-portal-network
     restart: unless-stopped
