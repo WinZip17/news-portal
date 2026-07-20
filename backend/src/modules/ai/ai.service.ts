@@ -108,8 +108,7 @@ export class AiService {
     for (const article of articles) {
       const isDuplicate = await this.deduplicationService.checkDuplicate(
         article.title,
-        article.content,
-        article.source
+        article.link
       );
 
       if (!isDuplicate.isDuplicate) {
@@ -162,8 +161,7 @@ export class AiService {
     for (const article of articles) {
       const isDuplicate = await this.deduplicationService.checkDuplicate(
         article.title,
-        article.content,
-        article.source
+        article.link
       );
 
       if (!isDuplicate.isDuplicate) {

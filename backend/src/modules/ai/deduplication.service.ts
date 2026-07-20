@@ -16,7 +16,7 @@ export class DeduplicationService {
   /**
    * Проверка на дубликат с использованием нескольких стратегий
    */
-  async checkDuplicate(title: string, content?: string, source?: string): Promise<{
+  async checkDuplicate(title: string, sourceUrl?: string): Promise<{
     isDuplicate: boolean;
     reason?: string;
     originalNews?: News;
@@ -41,6 +41,15 @@ export class DeduplicationService {
       };
     }
 
+    // 3. Совпадение по ссылке на источник
+    if (sourceUrl) {
+      const sourceMatch = await this.newsRepository.findOne({
+        where: { sourceUrl: sourceUrl },
+      });
+      if (sourceMatch) {
+        return { isDuplicate: true, reason: 'Совпадение по ссылке на источник' };
+      }
+    }
     return { isDuplicate: false };
   }
 
