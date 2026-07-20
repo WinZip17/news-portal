@@ -49,7 +49,27 @@ export default defineConfig({
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-news',
-              expiration: { maxEntries: 50, maxAgeSeconds: 300 },
+              expiration: { maxEntries: 50, maxAgeSeconds: 60 },
+            },
+          },
+          {
+            urlPattern: /\.(?:js|css)$/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'assets',
+              expiration: {
+                maxAgeSeconds: 300,
+              },
+            },
+          },
+          {
+            urlPattern: /\.(?:png|svg|ico)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images',
+              expiration: {
+                maxAgeSeconds: 86400, // 24 часа для картинок
+              },
             },
           },
         ],
