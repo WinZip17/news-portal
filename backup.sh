@@ -13,5 +13,6 @@ find $BACKUP_DIR -name "news_portal_*.sql.gz" -mtime +$RETENTION_DAYS -delete
 
 echo "Backup completed: news_portal_$TIMESTAMP.sql.gz"
 
+# chmod +x /opt/news-portal/backup.sh
 # crontab -e
 # 0 3 * * * /opt/news-portal/backup.sh >> /var/log/news-portal-backup.log 2>&1
