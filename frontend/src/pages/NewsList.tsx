@@ -243,10 +243,10 @@ const NewsList: React.FC = () => {
               >
                 <Space align="start" style={{ width: '100%', justifyContent: 'space-between' }}>
                   <div style={{ flex: 1 }}>
-                    <Text strong style={{ fontSize: '16px' }}>{item.title}</Text>
+                    <Text strong style={{ fontSize: '16px', wordBreak: 'break-word' }}>{item.title}</Text>
                     <Paragraph
                       ellipsis={{ rows: 2 }}
-                      style={{ marginBottom: 8, marginTop: 4, color: '#666', fontSize: '14px', lineHeight: '1.6' }}
+                      style={{ marginBottom: 8, marginTop: 4, color: '#666', fontSize: '14px', lineHeight: '1.6', wordBreak: 'break-word' }}
                     >
                       {item.summary || item.content?.substring(0, 200) || 'Описание отсутствует'}
                     </Paragraph>
@@ -257,7 +257,7 @@ const NewsList: React.FC = () => {
                       ) : (
                         <Tag icon={<LinkOutlined />} color="green">Оригинал</Tag>
                       )}
-                      {item.source && <Tag color="purple">{item.source}</Tag>}
+                      {item.source && <Tag color="purple" style={{ maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.source}</Tag>}
                       {item.tags?.slice(0, 3).map((tag) => (
                         <Tag key={tag} style={{ fontSize: '11px' }}>{tag}</Tag>
                       ))}
