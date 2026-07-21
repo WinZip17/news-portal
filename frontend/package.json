@@ -11,7 +11,9 @@
     "lint": "eslint .",
     "test": "vitest",
     "test:watch": "vitest --watch",
-    "test:cov": "vitest --coverage"
+    "test:cov": "vitest --coverage",
+    "format": "npm -w frontend run format && npm -w backend run format",
+    "format:check": "npm -w frontend run format:check && npm -w backend run format:check"
   },
   "dependencies": {
     "@ant-design/icons": "^6.3.2",
