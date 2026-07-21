@@ -1,16 +1,17 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, LessThan, ILike, Between, In, MoreThanOrEqual } from 'typeorm';
-import { News, NewsCategory, NewsStatus } from '../../entities';
+import { Repository, LessThan, ILike, Between, In, MoreThanOrEqual, FindOptionsWhere } from 'typeorm';
+import { News, NewsCategory, NewsStatus, Favorite, Like } from '../../entities';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { NewsStatsDto } from './dto/stats.dto';
-import { Favorite } from '../../entities';
-import { Like } from '../../entities'
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { NewsFilter } from '../../types';
 
 @Injectable()
 export class NewsService {
+  private readonly logger = new Logger(NewsService.name);
+
   constructor(
     @InjectRepository(News)
     private newsRepository: Repository<News>,
@@ -21,7 +22,7 @@ export class NewsService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  async findAll(filters: any) {
+  async findAll(filters: NewsFilter) {
     const {
       page = 1,
       limit = 10,
@@ -36,7 +37,7 @@ export class NewsService {
       authorId,
     } = filters;
 
-    const where: any = {};
+    const where: FindOptionsWhere<News> = {};
 
     if (status) where.status = status;
     if (category) where.category = category;
@@ -53,25 +54,16 @@ export class NewsService {
 
     const [data, total] = await this.newsRepository.findAndCount({
       where,
-      // Исправлено: убран select с relations
-      relations: {
-        author: true,
-      },
-      order: {
-        [sortBy]: sortOrder,
-      },
+      relations: { author: true },
+      order: { [sortBy]: sortOrder },
       skip: (page - 1) * limit,
       take: limit,
     });
 
-    // Убираем пароль и refreshToken из автора, если он есть
     const sanitizedData = data.map((news) => {
       if (news.author) {
-        const { password, refreshToken, ...authorWithoutSensitive } = news.author as any;
-        return {
-          ...news,
-          author: authorWithoutSensitive,
-        };
+        const { password, refreshToken, ...authorWithoutSensitive } = news.author;
+        return { ...news, author: authorWithoutSensitive };
       }
       return news;
     });
@@ -88,26 +80,19 @@ export class NewsService {
   async findOne(id: string) {
     const news = await this.newsRepository.findOne({
       where: { id },
-      relations: {
-        author: true,
-      },
+      relations: { author: true },
     });
 
     if (!news) {
       throw new NotFoundException('Новость не найдена');
     }
 
-    // Увеличиваем счетчик просмотров
     await this.newsRepository.increment({ id }, 'views', 1);
     news.views += 1;
 
-    // Убираем чувствительные данные автора
     if (news.author) {
-      const { password, refreshToken, ...authorWithoutSensitive } = news.author as any;
-      return {
-        ...news,
-        author: authorWithoutSensitive,
-      };
+      const { password, refreshToken, ...authorWithoutSensitive } = news.author;
+      return { ...news, author: authorWithoutSensitive };
     }
 
     return news;
@@ -120,50 +105,43 @@ export class NewsService {
       status: NewsStatus.PENDING,
       publishedAt: new Date(),
     });
-
     return this.newsRepository.save(news);
   }
 
-  async update(id: string, updateData: Partial<News>) {
+  async update(id: string, updateData: Partial<Omit<News, 'id' | 'author'>>) {
     const news = await this.findOne(id);
-
-    // Убираем id из данных обновления
-    const { id: _, author, ...safeUpdateData } = updateData as any;
-
+    const { id: _, author, ...safeUpdateData } = updateData as News;
     Object.assign(news, safeUpdateData);
     return this.newsRepository.save(news);
   }
 
   async delete(id: string) {
-    const news = await this.findOne(id);
+    const news = await this.newsRepository.findOne({ where: { id } });
+    if (!news) {
+      throw new NotFoundException('Новость не найдена');
+    }
     return this.newsRepository.remove(news);
   }
 
   async moderate(id: string, status: NewsStatus, moderatorId: string, comment?: string) {
     const news = await this.findOne(id);
-
     news.status = status;
     news.moderatedBy = moderatorId;
     news.moderatedAt = new Date();
     news.moderationComment = comment || '';
-
     return this.newsRepository.save(news);
   }
 
   async like(userId: string, newsId: string): Promise<{ liked: boolean; likes: number }> {
-    const existing = await this.likeRepository.findOne({
-      where: { userId, newsId },
-    });
+    const existing = await this.likeRepository.findOne({ where: { userId, newsId } });
 
     if (existing) {
-      // Уже лайкнул — убираем лайк
       await this.likeRepository.remove(existing);
       await this.newsRepository.decrement({ id: newsId }, 'likes', 1);
       const news = await this.newsRepository.findOne({ where: { id: newsId } });
       return { liked: false, likes: news?.likes || 0 };
     }
 
-    // Новый лайк
     await this.likeRepository.save({ userId, newsId });
     await this.newsRepository.increment({ id: newsId }, 'likes', 1);
     const news = await this.newsRepository.findOne({ where: { id: newsId } });
@@ -175,38 +153,24 @@ export class NewsService {
     return count > 0;
   }
 
-  async findPersonalized(preferences: any) {
-    // Упрощенная логика персонализации
+  async findPersonalized(preferences: { categories?: string[] }) {
     const category = preferences?.categories?.[0] || undefined;
-
-    return this.findAll({
-      category,
-      limit: 20,
-      sortBy: 'publishedAt',
-      sortOrder: 'DESC',
-    });
+    return this.findAll({ category: category as NewsCategory, limit: 20, sortBy: 'publishedAt', sortOrder: 'DESC' });
   }
 
-  // Дополнительный метод для подсчета новостей
   async countByStatus(status: NewsStatus): Promise<number> {
-    return this.newsRepository.count({
-      where: { status },
-    });
+    return this.newsRepository.count({ where: { status } });
   }
 
-  // Дополнительный метод для получения популярных новостей
   async getPopular(limit: number = 10) {
     return this.newsRepository.find({
       where: { status: NewsStatus.PUBLISHED },
       order: { views: 'DESC' },
       take: limit,
-      relations: {
-        author: true,
-      },
+      relations: { author: true },
     });
   }
 
-  // Дополнительный метод для получения новостей по тегам
   async findByTags(tags: string[], limit: number = 10) {
     const queryBuilder = this.newsRepository
       .createQueryBuilder('news')
@@ -220,30 +184,20 @@ export class NewsService {
     return queryBuilder.orderBy('news.publishedAt', 'DESC').take(limit).getMany();
   }
 
-  // Метод для поиска новостей за период
   async findByDateRange(startDate: Date, endDate: Date) {
     return this.newsRepository.find({
-      where: {
-        publishedAt: Between(startDate, endDate),
-        status: NewsStatus.PUBLISHED,
-      },
+      where: { publishedAt: Between(startDate, endDate), status: NewsStatus.PUBLISHED },
       order: { publishedAt: 'DESC' },
-      relations: {
-        author: true,
-      },
+      relations: { author: true },
     });
   }
 
-  // Метод для архивации старых новостей
   async archiveOldNews(days: number = 30) {
     const date = new Date();
     date.setDate(date.getDate() - days);
 
     const oldNews = await this.newsRepository.find({
-      where: {
-        publishedAt: Between(new Date(0), date) as any,
-        status: NewsStatus.PUBLISHED,
-      },
+      where: { publishedAt: Between(new Date(0), date), status: NewsStatus.PUBLISHED },
     });
 
     for (const news of oldNews) {
@@ -254,34 +208,19 @@ export class NewsService {
     return { archived: oldNews.length };
   }
 
-  /**
-   * Автоматическое подтверждение новостей старше 1 часа
-   */
-  async autoApproveOldNews(): Promise<{ approved: number; news: any[] }> {
+  async autoApproveOldNews(): Promise<{ approved: number; news: { id: string; title: string }[] }> {
     const oneHourAgo = new Date();
     oneHourAgo.setHours(oneHourAgo.getHours() - 1);
 
     const pendingNews = await this.newsRepository.find({
-      where: {
-        status: NewsStatus.PENDING,
-        createdAt: LessThan(oneHourAgo),
-      },
-      select: {
-        id: true,
-        title: true,
-        createdAt: true,
-        status: true,
-      },
+      where: { status: NewsStatus.PENDING, createdAt: LessThan(oneHourAgo) },
+      select: { id: true, title: true, createdAt: true, status: true },
     });
 
     if (pendingNews.length > 0) {
-      // Логируем какие новости будут подтверждены
-      console.log(`📋 Auto-approving ${pendingNews.length} news:`);
-      pendingNews.forEach((news) => {
-        console.log(`  - ${news.title} (created: ${news.createdAt})`);
-      });
+      this.logger.log(`📋 Auto-approving ${pendingNews.length} news:`);
+      pendingNews.forEach((news) => this.logger.log(`  - ${news.title}`));
 
-      // Подтверждаем
       await this.newsRepository.update(
         { id: In(pendingNews.map((n) => n.id)) },
         {
@@ -293,107 +232,76 @@ export class NewsService {
       );
     }
 
-    return {
-      approved: pendingNews.length,
-      news: pendingNews.map((n) => ({ id: n.id, title: n.title })),
-    };
+    return { approved: pendingNews.length, news: pendingNews.map((n) => ({ id: n.id, title: n.title })) };
   }
 
-  /**
-   * Проверка на дубликат новости по заголовку
-   */
   async isDuplicate(title: string, source?: string): Promise<boolean> {
     const query = this.newsRepository.createQueryBuilder('news').where('news.title ILIKE :title', { title: `%${title.substring(0, 50)}%` });
 
     if (source) {
-      query.orWhere('news.source = :source AND news.title ILIKE :title', {
-        source,
-        title: `%${title.substring(0, 30)}%`,
-      });
+      query.orWhere('news.source = :source AND news.title ILIKE :title', { source, title: `%${title.substring(0, 30)}%` });
     }
 
-    // Проверяем за последние 7 дней
-    query.andWhere('news.createdAt > :date', {
-      date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-    });
+    query.andWhere('news.createdAt > :date', { date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) });
 
     const count = await query.getCount();
     return count > 0;
   }
 
-  /**
-   * Поиск похожих новостей
-   */
-  async findSimilar(title: string, threshold: number = 0.6): Promise<News[]> {
-    // Поиск по первым 3 словам заголовка
+  async findSimilar(title: string): Promise<News[]> {
     const words = title.split(' ').slice(0, 3).join(' ');
-
     return this.newsRepository.find({
-      where: {
-        title: ILike(`%${words}%`),
-      },
+      where: { title: ILike(`%${words}%`) },
       take: 5,
       order: { createdAt: 'DESC' },
     });
   }
 
-  /**
-   * Статистика новостей
-   */
   async getStats(): Promise<NewsStatsDto> {
     const cacheKey = 'news:stats';
-    // Пробуем кэш
+
     try {
-      const cached = await this.cacheManager.get(cacheKey);
-      if (cached) return cached as NewsStatsDto;
-    } catch (e) {
-      console.error('const cached error', e);
+      const cached = await this.cacheManager.get<NewsStatsDto>(cacheKey);
+      if (cached) return cached;
+    } catch {
+      // Кэш недоступен
     }
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     const [newsToday, totalNews, totalAiNews, pendingNews, newsLastHour, totalViews] = await Promise.all([
-      this.newsRepository.count({
-        where: { createdAt: MoreThanOrEqual(today) },
-      }),
+      this.newsRepository.count({ where: { createdAt: MoreThanOrEqual(today) } }),
       this.newsRepository.count(),
-      this.newsRepository.count({
-        where: { isAiGenerated: true },
-      }),
-      this.newsRepository.count({
-        where: { status: NewsStatus.PENDING },
-      }),
-      this.newsRepository.count({
-        where: { createdAt: MoreThanOrEqual(new Date(Date.now() - 3600000)) },
-      }),
+      this.newsRepository.count({ where: { isAiGenerated: true } }),
+      this.newsRepository.count({ where: { status: NewsStatus.PENDING } }),
+      this.newsRepository.count({ where: { createdAt: MoreThanOrEqual(new Date(Date.now() - 3600000)) } }),
       this.newsRepository.sum('views'),
     ]);
-    const result = {
+
+    const result: NewsStatsDto = {
       newsToday,
       totalNews,
       totalAiNews,
       pendingNews,
       newsLastHour,
       totalViews: totalViews || 0,
-      totalUsers: 0, // Будет заполнено ниже
+      totalUsers: 0,
       activeSources: 0,
       categoriesCount: Object.keys(NewsCategory).length,
     };
+
     try {
       await this.cacheManager.set(cacheKey, result, 60000);
-    } catch (e) {
-      console.error('await this.cacheManager error', e);
+    } catch {
+      // Кэш недоступен
     }
+
     return result;
   }
 
-  /**
-   * Переключение избранного
-   */
   async toggleFavorite(userId: string, newsId: string): Promise<{ favorited: boolean }> {
-    const existing = await this.favoriteRepository.findOne({
-      where: { userId, newsId },
-    });
+    const existing = await this.favoriteRepository.findOne({ where: { userId, newsId } });
 
     if (existing) {
       await this.favoriteRepository.remove(existing);
@@ -404,9 +312,6 @@ export class NewsService {
     return { favorited: true };
   }
 
-  /**
-   * Получение избранного
-   */
   async getFavorites(
     userId: string,
     page = 1,
@@ -414,28 +319,15 @@ export class NewsService {
   ): Promise<{ data: News[]; total: number; page: number; limit: number; totalPages: number }> {
     const [data, total] = await this.favoriteRepository.findAndCount({
       where: { userId },
-      relations: {
-        news: {
-          author: true,
-        },
-      },
+      relations: { news: { author: true } },
       order: { createdAt: 'DESC' },
       skip: (page - 1) * limit,
       take: limit,
     });
 
-    return {
-      data: data.map((f) => f.news),
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    };
+    return { data: data.map((f) => f.news), total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
-  /**
-   * Проверка избранного
-   */
   async isFavorited(userId: string, newsId: string): Promise<boolean> {
     const count = await this.favoriteRepository.count({ where: { userId, newsId } });
     return count > 0;

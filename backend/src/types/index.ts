@@ -1,4 +1,6 @@
 // Общие типы для API ответов
+import { NewsCategory, NewsStatus } from '../entities';
+
 export interface TokenResponse {
   accessToken: string;
   refreshToken: string;
@@ -39,6 +41,21 @@ export interface UserPreferences {
   notificationsEnabled: boolean;
   emailNotifications: boolean;
   theme: 'light' | 'dark';
+}
+
+export interface NewsFilter {
+  page?: number;
+  limit?: number;
+  category?: NewsCategory;
+  status?: NewsStatus;
+  search?: string;
+  tags?: string[];
+  fromDate?: string;
+  toDate?: string;
+  sortBy?: 'publishedAt' | 'views' | 'likes';
+  sortOrder?: 'ASC' | 'DESC';
+  isAiGenerated?: boolean;
+  authorId?: string;
 }
 
 export interface AiRewriteResult {

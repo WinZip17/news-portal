@@ -6,8 +6,18 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from '../auth/auth.service';
-import { NewsStatus } from '../../entities';
+import { News, NewsStatus } from '../../entities';
 import { escapeXml } from '../../utils/escapeXml';
+import { NewsFilter } from '../../types';
+
+interface RequestWithUser {
+  user: { id: string };
+}
+
+interface ModerationBody {
+  status: NewsStatus;
+  comment?: string;
+}
 
 @ApiTags('News')
 @Controller('news')
@@ -19,7 +29,7 @@ export class NewsController {
 
   @Get()
   @ApiOperation({ summary: 'Получение списка новостей' })
-  findAll(@Query() filters: any) {
+  findAll(@Query() filters: NewsFilter) {
     return this.newsService.findAll(filters);
   }
 
@@ -40,7 +50,7 @@ export class NewsController {
   @Get('favorites')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
-  async getFavorites(@Request() req, @Query('page') page = 1, @Query('limit') limit = 20) {
+  async getFavorites(@Request() req: RequestWithUser, @Query('page') page = 1, @Query('limit') limit = 20) {
     return this.newsService.getFavorites(req.user.id, page, limit);
   }
 
@@ -49,7 +59,7 @@ export class NewsController {
   @Roles('admin', 'moderator', 'user')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Создание новости' })
-  create(@Body() createNewsDto: CreateNewsDto, @Request() req) {
+  create(@Body() createNewsDto: CreateNewsDto, @Request() req: RequestWithUser) {
     return this.newsService.create(createNewsDto, req.user.id);
   }
 
@@ -57,18 +67,14 @@ export class NewsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Получение персонализированных новостей' })
-  findPersonalized(@Body('preferences') preferences: string[]) {
+  findPersonalized(@Body('preferences') preferences: { categories?: string[] }) {
     return this.newsService.findPersonalized(preferences);
   }
 
   @Get('sitemap.xml')
   @Header('Content-Type', 'application/xml')
   async getSitemap() {
-    const news = await this.newsService.findAll({
-      status: NewsStatus.PUBLISHED,
-      limit: 1000,
-    });
-
+    const news = await this.newsService.findAll({ status: NewsStatus.PUBLISHED, limit: 1000 });
     const baseUrl = process.env.SITE_URL || 'http://localhost:5173';
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -119,7 +125,7 @@ export class NewsController {
   @Get(':id/favorite/check')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
-  async checkFavorite(@Param('id') id: string, @Request() req) {
+  async checkFavorite(@Param('id') id: string, @Request() req: RequestWithUser) {
     const favorited = await this.newsService.isFavorited(req.user.id, id);
     return { favorited };
   }
@@ -129,7 +135,7 @@ export class NewsController {
   @Roles('admin', 'moderator')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Обновление новости' })
-  update(@Param('id') id: string, @Body() updateData: any) {
+  update(@Param('id') id: string, @Body() updateData: Partial<News>) {
     return this.newsService.update(id, updateData);
   }
 
@@ -147,7 +153,7 @@ export class NewsController {
   @Roles('admin', 'moderator')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Модерация новости' })
-  moderate(@Param('id') id: string, @Body() moderationData: any, @Request() req) {
+  moderate(@Param('id') id: string, @Body() moderationData: ModerationBody, @Request() req: RequestWithUser) {
     return this.newsService.moderate(id, moderationData.status, req.user.id, moderationData.comment);
   }
 
@@ -155,14 +161,14 @@ export class NewsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Лайк/дизлайк новости' })
-  async like(@Param('id') id: string, @Request() req) {
+  async like(@Param('id') id: string, @Request() req: RequestWithUser) {
     return this.newsService.like(req.user.id, id);
   }
 
   @Get(':id/like/check')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
-  async checkLike(@Param('id') id: string, @Request() req) {
+  async checkLike(@Param('id') id: string, @Request() req: RequestWithUser) {
     const liked = await this.newsService.isLiked(req.user.id, id);
     return { liked };
   }
@@ -170,7 +176,7 @@ export class NewsController {
   @Post(':id/favorite')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
-  async toggleFavorite(@Param('id') id: string, @Request() req) {
+  async toggleFavorite(@Param('id') id: string, @Request() req: RequestWithUser) {
     return this.newsService.toggleFavorite(req.user.id, id);
   }
 }
