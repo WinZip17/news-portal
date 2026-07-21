@@ -3,10 +3,10 @@ import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter as Router, useRoutes } from 'react-router-dom';
 import { ConfigProvider, App as AntApp, theme as antTheme } from 'antd';
 import { Provider } from 'react-redux';
-import { store, useAppSelector, selectTheme, setTheme } from './store';
-import { useAuth } from './hooks/useAuth';
-import AppErrorBoundary from './components/common/ErrorBoundary';
-import { routes } from './config/routes';
+import { store, useAppSelector, selectTheme, setTheme } from '@/store';
+import { useAuth } from '@/hooks/useAuth';
+import AppErrorBoundary from '@/components/common/ErrorBoundary';
+import { routes } from '@/config/routes';
 import ruRU from 'antd/locale/ru_RU';
 import enUS from 'antd/locale/en_US';
 import YandexMetrika from '@/components/YandexMetrika.tsx'

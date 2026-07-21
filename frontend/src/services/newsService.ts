@@ -1,5 +1,5 @@
 import { apiService } from './api';
-import { News, NewsFilter, NewsResponse, NewsStats } from '../types';
+import { News, NewsFilter, NewsResponse, NewsStats } from '@/types';
 
 export const newsService = {
   async getNews(filters?: NewsFilter): Promise<NewsResponse> {

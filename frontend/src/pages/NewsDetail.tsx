@@ -30,8 +30,8 @@ import {
   TagOutlined,
   WarningOutlined,
 } from '@ant-design/icons';
-import { useNews } from '../hooks/useNews';
-import { getCategoryLabel } from "../utils/getCategoryLabel.ts";
+import { useNews } from '@/hooks/useNews';
+import { getCategoryLabel } from "@/utils/getCategoryLabel.ts";
 
 const { Title, Text } = Typography;
 const { Content } = Layout;

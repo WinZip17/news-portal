@@ -1,5 +1,5 @@
 import { apiService } from './api';
-import { User } from "../types";
+import { User } from "@/types";
 
 
 export const userService = {

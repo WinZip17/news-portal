@@ -1,8 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import NewsDetailModal from '../NewsDetailModal';
 import { Provider } from 'react-redux';
-import { store } from '../../store';
+import { store } from '@/store'
+import NewsDetailModal from '@/components/NewsDetailModal.tsx'
+
 
 vi.mock('../../hooks/useNews', () => ({
   useNews: () => ({

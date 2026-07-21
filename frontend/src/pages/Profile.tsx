@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Tabs, Card, Form, Input, Button, Switch, Select, message, Tag, Space, Empty, Spin, Modal } from 'antd';
 import { UserOutlined, HeartOutlined, SettingOutlined, RobotOutlined, LinkOutlined, ClockCircleOutlined } from '@ant-design/icons';
-import { useAuth } from '../hooks/useAuth';
-import { newsService } from '../services/newsService';
-import { News } from '../types';
-import { useNewsModal } from '../hooks/useNewsModal.ts';
-import NewsDetailModal from '../components/NewsDetailModal';
+import { useAuth } from '@/hooks/useAuth';
+import { newsService } from '@/services/newsService';
+import { News } from '@/types';
+import { useNewsModal } from '@/hooks/useNewsModal.ts';
+import NewsDetailModal from '@/components/NewsDetailModal';
 import { Typography } from 'antd';
 
 const { Text } = Typography;
@@ -138,9 +138,9 @@ const Profile: React.FC = () => {
                     ) : (
                       <Tag icon={<LinkOutlined />} color="green">Оригинал</Tag>
                     )}
-                    <Typography.Text type="secondary" style={{ fontSize: '12px' }}>
+                    <Text type="secondary" style={{ fontSize: '12px' }}>
                       <ClockCircleOutlined /> {formatDate(item.publishedAt)}
-                    </Typography.Text>
+                    </Text>
                   </Space>
                 </div>
                 <Button type="link" danger onClick={() => handleRemoveFavorite(item.id)}>

@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from '../store';
+import { useAppDispatch, useAppSelector } from '@/store';
 import {
   fetchNews,
   fetchNewsById,
@@ -18,8 +18,8 @@ import {
   selectNewsFilters,
   selectNewsPagination,
   selectPersonalizedNews,
-} from '../store';
-import { News, NewsFilter } from "../types";
+} from '@/store';
+import type { News, NewsFilter } from "@/types";
 
 export const useNews = () => {
   const dispatch = useAppDispatch();

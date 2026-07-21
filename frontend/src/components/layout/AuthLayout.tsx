@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Layout, Row, Col, Card, Typography } from 'antd';
-import { useAppSelector } from '../../store';
+import { useAppSelector } from '@/store'
 
 const { Content } = Layout;
 const { Title, Text } = Typography;

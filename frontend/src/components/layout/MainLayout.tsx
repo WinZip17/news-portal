@@ -8,7 +8,6 @@ import {
   Dropdown,
   Space,
   Switch,
-  Badge,
   Drawer,
 } from 'antd';
 import {
@@ -19,15 +18,13 @@ import {
   LoginOutlined,
   LogoutOutlined,
   MenuOutlined,
-  BellOutlined,
   BulbOutlined,
   BulbFilled,
   DashboardOutlined,
-  TeamOutlined,
 } from '@ant-design/icons';
-import { useAuth } from '../../hooks/useAuth';
-import { useAppSelector, useAppDispatch, toggleTheme } from '../../store';
 import type { MenuProps } from 'antd';
+import { useAuth } from '@/hooks/useAuth.ts'
+import { toggleTheme, useAppDispatch, useAppSelector } from '@/store'
 
 const { Header, Sider, Content, Footer } = Layout;
 

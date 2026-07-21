@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { store } from '../store';
-import { logout, setTokens } from '../store';
+import { store } from '@/store';
+import { logout, setTokens } from '@/store';
 
 class ApiService {
   private api: AxiosInstance;

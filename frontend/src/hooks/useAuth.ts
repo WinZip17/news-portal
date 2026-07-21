@@ -14,8 +14,8 @@ import {
   selectIsAuthenticated,
   selectAuthLoading,
   selectAuthError, store, setTheme,
-} from '../store';
-import { LoginCredentials, RegisterData, User } from '../types/auth';
+} from '@/store';
+import { LoginCredentials, RegisterData, User } from '@/types';
 import { message } from 'antd'
 
 export const useAuth = () => {

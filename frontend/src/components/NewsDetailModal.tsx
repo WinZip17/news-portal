@@ -10,9 +10,9 @@ import {
   UserOutlined,
   ShareAltOutlined, LikeFilled, LikeOutlined,
 } from '@ant-design/icons';
-import { useNews } from '../hooks/useNews';
-import { newsService } from '../services/newsService';
-import NewsSEO from './NewsSEO.tsx'
+import { newsService } from '@/services/newsService.ts'
+import { useNews } from '@/hooks/useNews.ts'
+import NewsSEO from '@/components/NewsSEO.tsx'
 
 const { Title, Text, Paragraph } = Typography;
 

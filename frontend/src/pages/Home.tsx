@@ -11,12 +11,12 @@ import {
   ClockCircleOutlined, EyeOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import { useNews } from '../hooks/useNews';
-import NewsDetailModal from '../components/NewsDetailModal';
-import { useNewsModal } from "../hooks/useNewsModal.ts";
-import { newsService } from "../services/newsService.ts";
-import { NewsStats } from "../types";
+import { useAuth } from '@/hooks/useAuth';
+import { useNews } from '@/hooks/useNews';
+import NewsDetailModal from '@/components/NewsDetailModal';
+import { useNewsModal } from "@/hooks/useNewsModal.ts";
+import { newsService } from "@/services/newsService.ts";
+import { NewsStats } from "@/types";
 
 const { Title, Paragraph } = Typography;
 

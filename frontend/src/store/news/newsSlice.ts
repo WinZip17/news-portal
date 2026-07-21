@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { News, NewsFilter } from '../../types';
-import { newsService } from '../../services/newsService';
-import { RootState } from '../index';
+import { News, NewsFilter } from '@/types';
+import { newsService } from '@/services/newsService';
+import type { RootState } from '@/store';
 import { createSelector } from '@reduxjs/toolkit';
 
 const selectNewsState = (state: RootState) => state.news;

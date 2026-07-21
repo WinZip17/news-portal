@@ -1,8 +1,8 @@
 import React from 'react';
 import { Tabs } from 'antd';
 import { ReadOutlined, TeamOutlined } from '@ant-design/icons';
-import UsersManagement from './UsersManagement';
-import NewsManagement from "./NewsManagement.tsx";
+import NewsManagement from '@/pages/admin/NewsManagement.tsx'
+import UsersManagement from '@/pages/admin/UsersManagement.tsx'
 
 const AdminDashboard: React.FC = () => {
   const items = [
