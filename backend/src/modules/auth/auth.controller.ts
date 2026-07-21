@@ -7,6 +7,11 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserPreferences, UserResponse } from '../../types';
+
+interface RequestWithUser {
+  user: { id: string };
+}
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -35,7 +40,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Выход из системы' })
-  logout(@Request() req) {
+  logout(@Request() req: RequestWithUser) {
     return this.authService.logout(req.user.id);
   }
 
@@ -43,7 +48,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Получение текущего пользователя' })
-  getCurrentUser(@Request() req) {
+  getCurrentUser(@Request() req: RequestWithUser): Promise<UserResponse> {
     return this.authService.getCurrentUser(req.user.id);
   }
 
@@ -51,7 +56,10 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Обновление профиля' })
-  updateProfile(@Request() req, @Body() updateData: any) {
+  updateProfile(
+    @Request() req: RequestWithUser,
+    @Body() updateData: { firstName?: string; lastName?: string; avatar?: string },
+  ): Promise<UserResponse> {
     return this.authService.updateProfile(req.user.id, updateData);
   }
 
@@ -59,7 +67,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Обновление настроек' })
-  updatePreferences(@Request() req, @Body() preferences: any) {
+  updatePreferences(@Request() req: RequestWithUser, @Body() preferences: Partial<UserPreferences>): Promise<UserResponse> {
     return this.authService.updatePreferences(req.user.id, preferences);
   }
 
