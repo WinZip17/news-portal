@@ -16,11 +16,13 @@ async function bootstrap() {
     logger.log('✅ Application created');
 
     // Глобальные пайпы
-    app.useGlobalPipes(new ValidationPipe({
-      whitelist: true,
-      transform: true,
-      forbidNonWhitelisted: true,
-    }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+        forbidNonWhitelisted: true,
+      }),
+    );
 
     // CORS
     app.enableCors({
@@ -75,7 +77,6 @@ async function bootstrap() {
     logger.log(`🚀 Application is running on: http://localhost:${port}`);
     logger.log(`📚 API: http://localhost:${port}/api`);
     logger.log(`📖 Swagger docs: http://localhost:${port}/api/docs`);
-
   } catch (error) {
     logger.error('❌ Failed to start application:', error.message);
     console.error(error);

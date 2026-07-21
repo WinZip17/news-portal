@@ -6,8 +6,7 @@ import { NewsService } from './news.service';
 export class NewsSchedulerService {
   private readonly logger = new Logger(NewsSchedulerService.name);
 
-  constructor(private readonly newsService: NewsService) {
-  }
+  constructor(private readonly newsService: NewsService) {}
 
   /**
    * Проверка каждые 10 минут - подтверждение новостей старше 1 часа

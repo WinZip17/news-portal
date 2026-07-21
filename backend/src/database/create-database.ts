@@ -37,7 +37,7 @@ async function createDatabase() {
       `SELECT 1
        FROM pg_database
        WHERE datname = $1`,
-      [dbConfig.database]
+      [dbConfig.database],
     );
 
     if (result.rows.length === 0) {
@@ -47,7 +47,7 @@ async function createDatabase() {
          ENCODING 'UTF8' 
          LC_COLLATE = 'C' 
          LC_CTYPE = 'C' 
-         TEMPLATE template0`
+         TEMPLATE template0`,
       );
       console.log(`✅ Database "${dbConfig.database}" created`);
     } else {
@@ -55,11 +55,8 @@ async function createDatabase() {
     }
 
     // Права
-    await client.query(
-      `GRANT ALL PRIVILEGES ON DATABASE "${dbConfig.database}" TO "${dbConfig.user}"`
-    );
+    await client.query(`GRANT ALL PRIVILEGES ON DATABASE "${dbConfig.database}" TO "${dbConfig.user}"`);
     console.log('✅ Privileges granted');
-
   } catch (error) {
     console.error('Error:', error.message);
     process.exit(1);

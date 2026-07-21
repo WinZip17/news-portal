@@ -1,10 +1,9 @@
 import { apiService } from './api';
-import { User } from "@/types";
-
+import { User } from '@/types';
 
 export const userService = {
-  async getUsers(page = 1, limit = 20): Promise<{ data: User[], total: number }> {
-    const response = await apiService.get<{ data: User[], total: number }>('/auth/users', { params: { page, limit } });
+  async getUsers(page = 1, limit = 20): Promise<{ data: User[]; total: number }> {
+    const response = await apiService.get<{ data: User[]; total: number }>('/auth/users', { params: { page, limit } });
     return response.data;
   },
 

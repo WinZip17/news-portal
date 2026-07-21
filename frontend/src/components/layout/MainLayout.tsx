@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import {
-  Layout,
-  Menu,
-  Button,
-  Avatar,
-  Dropdown,
-  Space,
-  Switch,
-  Drawer,
-} from 'antd';
+import { Layout, Menu, Button, Avatar, Dropdown, Space, Switch, Drawer } from 'antd';
 import {
   HomeOutlined,
   ReadOutlined,
@@ -23,8 +14,8 @@ import {
   DashboardOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { useAuth } from '@/hooks/useAuth.ts'
-import { toggleTheme, useAppDispatch, useAppSelector } from '@/store'
+import { useAuth } from '@/hooks/useAuth.ts';
+import { toggleTheme, useAppDispatch, useAppSelector } from '@/store';
 
 const { Header, Sider, Content, Footer } = Layout;
 
@@ -32,7 +23,7 @@ const MainLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isAuthenticated, logout } = useAuth();
-  const theme = useAppSelector(state => state.ui.theme);
+  const theme = useAppSelector((state) => state.ui.theme);
   const dispatch = useAppDispatch();
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
@@ -46,65 +37,65 @@ const MainLayout: React.FC = () => {
   const mainMenuItems: MenuProps['items'] = [
     {
       key: '/',
-      icon: <HomeOutlined/>,
+      icon: <HomeOutlined />,
       label: 'Главная',
     },
     {
       key: '/news',
-      icon: <ReadOutlined/>,
+      icon: <ReadOutlined />,
       label: 'Новости',
     },
     ...(isAuthenticated
       ? [
-        {
-          key: '/profile',
-          icon: <UserOutlined/>,
-          label: 'Профиль',
-        },
-        ...(user?.role === 'admin' || user?.role === 'moderator'
-          ? [
-            {
-              key: '/admin',
-              icon: <DashboardOutlined/>,
-              label: 'Админ панель',
-            },
-          ]
-          : []),
-      ]
+          {
+            key: '/profile',
+            icon: <UserOutlined />,
+            label: 'Профиль',
+          },
+          ...(user?.role === 'admin' || user?.role === 'moderator'
+            ? [
+                {
+                  key: '/admin',
+                  icon: <DashboardOutlined />,
+                  label: 'Админ панель',
+                },
+              ]
+            : []),
+        ]
       : []),
   ];
 
   // Меню пользователя
   const userMenuItems: MenuProps['items'] = isAuthenticated
     ? [
-      {
-        key: 'profile',
-        icon: <UserOutlined/>,
-        label: 'Профиль',
-        onClick: () => navigate('/profile'),
-      },
-      {
-        key: 'settings',
-        icon: <SettingOutlined/>,
-        label: 'Настройки',
-        onClick: () => navigate('/settings'),
-      },
-      { type: 'divider' },
-      {
-        key: 'logout',
-        icon: <LogoutOutlined/>,
-        label: 'Выйти',
-        onClick: handleLogout,
-      },
-    ]
+        {
+          key: 'profile',
+          icon: <UserOutlined />,
+          label: 'Профиль',
+          onClick: () => navigate('/profile'),
+        },
+        {
+          key: 'settings',
+          icon: <SettingOutlined />,
+          label: 'Настройки',
+          onClick: () => navigate('/settings'),
+        },
+        { type: 'divider' },
+        {
+          key: 'logout',
+          icon: <LogoutOutlined />,
+          label: 'Выйти',
+          onClick: handleLogout,
+        },
+      ]
     : [
-      {
-        key: 'login',
-        icon: <LoginOutlined/>,
-        label: 'Войти',
-        onClick: () => navigate('/login'),
-      },
-    ];
+        {
+          key: 'login',
+          icon: <LoginOutlined />,
+          label: 'Войти',
+          onClick: () => navigate('/login'),
+        },
+      ];
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -192,7 +183,7 @@ const MainLayout: React.FC = () => {
           <Space>
             <Button
               type="text"
-              icon={<MenuOutlined/>}
+              icon={<MenuOutlined />}
               onClick={() => setMobileMenuVisible(true)}
               className="mobile-menu-btn"
               style={{ display: 'none' }}
@@ -207,34 +198,26 @@ const MainLayout: React.FC = () => {
 
           <Space size="middle">
             <Switch
-              checkedChildren={<BulbFilled/>}
-              unCheckedChildren={<BulbOutlined/>}
+              checkedChildren={<BulbFilled />}
+              unCheckedChildren={<BulbOutlined />}
               checked={theme === 'dark'}
               onChange={() => dispatch(toggleTheme())}
             />
 
             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
               <Space style={{ cursor: 'pointer' }}>
-                <Avatar
-                  src={user?.avatar}
-                  icon={!user?.avatar && <UserOutlined/>}
-                  size="small"
-                />
-                <span style={{ maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {isAuthenticated ? user?.username : 'Гость'}
-                </span>
+                <Avatar src={user?.avatar} icon={!user?.avatar && <UserOutlined />} size="small" />
+                <span style={{ maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis' }}>{isAuthenticated ? user?.username : 'Гость'}</span>
               </Space>
             </Dropdown>
           </Space>
         </Header>
 
         <Content style={{ margin: '24px', minHeight: 280 }}>
-          <Outlet/>
+          <Outlet />
         </Content>
 
-        <Footer style={{ textAlign: 'center' }}>
-          News Portal ©{new Date().getFullYear()} - Создано с ❤️ и AI
-        </Footer>
+        <Footer style={{ textAlign: 'center' }}>News Portal ©{new Date().getFullYear()} - Создано с ❤️ и AI</Footer>
       </Layout>
 
       <style>{`

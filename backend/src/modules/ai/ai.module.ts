@@ -11,23 +11,12 @@ import { News } from '../../entities';
 import { Favorite } from '../../entities/favorite.entity';
 import { NewsService } from '../news/news.service';
 import { AuthModule } from '../auth/auth.module';
-import { Like } from '../../entities/like.entity'
+import { Like } from '../../entities/like.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([News, Favorite, Like]),
-    ScheduleModule.forRoot(),
-    ConfigModule,
-    AuthModule,
-  ],
+  imports: [TypeOrmModule.forFeature([News, Favorite, Like]), ScheduleModule.forRoot(), ConfigModule, AuthModule],
   controllers: [AiController],
-  providers: [
-    AiService,
-    AiConfig,
-    RssFetcherService,
-    DeduplicationService,
-    NewsService,
-  ],
+  providers: [AiService, AiConfig, RssFetcherService, DeduplicationService, NewsService],
   exports: [AiService],
 })
 export class AiModule {}

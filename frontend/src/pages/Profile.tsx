@@ -51,7 +51,11 @@ const Profile: React.FC = () => {
   const tabItems = [
     {
       key: 'profile',
-      label: <span><UserOutlined /> Профиль</span>,
+      label: (
+        <span>
+          <UserOutlined /> Профиль
+        </span>
+      ),
       children: (
         <Card>
           <Form layout="vertical" initialValues={user || undefined} onFinish={handleSaveProfile}>
@@ -68,7 +72,9 @@ const Profile: React.FC = () => {
               <Input disabled />
             </Form.Item>
             <Form.Item>
-              <Button type="primary" htmlType="submit">Сохранить</Button>
+              <Button type="primary" htmlType="submit">
+                Сохранить
+              </Button>
             </Form.Item>
           </Form>
         </Card>
@@ -76,7 +82,11 @@ const Profile: React.FC = () => {
     },
     {
       key: 'preferences',
-      label: <span><SettingOutlined /> Настройки</span>,
+      label: (
+        <span>
+          <SettingOutlined /> Настройки
+        </span>
+      ),
       children: (
         <Card>
           <Form layout="vertical" initialValues={user?.preferences || undefined} onFinish={handleSavePreferences}>
@@ -99,7 +109,9 @@ const Profile: React.FC = () => {
               <Switch />
             </Form.Item>
             <Form.Item>
-              <Button type="primary" htmlType="submit">Сохранить</Button>
+              <Button type="primary" htmlType="submit">
+                Сохранить
+              </Button>
             </Form.Item>
           </Form>
         </Card>
@@ -107,7 +119,11 @@ const Profile: React.FC = () => {
     },
     {
       key: 'favorites',
-      label: <span><HeartOutlined /> Избранное</span>,
+      label: (
+        <span>
+          <HeartOutlined /> Избранное
+        </span>
+      ),
       children: (
         <Spin spinning={loading}>
           {favorites.length === 0 ? (
@@ -125,18 +141,19 @@ const Profile: React.FC = () => {
                 }}
               >
                 <div style={{ flex: 1 }}>
-                  <a
-                    onClick={() => openNews(item.id)}
-                    style={{ fontSize: '16px', fontWeight: 500, marginBottom: 8, display: 'block' }}
-                  >
+                  <a onClick={() => openNews(item.id)} style={{ fontSize: '16px', fontWeight: 500, marginBottom: 8, display: 'block' }}>
                     {item.title}
                   </a>
                   <Space wrap size={[4, 4]}>
                     <Tag>{item.category}</Tag>
                     {item.isAiGenerated ? (
-                      <Tag icon={<RobotOutlined />} color="blue">AI</Tag>
+                      <Tag icon={<RobotOutlined />} color="blue">
+                        AI
+                      </Tag>
                     ) : (
-                      <Tag icon={<LinkOutlined />} color="green">Оригинал</Tag>
+                      <Tag icon={<LinkOutlined />} color="green">
+                        Оригинал
+                      </Tag>
                     )}
                     <Text type="secondary" style={{ fontSize: '12px' }}>
                       <ClockCircleOutlined /> {formatDate(item.publishedAt)}
@@ -159,15 +176,7 @@ const Profile: React.FC = () => {
       <h1>Личный кабинет</h1>
       <Tabs items={tabItems} />
 
-      <Modal
-        open={modalVisible}
-        onCancel={closeNews}
-        footer={null}
-        width={900}
-        centered
-        destroyOnHidden
-        style={{ top: 20 }}
-      >
+      <Modal open={modalVisible} onCancel={closeNews} footer={null} width={900} centered destroyOnHidden style={{ top: 20 }}>
         {selectedNewsId && <NewsDetailModal newsId={selectedNewsId} />}
       </Modal>
     </div>

@@ -12,77 +12,62 @@ const initialState: AuthState = {
   error: null,
 };
 
-export const login = createAsyncThunk(
-  'auth/login',
-  async (credentials: LoginCredentials, { rejectWithValue }) => {
-    try {
-      const response = await authService.login(credentials);
+export const login = createAsyncThunk('auth/login', async (credentials: LoginCredentials, { rejectWithValue }) => {
+  try {
+    const response = await authService.login(credentials);
 
-      localStorage.setItem('accessToken', response.accessToken);
-      localStorage.setItem('refreshToken', response.refreshToken);
+    localStorage.setItem('accessToken', response.accessToken);
+    localStorage.setItem('refreshToken', response.refreshToken);
 
-      if (credentials.rememberMe) {
-        localStorage.setItem('rememberMe', 'true');
-      }
-
-      return response;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Login failed');
+    if (credentials.rememberMe) {
+      localStorage.setItem('rememberMe', 'true');
     }
+
+    return response;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data?.message || 'Login failed');
   }
-);
+});
 
-export const register = createAsyncThunk(
-  'auth/register',
-  async (data: RegisterData, { rejectWithValue }) => {
-    try {
-      const response = await authService.register(data);
+export const register = createAsyncThunk('auth/register', async (data: RegisterData, { rejectWithValue }) => {
+  try {
+    const response = await authService.register(data);
 
-      localStorage.setItem('accessToken', response.accessToken);
-      localStorage.setItem('refreshToken', response.refreshToken);
+    localStorage.setItem('accessToken', response.accessToken);
+    localStorage.setItem('refreshToken', response.refreshToken);
 
-      return response;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Registration failed');
-    }
+    return response;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data?.message || 'Registration failed');
   }
-);
+});
 
-export const fetchCurrentUser = createAsyncThunk(
-  'auth/fetchCurrentUser',
-  async (_, { rejectWithValue }) => {
-    try {
-      const user = await authService.getCurrentUser();
-      return user;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch user');
-    }
+export const fetchCurrentUser = createAsyncThunk('auth/fetchCurrentUser', async (_, { rejectWithValue }) => {
+  try {
+    const user = await authService.getCurrentUser();
+    return user;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data?.message || 'Failed to fetch user');
   }
-);
+});
 
-export const updateProfile = createAsyncThunk(
-  'auth/updateProfile',
-  async (data: Partial<User>, { rejectWithValue }) => {
-    try {
-      const user = await authService.updateProfile(data);
-      return user;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to update profile');
-    }
+export const updateProfile = createAsyncThunk('auth/updateProfile', async (data: Partial<User>, { rejectWithValue }) => {
+  try {
+    const user = await authService.updateProfile(data);
+    return user;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data?.message || 'Failed to update profile');
   }
-);
+});
 
-export const updatePreferences = createAsyncThunk(
-  'auth/updatePreferences',
-  async (preferences: any, { rejectWithValue }) => {
-    try {
-      const user = await authService.updatePreferences(preferences);
-      return user;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to update preferences');
-    }
+export const updatePreferences = createAsyncThunk('auth/updatePreferences', async (preferences: any, { rejectWithValue }) => {
+  try {
+    const user = await authService.updatePreferences(preferences);
+    return user;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data?.message || 'Failed to update preferences');
   }
-);
+});
 
 const authSlice = createSlice({
   name: 'auth',
@@ -195,12 +180,7 @@ const authSlice = createSlice({
   },
 });
 
-export const {
-  setTokens,
-  logout,
-  clearAuthError,
-  setUser,
-} = authSlice.actions;
+export const { setTokens, logout, clearAuthError, setUser } = authSlice.actions;
 
 // Selectors
 export const selectAuth = (state: RootState) => state.auth;

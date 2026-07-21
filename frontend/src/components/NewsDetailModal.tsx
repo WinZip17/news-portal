@@ -8,11 +8,13 @@ import {
   RobotOutlined,
   LinkOutlined,
   UserOutlined,
-  ShareAltOutlined, LikeFilled, LikeOutlined,
+  ShareAltOutlined,
+  LikeFilled,
+  LikeOutlined,
 } from '@ant-design/icons';
-import { newsService } from '@/services/newsService.ts'
-import { useNews } from '@/hooks/useNews.ts'
-import NewsSEO from '@/components/NewsSEO.tsx'
+import { newsService } from '@/services/newsService.ts';
+import { useNews } from '@/hooks/useNews.ts';
+import NewsSEO from '@/components/NewsSEO.tsx';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -85,7 +87,7 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
       const result = await newsService.toggleLike(newsId);
       setIsLiked(result.liked);
       setLikesCount(result.likes);
-      console.log('result', result)
+      console.log('result', result);
       if (currentNews) {
         // currentNews.likes = result.likes;
       }
@@ -114,7 +116,7 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
   if (isLoading) {
     return (
       <div style={{ textAlign: 'center', padding: '40px 0' }}>
-        <Spin size="large" description="Загрузка новости..."/>
+        <Spin size="large" description="Загрузка новости..." />
       </div>
     );
   }
@@ -161,7 +163,7 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
     return labels[category] || category;
   };
 
-  const tagStyle = { maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }
+  const tagStyle = { maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' };
 
   return (
     <div>
@@ -177,11 +179,7 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
       />
       {/* Тип новости */}
       <Alert
-        title={
-          currentNews.isAiGenerated
-            ? '🤖 AI-рерайт новости'
-            : '📄 Оригинальная новость'
-        }
+        title={currentNews.isAiGenerated ? '🤖 AI-рерайт новости' : '📄 Оригинальная новость'}
         description={
           currentNews.isAiGenerated
             ? 'Эта новость создана с помощью искусственного интеллекта на основе реальных данных. Факты сохранены, формулировки изменены.'
@@ -198,30 +196,25 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
       {/* Мета-информация */}
       <Space wrap size="middle" style={{ marginBottom: 16, color: '#666' }}>
         <Text type="secondary">
-          <ClockCircleOutlined/> {formatDate(currentNews.publishedAt)}
+          <ClockCircleOutlined /> {formatDate(currentNews.publishedAt)}
         </Text>
         <Text type="secondary">
-          <EyeOutlined/> {currentNews.views || 0} просмотров
+          <EyeOutlined /> {currentNews.views || 0} просмотров
         </Text>
         {currentNews.author && (
           <Text type="secondary">
-            <UserOutlined/> {currentNews.author}
+            <UserOutlined /> {currentNews.author}
           </Text>
         )}
       </Space>
 
       {/* Кнопки действий */}
       <Space style={{ marginBottom: 16, marginLeft: 16 }}>
-        <Button
-          icon={isLiked ? <LikeFilled/> : <LikeOutlined/>}
-          onClick={handleLike}
-          size="small"
-          danger={isLiked}
-        >
+        <Button icon={isLiked ? <LikeFilled /> : <LikeOutlined />} onClick={handleLike} size="small" danger={isLiked}>
           {likesCount || currentNews?.likes || 0}
         </Button>
         <Button
-          icon={isFavorited ? <HeartFilled/> : <HeartOutlined/>}
+          icon={isFavorited ? <HeartFilled /> : <HeartOutlined />}
           onClick={handleToggleFavorite}
           size="small"
           type={isFavorited ? 'primary' : 'default'}
@@ -229,11 +222,7 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
         >
           {isFavorited ? 'В избранном' : 'В избранное'}
         </Button>
-        <Button
-          icon={<ShareAltOutlined/>}
-          onClick={handleShare}
-          size="small"
-        >
+        <Button icon={<ShareAltOutlined />} onClick={handleShare} size="small">
           Поделиться
         </Button>
       </Space>
@@ -244,19 +233,27 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
           {getCategoryLabel(currentNews.category)}
         </Tag>
         {currentNews.isAiGenerated ? (
-          <Tag icon={<RobotOutlined/>} color="blue" style={tagStyle}>AI-рерайт</Tag>
+          <Tag icon={<RobotOutlined />} color="blue" style={tagStyle}>
+            AI-рерайт
+          </Tag>
         ) : (
-          <Tag icon={<LinkOutlined/>} color="green" style={tagStyle}>Оригинал</Tag>
+          <Tag icon={<LinkOutlined />} color="green" style={tagStyle}>
+            Оригинал
+          </Tag>
         )}
         {currentNews.source && (
-          <Tag color="purple" style={tagStyle}>{currentNews.source}</Tag>
+          <Tag color="purple" style={tagStyle}>
+            {currentNews.source}
+          </Tag>
         )}
         {currentNews.tags?.map((tag) => (
-          <Tag key={tag} style={tagStyle}>{tag}</Tag>
+          <Tag key={tag} style={tagStyle}>
+            {tag}
+          </Tag>
         ))}
       </Space>
 
-      <Divider/>
+      <Divider />
 
       {/* Изображение */}
       {currentNews.imageUrl && (

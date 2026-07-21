@@ -1,17 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  Query,
-  UseGuards,
-  Request,
-  Patch,
-  Header,
-} from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Request, Patch, Header } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -19,10 +6,8 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from '../auth/auth.service';
-import { NewsStatus } from '../../entities'
-import { escapeXml } from '../../utils/escapeXml'
-
-
+import { NewsStatus } from '../../entities';
+import { escapeXml } from '../../utils/escapeXml';
 
 @ApiTags('News')
 @Controller('news')
@@ -47,10 +32,7 @@ export class NewsController {
   @Get('stats')
   @ApiOperation({ summary: 'Полная статистика для главной' })
   async getStats() {
-    const [newsStats, totalUsers] = await Promise.all([
-      this.newsService.getStats(),
-      this.authService.getTotalUsers(),
-    ]);
+    const [newsStats, totalUsers] = await Promise.all([this.newsService.getStats(), this.authService.getTotalUsers()]);
     newsStats.totalUsers = totalUsers;
     return newsStats;
   }
@@ -102,7 +84,9 @@ export class NewsController {
                     <changefreq>hourly</changefreq>
                     <priority>0.9</priority>
                   </url>
-                    ${news.data.map((item) => `
+                    ${news.data
+                      .map(
+                        (item) => `
                     <url>
                       <loc>${baseUrl}/?news=${item.id}</loc>
                       <lastmod>${new Date(item.publishedAt).toISOString()}</lastmod>
@@ -118,7 +102,9 @@ export class NewsController {
                         <news:keywords>${escapeXml(item.tags?.join(', ') || '')}</news:keywords>
                       </news:news>
                     </url>
-                    `).join('')}
+                    `,
+                      )
+                      .join('')}
                 </urlset>`;
 
     return xml;
@@ -161,17 +147,8 @@ export class NewsController {
   @Roles('admin', 'moderator')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Модерация новости' })
-  moderate(
-    @Param('id') id: string,
-    @Body() moderationData: any,
-    @Request() req,
-  ) {
-    return this.newsService.moderate(
-      id,
-      moderationData.status,
-      req.user.id,
-      moderationData.comment,
-    );
+  moderate(@Param('id') id: string, @Body() moderationData: any, @Request() req) {
+    return this.newsService.moderate(id, moderationData.status, req.user.id, moderationData.comment);
   }
 
   @Post(':id/like')

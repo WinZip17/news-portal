@@ -35,12 +35,7 @@ const Login: React.FC = () => {
   return (
     <div>
       <div style={{ textAlign: 'center', marginBottom: 16 }}>
-        <Button
-          icon={<HomeOutlined />}
-          onClick={() => navigate('/')}
-          type="text"
-          size="small"
-        >
+        <Button icon={<HomeOutlined />} onClick={() => navigate('/')} type="text" size="small">
           На главную
         </Button>
       </div>
@@ -57,20 +52,13 @@ const Login: React.FC = () => {
             onClose: () => {
               setLoginError(null);
               clearError();
-            }
+            },
           }}
           style={{ marginBottom: 24 }}
         />
       )}
 
-      <Form
-        form={form}
-        name="login"
-        onFinish={onFinish}
-        autoComplete="off"
-        size="large"
-        initialValues={{ rememberMe: true }}
-      >
+      <Form form={form} name="login" onFinish={onFinish} autoComplete="off" size="large" initialValues={{ rememberMe: true }}>
         <Form.Item
           name="email"
           rules={[
@@ -78,11 +66,7 @@ const Login: React.FC = () => {
             { type: 'email', message: 'Введите корректный email' },
           ]}
         >
-          <Input
-            prefix={<UserOutlined/>}
-            placeholder="Email"
-            autoFocus
-          />
+          <Input prefix={<UserOutlined />} placeholder="Email" autoFocus />
         </Form.Item>
 
         <Form.Item
@@ -92,10 +76,7 @@ const Login: React.FC = () => {
             { min: 6, message: 'Пароль должен быть минимум 6 символов' },
           ]}
         >
-          <Input.Password
-            prefix={<LockOutlined/>}
-            placeholder="Пароль"
-          />
+          <Input.Password prefix={<LockOutlined />} placeholder="Пароль" />
         </Form.Item>
 
         <Form.Item>
@@ -105,12 +86,7 @@ const Login: React.FC = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={isLoading}
-            block
-          >
+          <Button type="primary" htmlType="submit" loading={isLoading} block>
             Войти
           </Button>
         </Form.Item>

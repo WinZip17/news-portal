@@ -15,7 +15,6 @@ const YandexMetrika: React.FC<{ counterId: number }> = ({ counterId }) => {
     `;
       document.head.appendChild(script);
     }
-
   }, [counterId]);
 
   return null;

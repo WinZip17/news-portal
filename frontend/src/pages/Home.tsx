@@ -8,15 +8,16 @@ import {
   ArrowRightOutlined,
   RobotOutlined,
   LinkOutlined,
-  ClockCircleOutlined, EyeOutlined,
+  ClockCircleOutlined,
+  EyeOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useNews } from '@/hooks/useNews';
 import NewsDetailModal from '@/components/NewsDetailModal';
-import { useNewsModal } from "@/hooks/useNewsModal.ts";
-import { newsService } from "@/services/newsService.ts";
-import { NewsStats } from "@/types";
+import { useNewsModal } from '@/hooks/useNewsModal.ts';
+import { newsService } from '@/services/newsService.ts';
+import { NewsStats } from '@/types';
 
 const { Title, Paragraph } = Typography;
 
@@ -49,18 +50,30 @@ const Home: React.FC = () => {
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      politics: 'blue', economy: 'green', technology: 'purple',
-      science: 'cyan', sports: 'orange', entertainment: 'magenta',
-      health: 'red', world: 'geekblue', other: 'default',
+      politics: 'blue',
+      economy: 'green',
+      technology: 'purple',
+      science: 'cyan',
+      sports: 'orange',
+      entertainment: 'magenta',
+      health: 'red',
+      world: 'geekblue',
+      other: 'default',
     };
     return colors[category] || 'default';
   };
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
-      politics: 'Политика', economy: 'Экономика', technology: 'Технологии',
-      science: 'Наука', sports: 'Спорт', entertainment: 'Развлечения',
-      health: 'Здоровье', world: 'Мир', other: 'Другое',
+      politics: 'Политика',
+      economy: 'Экономика',
+      technology: 'Технологии',
+      science: 'Наука',
+      sports: 'Спорт',
+      entertainment: 'Развлечения',
+      health: 'Здоровье',
+      world: 'Мир',
+      other: 'Другое',
     };
     return labels[category] || category;
   };
@@ -88,35 +101,56 @@ const Home: React.FC = () => {
         <link rel="canonical" href={window.location.origin} />
       </Helmet>
       {/* Hero секция */}
-      <div style={{
-        textAlign: 'center', marginBottom: 48, padding: '48px 24px', borderRadius: 12,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white',
-      }}>
+      <div
+        style={{
+          textAlign: 'center',
+          marginBottom: 48,
+          padding: '48px 24px',
+          borderRadius: 12,
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+        }}
+      >
         <Title level={1} style={{ color: 'white', fontSize: '3em', marginBottom: 16 }}>
           📰 News Portal
         </Title>
-        <Paragraph style={{
-          color: 'rgba(255,255,255,0.9)',
-          fontSize: '1.2em',
-          marginBottom: 32,
-          maxWidth: 600,
-          margin: '0 auto 32px'
-        }}>
+        <Paragraph
+          style={{
+            color: 'rgba(255,255,255,0.9)',
+            fontSize: '1.2em',
+            marginBottom: 32,
+            maxWidth: 600,
+            margin: '0 auto 32px',
+          }}
+        >
           Актуальные новости с AI-рерайтом из проверенных источников.
         </Paragraph>
         <Space size="large">
           {!isAuthenticated ? (
             <>
-              <Button type="primary" size="large" onClick={() => navigate('/register')}
-                      style={{ background: 'white', color: '#667eea', border: 'none', fontWeight: 'bold' }}
-                      icon={<RocketOutlined/>}>Начать бесплатно</Button>
-              <Button size="large" ghost onClick={() => navigate('/login')}
-                      style={{ color: 'white', borderColor: 'white' }}>Войти</Button>
+              <Button
+                type="primary"
+                size="large"
+                onClick={() => navigate('/register')}
+                style={{ background: 'white', color: '#667eea', border: 'none', fontWeight: 'bold' }}
+                icon={<RocketOutlined />}
+              >
+                Начать бесплатно
+              </Button>
+              <Button size="large" ghost onClick={() => navigate('/login')} style={{ color: 'white', borderColor: 'white' }}>
+                Войти
+              </Button>
             </>
           ) : (
-            <Button type="primary" size="large" onClick={() => navigate('/news')}
-                    style={{ background: 'white', color: '#667eea', border: 'none', fontWeight: 'bold' }}
-                    icon={<ReadOutlined/>}>Читать новости</Button>
+            <Button
+              type="primary"
+              size="large"
+              onClick={() => navigate('/news')}
+              style={{ background: 'white', color: '#667eea', border: 'none', fontWeight: 'bold' }}
+              icon={<ReadOutlined />}
+            >
+              Читать новости
+            </Button>
           )}
         </Space>
       </div>
@@ -125,27 +159,27 @@ const Home: React.FC = () => {
       <Row gutter={[24, 24]} style={{ marginBottom: 48 }}>
         <Col xs={12} sm={8} md={4}>
           <Card hoverable>
-            <Statistic title="Сегодня" value={stats?.newsToday || 0} prefix={<ReadOutlined/>} loading={!stats}/>
+            <Statistic title="Сегодня" value={stats?.newsToday || 0} prefix={<ReadOutlined />} loading={!stats} />
           </Card>
         </Col>
         <Col xs={12} sm={8} md={4}>
           <Card hoverable>
-            <Statistic title="Пользователей" value={stats?.totalUsers || 0} prefix={<TeamOutlined/>} loading={!stats}/>
+            <Statistic title="Пользователей" value={stats?.totalUsers || 0} prefix={<TeamOutlined />} loading={!stats} />
           </Card>
         </Col>
         <Col xs={12} sm={8} md={4}>
           <Card hoverable>
-            <Statistic title="AI-рерайт" value={stats?.totalAiNews || 0} prefix={<RobotOutlined/>} loading={!stats}/>
+            <Statistic title="AI-рерайт" value={stats?.totalAiNews || 0} prefix={<RobotOutlined />} loading={!stats} />
           </Card>
         </Col>
         <Col xs={12} sm={8} md={4}>
           <Card hoverable>
-            <Statistic title="Всего новостей" value={stats?.totalNews || 0} prefix={<ReadOutlined/>} loading={!stats}/>
+            <Statistic title="Всего новостей" value={stats?.totalNews || 0} prefix={<ReadOutlined />} loading={!stats} />
           </Card>
         </Col>
         <Col xs={12} sm={8} md={4}>
           <Card hoverable>
-            <Statistic title="Просмотров" value={stats?.totalViews || 0} prefix={<EyeOutlined/>} loading={!stats}/>
+            <Statistic title="Просмотров" value={stats?.totalViews || 0} prefix={<EyeOutlined />} loading={!stats} />
           </Card>
         </Col>
         <Col xs={12} sm={8} md={4}>
@@ -153,7 +187,7 @@ const Home: React.FC = () => {
             <Statistic
               title="На модерации"
               value={stats?.pendingNews || 0}
-              prefix={<ClockCircleOutlined/>}
+              prefix={<ClockCircleOutlined />}
               styles={stats?.pendingNews ? { content: { color: '#faad14' } } : undefined}
               loading={!stats}
             />
@@ -164,8 +198,12 @@ const Home: React.FC = () => {
       {/* Последние новости */}
       <div style={{ marginBottom: 24 }}>
         <Space style={{ justifyContent: 'space-between', width: '100%', marginBottom: 16 }}>
-          <Title level={2} style={{ margin: 0 }}>Последние новости</Title>
-          <Button type="link" onClick={() => navigate('/news')} icon={<ArrowRightOutlined/>}>Все новости</Button>
+          <Title level={2} style={{ margin: 0 }}>
+            Последние новости
+          </Title>
+          <Button type="link" onClick={() => navigate('/news')} icon={<ArrowRightOutlined />}>
+            Все новости
+          </Button>
         </Space>
 
         <Spin spinning={isLoading}>
@@ -175,24 +213,27 @@ const Home: React.FC = () => {
                 <Col xs={24} sm={12} lg={8} key={item.id}>
                   <Card
                     hoverable
-                    cover={item.imageUrl ? (
-                      <img alt={item.title} src={item.imageUrl} style={{ height: 200, objectFit: 'cover' }}/>
-                    ) : (
-                      <div style={{
-                        height: 200,
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white',
-                        fontSize: '48px'
-                      }}>📰</div>
-                    )}
+                    cover={
+                      item.imageUrl ? (
+                        <img alt={item.title} src={item.imageUrl} style={{ height: 200, objectFit: 'cover' }} />
+                      ) : (
+                        <div
+                          style={{
+                            height: 200,
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            fontSize: '48px',
+                          }}
+                        >
+                          📰
+                        </div>
+                      )
+                    }
                     onClick={() => openNews(item.id)}
-                    actions={[
-                      <span key="views">👁 {item.views || 0}</span>,
-                      <span key="likes">❤️ {item.likes || 0}</span>,
-                    ]}
+                    actions={[<span key="views">👁 {item.views || 0}</span>, <span key="likes">❤️ {item.likes || 0}</span>]}
                   >
                     <Card.Meta
                       title={item.title}
@@ -204,14 +245,18 @@ const Home: React.FC = () => {
                           <Space wrap size={[4, 4]}>
                             <Tag color={getCategoryColor(item.category)}>{getCategoryLabel(item.category)}</Tag>
                             {item.isAiGenerated ? (
-                              <Tag icon={<RobotOutlined/>} color="blue">AI-рерайт</Tag>
+                              <Tag icon={<RobotOutlined />} color="blue">
+                                AI-рерайт
+                              </Tag>
                             ) : (
-                              <Tag icon={<LinkOutlined/>} color="green">Оригинал</Tag>
+                              <Tag icon={<LinkOutlined />} color="green">
+                                Оригинал
+                              </Tag>
                             )}
                             {item.source && <Tag color="purple">{item.source}</Tag>}
                           </Space>
                           <div style={{ marginTop: 8, color: '#999', fontSize: '12px' }}>
-                            <ClockCircleOutlined/> {formatDate(item.publishedAt)}
+                            <ClockCircleOutlined /> {formatDate(item.publishedAt)}
                           </div>
                         </>
                       }
@@ -223,7 +268,9 @@ const Home: React.FC = () => {
           ) : (
             !isLoading && (
               <Empty description="Новости пока не загружены" style={{ padding: '40px 0' }}>
-                <Button type="primary" onClick={() => fetchNews({ limit: 6 })}>Загрузить новости</Button>
+                <Button type="primary" onClick={() => fetchNews({ limit: 6 })}>
+                  Загрузить новости
+                </Button>
               </Empty>
             )
           )}
@@ -231,16 +278,8 @@ const Home: React.FC = () => {
       </div>
 
       {/* Модальное окно */}
-      <Modal
-        open={modalVisible}
-        onCancel={closeNews}
-        footer={null}
-        width={900}
-        centered
-        destroyOnHidden
-        style={{ top: 20 }}
-      >
-        {selectedNewsId && <NewsDetailModal newsId={selectedNewsId}/>}
+      <Modal open={modalVisible} onCancel={closeNews} footer={null} width={900} centered destroyOnHidden style={{ top: 20 }}>
+        {selectedNewsId && <NewsDetailModal newsId={selectedNewsId} />}
       </Modal>
     </div>
   );

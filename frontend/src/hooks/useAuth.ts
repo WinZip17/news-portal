@@ -13,10 +13,12 @@ import {
   selectUser,
   selectIsAuthenticated,
   selectAuthLoading,
-  selectAuthError, store, setTheme,
+  selectAuthError,
+  store,
+  setTheme,
 } from '@/store';
 import { LoginCredentials, RegisterData, User } from '@/types';
-import { message } from 'antd'
+import { message } from 'antd';
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
@@ -30,14 +32,14 @@ export const useAuth = () => {
     async (credentials: LoginCredentials) => {
       return dispatch(login(credentials)).unwrap();
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleRegister = useCallback(
     async (data: RegisterData) => {
       return dispatch(register(data)).unwrap();
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleLogout = useCallback(() => {
@@ -52,25 +54,28 @@ export const useAuth = () => {
     (data: Partial<User>) => {
       return dispatch(updateProfile(data)).unwrap();
     },
-    [dispatch]
+    [dispatch],
   );
 
-  const handleUpdatePreferences = useCallback(async (preferences: any) => {
-    try {
-      const user = await dispatch(updatePreferences(preferences)).unwrap();
+  const handleUpdatePreferences = useCallback(
+    async (preferences: any) => {
+      try {
+        const user = await dispatch(updatePreferences(preferences)).unwrap();
 
-      // Применяем тему сразу
-      if (preferences.theme) {
-        store.dispatch(setTheme(preferences.theme));
+        // Применяем тему сразу
+        if (preferences.theme) {
+          store.dispatch(setTheme(preferences.theme));
+        }
+
+        message.success('Настройки сохранены');
+        return user;
+      } catch (error) {
+        message.error('Ошибка сохранения настроек');
+        throw error;
       }
-
-      message.success('Настройки сохранены');
-      return user;
-    } catch (error) {
-      message.error('Ошибка сохранения настроек');
-      throw error;
-    }
-  }, [dispatch]);
+    },
+    [dispatch],
+  );
 
   const handleClearError = useCallback(() => {
     dispatch(clearAuthError());

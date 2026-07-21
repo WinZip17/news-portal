@@ -31,7 +31,7 @@ class ApiService {
 
         return config;
       },
-      (error) => Promise.reject(error)
+      (error) => Promise.reject(error),
     );
 
     // Response interceptor
@@ -41,9 +41,11 @@ class ApiService {
         const originalRequest = error.config;
 
         // Не пытаемся обновить токен для запросов логина и регистрации
-        if (originalRequest.url?.includes('/auth/login') ||
+        if (
+          originalRequest.url?.includes('/auth/login') ||
           originalRequest.url?.includes('/auth/register') ||
-          originalRequest.url?.includes('/auth/refresh')) {
+          originalRequest.url?.includes('/auth/refresh')
+        ) {
           return Promise.reject(error);
         }
 
@@ -55,10 +57,9 @@ class ApiService {
             const refreshToken = state.auth.refreshToken;
 
             if (refreshToken) {
-              this.refreshTokenPromise = this.refreshAccessToken(refreshToken)
-                .finally(() => {
-                  this.refreshTokenPromise = null;
-                });
+              this.refreshTokenPromise = this.refreshAccessToken(refreshToken).finally(() => {
+                this.refreshTokenPromise = null;
+              });
             }
           }
 
@@ -74,7 +75,7 @@ class ApiService {
         }
 
         return Promise.reject(error);
-      }
+      },
     );
   }
 
@@ -84,10 +85,12 @@ class ApiService {
         refreshToken,
       });
 
-      store.dispatch(setTokens({
-        accessToken: response.data.accessToken,
-        refreshToken: response.data.refreshToken,
-      }));
+      store.dispatch(
+        setTokens({
+          accessToken: response.data.accessToken,
+          refreshToken: response.data.refreshToken,
+        }),
+      );
 
       return response.data;
     } catch (error) {

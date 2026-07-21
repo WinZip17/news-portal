@@ -41,12 +41,7 @@ const Register: React.FC = () => {
   return (
     <div>
       <div style={{ textAlign: 'center', marginBottom: 16 }}>
-        <Button
-          icon={<HomeOutlined />}
-          onClick={() => navigate('/')}
-          type="text"
-          size="small"
-        >
+        <Button icon={<HomeOutlined />} onClick={() => navigate('/')} type="text" size="small">
           На главную
         </Button>
       </div>
@@ -63,19 +58,13 @@ const Register: React.FC = () => {
             onClose: () => {
               setRegisterError(null);
               clearError();
-            }
+            },
           }}
           style={{ marginBottom: 24 }}
         />
       )}
 
-      <Form
-        form={form}
-        name="register"
-        onFinish={onFinish}
-        autoComplete="off"
-        size="large"
-      >
+      <Form form={form} name="register" onFinish={onFinish} autoComplete="off" size="large">
         <Form.Item
           name="email"
           rules={[

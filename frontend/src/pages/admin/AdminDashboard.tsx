@@ -1,8 +1,8 @@
 import React from 'react';
 import { Tabs } from 'antd';
 import { ReadOutlined, TeamOutlined } from '@ant-design/icons';
-import NewsManagement from '@/pages/admin/NewsManagement.tsx'
-import UsersManagement from '@/pages/admin/UsersManagement.tsx'
+import NewsManagement from '@/pages/admin/NewsManagement.tsx';
+import UsersManagement from '@/pages/admin/UsersManagement.tsx';
 
 const AdminDashboard: React.FC = () => {
   const items = [
@@ -10,26 +10,26 @@ const AdminDashboard: React.FC = () => {
       key: 'news',
       label: (
         <span>
-          <ReadOutlined/> Управление новостями
+          <ReadOutlined /> Управление новостями
         </span>
       ),
-      children: <NewsManagement/>,
+      children: <NewsManagement />,
     },
     {
       key: 'users',
       label: (
         <span>
-          <TeamOutlined/> Пользователи
+          <TeamOutlined /> Пользователи
         </span>
       ),
-      children: <UsersManagement/>,
+      children: <UsersManagement />,
     },
   ];
 
   return (
     <div>
       <h1>Админ-панель</h1>
-      <Tabs defaultActiveKey="news" items={items}/>
+      <Tabs defaultActiveKey="news" items={items} />
     </div>
   );
 };

@@ -50,5 +50,4 @@ import { redisStore } from 'cache-manager-redis-yet';
   ],
   controllers: [AppController],
 })
-export class AppModule {
-}
+export class AppModule {}

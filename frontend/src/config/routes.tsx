@@ -19,26 +19,28 @@ const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
 const NotFound = lazy(() => import('@/pages/NotFound.tsx'));
 
 const PageLoader: React.FC = () => (
-  <div style={{
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: 400
-  }}>
-    <Spin size="large"/>
+  <div
+    style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: 400,
+    }}
+  >
+    <Spin size="large" />
   </div>
 );
 
 export const routes = [
   {
-    element: <AuthLayout/>,
+    element: <AuthLayout />,
     children: [
       {
         path: '/login',
         element: (
           <PublicRoute>
-            <Suspense fallback={<PageLoader/>}>
-              <Login/>
+            <Suspense fallback={<PageLoader />}>
+              <Login />
             </Suspense>
           </PublicRoute>
         ),
@@ -47,8 +49,8 @@ export const routes = [
         path: '/register',
         element: (
           <PublicRoute>
-            <Suspense fallback={<PageLoader/>}>
-              <Register/>
+            <Suspense fallback={<PageLoader />}>
+              <Register />
             </Suspense>
           </PublicRoute>
         ),
@@ -56,21 +58,21 @@ export const routes = [
     ],
   },
   {
-    element: <MainLayout/>,
+    element: <MainLayout />,
     children: [
       {
         path: '/',
         element: (
-          <Suspense fallback={<PageLoader/>}>
-            <Home/>
+          <Suspense fallback={<PageLoader />}>
+            <Home />
           </Suspense>
         ),
       },
       {
         path: '/news',
         element: (
-          <Suspense fallback={<PageLoader/>}>
-            <NewsList/>
+          <Suspense fallback={<PageLoader />}>
+            <NewsList />
           </Suspense>
         ),
       },
@@ -79,8 +81,8 @@ export const routes = [
         path: '/profile',
         element: (
           <ProtectedRoute>
-            <Suspense fallback={<PageLoader/>}>
-              <Profile/>
+            <Suspense fallback={<PageLoader />}>
+              <Profile />
             </Suspense>
           </ProtectedRoute>
         ),
@@ -89,8 +91,8 @@ export const routes = [
         path: '/settings',
         element: (
           <ProtectedRoute>
-            <Suspense fallback={<PageLoader/>}>
-              <Profile/>
+            <Suspense fallback={<PageLoader />}>
+              <Profile />
             </Suspense>
           </ProtectedRoute>
         ),
@@ -100,8 +102,8 @@ export const routes = [
         path: '/admin',
         element: (
           <ProtectedRoute requiredRoles={['admin', 'moderator']}>
-            <Suspense fallback={<PageLoader/>}>
-              <AdminDashboard/>
+            <Suspense fallback={<PageLoader />}>
+              <AdminDashboard />
             </Suspense>
           </ProtectedRoute>
         ),
@@ -115,5 +117,5 @@ export const routes = [
         <NotFound />
       </Suspense>
     ),
-  }
+  },
 ];

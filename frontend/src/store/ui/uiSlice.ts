@@ -58,23 +58,14 @@ const uiSlice = createSlice({
   },
 });
 
-export const {
-  toggleTheme,
-  setTheme,
-  toggleSidebar,
-  setLoading,
-  setModalVisible,
-  addNotification,
-  removeNotification,
-  clearNotifications,
-} = uiSlice.actions;
+export const { toggleTheme, setTheme, toggleSidebar, setLoading, setModalVisible, addNotification, removeNotification, clearNotifications } =
+  uiSlice.actions;
 
 // Selectors
 export const selectTheme = (state: RootState) => state.ui.theme;
 export const selectSidebarCollapsed = (state: RootState) => state.ui.sidebarCollapsed;
 export const selectLoading = (state: RootState) => state.ui.loading;
-export const selectModalVisible = (modal: string) => (state: RootState) =>
-  state.ui.modalVisible[modal] || false;
+export const selectModalVisible = (modal: string) => (state: RootState) => state.ui.modalVisible[modal] || false;
 export const selectNotifications = (state: RootState) => state.ui.notifications;
 
 export default uiSlice.reducer;

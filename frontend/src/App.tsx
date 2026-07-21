@@ -9,7 +9,7 @@ import AppErrorBoundary from '@/components/common/ErrorBoundary';
 import { routes } from '@/config/routes';
 import ruRU from 'antd/locale/ru_RU';
 import enUS from 'antd/locale/en_US';
-import YandexMetrika from '@/components/YandexMetrika.tsx'
+import YandexMetrika from '@/components/YandexMetrika.tsx';
 
 const AppRoutes: React.FC = () => {
   const element = useRoutes(routes);
@@ -23,7 +23,7 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (token && !isAuthenticated) {
-      fetchCurrentUser()
+      fetchCurrentUser();
     }
   }, []);
 
@@ -37,7 +37,7 @@ const AppContent: React.FC = () => {
     }
   }, [user]);
 
-  const getLocale = (lang: string) => lang === 'ru' ? ruRU : enUS;
+  const getLocale = (lang: string) => (lang === 'ru' ? ruRU : enUS);
 
   return (
     <ConfigProvider
@@ -66,7 +66,7 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <Provider store={store}>
-      <AppContent/>
+      <AppContent />
     </Provider>
   );
 };

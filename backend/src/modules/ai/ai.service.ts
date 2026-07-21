@@ -55,7 +55,6 @@ export class AiService {
 
         this.logger.log(`✅ ${category}: ${result.news.length} news generated`);
         await this.delay(5000);
-
       } catch (error) {
         this.logger.error(`Failed for ${category}: ${error.message}`);
         results[category] = 0;
@@ -70,7 +69,7 @@ export class AiService {
   }
 
   @Cron(CronExpression.EVERY_6_HOURS, {
-    timeZone: 'Europe/Moscow'
+    timeZone: 'Europe/Moscow',
   })
   async autoGenerateNews() {
     this.logger.log('🚀 Starting automatic news generation...');
@@ -88,10 +87,7 @@ export class AiService {
     this.logger.log(`📰 Fetching RSS articles for category: ${selectedCategory}`);
 
     // 1. ОДИН запрос RSS — получаем в 2 раза больше статей
-    const articles = await this.rssFetcher.fetchNewsByCategory(
-      selectedCategory,
-      count * 2
-    );
+    const articles = await this.rssFetcher.fetchNewsByCategory(selectedCategory, count * 2);
 
     if (!articles || articles.length === 0) {
       this.logger.warn(`No RSS articles found for ${selectedCategory}`);
@@ -106,10 +102,7 @@ export class AiService {
     // 2. Фильтруем дубликаты
     const uniqueArticles: RssArticle[] = [];
     for (const article of articles) {
-      const isDuplicate = await this.deduplicationService.checkDuplicate(
-        article.title,
-        article.link
-      );
+      const isDuplicate = await this.deduplicationService.checkDuplicate(article.title, article.link);
 
       if (!isDuplicate.isDuplicate) {
         uniqueArticles.push(article);
@@ -159,10 +152,7 @@ export class AiService {
 
     // Ищем первую не дубликат
     for (const article of articles) {
-      const isDuplicate = await this.deduplicationService.checkDuplicate(
-        article.title,
-        article.link
-      );
+      const isDuplicate = await this.deduplicationService.checkDuplicate(article.title, article.link);
 
       if (!isDuplicate.isDuplicate) {
         return this.rewriteArticle(article, selectedCategory);
@@ -203,7 +193,8 @@ export class AiService {
         messages: [
           {
             role: 'system',
-            content: 'Ты профессиональный журналист и редактор. Твоя задача - делать качественный рерайт новостей на русском языке, сохраняя факты и добавляя аналитику. Отвечай только валидным JSON без переносов строк внутри строк.',
+            content:
+              'Ты профессиональный журналист и редактор. Твоя задача - делать качественный рерайт новостей на русском языке, сохраняя факты и добавляя аналитику. Отвечай только валидным JSON без переносов строк внутри строк.',
           },
           {
             role: 'user',
@@ -223,9 +214,9 @@ export class AiService {
 
         // Пробуем исправить незакрытые строки
         let fixedContent = rawContent
-          .replace(/\n/g, ' ')           // Убираем переносы строк
-          .replace(/\\/g, '\\\\')        // Экранируем обратные слеши
-          .replace(/\r/g, '');           // Убираем carriage return
+          .replace(/\n/g, ' ') // Убираем переносы строк
+          .replace(/\\/g, '\\\\') // Экранируем обратные слеши
+          .replace(/\r/g, ''); // Убираем carriage return
 
         try {
           result = JSON.parse(fixedContent);
@@ -283,7 +274,6 @@ export class AiService {
       const saved = await this.newsRepository.save(news);
       this.logger.log(`✅ News generated: ${saved.title}`);
       return saved;
-
     } catch (error) {
       this.logger.error('Failed to rewrite article:', error.message);
 
@@ -300,14 +290,17 @@ export class AiService {
       // Разбиваем на абзацы по точкам
       const paragraphs = cleanContent
         .split(/\.\s+/)
-        .filter(p => p.trim().length > 10)
-        .map(p => `<p>${p.trim()}.</p>`)
+        .filter((p) => p.trim().length > 10)
+        .map((p) => `<p>${p.trim()}.</p>`)
         .join('');
 
       const news = this.newsRepository.create({
         title: article.title.replace(/<[^>]*>/g, '').trim(),
         content: paragraphs || `<p>${cleanContent}</p>`,
-        summary: (article.summary || '').replace(/<[^>]*>/g, '').trim().substring(0, 200),
+        summary: (article.summary || '')
+          .replace(/<[^>]*>/g, '')
+          .trim()
+          .substring(0, 200),
         category: category,
         tags: article.categories || [],
         imageUrl: article.imageUrl || this.generateImageUrl(category),
@@ -346,7 +339,10 @@ export class AiService {
       content,
       summary,
       category: selectedCategory,
-      tags: tags.split(',').map(t => t.trim()).filter(Boolean),
+      tags: tags
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean),
       imageUrl,
       isAiGenerated: true,
       status: NewsStatus.PENDING,
@@ -373,8 +369,7 @@ export class AiService {
         max_tokens: 100,
       });
 
-      return completion.choices[0]?.message?.content?.trim() ||
-        `Новости ${category}: ${new Date().toLocaleDateString('ru-RU')}`;
+      return completion.choices[0]?.message?.content?.trim() || `Новости ${category}: ${new Date().toLocaleDateString('ru-RU')}`;
     } catch (error) {
       return `Актуальные новости ${category}`;
     }
@@ -394,8 +389,7 @@ export class AiService {
         max_tokens: this.aiConfig.maxTokens,
       });
 
-      return completion.choices[0]?.message?.content?.trim() ||
-        `Новость: ${title}\n\nКонтент временно недоступен.`;
+      return completion.choices[0]?.message?.content?.trim() || `Новость: ${title}\n\nКонтент временно недоступен.`;
     } catch (error) {
       return `# ${title}\n\nКонтент находится в процессе генерации.`;
     }
@@ -412,8 +406,7 @@ export class AiService {
         max_tokens: 200,
       });
 
-      return completion.choices[0]?.message?.content?.trim() ||
-        content.substring(0, 200) + '...';
+      return completion.choices[0]?.message?.content?.trim() || content.substring(0, 200) + '...';
     } catch (error) {
       return content.substring(0, 200) + '...';
     }
@@ -439,7 +432,10 @@ export class AiService {
   private generateImageUrl(category: NewsCategory): string {
     // SVG иконки в base64 для каждой категории
     const icons: Record<string, string> = {
-      [NewsCategory.TECHNOLOGY]: 'data:image/svg+xml;base64,' + Buffer.from(`
+      [NewsCategory.TECHNOLOGY]:
+        'data:image/svg+xml;base64,' +
+        Buffer.from(
+          `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
           <rect width="400" height="200" fill="#1a1a2e"/>
           <rect x="80" y="60" width="240" height="100" rx="8" fill="#16213e" stroke="#0f3460" stroke-width="2"/>
@@ -450,18 +446,26 @@ export class AiService {
           <circle cx="320" cy="160" r="20" fill="#e94560"/>
           <text x="310" y="167" font-size="16" fill="white" font-family="Arial">⚡</text>
         </svg>
-      `).toString('base64'),
+      `,
+        ).toString('base64'),
 
-      [NewsCategory.POLITICS]: 'data:image/svg+xml;base64,' + Buffer.from(`
+      [NewsCategory.POLITICS]:
+        'data:image/svg+xml;base64,' +
+        Buffer.from(
+          `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
           <rect width="400" height="200" fill="#1a1a2e"/>
           <rect x="60" y="30" width="280" height="140" rx="4" fill="#16213e" stroke="#0f3460" stroke-width="2"/>
           <rect x="80" y="50" width="240" height="100" rx="2" fill="#1a1a2e"/>
           <text x="200" y="110" text-anchor="middle" font-size="40" fill="#e94560" font-family="Arial">🏛</text>
         </svg>
-      `).toString('base64'),
+      `,
+        ).toString('base64'),
 
-      [NewsCategory.ECONOMY]: 'data:image/svg+xml;base64,' + Buffer.from(`
+      [NewsCategory.ECONOMY]:
+        'data:image/svg+xml;base64,' +
+        Buffer.from(
+          `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
           <rect width="400" height="200" fill="#1a1a2e"/>
           <polyline points="60,150 140,90 220,130 300,50 340,70" stroke="#00b894" stroke-width="4" fill="none" stroke-linecap="round"/>
@@ -469,9 +473,13 @@ export class AiService {
           <line x1="60" y1="160" x2="340" y2="160" stroke="#0f3460" stroke-width="2"/>
           <line x1="60" y1="160" x2="60" y2="30" stroke="#0f3460" stroke-width="2"/>
         </svg>
-      `).toString('base64'),
+      `,
+        ).toString('base64'),
 
-      [NewsCategory.SCIENCE]: 'data:image/svg+xml;base64,' + Buffer.from(`
+      [NewsCategory.SCIENCE]:
+        'data:image/svg+xml;base64,' +
+        Buffer.from(
+          `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
           <rect width="400" height="200" fill="#1a1a2e"/>
           <circle cx="200" cy="100" r="50" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-dasharray="8,4"/>
@@ -482,9 +490,13 @@ export class AiService {
           <line x1="200" y1="140" x2="200" y2="170" stroke="#6c5ce7" stroke-width="2"/>
           <line x1="170" y1="155" x2="230" y2="155" stroke="#6c5ce7" stroke-width="2"/>
         </svg>
-      `).toString('base64'),
+      `,
+        ).toString('base64'),
 
-      [NewsCategory.SPORTS]: 'data:image/svg+xml;base64,' + Buffer.from(`
+      [NewsCategory.SPORTS]:
+        'data:image/svg+xml;base64,' +
+        Buffer.from(
+          `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
           <rect width="400" height="200" fill="#1a1a2e"/>
           <circle cx="200" cy="100" r="45" fill="#16213e" stroke="#e17055" stroke-width="3"/>
@@ -492,27 +504,39 @@ export class AiService {
           <line x1="155" y1="100" x2="245" y2="100" stroke="#e17055" stroke-width="2"/>
           <circle cx="200" cy="100" r="8" fill="#e17055"/>
         </svg>
-      `).toString('base64'),
+      `,
+        ).toString('base64'),
 
-      [NewsCategory.ENTERTAINMENT]: 'data:image/svg+xml;base64,' + Buffer.from(`
+      [NewsCategory.ENTERTAINMENT]:
+        'data:image/svg+xml;base64,' +
+        Buffer.from(
+          `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
           <rect width="400" height="200" fill="#1a1a2e"/>
           <rect x="100" y="40" width="200" height="120" rx="4" fill="#16213e" stroke="#fdcb6e" stroke-width="2"/>
           <polygon points="175,70 225,90 175,110" fill="#fdcb6e"/>
           <rect x="120" y="130" width="160" height="6" rx="3" fill="#2d3436"/>
         </svg>
-      `).toString('base64'),
+      `,
+        ).toString('base64'),
 
-      [NewsCategory.HEALTH]: 'data:image/svg+xml;base64,' + Buffer.from(`
+      [NewsCategory.HEALTH]:
+        'data:image/svg+xml;base64,' +
+        Buffer.from(
+          `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
           <rect width="400" height="200" fill="#1a1a2e"/>
           <rect x="170" y="50" width="60" height="100" rx="30" fill="#16213e" stroke="#e74c3c" stroke-width="3"/>
           <rect x="150" y="70" width="100" height="60" rx="30" fill="#16213e" stroke="#e74c3c" stroke-width="3"/>
           <circle cx="200" cy="100" r="15" fill="#e74c3c"/>
         </svg>
-      `).toString('base64'),
+      `,
+        ).toString('base64'),
 
-      [NewsCategory.WORLD]: 'data:image/svg+xml;base64,' + Buffer.from(`
+      [NewsCategory.WORLD]:
+        'data:image/svg+xml;base64,' +
+        Buffer.from(
+          `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
           <rect width="400" height="200" fill="#1a1a2e"/>
           <circle cx="200" cy="100" r="55" fill="#16213e" stroke="#0984e3" stroke-width="2"/>
@@ -520,9 +544,13 @@ export class AiService {
           <line x1="145" y1="100" x2="255" y2="100" stroke="#0984e3" stroke-width="1" opacity="0.5"/>
           <line x1="200" y1="45" x2="200" y2="155" stroke="#0984e3" stroke-width="1" opacity="0.5"/>
         </svg>
-      `).toString('base64'),
+      `,
+        ).toString('base64'),
 
-      [NewsCategory.OTHER]: 'data:image/svg+xml;base64,' + Buffer.from(`
+      [NewsCategory.OTHER]:
+        'data:image/svg+xml;base64,' +
+        Buffer.from(
+          `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
           <rect width="400" height="200" fill="#1a1a2e"/>
           <rect x="100" y="60" width="200" height="100" rx="8" fill="#16213e" stroke="#636e72" stroke-width="2"/>
@@ -531,7 +559,8 @@ export class AiService {
           <line x1="130" y1="110" x2="230" y2="110" stroke="#636e72" stroke-width="2" stroke-linecap="round"/>
           <line x1="130" y1="125" x2="210" y2="125" stroke="#636e72" stroke-width="2" stroke-linecap="round"/>
         </svg>
-      `).toString('base64'),
+      `,
+        ).toString('base64'),
     };
 
     return icons[category] || icons[NewsCategory.OTHER];
@@ -585,6 +614,6 @@ export class AiService {
   }
 
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

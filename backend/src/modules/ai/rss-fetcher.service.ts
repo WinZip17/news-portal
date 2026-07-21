@@ -8,44 +8,14 @@ export class RssFetcherService {
 
   // RSS источники по категориям
   private readonly rssSources: Record<string, string[]> = {
-    technology: [
-      'https://habr.com/ru/rss/articles/?fl=ru',
-      'https://3dnews.ru/news/rss',
-      'https://www.ixbt.com/export/rss.xml',
-    ],
-    politics: [
-      'https://lenta.ru/rss/top7',
-      'https://ria.ru/export/rss2/index.xml',
-      'https://tass.ru/rss/v2.xml',
-    ],
-    economy: [
-      'https://www.rbc.ru/rss/',
-      'https://www.kommersant.ru/RSS/news.xml',
-      'https://www.vedomosti.ru/rss/news',
-    ],
-    science: [
-      'https://nplus1.ru/rss',
-      'https://elementy.ru/rss',
-      'https://scientificrussia.ru/rss',
-    ],
-    sports: [
-      'https://www.sport-express.ru/rss/',
-      'https://www.championat.com/rss/',
-      'https://www.sports.ru/rss/main.xml',
-    ],
-    world: [
-      'https://lenta.ru/rss/news',
-      'https://ria.ru/export/rss2/world/index.xml',
-      'https://www.interfax.ru/rss.asp',
-    ],
-    health: [
-      'https://medportal.ru/rss/',
-      'https://www.gazeta.ru/health/rss/',
-    ],
-    entertainment: [
-      'https://www.kinoafisha.info/rss/',
-      'https://news.myseldon.com/ru/rss?rubricId=3',
-    ],
+    technology: ['https://habr.com/ru/rss/articles/?fl=ru', 'https://3dnews.ru/news/rss', 'https://www.ixbt.com/export/rss.xml'],
+    politics: ['https://lenta.ru/rss/top7', 'https://ria.ru/export/rss2/index.xml', 'https://tass.ru/rss/v2.xml'],
+    economy: ['https://www.rbc.ru/rss/', 'https://www.kommersant.ru/RSS/news.xml', 'https://www.vedomosti.ru/rss/news'],
+    science: ['https://nplus1.ru/rss', 'https://elementy.ru/rss', 'https://scientificrussia.ru/rss'],
+    sports: ['https://www.sport-express.ru/rss/', 'https://www.championat.com/rss/', 'https://www.sports.ru/rss/main.xml'],
+    world: ['https://lenta.ru/rss/news', 'https://ria.ru/export/rss2/world/index.xml', 'https://www.interfax.ru/rss.asp'],
+    health: ['https://medportal.ru/rss/', 'https://www.gazeta.ru/health/rss/'],
+    entertainment: ['https://www.kinoafisha.info/rss/', 'https://news.myseldon.com/ru/rss?rubricId=3'],
   };
 
   constructor() {
@@ -68,9 +38,7 @@ export class RssFetcherService {
         const feed = await this.parser.parseURL(source);
 
         if (feed.items && feed.items.length > 0) {
-          const newArticles = feed.items
-            .slice(0, limit)
-            .map(item => this.parseArticle(item, feed.title || source));
+          const newArticles = feed.items.slice(0, limit).map((item) => this.parseArticle(item, feed.title || source));
 
           articles.push(...newArticles);
         }
@@ -97,12 +65,11 @@ export class RssFetcherService {
 
         if (feed.items) {
           const matchingArticles = feed.items
-            .filter(item =>
-              item.title?.toLowerCase().includes(query.toLowerCase()) ||
-              item.contentSnippet?.toLowerCase().includes(query.toLowerCase())
+            .filter(
+              (item) => item.title?.toLowerCase().includes(query.toLowerCase()) || item.contentSnippet?.toLowerCase().includes(query.toLowerCase()),
             )
             .slice(0, 2)
-            .map(item => this.parseArticle(item, feed.title || source));
+            .map((item) => this.parseArticle(item, feed.title || source));
 
           articles.push(...matchingArticles);
         }
@@ -121,9 +88,7 @@ export class RssFetcherService {
     const cat = category || this.getRandomCategory();
     const articles = await this.fetchNewsByCategory(cat, 5);
 
-    return articles.length > 0
-      ? articles[Math.floor(Math.random() * articles.length)]
-      : null;
+    return articles.length > 0 ? articles[Math.floor(Math.random() * articles.length)] : null;
   }
 
   /**

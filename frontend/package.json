@@ -12,8 +12,8 @@
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:cov": "vitest --coverage",
-    "format": "npm -w frontend run format && npm -w backend run format",
-    "format:check": "npm -w frontend run format:check && npm -w backend run format:check"
+    "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\""
   },
   "dependencies": {
     "@ant-design/icons": "^6.3.2",

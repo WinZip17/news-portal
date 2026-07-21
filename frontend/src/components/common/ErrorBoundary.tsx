@@ -7,10 +7,7 @@ interface ErrorFallbackProps {
   resetErrorBoundary: () => void;
 }
 
-const ErrorFallback: React.FC<ErrorFallbackProps> = ({
-                                                       error,
-                                                       resetErrorBoundary
-                                                     }) => {
+const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetErrorBoundary }) => {
   const handleReload = () => {
     window.location.reload();
   };
@@ -20,38 +17,27 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '20px',
-    }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px',
+      }}
+    >
       <Result
         status="error"
         title="Что-то пошло не так"
         subTitle="Произошла непредвиденная ошибка в приложении"
         extra={[
-          <Button
-            key="retry"
-            type="primary"
-            icon={<ReloadOutlined/>}
-            onClick={resetErrorBoundary}
-          >
+          <Button key="retry" type="primary" icon={<ReloadOutlined />} onClick={resetErrorBoundary}>
             Попробовать снова
           </Button>,
-          <Button
-            key="reload"
-            icon={<ReloadOutlined/>}
-            onClick={handleReload}
-          >
+          <Button key="reload" icon={<ReloadOutlined />} onClick={handleReload}>
             Обновить страницу
           </Button>,
-          <Button
-            key="home"
-            icon={<HomeOutlined/>}
-            onClick={handleGoHome}
-          >
+          <Button key="home" icon={<HomeOutlined />} onClick={handleGoHome}>
             На главную
           </Button>,
         ]}
@@ -61,14 +47,16 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({
             <h4>Техническая информация (только для разработки):</h4>
             <p style={{ color: 'red' }}>{error.message}</p>
             {error.stack && (
-              <pre style={{
-                fontSize: '11px',
-                maxHeight: 200,
-                overflow: 'auto',
-                padding: '8px',
-                backgroundColor: '#f5f5f5',
-                borderRadius: '4px',
-              }}>
+              <pre
+                style={{
+                  fontSize: '11px',
+                  maxHeight: 200,
+                  overflow: 'auto',
+                  padding: '8px',
+                  backgroundColor: '#f5f5f5',
+                  borderRadius: '4px',
+                }}
+              >
                 {error.stack}
               </pre>
             )}
@@ -106,12 +94,7 @@ class AppErrorBoundary extends React.Component<AppErrorBoundaryProps, { hasError
 
   render() {
     if (this.state.hasError && this.state.error) {
-      return (
-        <ErrorFallback
-          error={this.state.error}
-          resetErrorBoundary={this.handleReset}
-        />
-      );
+      return <ErrorFallback error={this.state.error} resetErrorBoundary={this.handleReset} />;
     }
 
     return this.props.children;

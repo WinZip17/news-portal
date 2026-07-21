@@ -1,17 +1,11 @@
 import React, { useEffect, useCallback } from 'react';
-import {
-  Input, Select, Tag, Space, Pagination, Empty, Spin, Typography,
-  Divider, Button, Modal, Row, Col, Card,
-} from 'antd';
-import {
-  SearchOutlined, ClockCircleOutlined, EyeOutlined, HeartOutlined,
-  LinkOutlined, RobotOutlined, ClearOutlined,
-} from '@ant-design/icons';
+import { Input, Select, Tag, Space, Pagination, Empty, Spin, Typography, Divider, Button, Modal, Row, Col, Card } from 'antd';
+import { SearchOutlined, ClockCircleOutlined, EyeOutlined, HeartOutlined, LinkOutlined, RobotOutlined, ClearOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
 import { useNews } from '@/hooks/useNews';
 import NewsDetailModal from '@/components/NewsDetailModal';
 import { useNewsModal } from '@/hooks/useNewsModal.ts';
-import { NewsCategory, NewsFilter } from '@/types'
+import { NewsCategory, NewsFilter } from '@/types';
 
 const { Option } = Select;
 const { Title, Text, Paragraph } = Typography;
@@ -25,7 +19,7 @@ const NewsList: React.FC = () => {
     const urlFilters: NewsFilter = {};
 
     const category = searchParams.get('category');
-    urlFilters.category = (category && category !== 'all') ? category as NewsCategory : undefined;
+    urlFilters.category = category && category !== 'all' ? (category as NewsCategory) : undefined;
 
     const search = searchParams.get('search');
     urlFilters.search = search || undefined;
@@ -34,49 +28,64 @@ const NewsList: React.FC = () => {
     urlFilters.page = page ? parseInt(page, 10) : undefined;
 
     const sortBy = searchParams.get('sortBy');
-    urlFilters.sortBy = sortBy as "createdAt" | "views" | "likes" | "publishedAt" || undefined;
+    urlFilters.sortBy = (sortBy as 'createdAt' | 'views' | 'likes' | 'publishedAt') || undefined;
 
     const isAiGenerated = searchParams.get('isAiGenerated');
-    urlFilters.isAiGenerated = (isAiGenerated && isAiGenerated !== 'all') ? isAiGenerated === 'true' : undefined;
+    urlFilters.isAiGenerated = isAiGenerated && isAiGenerated !== 'all' ? isAiGenerated === 'true' : undefined;
 
     setFilters(urlFilters);
     fetchNews(urlFilters);
   }, [searchParams]);
 
-  const handleSearch = useCallback((value: string) => {
-    const p = new URLSearchParams(searchParams);
-    value ? p.set('search', value) : p.delete('search');
-    p.delete('page');
-    setSearchParams(p);
-  }, [searchParams]);
+  const handleSearch = useCallback(
+    (value: string) => {
+      const p = new URLSearchParams(searchParams);
+      value ? p.set('search', value) : p.delete('search');
+      p.delete('page');
+      setSearchParams(p);
+    },
+    [searchParams],
+  );
 
-  const handleCategoryChange = useCallback((category: string) => {
-    const p = new URLSearchParams(searchParams);
-    category !== 'all' ? p.set('category', category) : p.delete('category');
-    p.delete('page');
-    setSearchParams(p);
-  }, [searchParams]);
+  const handleCategoryChange = useCallback(
+    (category: string) => {
+      const p = new URLSearchParams(searchParams);
+      category !== 'all' ? p.set('category', category) : p.delete('category');
+      p.delete('page');
+      setSearchParams(p);
+    },
+    [searchParams],
+  );
 
-  const handleSortChange = useCallback((sortBy: string) => {
-    const p = new URLSearchParams(searchParams);
-    sortBy !== 'publishedAt' ? p.set('sortBy', sortBy) : p.delete('sortBy');
-    p.delete('page');
-    setSearchParams(p);
-  }, [searchParams]);
+  const handleSortChange = useCallback(
+    (sortBy: string) => {
+      const p = new URLSearchParams(searchParams);
+      sortBy !== 'publishedAt' ? p.set('sortBy', sortBy) : p.delete('sortBy');
+      p.delete('page');
+      setSearchParams(p);
+    },
+    [searchParams],
+  );
 
-  const handleAiFilterChange = useCallback((value: string) => {
-    const p = new URLSearchParams(searchParams);
-    value !== 'all' ? p.set('isAiGenerated', value) : p.delete('isAiGenerated');
-    p.delete('page');
-    setSearchParams(p);
-  }, [searchParams]);
+  const handleAiFilterChange = useCallback(
+    (value: string) => {
+      const p = new URLSearchParams(searchParams);
+      value !== 'all' ? p.set('isAiGenerated', value) : p.delete('isAiGenerated');
+      p.delete('page');
+      setSearchParams(p);
+    },
+    [searchParams],
+  );
 
-  const handlePageChange = useCallback((page: number) => {
-    const p = new URLSearchParams(searchParams);
-    p.set('page', page.toString());
-    setSearchParams(p);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [searchParams]);
+  const handlePageChange = useCallback(
+    (page: number) => {
+      const p = new URLSearchParams(searchParams);
+      p.set('page', page.toString());
+      setSearchParams(p);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    [searchParams],
+  );
 
   const handleClearFilters = useCallback(() => setSearchParams({}), []);
 
@@ -90,7 +99,7 @@ const NewsList: React.FC = () => {
       entertainment: 'magenta',
       health: 'red',
       world: 'geekblue',
-      other: 'default'
+      other: 'default',
     };
     return c[cat] || 'default';
   };
@@ -105,7 +114,7 @@ const NewsList: React.FC = () => {
       entertainment: 'Развлечения',
       health: 'Здоровье',
       world: 'Мир',
-      other: 'Другое'
+      other: 'Другое',
     };
     return l[cat] || cat;
   };
@@ -125,7 +134,9 @@ const NewsList: React.FC = () => {
 
   return (
     <div style={{ maxWidth: 960, margin: '0 auto' }}>
-      <Title level={2} style={{ marginBottom: 16 }}>📰 Лента новостей</Title>
+      <Title level={2} style={{ marginBottom: 16 }}>
+        📰 Лента новостей
+      </Title>
 
       <Space wrap size="middle" style={{ width: '100%', marginBottom: 16 }}>
         <Input.Search
@@ -133,7 +144,7 @@ const NewsList: React.FC = () => {
           allowClear
           defaultValue={searchParams.get('search') || ''}
           style={{ minWidth: 200 }}
-          prefix={<SearchOutlined/>}
+          prefix={<SearchOutlined />}
           onSearch={handleSearch}
           onChange={(e) => {
             if (!e.target.value) {
@@ -152,25 +163,29 @@ const NewsList: React.FC = () => {
           <Option value={NewsCategory.HEALTH}>🏥 Здоровье</Option>
           <Option value={NewsCategory.WORLD}>🌍 Мир</Option>
         </Select>
-        <Select value={searchParams.get('sortBy') || 'publishedAt'} style={{ minWidth: 140 }}
-                onChange={handleSortChange}>
+        <Select value={searchParams.get('sortBy') || 'publishedAt'} style={{ minWidth: 140 }} onChange={handleSortChange}>
           <Option value="publishedAt">🕒 По дате</Option>
           <Option value="views">👁 По просмотрам</Option>
           <Option value="likes">❤️ По лайкам</Option>
         </Select>
-        <Select value={searchParams.get('isAiGenerated') || 'all'} style={{ minWidth: 150 }}
-                onChange={handleAiFilterChange}>
+        <Select value={searchParams.get('isAiGenerated') || 'all'} style={{ minWidth: 150 }} onChange={handleAiFilterChange}>
           <Option value="all">📋 Все</Option>
           <Option value="true">🤖 AI-рерайт</Option>
           <Option value="false">📄 Оригиналы</Option>
         </Select>
-        {hasActiveFilters &&
-            <Button icon={<ClearOutlined/>} onClick={handleClearFilters} size="small">Сбросить</Button>}
+        {hasActiveFilters && (
+          <Button icon={<ClearOutlined />} onClick={handleClearFilters} size="small">
+            Сбросить
+          </Button>
+        )}
       </Space>
-      {hasActiveFilters &&
-          <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>Показаны результаты с фильтрами</Text>}
+      {hasActiveFilters && (
+        <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+          Показаны результаты с фильтрами
+        </Text>
+      )}
 
-      <Divider style={{ margin: '12px 0' }}/>
+      <Divider style={{ margin: '12px 0' }} />
 
       <Spin spinning={isLoading}>
         {error ? (
@@ -199,20 +214,31 @@ const NewsList: React.FC = () => {
                         color: '#666',
                         fontSize: '13px',
                         lineHeight: '1.5',
-                        wordBreak: 'break-word'
+                        wordBreak: 'break-word',
                       }}
                     >
                       {item.summary || item.content?.substring(0, 150) || 'Описание отсутствует'}
                     </Paragraph>
                     <Space wrap size={[4, 4]} style={{ marginTop: 'auto' }}>
                       <Tag color={getCategoryColor(item.category)}>{getCategoryLabel(item.category)}</Tag>
-                      {item.isAiGenerated ? <Tag icon={<RobotOutlined/>} color="blue">AI</Tag> :
-                        <Tag icon={<LinkOutlined/>} color="green">Оригинал</Tag>}
+                      {item.isAiGenerated ? (
+                        <Tag icon={<RobotOutlined />} color="blue">
+                          AI
+                        </Tag>
+                      ) : (
+                        <Tag icon={<LinkOutlined />} color="green">
+                          Оригинал
+                        </Tag>
+                      )}
                       <Text type="secondary" style={{ fontSize: '11px' }}>
-                        <ClockCircleOutlined/> {formatDate(item.publishedAt)}
+                        <ClockCircleOutlined /> {formatDate(item.publishedAt)}
                       </Text>
-                      <Text type="secondary" style={{ fontSize: '11px' }}><EyeOutlined/> {item.views || 0}</Text>
-                      <Text type="secondary" style={{ fontSize: '11px' }}><HeartOutlined/> {item.likes || 0}</Text>
+                      <Text type="secondary" style={{ fontSize: '11px' }}>
+                        <EyeOutlined /> {item.views || 0}
+                      </Text>
+                      <Text type="secondary" style={{ fontSize: '11px' }}>
+                        <HeartOutlined /> {item.likes || 0}
+                      </Text>
                     </Space>
                   </Card>
                 </Col>
@@ -220,23 +246,26 @@ const NewsList: React.FC = () => {
             </Row>
             {pagination.totalPages > 1 && (
               <div style={{ textAlign: 'center', marginTop: 24 }}>
-                <Pagination current={pagination.page} total={pagination.total} pageSize={pagination.limit}
-                            onChange={handlePageChange} showSizeChanger={false} showQuickJumper/>
+                <Pagination
+                  current={pagination.page}
+                  total={pagination.total}
+                  pageSize={pagination.limit}
+                  onChange={handlePageChange}
+                  showSizeChanger={false}
+                  showQuickJumper
+                />
               </div>
             )}
           </>
         ) : (
-          <Empty description={hasActiveFilters ? 'Ничего не найдено' : 'Новостей пока нет'}
-                 style={{ padding: '40px 0' }}>
-            {hasActiveFilters ? <Button onClick={handleClearFilters}>Сбросить</Button> :
-              <Button onClick={() => fetchNews()}>Обновить</Button>}
+          <Empty description={hasActiveFilters ? 'Ничего не найдено' : 'Новостей пока нет'} style={{ padding: '40px 0' }}>
+            {hasActiveFilters ? <Button onClick={handleClearFilters}>Сбросить</Button> : <Button onClick={() => fetchNews()}>Обновить</Button>}
           </Empty>
         )}
       </Spin>
 
-      <Modal open={modalVisible} onCancel={closeNews} footer={null} width={900} centered destroyOnHidden
-             style={{ top: 20 }}>
-        {selectedNewsId && <NewsDetailModal newsId={selectedNewsId}/>}
+      <Modal open={modalVisible} onCancel={closeNews} footer={null} width={900} centered destroyOnHidden style={{ top: 20 }}>
+        {selectedNewsId && <NewsDetailModal newsId={selectedNewsId} />}
       </Modal>
     </div>
   );

@@ -10,7 +10,7 @@ import {
   likeNews,
   fetchPersonalizedNews,
   setFilters,
-  clearNewsError,  // Обновленное имя
+  clearNewsError, // Обновленное имя
   selectNews,
   selectCurrentNews,
   selectNewsLoading,
@@ -19,7 +19,7 @@ import {
   selectNewsPagination,
   selectPersonalizedNews,
 } from '@/store';
-import type { News, NewsFilter } from "@/types";
+import type { News, NewsFilter } from '@/types';
 
 export const useNews = () => {
   const dispatch = useAppDispatch();
@@ -37,67 +37,67 @@ export const useNews = () => {
       dispatch(setFilters(params));
       return dispatch(fetchNews(params)).unwrap();
     },
-    [dispatch, filters]
+    [dispatch, filters],
   );
 
   const handleFetchNewsById = useCallback(
     (id: string) => {
       return dispatch(fetchNewsById(id)).unwrap();
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleCreateNews = useCallback(
     (data: Partial<News>) => {
       return dispatch(createNews(data)).unwrap();
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleUpdateNews = useCallback(
     (id: string, data: Partial<News>) => {
       return dispatch(updateNews({ id, data })).unwrap();
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleDeleteNews = useCallback(
     (id: string) => {
       return dispatch(deleteNews(id)).unwrap();
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleModerateNews = useCallback(
     (id: string, status: string) => {
       return dispatch(moderateNews({ id, status })).unwrap();
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleLikeNews = useCallback(
     (id: string) => {
       return dispatch(likeNews(id)).unwrap();
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleFetchPersonalizedNews = useCallback(
     (preferences: string[]) => {
       return dispatch(fetchPersonalizedNews(preferences)).unwrap();
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleSetFilters = useCallback(
     (newFilters: NewsFilter) => {
       dispatch(setFilters(newFilters));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleClearError = useCallback(() => {
-    dispatch(clearNewsError());  // Используем новое имя
+    dispatch(clearNewsError()); // Используем новое имя
   }, [dispatch]);
 
   const loadMore = useCallback(() => {

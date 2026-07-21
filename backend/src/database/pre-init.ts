@@ -28,7 +28,7 @@ async function ensureDatabaseExists() {
       `SELECT 1
        FROM pg_database
        WHERE datname = $1`,
-      [dbName]
+      [dbName],
     );
 
     if (result.rows.length === 0) {
@@ -44,7 +44,6 @@ async function ensureDatabaseExists() {
 
     // Даем права
     await client.query(`GRANT ALL PRIVILEGES ON DATABASE "${dbName}" TO "${dbUser}"`);
-
   } catch (error) {
     console.error('❌ Failed to ensure database exists:', error.message);
 

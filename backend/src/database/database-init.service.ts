@@ -6,8 +6,7 @@ import { Client } from 'pg';
 export class DatabaseInitService implements OnModuleInit {
   private readonly logger = new Logger(DatabaseInitService.name);
 
-  constructor(private configService: ConfigService) {
-  }
+  constructor(private configService: ConfigService) {}
 
   async onModuleInit() {
     await this.ensureDatabaseExists();
@@ -43,7 +42,7 @@ export class DatabaseInitService implements OnModuleInit {
         `SELECT 1
          FROM pg_database
          WHERE datname = $1`,
-        [dbConfig.database]
+        [dbConfig.database],
       );
 
       if (result.rows.length === 0) {
@@ -55,7 +54,7 @@ export class DatabaseInitService implements OnModuleInit {
            ENCODING 'UTF8' 
            LC_COLLATE = 'C' 
            LC_CTYPE = 'C' 
-           TEMPLATE template0`
+           TEMPLATE template0`,
         );
 
         this.logger.log(`✅ Database "${dbConfig.database}" created successfully!`);
@@ -64,10 +63,7 @@ export class DatabaseInitService implements OnModuleInit {
       }
 
       // Даем права пользователю
-      await client.query(
-        `GRANT ALL PRIVILEGES ON DATABASE "${dbConfig.database}" TO "${dbConfig.username}"`
-      );
-
+      await client.query(`GRANT ALL PRIVILEGES ON DATABASE "${dbConfig.database}" TO "${dbConfig.username}"`);
     } catch (error) {
       this.logger.error('Failed to ensure database exists:', error.message);
 
@@ -76,9 +72,7 @@ export class DatabaseInitService implements OnModuleInit {
         try {
           this.logger.log('Trying alternative method to create database...');
 
-          await client.query(
-            `CREATE DATABASE "${dbConfig.database}" ENCODING 'UTF8'`
-          );
+          await client.query(`CREATE DATABASE "${dbConfig.database}" ENCODING 'UTF8'`);
 
           this.logger.log(`✅ Database "${dbConfig.database}" created with alternative method`);
         } catch (createError) {

@@ -8,8 +8,8 @@ import { RegisterDto } from './dto/register.dto';
 
 // Импортируем типы
 import { AuthResponse, TokenResponse, UserResponse } from '../../types';
-import { User } from "../../entities";
-import { UpdateUserDto } from "./dto/update-user.dto";
+import { User } from '../../entities';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,8 +17,7 @@ export class AuthService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private jwtService: JwtService,
-  ) {
-  }
+  ) {}
 
   async register(registerDto: RegisterDto): Promise<AuthResponse> {
     const { email, username, password, firstName, lastName } = registerDto;
@@ -101,7 +100,7 @@ export class AuthService {
       });
 
       const user = await this.userRepository.findOne({
-        where: { id: payload.sub }
+        where: { id: payload.sub },
       });
 
       if (!user || user.refreshToken !== refreshToken) {
@@ -176,7 +175,7 @@ export class AuthService {
     const payload = {
       sub: user.id,
       email: user.email,
-      role: user.role
+      role: user.role,
     };
 
     const accessToken = this.jwtService.sign(payload);
@@ -202,7 +201,7 @@ export class AuthService {
     return this.userRepository.count();
   }
 
-  async getAllUsers(page = 1, limit = 20): Promise<{ data: User[], total: number }> {
+  async getAllUsers(page = 1, limit = 20): Promise<{ data: User[]; total: number }> {
     const [data, total] = await this.userRepository.findAndCount({
       select: {
         id: true,
@@ -262,14 +261,14 @@ export class AuthService {
     return this.userRepository.findOne({
       where: { id },
       select: {
-        'id': true,
-        'email': true,
-        'username': true,
-        'firstName': true,
-        'lastName': true,
-        'role': true,
-        'isActive': true,
-        'preferences': true
+        id: true,
+        email: true,
+        username: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        isActive: true,
+        preferences: true,
       },
     });
   }

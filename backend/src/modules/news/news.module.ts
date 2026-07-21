@@ -6,18 +6,13 @@ import { NewsController } from './news.controller';
 import { NewsSchedulerService } from './news-scheduler.service';
 import { News } from '../../entities';
 import { AuthModule } from '../auth/auth.module';
-import { Favorite } from '../../entities/favorite.entity'
-import { Like } from '../../entities/like.entity'
+import { Favorite } from '../../entities/favorite.entity';
+import { Like } from '../../entities/like.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([News, Favorite, Like]),
-    ScheduleModule.forRoot(),
-    AuthModule,
-  ],
+  imports: [TypeOrmModule.forFeature([News, Favorite, Like]), ScheduleModule.forRoot(), AuthModule],
   controllers: [NewsController],
   providers: [NewsService, NewsSchedulerService], // Добавлен планировщик
   exports: [NewsService],
 })
-export class NewsModule {
-}
+export class NewsModule {}

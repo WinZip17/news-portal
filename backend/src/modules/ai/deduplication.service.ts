@@ -10,13 +10,15 @@ export class DeduplicationService {
   constructor(
     @InjectRepository(News)
     private newsRepository: Repository<News>,
-  ) {
-  }
+  ) {}
 
   /**
    * Проверка на дубликат с использованием нескольких стратегий
    */
-  async checkDuplicate(title: string, sourceUrl?: string): Promise<{
+  async checkDuplicate(
+    title: string,
+    sourceUrl?: string,
+  ): Promise<{
     isDuplicate: boolean;
     reason?: string;
     originalNews?: News;
@@ -114,8 +116,7 @@ export class DeduplicationService {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const queryBuilder = this.newsRepository.createQueryBuilder('news')
-      .where('news.createdAt > :date', { date: today });
+    const queryBuilder = this.newsRepository.createQueryBuilder('news').where('news.createdAt > :date', { date: today });
 
     keywords.forEach((keyword, index) => {
       queryBuilder.orWhere(`news.title ILIKE :keyword${index}`, {
@@ -129,7 +130,7 @@ export class DeduplicationService {
       // Если больше 3 ключевых слов совпадает - это дубликат
       for (const match of matches) {
         const matchKeywords = this.extractKeywords(match.title);
-        const commonKeywords = keywords.filter(k => matchKeywords.includes(k));
+        const commonKeywords = keywords.filter((k) => matchKeywords.includes(k));
 
         if (commonKeywords.length >= 3) {
           return match;
@@ -150,7 +151,7 @@ export class DeduplicationService {
       .toLowerCase()
       .replace(/[^а-яёa-z0-9\s]/g, '')
       .split(/\s+/)
-      .filter(word => word.length > 3 && !stopWords.includes(word))
+      .filter((word) => word.length > 3 && !stopWords.includes(word))
       .slice(0, 10);
   }
 
@@ -161,7 +162,7 @@ export class DeduplicationService {
     const words1 = new Set(str1.toLowerCase().split(/\s+/));
     const words2 = new Set(str2.toLowerCase().split(/\s+/));
 
-    const intersection = new Set([...words1].filter(x => words2.has(x)));
+    const intersection = new Set([...words1].filter((x) => words2.has(x)));
     const union = new Set([...words1, ...words2]);
 
     return intersection.size / union.size;
@@ -185,7 +186,7 @@ export class DeduplicationService {
       .select('news.title', 'title')
       .addSelect('COUNT(*)', 'count')
       .where('news.createdAt > :date', {
-        date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+        date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
       })
       .groupBy('news.title')
       .having('COUNT(*) > 1')

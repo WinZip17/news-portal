@@ -3,8 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AiConfig {
-  constructor(private configService: ConfigService) {
-  }
+  constructor(private configService: ConfigService) {}
 
   get apiKey(): string {
     return this.configService.get<string>('OPENAI_API_KEY', '');
@@ -28,23 +27,15 @@ export class AiConfig {
   }
 
   get categories(): string[] {
-    return [
-      'technology',
-      'science',
-      'politics',
-      'economy',
-      'sports',
-      'entertainment',
-      'health',
-      'world',
-    ];
+    return ['technology', 'science', 'politics', 'economy', 'sports', 'entertainment', 'health', 'world'];
   }
 
   get prompts() {
     return {
       title: 'Generate a news title in Russian language. Should be catchy and informative, max 100 characters.',
       summary: 'Write a brief summary of the news in Russian, 2-3 sentences.',
-      content: 'Write a detailed news article in Russian language. Include facts, context, and analysis. Format with paragraphs. Length: 500-800 words.',
+      content:
+        'Write a detailed news article in Russian language. Include facts, context, and analysis. Format with paragraphs. Length: 500-800 words.',
       tags: 'Generate 3-5 relevant tags for this news article in Russian, comma separated.',
     };
   }

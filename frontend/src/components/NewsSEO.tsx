@@ -12,16 +12,7 @@ interface NewsSEOProps {
   url: string;
 }
 
-const NewsSEO: React.FC<NewsSEOProps> = ({
-                                           title,
-                                           summary,
-                                           imageUrl,
-                                           publishedAt,
-                                           category,
-                                           tags,
-                                           author,
-                                           url,
-                                         }) => {
+const NewsSEO: React.FC<NewsSEOProps> = ({ title, summary, imageUrl, publishedAt, category, tags, author, url }) => {
   const siteName = 'News Portal';
   const fullTitle = `${title} | ${siteName}`;
   const description = summary?.substring(0, 160) || 'Читайте новость на News Portal';
@@ -55,12 +46,8 @@ const NewsSEO: React.FC<NewsSEOProps> = ({
       <meta name="twitter:image" content={image} />
 
       {/* Article специфичные теги */}
-      {publishedTime && (
-        <meta property="article:published_time" content={publishedTime} />
-      )}
-      {category && (
-        <meta property="article:section" content={category} />
-      )}
+      {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+      {category && <meta property="article:section" content={category} />}
       {tags?.map((tag) => (
         <meta key={tag} property="article:tag" content={tag} />
       ))}

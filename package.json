@@ -26,8 +26,8 @@
     "test:backend": "npm -w backend run test",
     "test:frontend": "npm -w frontend run test",
     "test:e2e": "npm -w backend run test:e2e",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\""
+    "format": "npm -w frontend run format && npm -w backend run format",
+    "format:check": "npm -w frontend run format:check && npm -w backend run format:check"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

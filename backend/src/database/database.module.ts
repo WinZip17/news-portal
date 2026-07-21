@@ -8,5 +8,4 @@ import { DatabaseInitService } from './database-init.service';
   providers: [DatabaseInitService],
   exports: [DatabaseInitService],
 })
-export class DatabaseModule {
-}
+export class DatabaseModule {}

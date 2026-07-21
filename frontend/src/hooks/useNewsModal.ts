@@ -16,13 +16,16 @@ export const useNewsModal = () => {
   }, []);
 
   // Открыть модалку и обновить URL
-  const openNews = useCallback((newsId: string) => {
-    setSelectedNewsId(newsId);
-    setModalVisible(true);
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set('news', newsId);
-    setSearchParams(newParams);
-  }, [searchParams, setSearchParams]);
+  const openNews = useCallback(
+    (newsId: string) => {
+      setSelectedNewsId(newsId);
+      setModalVisible(true);
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set('news', newsId);
+      setSearchParams(newParams);
+    },
+    [searchParams, setSearchParams],
+  );
 
   // Закрыть модалку и убрать news из URL
   const closeNews = useCallback(() => {

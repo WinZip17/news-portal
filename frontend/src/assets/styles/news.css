@@ -1,19 +1,19 @@
 /* Стили для контента новости */
 .news-content {
-    font-size: 16px;
-    line-height: 1.8;
-    text-align: justify;
+  font-size: 16px;
+  line-height: 1.8;
+  text-align: justify;
 }
 
 .news-content img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    margin: 16px 0;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 16px 0;
 }
 
 .news-content p {
-    margin-bottom: 16px;
+  margin-bottom: 16px;
 }
 
 .news-content h1,
@@ -22,64 +22,64 @@
 .news-content h4,
 .news-content h5,
 .news-content h6 {
-    margin-top: 24px;
-    margin-bottom: 16px;
+  margin-top: 24px;
+  margin-bottom: 16px;
 }
 
 .news-content blockquote {
-    border-left: 4px solid #1677ff;
-    padding-left: 16px;
-    margin: 16px 0;
-    color: #666;
+  border-left: 4px solid #1677ff;
+  padding-left: 16px;
+  margin: 16px 0;
+  color: #666;
 }
 
 .news-content a {
-    color: #1677ff;
-    text-decoration: underline;
+  color: #1677ff;
+  text-decoration: underline;
 }
 
 .news-content ul,
 .news-content ol {
-    margin: 16px 0;
-    padding-left: 24px;
+  margin: 16px 0;
+  padding-left: 24px;
 }
 
 .news-content li {
-    margin-bottom: 8px;
+  margin-bottom: 8px;
 }
 
 /* Анимация появления */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .news-detail-enter {
-    animation: fadeIn 0.5s ease-out;
+  animation: fadeIn 0.5s ease-out;
 }
 
 .ai-badge {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .source-badge {
-    background: #f6ffed;
-    color: #52c41a;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    border: 1px solid #b7eb8f;
+  background: #f6ffed;
+  color: #52c41a;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  border: 1px solid #b7eb8f;
 }

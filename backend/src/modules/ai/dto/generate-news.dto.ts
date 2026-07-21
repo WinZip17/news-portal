@@ -1,18 +1,18 @@
 import { IsString, IsOptional, IsArray, IsEnum } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { NewsCategory } from "../../../entities";
+import { NewsCategory } from '../../../entities';
 
 export class GenerateNewsDto {
   @ApiPropertyOptional({
     enum: NewsCategory,
-    description: 'Категория для генерации новости'
+    description: 'Категория для генерации новости',
   })
   @IsEnum(NewsCategory)
   @IsOptional()
   category?: NewsCategory;
 
   @ApiPropertyOptional({
-    description: 'Тема для генерации новости'
+    description: 'Тема для генерации новости',
   })
   @IsString()
   @IsOptional()
@@ -20,7 +20,7 @@ export class GenerateNewsDto {
 
   @ApiPropertyOptional({
     description: 'Количество новостей для генерации',
-    default: 1
+    default: 1,
   })
   @IsOptional()
   count?: number = 1;
