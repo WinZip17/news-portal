@@ -3,8 +3,8 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NewsService } from './news.service';
 import { News, NewsStatus, NewsCategory } from '../../entities';
-import { Favorite } from '../../entities/favorite.entity';
-import { Like } from '../../entities/like.entity';
+import { Favorite } from '../../entities';
+import { Like } from '../../entities';
 import { NotFoundException } from '@nestjs/common';
 
 describe('NewsService', () => {

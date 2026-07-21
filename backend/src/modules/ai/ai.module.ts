@@ -8,10 +8,10 @@ import { AiConfig } from './config/ai.config';
 import { RssFetcherService } from './rss-fetcher.service';
 import { DeduplicationService } from './deduplication.service';
 import { News } from '../../entities';
-import { Favorite } from '../../entities/favorite.entity';
+import { Favorite } from '../../entities';
 import { NewsService } from '../news/news.service';
 import { AuthModule } from '../auth/auth.module';
-import { Like } from '../../entities/like.entity';
+import { Like } from '../../entities';
 
 @Module({
   imports: [TypeOrmModule.forFeature([News, Favorite, Like]), ScheduleModule.forRoot(), ConfigModule, AuthModule],

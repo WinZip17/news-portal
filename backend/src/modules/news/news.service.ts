@@ -4,8 +4,8 @@ import { Repository, LessThan, ILike, Between, In, MoreThanOrEqual } from 'typeo
 import { News, NewsCategory, NewsStatus } from '../../entities';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { NewsStatsDto } from './dto/stats.dto';
-import { Favorite } from '../../entities/favorite.entity';
-import { Like } from '../../entities/like.entity';
+import { Favorite } from '../../entities';
+import { Like } from '../../entities';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 
