@@ -3,7 +3,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter as Router, useRoutes } from 'react-router-dom';
 import { ConfigProvider, App as AntApp, theme as antTheme } from 'antd';
 import { Provider } from 'react-redux';
-import { store, useAppSelector, selectTheme, setTheme } from '@/store';
+import { store, useAppSelector, setTheme, selectTheme } from '@/store';
 import { useAuth } from '@/hooks/useAuth';
 import AppErrorBoundary from '@/components/common/ErrorBoundary';
 import { routes } from '@/config/routes';
@@ -18,7 +18,7 @@ const AppRoutes: React.FC = () => {
 
 const AppContent: React.FC = () => {
   const theme = useAppSelector(selectTheme);
-  const { fetchCurrentUser, isAuthenticated, logout, clearError, user } = useAuth();
+  const { fetchCurrentUser, isAuthenticated, user } = useAuth();
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
