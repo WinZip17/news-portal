@@ -2,9 +2,14 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { store } from '@/store';
 import { logout, setTokens } from '@/store';
 
+interface TokenResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
 class ApiService {
   private api: AxiosInstance;
-  private refreshTokenPromise: Promise<any> | null = null;
+  private refreshTokenPromise: Promise<TokenResponse> | null = null;
 
   constructor() {
     this.api = axios.create({
@@ -19,7 +24,6 @@ class ApiService {
   }
 
   private setupInterceptors() {
-    // Request interceptor
     this.api.interceptors.request.use(
       (config) => {
         const state = store.getState();
@@ -34,13 +38,11 @@ class ApiService {
       (error) => Promise.reject(error),
     );
 
-    // Response interceptor
     this.api.interceptors.response.use(
       (response) => response,
       async (error) => {
         const originalRequest = error.config;
 
-        // Не пытаемся обновить токен для запросов логина и регистрации
         if (
           originalRequest.url?.includes('/auth/login') ||
           originalRequest.url?.includes('/auth/register') ||
@@ -67,10 +69,10 @@ class ApiService {
             const response = await this.refreshTokenPromise;
             originalRequest.headers.Authorization = `Bearer ${response.accessToken}`;
             return this.api(originalRequest);
-          } catch (refreshError) {
+          } catch {
             store.dispatch(logout());
             window.location.href = '/login';
-            return Promise.reject(refreshError);
+            return Promise.reject(new Error('Token refresh failed'));
           }
         }
 
@@ -79,38 +81,32 @@ class ApiService {
     );
   }
 
-  private async refreshAccessToken(refreshToken: string) {
-    try {
-      const response = await axios.post('/api/auth/refresh', {
-        refreshToken,
-      });
+  private async refreshAccessToken(refreshToken: string): Promise<TokenResponse> {
+    const response = await axios.post<TokenResponse>('/api/auth/refresh', { refreshToken });
 
-      store.dispatch(
-        setTokens({
-          accessToken: response.data.accessToken,
-          refreshToken: response.data.refreshToken,
-        }),
-      );
+    store.dispatch(
+      setTokens({
+        accessToken: response.data.accessToken,
+        refreshToken: response.data.refreshToken,
+      }),
+    );
 
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    return response.data;
   }
 
   async get<T>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
     return this.api.get<T>(url, config);
   }
 
-  async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  async post<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
     return this.api.post<T>(url, data, config);
   }
 
-  async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  async put<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
     return this.api.put<T>(url, data, config);
   }
 
-  async patch<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  async patch<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
     return this.api.patch<T>(url, data, config);
   }
 
