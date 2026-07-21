@@ -31,3 +31,11 @@ export interface JwtPayload {
   iat?: number;
   exp?: number;
 }
+
+export interface AiRewriteResult {
+  title: string;
+  summary: string;
+  content: string;
+  category: string;
+  tags: string[];
+}

@@ -8,7 +8,8 @@ import { AiConfig } from './config/ai.config';
 import { GenerateNewsDto } from './dto/generate-news.dto';
 import { RssFetcherService, RssArticle } from './rss-fetcher.service';
 import { DeduplicationService } from './deduplication.service';
-import { NewsService } from '../news/news.service';
+import { normalizeUrl } from '../../utils/normalizeUrl';
+import { AiRewriteResult } from '../../types';
 
 @Injectable()
 export class AiService {
@@ -21,7 +22,6 @@ export class AiService {
     private aiConfig: AiConfig,
     private rssFetcher: RssFetcherService,
     private deduplicationService: DeduplicationService,
-    private newsService: NewsService,
   ) {
     if (this.aiConfig.apiKey) {
       this.openai = new OpenAI({
@@ -38,7 +38,7 @@ export class AiService {
     this.logger.log(`🚀 Manual generation: ${countPerCategory} news per category`);
 
     const categories = this.aiConfig.categories;
-    const results: any = {};
+    const results: { [key: string]: number } = {};
     let totalGenerated = 0;
 
     for (const category of categories) {
@@ -101,13 +101,27 @@ export class AiService {
 
     // 2. Фильтруем дубликаты
     const uniqueArticles: RssArticle[] = [];
+    const seenUrls = new Set<string>();
+    const seenTitles = new Set<string>();
     for (const article of articles) {
+      // Проверка на дубликаты внутри самого массива
+      const url = normalizeUrl(article.link);
+      const normalizedTitle = article.title.trim().toLowerCase();
+
+      if (seenUrls.has(url) || seenTitles.has(normalizedTitle)) {
+        this.logger.warn(`⏭️ Duplicate in RSS batch: "${article.title.substring(0, 50)}..."`);
+        continue;
+      }
+
+      // Проверка на дубликаты в базе
       const isDuplicate = await this.deduplicationService.checkDuplicate(article.title, article.link);
 
       if (!isDuplicate.isDuplicate) {
         uniqueArticles.push(article);
+        seenUrls.add(url);
+        seenTitles.add(normalizedTitle);
       } else {
-        this.logger.warn(`⏭️ Skipping duplicate: "${article.title.substring(0, 50)}..."`);
+        this.logger.warn(`⏭️ Duplicate in DB: "${article.title.substring(0, 50)}..."`);
       }
 
       if (uniqueArticles.length >= count) break;
@@ -133,34 +147,6 @@ export class AiService {
       message: `Generated ${generatedNews.length} of ${count} news articles`,
       news: generatedNews,
     };
-  }
-
-  async generateFromRss(category?: NewsCategory, topic?: string) {
-    if (!this.openai) {
-      throw new Error('OpenAI API key not configured');
-    }
-
-    const selectedCategory = category || this.getRandomCategory();
-
-    // Получаем 3 статьи, выбираем одну
-    const articles = await this.rssFetcher.fetchNewsByCategory(selectedCategory, 3);
-
-    if (!articles || articles.length === 0) {
-      this.logger.warn(`No RSS articles found for ${selectedCategory}`);
-      return null;
-    }
-
-    // Ищем первую не дубликат
-    for (const article of articles) {
-      const isDuplicate = await this.deduplicationService.checkDuplicate(article.title, article.link);
-
-      if (!isDuplicate.isDuplicate) {
-        return this.rewriteArticle(article, selectedCategory);
-      }
-    }
-
-    this.logger.warn(`All ${articles.length} articles are duplicates`);
-    return null;
   }
 
   private async rewriteArticle(article: RssArticle, category: NewsCategory) {
@@ -206,20 +192,26 @@ export class AiService {
         response_format: { type: 'json_object' },
       });
       const rawContent = completion.choices[0]?.message?.content || '{}';
-      let result: any = {};
+      let result: AiRewriteResult = {
+        title: '',
+        summary: '',
+        content: '',
+        category: '',
+        tags: [],
+      };
       try {
-        result = JSON.parse(rawContent);
-      } catch (parseError) {
+        result = JSON.parse(rawContent) as AiRewriteResult;
+      } catch {
         this.logger.error('Failed to parse AI response, trying to fix...');
 
         // Пробуем исправить незакрытые строки
-        let fixedContent = rawContent
+        const fixedContent = rawContent
           .replace(/\n/g, ' ') // Убираем переносы строк
           .replace(/\\/g, '\\\\') // Экранируем обратные слеши
           .replace(/\r/g, ''); // Убираем carriage return
 
         try {
-          result = JSON.parse(fixedContent);
+          result = JSON.parse(fixedContent) as AiRewriteResult;
         } catch {
           // Извлекаем что можем через регулярки
           const titleMatch = rawContent.match(/"title"\s*:\s*"([^"]+)"/);
@@ -230,6 +222,7 @@ export class AiService {
             title: titleMatch?.[1] || article.title,
             summary: summaryMatch?.[1] || article.summary,
             content: article.content || article.summary,
+            category,
             tags: tagsMatch ? tagsMatch[1].split(',').map((t: string) => t.replace(/"/g, '').trim()) : [],
           };
 
@@ -324,35 +317,6 @@ export class AiService {
     return valid.includes(cat as NewsCategory) ? (cat as NewsCategory) : null;
   }
 
-  private async generateSingleNews(category?: NewsCategory, topic?: string) {
-    const selectedCategory = category || this.getRandomCategory();
-    const categoryName = this.getCategoryName(selectedCategory);
-
-    const title = await this.generateTitle(categoryName, topic);
-    const content = await this.generateContent(title, categoryName);
-    const summary = await this.generateSummary(content);
-    const tags = await this.generateTags(title, content);
-    const imageUrl = this.generateImageUrl(selectedCategory);
-
-    const news = this.newsRepository.create({
-      title,
-      content,
-      summary,
-      category: selectedCategory,
-      tags: tags
-        .split(',')
-        .map((t) => t.trim())
-        .filter(Boolean),
-      imageUrl,
-      isAiGenerated: true,
-      status: NewsStatus.PENDING,
-      source: 'AI Generated',
-      publishedAt: new Date(),
-    });
-
-    return this.newsRepository.save(news);
-  }
-
   private async generateTitle(category: string, topic?: string): Promise<string> {
     const prompt = topic
       ? `${this.aiConfig.prompts.title}\nCategory: ${category}\nTopic: ${topic}`
@@ -370,62 +334,8 @@ export class AiService {
       });
 
       return completion.choices[0]?.message?.content?.trim() || `Новости ${category}: ${new Date().toLocaleDateString('ru-RU')}`;
-    } catch (error) {
+    } catch {
       return `Актуальные новости ${category}`;
-    }
-  }
-
-  private async generateContent(title: string, category: string): Promise<string> {
-    const prompt = `${this.aiConfig.prompts.content}\nTitle: ${title}\nCategory: ${category}`;
-
-    try {
-      const completion = await this.openai.chat.completions.create({
-        model: this.aiConfig.model,
-        messages: [
-          { role: 'system', content: 'You are a professional journalist writing for a Russian news portal.' },
-          { role: 'user', content: prompt },
-        ],
-        temperature: this.aiConfig.temperature,
-        max_tokens: this.aiConfig.maxTokens,
-      });
-
-      return completion.choices[0]?.message?.content?.trim() || `Новость: ${title}\n\nКонтент временно недоступен.`;
-    } catch (error) {
-      return `# ${title}\n\nКонтент находится в процессе генерации.`;
-    }
-  }
-
-  private async generateSummary(content: string): Promise<string> {
-    const prompt = `${this.aiConfig.prompts.summary}\n\nArticle:\n${content.substring(0, 500)}`;
-
-    try {
-      const completion = await this.openai.chat.completions.create({
-        model: this.aiConfig.model,
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.5,
-        max_tokens: 200,
-      });
-
-      return completion.choices[0]?.message?.content?.trim() || content.substring(0, 200) + '...';
-    } catch (error) {
-      return content.substring(0, 200) + '...';
-    }
-  }
-
-  private async generateTags(title: string, content: string): Promise<string> {
-    const prompt = `${this.aiConfig.prompts.tags}\nTitle: ${title}\nContent: ${content.substring(0, 300)}`;
-
-    try {
-      const completion = await this.openai.chat.completions.create({
-        model: this.aiConfig.model,
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.3,
-        max_tokens: 50,
-      });
-
-      return completion.choices[0]?.message?.content?.trim() || '';
-    } catch (error) {
-      return '';
     }
   }
 
@@ -571,28 +481,13 @@ export class AiService {
     return categories[Math.floor(Math.random() * categories.length)];
   }
 
-  private getCategoryName(category: NewsCategory): string {
-    const names: Record<string, string> = {
-      [NewsCategory.TECHNOLOGY]: 'Технологии',
-      [NewsCategory.SCIENCE]: 'Наука',
-      [NewsCategory.POLITICS]: 'Политика',
-      [NewsCategory.ECONOMY]: 'Экономика',
-      [NewsCategory.SPORTS]: 'Спорт',
-      [NewsCategory.ENTERTAINMENT]: 'Развлечения',
-      [NewsCategory.HEALTH]: 'Здоровье',
-      [NewsCategory.WORLD]: 'Мир',
-      [NewsCategory.OTHER]: 'Другое',
-    };
-    return names[category] || 'Другое';
-  }
-
   async checkAvailability(): Promise<{ available: boolean; message: string }> {
     if (!this.aiConfig.apiKey) {
       return { available: false, message: 'OpenAI API key not configured.' };
     }
 
     try {
-      const completion = await this.openai.chat.completions.create({
+      await this.openai.chat.completions.create({
         model: 'deepseek-v4-flash',
         messages: [{ role: 'user', content: 'Test' }],
         max_tokens: 5,
@@ -602,15 +497,6 @@ export class AiService {
     } catch (error) {
       return { available: false, message: `AI service error: ${error.message}` };
     }
-  }
-
-  private shuffleArray<T>(array: T[]): T[] {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
   }
 
   private delay(ms: number): Promise<void> {
