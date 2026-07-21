@@ -11,7 +11,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useNews } from '../hooks/useNews';
 import NewsDetailModal from '../components/NewsDetailModal';
 import { useNewsModal } from "../hooks/useNewsModal.ts";
-import { NewsCategory, NewsFilter } from "../types";
+import { NewsCategory, NewsFilter } from '@/types'
 
 const { Search } = Input;
 const { Option } = Select;
@@ -24,16 +24,22 @@ const NewsList: React.FC = () => {
 
   useEffect(() => {
     const urlFilters: NewsFilter = {};
+
     const category = searchParams.get('category');
-    if (category && category !== 'all') urlFilters.category = category as NewsCategory;
+    urlFilters.category = (category && category !== 'all') ? category as NewsCategory : undefined;
+
     const search = searchParams.get('search');
-    if (search) urlFilters.search = search;
+    urlFilters.search = search || undefined;
+
     const page = searchParams.get('page');
-    if (page) urlFilters.page = parseInt(page, 10);
+    urlFilters.page = page ? parseInt(page, 10) : undefined;
+
     const sortBy = searchParams.get('sortBy');
-    if (sortBy) urlFilters.sortBy = sortBy as any;
+    urlFilters.sortBy = sortBy as "createdAt" | "views" | "likes" | "publishedAt" || undefined;
+
     const isAiGenerated = searchParams.get('isAiGenerated');
-    if (isAiGenerated && isAiGenerated !== 'all') urlFilters.isAiGenerated = isAiGenerated === 'true';
+    urlFilters.isAiGenerated = (isAiGenerated && isAiGenerated !== 'all') ? isAiGenerated === 'true' : undefined;
+
     setFilters(urlFilters);
     fetchNews(urlFilters);
   }, [searchParams]);
@@ -103,7 +109,19 @@ const NewsList: React.FC = () => {
       <Title level={2} style={{ marginBottom: 16 }}>📰 Лента новостей</Title>
 
       <Space wrap size="middle" style={{ width: '100%', marginBottom: 16 }}>
-        <Search placeholder="Поиск..." allowClear onSearch={handleSearch} defaultValue={searchParams.get('search') || ''} style={{ minWidth: 200 }} prefix={<SearchOutlined />} />
+        <Input.Search
+          placeholder="Поиск..."
+          allowClear
+          defaultValue={searchParams.get('search') || ''}
+          style={{ minWidth: 200 }}
+          prefix={<SearchOutlined />}
+          onSearch={handleSearch}
+          onChange={(e) => {
+            if (!e.target.value) {
+              handleSearch(''); // Очистка при пустом поле
+            }
+          }}
+        />
         <Select value={searchParams.get('category') || 'all'} style={{ minWidth: 160 }} onChange={handleCategoryChange}>
           <Option value="all">📂 Все</Option>
           <Option value={NewsCategory.POLITICS}>🏛 Политика</Option>

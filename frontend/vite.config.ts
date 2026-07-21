@@ -85,8 +85,8 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        // target: 'http://localhost:3001',
-        target: 'https://short-news.ru/',
+        target: 'http://localhost:3001',
+        // target: 'https://short-news.ru/',
         changeOrigin: true,
       },
     },
