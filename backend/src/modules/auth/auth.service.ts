@@ -5,11 +5,15 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-
-// Импортируем типы
-import { AuthResponse, TokenResponse, UserResponse } from '../../types';
+import { AuthResponse, TokenResponse, UserResponse, UserPreferences } from '../../types';
 import { User } from '../../entities';
 import { UpdateUserDto } from './dto/update-user.dto';
+
+interface ProfileUpdateData {
+  firstName?: string;
+  lastName?: string;
+  avatar?: string;
+}
 
 @Injectable()
 export class AuthService {
@@ -22,7 +26,6 @@ export class AuthService {
   async register(registerDto: RegisterDto): Promise<AuthResponse> {
     const { email, username, password, firstName, lastName } = registerDto;
 
-    // Проверка существующего пользователя
     const existingUser = await this.userRepository.findOne({
       where: [{ email }, { username }],
     });
@@ -31,10 +34,8 @@ export class AuthService {
       throw new ConflictException('Пользователь с таким email или username уже существует');
     }
 
-    // Хеширование пароля
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Создание пользователя
     const user = this.userRepository.create({
       email,
       username,
@@ -53,7 +54,6 @@ export class AuthService {
 
     await this.userRepository.save(user);
 
-    // Генерация токенов
     const tokens = await this.generateTokens(user);
 
     return {
@@ -81,7 +81,6 @@ export class AuthService {
       throw new UnauthorizedException('Неверный email или пароль');
     }
 
-    // Обновление времени последнего входа
     user.lastLoginAt = new Date();
     await this.userRepository.save(user);
 
@@ -95,7 +94,7 @@ export class AuthService {
 
   async refreshToken(refreshToken: string): Promise<TokenResponse> {
     try {
-      const payload = this.jwtService.verify(refreshToken, {
+      const payload = this.jwtService.verify<{ sub: string }>(refreshToken, {
         secret: process.env.JWT_SECRET,
       });
 
@@ -107,10 +106,8 @@ export class AuthService {
         throw new UnauthorizedException('Невалидный refresh token');
       }
 
-      const tokens = await this.generateTokens(user);
-
-      return tokens;
-    } catch (error) {
+      return this.generateTokens(user);
+    } catch {
       throw new UnauthorizedException('Невалидный refresh token');
     }
   }
@@ -129,13 +126,12 @@ export class AuthService {
     return this.sanitizeUser(user);
   }
 
-  async updateProfile(userId: string, updateData: any): Promise<UserResponse> {
-    // Разрешенные поля для обновления
-    const allowedFields = ['firstName', 'lastName', 'avatar'];
-    const filteredData: any = {};
+  async updateProfile(userId: string, updateData: ProfileUpdateData): Promise<UserResponse> {
+    const allowedFields: (keyof ProfileUpdateData)[] = ['firstName', 'lastName', 'avatar'];
+    const filteredData: Partial<ProfileUpdateData> = {};
 
-    for (const key of Object.keys(updateData)) {
-      if (allowedFields.includes(key)) {
+    for (const key of Object.keys(updateData) as (keyof ProfileUpdateData)[]) {
+      if (allowedFields.includes(key) && updateData[key] !== undefined) {
         filteredData[key] = updateData[key];
       }
     }
@@ -153,14 +149,13 @@ export class AuthService {
     return this.sanitizeUser(updatedUser);
   }
 
-  async updatePreferences(userId: string, preferences: any): Promise<UserResponse> {
+  async updatePreferences(userId: string, preferences: Partial<UserPreferences>): Promise<UserResponse> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
     if (!user) {
       throw new UnauthorizedException('Пользователь не найден');
     }
 
-    // Обновляем только переданные поля
     user.preferences = {
       ...user.preferences,
       ...preferences,
@@ -181,19 +176,17 @@ export class AuthService {
     const accessToken = this.jwtService.sign(payload);
     const refreshToken = this.jwtService.sign(payload);
 
-    // Сохраняем refresh token
     await this.userRepository.update(user.id, { refreshToken });
 
     return {
       accessToken,
       refreshToken,
-      expiresIn: 86400, // 24 часа в секундах
+      expiresIn: 86400,
     };
   }
 
   private sanitizeUser(user: User): UserResponse {
-    // Деструктурируем и возвращаем без пароля и refreshToken
-    const { password, refreshToken, ...sanitizedUser } = user;
+    const { password: _password, refreshToken: _refreshToken, ...sanitizedUser } = user;
     return sanitizedUser as unknown as UserResponse;
   }
 
@@ -247,12 +240,11 @@ export class AuthService {
       throw new NotFoundException('Пользователь не найден');
     }
 
-    // Разрешённые для редактирования поля
-    const allowedFields = ['email', 'username', 'firstName', 'lastName', 'role', 'isActive', 'preferences'];
+    const allowedFields: (keyof UpdateUserDto)[] = ['email', 'username', 'firstName', 'lastName', 'role', 'isActive', 'preferences'];
 
     for (const field of allowedFields) {
       if (dto[field] !== undefined) {
-        user[field] = dto[field];
+        (user as unknown as Record<string, unknown>)[field] = dto[field];
       }
     }
 

@@ -5,7 +5,7 @@ import { News, NewsCategory, NewsStatus } from '../../entities';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { NewsStatsDto } from './dto/stats.dto';
 import { Favorite } from '../../entities';
-import { Like } from '../../entities';
+import { Like } from '../../entities'
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 

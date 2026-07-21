@@ -32,6 +32,15 @@ export interface JwtPayload {
   exp?: number;
 }
 
+export interface UserPreferences {
+  categories: string[];
+  tags: string[];
+  language: string;
+  notificationsEnabled: boolean;
+  emailNotifications: boolean;
+  theme: 'light' | 'dark';
+}
+
 export interface AiRewriteResult {
   title: string;
   summary: string;
