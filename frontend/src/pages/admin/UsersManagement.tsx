@@ -23,7 +23,7 @@ const UsersManagement: React.FC = () => {
       const response = await userService.getUsers(page);
       setUsers(response.data);
       setTotal(response.total);
-    } catch (error) {
+    } catch {
       message.error('Ошибка загрузки пользователей');
     }
     setLoading(false);
@@ -49,7 +49,7 @@ const UsersManagement: React.FC = () => {
       message.success('Пользователь обновлен');
       setModalVisible(false);
       loadUsers();
-    } catch (error) {
+    } catch {
       message.error('Ошибка обновления');
     }
   };
@@ -59,7 +59,7 @@ const UsersManagement: React.FC = () => {
       await userService.deleteUser(id);
       message.success('Пользователь удален');
       loadUsers();
-    } catch (error) {
+    } catch {
       message.error('Ошибка удаления');
     }
   };
