@@ -1,10 +1,16 @@
-import { Controller, Get, Render } from '@nestjs/common';
+import { Controller, Get, Req, Res } from '@nestjs/common';
+import type { Request, Response } from 'express';
+import { join } from 'path';
 
-@Controller('login')
+@Controller()
 export class AuthController {
-  @Get()
-  @Render('login')
-  login() {
-    return { framework: 'nestjs' };
+  @Get('login')
+  login(@Res() res: Response) {
+    res.sendFile(join(__dirname, '..', 'public', 'index.html'));
+  }
+
+  @Get('register')
+  register(@Res() res: Response) {
+    res.sendFile(join(__dirname, '..', 'public', 'index.html'));
   }
 }
