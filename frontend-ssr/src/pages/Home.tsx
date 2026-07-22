@@ -16,13 +16,12 @@ import {
   ReadOutlined,
   TeamOutlined,
   RocketOutlined,
-  ArrowRightOutlined,
   RobotOutlined,
   LinkOutlined,
   ClockCircleOutlined,
 } from '@ant-design/icons';
 import NewsDetailModal from '../components/NewsDetailModal';
-import axios from 'axios';
+import { useNewsStore } from '../store/newsStore';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -41,19 +40,13 @@ interface News {
 }
 
 const Home: React.FC = () => {
-  const [news, setNews] = useState<News[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { news, loading, fetchNews } = useNewsStore();
   const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const isAuthenticated = !!localStorage.getItem('accessToken');
 
   useEffect(() => {
-    axios
-      .get('/api/news', {
-        params: { limit: 6, sortBy: 'publishedAt', sortOrder: 'DESC' },
-      })
-      .then((res) => setNews(res.data.data))
-      .finally(() => setLoading(false));
+    if (!news.length) fetchNews({ limit: 6 });
   }, []);
 
   const formatDate = (dateString: string) => {

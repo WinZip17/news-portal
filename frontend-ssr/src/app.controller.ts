@@ -3,16 +3,28 @@ import type { NextFunction, Request, Response } from 'express';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom';
-import App from './App';
 import { createCache, extractStyle, StyleProvider } from '@ant-design/cssinjs';
+import App from './App';
+import { newsService } from './services/news.service';
 
 const routes = ['/', '/news', '/login', '/register', '/profile', '/admin'];
 
 @Controller()
 export class AppController {
   @Get(routes)
-  serve(@Req() req: Request, @Res() res: Response, @Next() next: NextFunction) {
+  async serve(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Next() next: NextFunction,
+  ) {
     if (req.url.startsWith('/api')) return next();
+
+    // Загружаем данные на сервере
+    const initialData =
+      req.url === '/' || req.url.startsWith('/news')
+        ? await newsService.fetchInitialData()
+        : { news: [], total: 0 };
+
     const cache = createCache();
 
     const html = renderToString(
@@ -41,6 +53,7 @@ export class AppController {
       </head>
       <body>
         <div id="root">${html}</div>
+        <script>window.__INITIAL_DATA__ = ${JSON.stringify(initialData)}</script>
         <script src="/client.js"></script>
       </body>
       </html>

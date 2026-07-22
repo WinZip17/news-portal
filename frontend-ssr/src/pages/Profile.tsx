@@ -24,6 +24,7 @@ import {
   KeyOutlined,
 } from '@ant-design/icons';
 import axios from 'axios';
+import api from '../services/api';
 
 const { Text } = Typography;
 
@@ -51,7 +52,7 @@ const Profile: React.FC = () => {
       window.location.href = '/login';
       return;
     }
-    axios
+    api
       .get('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => setUser(r.data));
     loadFavorites();

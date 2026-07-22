@@ -8,25 +8,9 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import axios from 'axios';
+import { News } from '../store/newsStore';
 
 const { Title, Text, Paragraph } = Typography;
-
-interface News {
-  id: string;
-  title: string;
-  content: string;
-  summary?: string;
-  imageUrl?: string;
-  category: string;
-  tags?: string[];
-  isAiGenerated: boolean;
-  views: number;
-  likes: number;
-  source?: string;
-  sourceUrl?: string;
-  author?: string;
-  publishedAt: string;
-}
 
 const NewsDetailModal: React.FC<{ newsId: string }> = ({ newsId }) => {
   const [news, setNews] = useState<News | null>(null);
