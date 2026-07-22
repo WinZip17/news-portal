@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Tag, Space, Select, message, Popconfirm, Modal, Input, Switch } from 'antd';
-import {
-  ReadOutlined,
-  TeamOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  CrownOutlined,
-  RocketOutlined
-} from '@ant-design/icons';
+import { ReadOutlined, TeamOutlined, EditOutlined, DeleteOutlined, CrownOutlined, RocketOutlined } from '@ant-design/icons';
 import { newsService } from '@/services/newsService';
 import { userService } from '@/services/userService';
 import { News, NewsStatus, NewsCategory } from '@/types/news';
 import { User } from '@/types/auth';
 import type { ColumnsType } from 'antd/es/table';
-import { aiService } from '@/services/aiService.ts'
+import { aiService } from '@/services/aiService.ts';
 
 const { TextArea } = Input;
 
@@ -155,7 +148,7 @@ const SuperAdminPanel: React.FC = () => {
       width: 150,
       render: (_, r) => (
         <Space>
-          <Button size="small" icon={<EditOutlined />} onClick={() => handleEditUser(r)} />
+          {r.role !== 'super_admin' && <Button size="small" icon={<EditOutlined />} onClick={() => handleEditUser(r)} />}
           {r.role !== 'super_admin' && (
             <Popconfirm title="Удалить?" onConfirm={() => handleDeleteUser(r.id)}>
               <Button size="small" danger icon={<DeleteOutlined />} />

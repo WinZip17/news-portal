@@ -127,10 +127,12 @@ const UsersManagement: React.FC = () => {
       width: 150,
       render: (_, record) => (
         <Space>
-          <Button size="small" icon={<EditOutlined />} onClick={() => handleEdit(record)} />
-          <Popconfirm title="Удалить пользователя?" onConfirm={() => handleDelete(record.id)}>
-            <Button size="small" danger icon={<DeleteOutlined />} />
-          </Popconfirm>
+          {record.role !== 'super_admin' && <Button size="small" icon={<EditOutlined />} onClick={() => handleEdit(record)} />}
+          {record.role !== 'super_admin' && (
+            <Popconfirm title="Удалить пользователя?" onConfirm={() => handleDelete(record.id)}>
+              <Button size="small" danger icon={<DeleteOutlined />} />
+            </Popconfirm>
+          )}
         </Space>
       ),
     },
