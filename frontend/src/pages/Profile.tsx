@@ -1,8 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Tabs, Card, Form, Input, Button, Switch, Select, message, Tag, Space, Empty, Spin, Modal } from 'antd';
-import { UserOutlined, HeartOutlined, SettingOutlined, RobotOutlined, LinkOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import {
+  UserOutlined,
+  HeartOutlined,
+  SettingOutlined,
+  RobotOutlined,
+  LinkOutlined,
+  ClockCircleOutlined,
+  LockOutlined,
+  KeyOutlined,
+} from '@ant-design/icons';
 import { useAuth } from '@/hooks/useAuth';
 import { newsService } from '@/services/newsService';
+import { authService } from '@/services/authService';
 import { News } from '@/types';
 import { useNewsModal } from '@/hooks/useNewsModal.ts';
 import NewsDetailModal from '@/components/NewsDetailModal';
@@ -24,20 +34,25 @@ interface PreferencesFormValues {
   emailNotifications?: boolean;
 }
 
+interface PasswordFormValues {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 const Profile: React.FC = () => {
   const { user, updateProfile, updatePreferences } = useAuth();
   const { selectedNewsId, modalVisible, openNews, closeNews } = useNewsModal();
   const [favorites, setFavorites] = useState<News[]>([]);
   const [loading, setLoading] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [passwordForm] = Form.useForm();
 
   useEffect(() => {
-    const fetchData = async () => {
-      const token = localStorage.getItem('accessToken');
-      if (token) {
-        await loadFavorites();
-      }
-    };
-    fetchData();
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      loadFavorites();
+    }
   }, []);
 
   const loadFavorites = async () => {
@@ -59,6 +74,18 @@ const Profile: React.FC = () => {
   const handleSavePreferences = async (values: PreferencesFormValues) => {
     await updatePreferences(values);
     message.success('Настройки сохранены');
+  };
+
+  const handleChangePassword = async (values: PasswordFormValues) => {
+    setPasswordLoading(true);
+    try {
+      await authService.changePassword(values.currentPassword, values.newPassword);
+      message.success('Пароль изменен');
+      passwordForm.resetFields();
+    } catch {
+      message.error('Ошибка смены пароля');
+    }
+    setPasswordLoading(false);
   };
 
   const handleRemoveFavorite = async (newsId: string) => {
@@ -94,6 +121,60 @@ const Profile: React.FC = () => {
             <Form.Item>
               <Button type="primary" htmlType="submit">
                 Сохранить
+              </Button>
+            </Form.Item>
+          </Form>
+        </Card>
+      ),
+    },
+    {
+      key: 'password',
+      label: (
+        <span>
+          <KeyOutlined /> Пароль
+        </span>
+      ),
+      children: (
+        <Card>
+          <Form form={passwordForm} layout="vertical" onFinish={handleChangePassword}>
+            <Form.Item name="currentPassword" label="Текущий пароль" rules={[{ required: true, message: 'Введите текущий пароль' }]}>
+              <Input.Password prefix={<LockOutlined />} placeholder="Текущий пароль" />
+            </Form.Item>
+            <Form.Item
+              name="newPassword"
+              label="Новый пароль"
+              rules={[
+                { required: true, message: 'Введите новый пароль' },
+                { min: 8, message: 'Минимум 8 символов' },
+                {
+                  pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+                  message: 'Заглавные, строчные буквы и цифры',
+                },
+              ]}
+            >
+              <Input.Password prefix={<LockOutlined />} placeholder="Новый пароль" />
+            </Form.Item>
+            <Form.Item
+              name="confirmPassword"
+              label="Подтвердите пароль"
+              dependencies={['newPassword']}
+              rules={[
+                { required: true, message: 'Подтвердите пароль' },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue('newPassword') === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error('Пароли не совпадают'));
+                  },
+                }),
+              ]}
+            >
+              <Input.Password prefix={<LockOutlined />} placeholder="Подтвердите пароль" />
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit" loading={passwordLoading}>
+                Сменить пароль
               </Button>
             </Form.Item>
           </Form>
