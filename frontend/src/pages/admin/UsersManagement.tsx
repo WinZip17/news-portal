@@ -69,6 +69,7 @@ const UsersManagement: React.FC = () => {
       admin: 'red',
       moderator: 'orange',
       user: 'blue',
+      super_admin: 'gold',
     };
     return colors[role] || 'default';
   };
@@ -78,6 +79,7 @@ const UsersManagement: React.FC = () => {
       admin: 'Админ',
       moderator: 'Модер',
       user: 'Пользователь',
+      super_admin: '👑 Суперадмин',
     };
     return labels[role] || role;
   };
