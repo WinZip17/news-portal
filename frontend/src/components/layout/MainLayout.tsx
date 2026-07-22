@@ -16,6 +16,7 @@ import {
 import type { MenuProps } from 'antd';
 import { useAuth } from '@/hooks/useAuth.ts';
 import { toggleTheme, useAppDispatch, useAppSelector } from '@/store';
+import FrameworkSwitcher from '@/components/FrameworkSwitcher.tsx'
 
 const { Header, Sider, Content, Footer } = Layout;
 
@@ -195,7 +196,7 @@ const MainLayout: React.FC = () => {
               {location.pathname.startsWith('/admin') && 'Админ панель'}
             </h2>
           </Space>
-
+          <FrameworkSwitcher />
           <Space size="middle">
             <Switch
               checkedChildren={<BulbFilled />}

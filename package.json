@@ -5,10 +5,7 @@
   "private": true,
   "license": "MIT",
   "description": "News portal with AI-generated content",
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
+  "workspaces": ["frontend", "backend", "frontend-ssr"],
   "scripts": {
     "install:all": "npm install",
     "dev": "concurrently -n \"DB,BE,FE\" -c \"yellow,blue,green\" \"npm run dev:db\" \"npm run dev:backend\" \"npm run dev:frontend\"",

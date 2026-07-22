@@ -192,7 +192,7 @@ const NewsList: React.FC = () => {
           <Empty description={<Text type="danger">Ошибка: {error}</Text>}>
             <Button onClick={() => fetchNews(pagination)}>Повторить</Button>
           </Empty>
-        ) : news.length > 0 ? (
+        ) : news?.length > 0 ? (
           <>
             <Row gutter={[16, 16]}>
               {news.map((item) => (
