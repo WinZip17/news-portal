@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Tag, Space, Select, message, Popconfirm, Modal, Input, Switch } from 'antd';
-import { ReadOutlined, TeamOutlined, EditOutlined, DeleteOutlined, CrownOutlined } from '@ant-design/icons';
+import {
+  ReadOutlined,
+  TeamOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  CrownOutlined,
+  RocketOutlined
+} from '@ant-design/icons';
 import { newsService } from '@/services/newsService';
 import { userService } from '@/services/userService';
 import { News, NewsStatus, NewsCategory } from '@/types/news';
 import { User } from '@/types/auth';
 import type { ColumnsType } from 'antd/es/table';
+import { aiService } from '@/services/aiService.ts'
 
 const { TextArea } = Input;
 
@@ -18,6 +26,7 @@ const SuperAdminPanel: React.FC = () => {
   const [editNews, setEditNews] = useState<News | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalType, setModalType] = useState<'user' | 'news'>('user');
+  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
     table === 'news' ? loadNews() : loadUsers();
@@ -157,21 +166,36 @@ const SuperAdminPanel: React.FC = () => {
     },
   ];
 
+  const handleAutoGenerate = async () => {
+    setGenerating(true);
+    try {
+      const result = await aiService.autoGenerate(2); // по 2 новости на категорию
+      message.success(`Сгенерировано ${result.totalGenerated} новостей`);
+    } catch {
+      message.error('Ошибка генерации');
+    }
+    setGenerating(false);
+  };
+
   return (
     <div>
       <h2>
         <CrownOutlined style={{ color: 'gold', marginRight: 8 }} />
         Панель суперадмина
       </h2>
-
-      <Select value={table} onChange={setTable} style={{ width: 200, marginBottom: 16 }}>
-        <Select.Option value="news">
-          <ReadOutlined /> Новости
-        </Select.Option>
-        <Select.Option value="users">
-          <TeamOutlined /> Пользователи
-        </Select.Option>
-      </Select>
+      <Space style={{ marginBottom: 16 }}>
+        <Select value={table} onChange={setTable} style={{ width: 200 }}>
+          <Select.Option value="news">
+            <ReadOutlined /> Новости
+          </Select.Option>
+          <Select.Option value="users">
+            <TeamOutlined /> Пользователи
+          </Select.Option>
+        </Select>
+        <Button type="primary" icon={<RocketOutlined />} loading={generating} onClick={handleAutoGenerate}>
+          Сгенерировать новости
+        </Button>
+      </Space>
 
       {table === 'news' ? (
         <Table columns={newsColumns} dataSource={news} rowKey="id" loading={loading} scroll={{ x: 700 }} />
