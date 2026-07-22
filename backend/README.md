@@ -161,5 +161,4 @@ docker build -t news-portal-backend . — сборка образа
 docker run -p 3001:3001 --env-file .env news-portal-backend — запуск контейнера
 ```
 ## 📝 Лицензия
-
 MIT
