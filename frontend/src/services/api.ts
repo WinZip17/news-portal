@@ -113,6 +113,11 @@ class ApiService {
   async delete<T>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
     return this.api.delete<T>(url, config);
   }
+  async postAi<T>(url: string, data?: unknown): Promise<AxiosResponse<T>> {
+    return this.api.post<T>(url, data, {
+      timeout: 600000, // 10 минут для AI генерации
+    });
+  }
 }
 
 export const apiService = new ApiService();
