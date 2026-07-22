@@ -39,7 +39,12 @@ const Profile: React.FC = () => {
   const [user, setUser] = useState<any>(null);
   const [favorites, setFavorites] = useState<News[]>([]);
   const [loading, setLoading] = useState(false);
-  const token = localStorage.getItem('accessToken');
+
+  const getToken = () => {
+    if (!window) return null;
+    return localStorage.getItem('accessToken');
+  };
+  const token = getToken();
 
   useEffect(() => {
     if (!token) {

@@ -202,7 +202,7 @@ const NewsList: React.FC = () => {
           <>
             <Row gutter={[16, 16]}>
               {news.map((item) => (
-                <Col xs={24} sm={12} lg={8} key={item.id}>
+                <Col style={{ width: '100%' }} key={item.id}>
                   <Card
                     hoverable
                     onClick={() => {

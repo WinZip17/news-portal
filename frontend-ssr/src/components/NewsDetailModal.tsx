@@ -50,13 +50,22 @@ const NewsDetailModal: React.FC<{ newsId: string }> = ({ newsId }) => {
   return (
     <div>
       <Alert
-        title={news.isAiGenerated ? '🤖 AI-рерайт' : '📄 Оригинал'}
+        title={
+          news.isAiGenerated
+            ? '🤖 AI-рерайт новости'
+            : '📄 Оригинальная новость'
+        }
+        description={
+          news.isAiGenerated
+            ? 'Эта новость создана с помощью искусственного интеллекта на основе реальных данных. Факты сохранены, формулировки изменены.'
+            : 'Оригинальная новость из новостного источника.'
+        }
         type={news.isAiGenerated ? 'info' : 'success'}
         showIcon
         style={{ marginBottom: 16 }}
       />
       <Title level={3}>{news.title}</Title>
-      <Space wrap style={{ marginBottom: 16, color: '#666' }}>
+      <Space wrap style={{ marginBottom: 16, color: '#666', marginRight: 8 }}>
         <Text type="secondary">
           <ClockCircleOutlined />{' '}
           {new Date(news.publishedAt).toLocaleDateString('ru-RU')}
