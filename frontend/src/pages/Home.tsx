@@ -28,6 +28,15 @@ const Home: React.FC = () => {
   const [stats, setStats] = useState<NewsStats | null>(null);
   const { selectedNewsId, modalVisible, openNews, closeNews } = useNewsModal();
 
+  useEffect(() => {
+    fetchNews({
+      limit: 9,
+      sortBy: 'publishedAt',
+      sortOrder: 'DESC',
+    });
+    loadStats();
+  }, []);
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -85,14 +94,7 @@ const Home: React.FC = () => {
       console.error('Failed to load stats:', error);
     }
   };
-  useEffect(() => {
-    fetchNews({
-      limit: 9,
-      sortBy: 'publishedAt',
-      sortOrder: 'DESC',
-    });
-    loadStats();
-  }, []);
+
   return (
     <div>
       <Helmet>

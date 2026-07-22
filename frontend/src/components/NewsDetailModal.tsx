@@ -29,6 +29,18 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
 
+  useEffect(() => {
+    if (newsId) {
+      fetchNewsById(newsId).then(() => {
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+          checkFavorite();
+          checkLike();
+        }
+      });
+    }
+  }, [newsId]);
+
   const checkLike = async () => {
     const token = localStorage.getItem('accessToken');
     if (!token) return;
@@ -50,18 +62,6 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
       // Не авторизован
     }
   };
-
-  useEffect(() => {
-    if (newsId) {
-      fetchNewsById(newsId).then(() => {
-        const token = localStorage.getItem('accessToken');
-        if (token) {
-          checkFavorite();
-          checkLike();
-        }
-      });
-    }
-  }, [newsId]);
 
   const handleToggleFavorite = async () => {
     const token = localStorage.getItem('accessToken');

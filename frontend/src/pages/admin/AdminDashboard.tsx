@@ -1,10 +1,15 @@
 import React from 'react';
 import { Tabs } from 'antd';
-import { ReadOutlined, TeamOutlined } from '@ant-design/icons';
-import NewsManagement from '@/pages/admin/NewsManagement.tsx';
-import UsersManagement from '@/pages/admin/UsersManagement.tsx';
+import { ReadOutlined, TeamOutlined, CrownOutlined } from '@ant-design/icons';
+import NewsManagement from './NewsManagement';
+import UsersManagement from './UsersManagement';
+import SuperAdminPanel from './SuperAdminPanel';
+import { useAuth } from '@/hooks/useAuth';
 
 const AdminDashboard: React.FC = () => {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === 'super_admin';
+
   const items = [
     {
       key: 'news',
@@ -25,6 +30,18 @@ const AdminDashboard: React.FC = () => {
       children: <UsersManagement />,
     },
   ];
+
+  if (isSuperAdmin) {
+    items.push({
+      key: 'super',
+      label: (
+        <span>
+          <CrownOutlined style={{ color: 'gold' }} /> Панель суперадмина
+        </span>
+      ),
+      children: <SuperAdminPanel />,
+    });
+  }
 
   return (
     <div>

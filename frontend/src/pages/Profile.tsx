@@ -30,6 +30,16 @@ const Profile: React.FC = () => {
   const [favorites, setFavorites] = useState<News[]>([]);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        await loadFavorites();
+      }
+    };
+    fetchData();
+  }, []);
+
   const loadFavorites = async () => {
     setLoading(true);
     try {
@@ -40,16 +50,6 @@ const Profile: React.FC = () => {
     }
     setLoading(false);
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const token = localStorage.getItem('accessToken');
-      if (token) {
-        await loadFavorites();
-      }
-    };
-    fetchData();
-  }, []);
 
   const handleSaveProfile = async (values: ProfileFormValues) => {
     await updateProfile(values);

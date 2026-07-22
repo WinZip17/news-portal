@@ -56,7 +56,7 @@ export class NewsController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'moderator', 'user')
+  @Roles('super_admin', 'admin', 'moderator', 'user')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Создание новости' })
   create(@Body() createNewsDto: CreateNewsDto, @Request() req: RequestWithUser) {
@@ -132,7 +132,7 @@ export class NewsController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'moderator')
+  @Roles('super_admin', 'admin', 'moderator')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Обновление новости' })
   update(@Param('id') id: string, @Body() updateData: Partial<News>) {
@@ -141,7 +141,7 @@ export class NewsController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('super_admin', 'admin')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Удаление новости' })
   delete(@Param('id') id: string) {
@@ -150,7 +150,7 @@ export class NewsController {
 
   @Patch(':id/moderate')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'moderator')
+  @Roles('super_admin', 'admin', 'moderator')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Модерация новости' })
   moderate(@Param('id') id: string, @Body() moderationData: ModerationBody, @Request() req: RequestWithUser) {

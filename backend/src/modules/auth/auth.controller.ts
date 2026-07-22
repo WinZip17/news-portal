@@ -79,7 +79,7 @@ export class AuthController {
 
   @Get('users')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('super_admin', 'admin')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Список пользователей (только для админов)' })
   async getUsers(@Query('page') page = 1, @Query('limit') limit = 20) {
@@ -88,7 +88,7 @@ export class AuthController {
 
   @Put('users/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('super_admin', 'admin')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Обновление пользователя (только для админов)' })
   async updateUser(@Param('id') id: string, @Body() dto: UpdateUserDto) {
@@ -97,7 +97,7 @@ export class AuthController {
 
   @Delete('users/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('super_admin', 'admin')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Удаление пользователя (только для админов)' })
   async deleteUser(@Param('id') id: string) {

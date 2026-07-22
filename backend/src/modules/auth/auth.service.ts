@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, ConflictException, NotFoundException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { AuthResponse, TokenResponse, UserResponse, UserPreferences } from '../../types';
-import { User } from '../../entities';
+import { User, UserRole } from '../../entities';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 interface ProfileUpdateData {
@@ -230,6 +230,13 @@ export class AuthService {
   }
 
   async deleteUser(id: string): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('Пользователь не найден');
+    }
+    if (user.role === UserRole.SUPER_ADMIN) {
+      throw new ForbiddenException('Нельзя удалить суперадмина');
+    }
     await this.userRepository.delete(id);
   }
 
@@ -238,6 +245,10 @@ export class AuthService {
 
     if (!user) {
       throw new NotFoundException('Пользователь не найден');
+    }
+
+    if (user.role === UserRole.SUPER_ADMIN) {
+      throw new ForbiddenException('Нельзя изменить суперадмина');
     }
 
     const allowedFields: (keyof UpdateUserDto)[] = ['email', 'username', 'firstName', 'lastName', 'role', 'isActive', 'preferences'];

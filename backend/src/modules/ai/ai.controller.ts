@@ -14,7 +14,7 @@ export class AiController {
 
   @Post('generate')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'moderator')
+  @Roles('super_admin', 'admin', 'moderator')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({
     summary: 'Генерация новостей с помощью AI',
@@ -29,7 +29,7 @@ export class AiController {
 
   @Get('status')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('super_admin', 'admin')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Проверка доступности AI сервиса' })
   @ApiResponse({ status: 200, description: 'Статус AI сервиса' })
@@ -39,7 +39,7 @@ export class AiController {
 
   @Post('auto-generate')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'moderator')
+  @Roles('super_admin', 'admin', 'moderator')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({
     summary: 'Ручной запуск авто-генерации по всем категориям',

@@ -101,7 +101,7 @@ export const routes = [
       {
         path: '/admin',
         element: (
-          <ProtectedRoute requiredRoles={['admin', 'moderator']}>
+          <ProtectedRoute requiredRoles={['admin', 'moderator', 'super_admin']}>
             <Suspense fallback={<PageLoader />}>
               <AdminDashboard />
             </Suspense>
