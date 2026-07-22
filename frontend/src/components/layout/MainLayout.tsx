@@ -52,7 +52,7 @@ const MainLayout: React.FC = () => {
             icon: <UserOutlined />,
             label: 'Профиль',
           },
-          ...(user?.role === 'admin' || user?.role === 'moderator'
+          ...(user?.role === 'admin' || user?.role === 'moderator' || user?.role === 'super_admin'
             ? [
                 {
                   key: '/admin',
