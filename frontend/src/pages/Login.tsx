@@ -27,8 +27,8 @@ const Login: React.FC = () => {
         rememberMe: values.rememberMe,
       });
       navigate('/');
-    } catch (err: any) {
-      setLoginError(err.message || 'Ошибка входа');
+    } catch (err: unknown) {
+      setLoginError(err instanceof Error ? err.message : 'Ошибка регистрации');
     }
   };
 

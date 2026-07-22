@@ -1,5 +1,5 @@
 import { apiService } from './api';
-import { AuthResponse, LoginCredentials, RegisterData, User } from '@/types';
+import { AuthResponse, LoginCredentials, RegisterData, User, UserPreferences } from '@/types';
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
@@ -26,7 +26,7 @@ export const authService = {
     return response.data;
   },
 
-  async updatePreferences(preferences: any): Promise<User> {
+  async updatePreferences(preferences: UserPreferences): Promise<User> {
     const response = await apiService.put<User>('/auth/preferences', preferences);
     return response.data;
   },

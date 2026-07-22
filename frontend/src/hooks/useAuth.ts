@@ -17,7 +17,7 @@ import {
   store,
   setTheme,
 } from '@/store';
-import { LoginCredentials, RegisterData, User } from '@/types';
+import { LoginCredentials, RegisterData, User, UserPreferences } from '@/types';
 import { message } from 'antd';
 
 export const useAuth = () => {
@@ -51,27 +51,26 @@ export const useAuth = () => {
   }, [dispatch]);
 
   const handleUpdateProfile = useCallback(
-    (data: Partial<User>) => {
+    (data: Partial<Pick<User, 'firstName' | 'lastName' | 'avatar'>>) => {
       return dispatch(updateProfile(data)).unwrap();
     },
     [dispatch],
   );
 
   const handleUpdatePreferences = useCallback(
-    async (preferences: any) => {
+    async (preferences: Partial<UserPreferences>) => {
       try {
-        const user = await dispatch(updatePreferences(preferences)).unwrap();
+        const updatedUser = await dispatch(updatePreferences(preferences)).unwrap();
 
-        // Применяем тему сразу
         if (preferences.theme) {
           store.dispatch(setTheme(preferences.theme));
         }
 
         message.success('Настройки сохранены');
-        return user;
-      } catch (error) {
+        return updatedUser;
+      } catch {
         message.error('Ошибка сохранения настроек');
-        throw error;
+        throw new Error('Ошибка сохранения настроек');
       }
     },
     [dispatch],

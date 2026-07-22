@@ -33,8 +33,8 @@ const Register: React.FC = () => {
       });
       message.success('Регистрация завершена успешно!');
       navigate('/');
-    } catch (err: any) {
-      setRegisterError(err.message || 'Ошибка регистрации');
+    } catch (err: unknown) {
+      setRegisterError(err instanceof Error ? err.message : 'Ошибка регистрации');
     }
   };
 

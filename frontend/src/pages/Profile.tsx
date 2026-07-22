@@ -10,33 +10,53 @@ import { Typography } from 'antd';
 
 const { Text } = Typography;
 
+interface ProfileFormValues {
+  firstName?: string;
+  lastName?: string;
+  username?: string;
+  email?: string;
+}
+
+interface PreferencesFormValues {
+  theme?: 'light' | 'dark';
+  language?: string;
+  notificationsEnabled?: boolean;
+  emailNotifications?: boolean;
+}
+
 const Profile: React.FC = () => {
   const { user, updateProfile, updatePreferences } = useAuth();
   const { selectedNewsId, modalVisible, openNews, closeNews } = useNewsModal();
   const [favorites, setFavorites] = useState<News[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    loadFavorites();
-  }, []);
-
   const loadFavorites = async () => {
     setLoading(true);
     try {
       const response = await newsService.getFavorites();
       setFavorites(response.data);
-    } catch (error) {
+    } catch {
       message.error('Ошибка загрузки избранного');
     }
     setLoading(false);
   };
 
-  const handleSaveProfile = async (values: any) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        await loadFavorites();
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handleSaveProfile = async (values: ProfileFormValues) => {
     await updateProfile(values);
     message.success('Профиль обновлен');
   };
 
-  const handleSavePreferences = async (values: any) => {
+  const handleSavePreferences = async (values: PreferencesFormValues) => {
     await updatePreferences(values);
     message.success('Настройки сохранены');
   };
@@ -175,7 +195,6 @@ const Profile: React.FC = () => {
     <div style={{ maxWidth: 800, margin: '0 auto' }}>
       <h1>Личный кабинет</h1>
       <Tabs items={tabItems} />
-
       <Modal open={modalVisible} onCancel={closeNews} footer={null} width={900} centered destroyOnHidden style={{ top: 20 }}>
         {selectedNewsId && <NewsDetailModal newsId={selectedNewsId} />}
       </Modal>

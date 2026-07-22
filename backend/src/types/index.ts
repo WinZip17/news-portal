@@ -15,7 +15,7 @@ export interface UserResponse {
   lastName?: string;
   avatar?: string;
   role: string;
-  preferences: any;
+  preferences: UserPreferences;
   isActive: boolean;
   lastLoginAt?: string;
   createdAt: string;

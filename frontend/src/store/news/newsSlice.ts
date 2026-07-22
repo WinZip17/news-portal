@@ -1,8 +1,8 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { News, NewsFilter } from '@/types';
+import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@reduxjs/toolkit';
+import { News, NewsFilter, NewsResponse } from '@/types';
 import { newsService } from '@/services/newsService';
 import type { RootState } from '@/store';
-import { createSelector } from '@reduxjs/toolkit';
+import { AxiosError } from 'axios';
 
 const selectNewsState = (state: RootState) => state.news;
 
@@ -17,6 +17,10 @@ interface NewsState {
   error: string | null;
   filters: NewsFilter;
   personalizedNews: News[];
+}
+
+interface ApiErrorResponse {
+  message: string;
 }
 
 const initialState: NewsState = {
@@ -37,75 +41,82 @@ const initialState: NewsState = {
   personalizedNews: [],
 };
 
-export const fetchNews = createAsyncThunk('news/fetchNews', async (filters: NewsFilter, { rejectWithValue }) => {
+const handleApiError = (error: unknown): string => {
+  if (error instanceof AxiosError) {
+    return (error.response?.data as ApiErrorResponse)?.message || 'Request failed';
+  }
+  return error instanceof Error ? error.message : 'Unknown error';
+};
+
+export const fetchNews = createAsyncThunk<NewsResponse, NewsFilter>('news/fetchNews', async (filters, { rejectWithValue }) => {
   try {
-    const response = await newsService.getNews(filters);
-    return response;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || 'Failed to fetch news');
+    return await newsService.getNews(filters);
+  } catch (error: unknown) {
+    return rejectWithValue(handleApiError(error));
   }
 });
 
-export const fetchNewsById = createAsyncThunk('news/fetchNewsById', async (id: string, { rejectWithValue }) => {
+export const fetchNewsById = createAsyncThunk<News, string>('news/fetchNewsById', async (id, { rejectWithValue }) => {
   try {
-    const news = await newsService.getNewsById(id);
-    return news;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || 'Failed to fetch news');
+    return await newsService.getNewsById(id);
+  } catch (error: unknown) {
+    return rejectWithValue(handleApiError(error));
   }
 });
 
-export const createNews = createAsyncThunk('news/createNews', async (data: Partial<News>, { rejectWithValue }) => {
+export const createNews = createAsyncThunk<News, Partial<News>>('news/createNews', async (data, { rejectWithValue }) => {
   try {
-    const news = await newsService.createNews(data);
-    return news;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || 'Failed to create news');
+    return await newsService.createNews(data);
+  } catch (error: unknown) {
+    return rejectWithValue(handleApiError(error));
   }
 });
 
-export const updateNews = createAsyncThunk('news/updateNews', async ({ id, data }: { id: string; data: Partial<News> }, { rejectWithValue }) => {
-  try {
-    const news = await newsService.updateNews(id, data);
-    return news;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || 'Failed to update news');
-  }
-});
+export const updateNews = createAsyncThunk<News, { id: string; data: Partial<News> }>(
+  'news/updateNews',
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      return await newsService.updateNews(id, data);
+    } catch (error: unknown) {
+      return rejectWithValue(handleApiError(error));
+    }
+  },
+);
 
-export const deleteNews = createAsyncThunk('news/deleteNews', async (id: string, { rejectWithValue }) => {
+export const deleteNews = createAsyncThunk<string, string>('news/deleteNews', async (id, { rejectWithValue }) => {
   try {
     await newsService.deleteNews(id);
     return id;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || 'Failed to delete news');
+  } catch (error: unknown) {
+    return rejectWithValue(handleApiError(error));
   }
 });
 
-export const moderateNews = createAsyncThunk('news/moderateNews', async ({ id, status }: { id: string; status: string }, { rejectWithValue }) => {
+export const moderateNews = createAsyncThunk<News, { id: string; status: string }>(
+  'news/moderateNews',
+  async ({ id, status }, { rejectWithValue }) => {
+    try {
+      return await newsService.moderateNews(id, status);
+    } catch (error: unknown) {
+      return rejectWithValue(handleApiError(error));
+    }
+  },
+);
+
+export const likeNews = createAsyncThunk<News, string>('news/likeNews', async (id, { rejectWithValue }) => {
   try {
-    const news = await newsService.moderateNews(id, status);
-    return news;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || 'Failed to moderate news');
+    return await newsService.likeNews(id);
+  } catch (error: unknown) {
+    return rejectWithValue(handleApiError(error));
   }
 });
 
-export const likeNews = createAsyncThunk('news/likeNews', async (id: string, { rejectWithValue }) => {
-  try {
-    const news = await newsService.likeNews(id);
-    return news;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || 'Failed to like news');
-  }
-});
-
-export const fetchPersonalizedNews = createAsyncThunk('news/fetchPersonalizedNews', async (preferences: string[], { rejectWithValue }) => {
+export const fetchPersonalizedNews = createAsyncThunk<News[], string[]>('news/fetchPersonalizedNews', async (preferences, { rejectWithValue }) => {
   try {
     const response = await newsService.getPersonalizedNews(preferences);
     return response.data;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || 'Failed to fetch personalized news');
+  } catch (error: unknown) {
+    return rejectWithValue(handleApiError(error));
   }
 });
 
@@ -128,7 +139,6 @@ const newsSlice = createSlice({
     resetNews: () => initialState,
   },
   extraReducers: (builder) => {
-    // Fetch News
     builder
       .addCase(fetchNews.pending, (state) => {
         state.isLoading = true;
@@ -147,7 +157,6 @@ const newsSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Fetch News By Id
     builder
       .addCase(fetchNewsById.pending, (state) => {
         state.isLoading = true;
@@ -162,7 +171,6 @@ const newsSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Create News
     builder
       .addCase(createNews.pending, (state) => {
         state.isLoading = true;
@@ -177,7 +185,6 @@ const newsSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Update News
     builder
       .addCase(updateNews.pending, (state) => {
         state.isLoading = true;
@@ -198,7 +205,6 @@ const newsSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Delete News
     builder
       .addCase(deleteNews.pending, (state) => {
         state.isLoading = true;
@@ -216,7 +222,6 @@ const newsSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Moderate News
     builder
       .addCase(moderateNews.pending, (state) => {
         state.isLoading = true;
@@ -236,7 +241,6 @@ const newsSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Like News
     builder.addCase(likeNews.fulfilled, (state, action) => {
       const index = state.news.findIndex((item) => item.id === action.payload.id);
       if (index !== -1) {
@@ -247,7 +251,6 @@ const newsSlice = createSlice({
       }
     });
 
-    // Fetch Personalized News
     builder
       .addCase(fetchPersonalizedNews.pending, (state) => {
         state.isLoading = true;
@@ -263,15 +266,8 @@ const newsSlice = createSlice({
   },
 });
 
-export const {
-  setFilters,
-  clearFilters,
-  setCurrentNews,
-  clearNewsError, // Экспортируем с новым именем
-  resetNews,
-} = newsSlice.actions;
+export const { setFilters, clearFilters, setCurrentNews, clearNewsError, resetNews } = newsSlice.actions;
 
-// Selectors
 export const selectNews = (state: RootState) => state.news.news;
 export const selectCurrentNews = (state: RootState) => state.news.currentNews;
 export const selectNewsLoading = (state: RootState) => state.news.isLoading;
