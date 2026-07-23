@@ -1,5 +1,14 @@
 import React, { useMemo, useState } from 'react';
-import { Layout, Menu, Switch, Avatar, Dropdown, Space } from 'antd';
+import {
+  Layout,
+  Menu,
+  Switch,
+  Avatar,
+  Dropdown,
+  Space,
+  Button,
+  Drawer,
+} from 'antd';
 import type { MenuProps } from 'antd';
 import {
   HomeOutlined,
@@ -9,6 +18,7 @@ import {
   LogoutOutlined,
   DashboardOutlined,
   SettingOutlined,
+  MenuOutlined,
   BulbOutlined,
   BulbFilled,
 } from '@ant-design/icons';
@@ -17,7 +27,7 @@ import FrameworkSwitcher from '../components/FrameworkSwitcher';
 import { useUserStore } from '../store/userStoreProvider';
 import { useUIStore } from '../store/uiStoreProvider';
 
-const { Header, Content, Sider } = Layout;
+const { Header, Content, Sider, Footer } = Layout;
 
 type NavItem = {
   key: string;
@@ -56,6 +66,7 @@ const allNavItems: NavItem[] = [
 
 const MainLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
   const isAuthenticated = useUserStore((s) => s.isAuthenticated);
   const user = useUserStore((s) => s.user);
   const setUser = useUserStore((s) => s.setUser);
@@ -101,6 +112,7 @@ const MainLayout: React.FC = () => {
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
     const item = navItems.find((i) => i.key === key);
     if (item) navigate(item.path);
+    setMobileMenuVisible(false);
   };
 
   const userMenuItems: MenuProps['items'] = isAuthenticated
@@ -109,17 +121,13 @@ const MainLayout: React.FC = () => {
           key: 'profile',
           icon: <UserOutlined />,
           label: 'Профиль',
-          onClick: () => {
-            navigate('/profile');
-          },
+          onClick: () => navigate('/profile'),
         },
         {
           key: 'settings',
           icon: <SettingOutlined />,
           label: 'Настройки',
-          onClick: () => {
-            navigate('/profile');
-          },
+          onClick: () => navigate('/profile'),
         },
         { type: 'divider' },
         {
@@ -134,29 +142,44 @@ const MainLayout: React.FC = () => {
           key: 'login',
           icon: <LoginOutlined />,
           label: 'Войти',
-          onClick: () => {
-            navigate('/login');
-          },
+          onClick: () => navigate('/login'),
         },
       ];
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
+      {/* Десктопный сайдбар */}
+      <Sider
+        collapsible
+        collapsed={collapsed}
+        onCollapse={setCollapsed}
+        breakpoint="lg"
+        collapsedWidth="0"
+        trigger={null}
+        style={{
+          overflow: 'auto',
+          height: '100vh',
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          zIndex: 100,
+        }}
+      >
         <div
           style={{
+            height: 64,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             color: 'white',
-            padding: 16,
-            fontSize: 20,
+            fontSize: collapsed ? '16px' : '20px',
             fontWeight: 'bold',
             cursor: 'pointer',
-            userSelect: 'none',
           }}
-          onClick={() => {
-            navigate('/');
-          }}
+          onClick={() => navigate('/')}
         >
-          📰 News Portal
+          {collapsed ? '📰' : '📰 News Portal'}
         </div>
         <Menu
           theme="dark"
@@ -166,18 +189,58 @@ const MainLayout: React.FC = () => {
           items={menuItems}
         />
       </Sider>
-      <Layout>
+
+      {/* Мобильное меню */}
+      <Drawer
+        title="Меню"
+        placement="left"
+        onClose={() => setMobileMenuVisible(false)}
+        open={mobileMenuVisible}
+        styles={{ body: { padding: 0 } }}
+        width={250}
+      >
+        <Menu
+          mode="inline"
+          selectedKeys={[selectedKey]}
+          onClick={handleMenuClick}
+          items={menuItems}
+          style={{ border: 'none' }}
+        />
+      </Drawer>
+
+      <Layout
+        style={{ marginLeft: collapsed ? 0 : 200, transition: 'all 0.2s' }}
+      >
         <Header
           style={{
-            background: theme === 'dark' ? '#141414' : '#fff',
             padding: '0 24px',
+            background: theme === 'dark' ? '#001529' : '#fff',
             display: 'flex',
-            justifyContent: 'space-between',
             alignItems: 'center',
+            justifyContent: 'space-between',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            position: 'sticky',
+            top: 0,
+            zIndex: 99,
           }}
         >
-          <FrameworkSwitcher />
+          <Space>
+            <Button
+              type="text"
+              icon={<MenuOutlined />}
+              onClick={() => setMobileMenuVisible(true)}
+              className="mobile-menu-btn"
+              style={{ display: 'none' }}
+            />
+            <h2 style={{ margin: 0 }}>
+              {location.pathname === '/' && 'Главная'}
+              {location.pathname === '/news' && 'Новости'}
+              {location.pathname === '/profile' && 'Профиль'}
+              {location.pathname.startsWith('/admin') && 'Админ панель'}
+            </h2>
+          </Space>
           <Space size="middle">
+            <FrameworkSwitcher />
             <Switch
               checkedChildren={<BulbFilled />}
               unCheckedChildren={<BulbOutlined />}
@@ -204,10 +267,23 @@ const MainLayout: React.FC = () => {
             </Dropdown>
           </Space>
         </Header>
-        <Content style={{ padding: 24 }}>
+
+        <Content style={{ margin: '24px', minHeight: 280 }}>
           <Outlet />
         </Content>
+
+        <Footer style={{ textAlign: 'center' }}>
+          News Portal ©{new Date().getFullYear()} - Создано с ❤️ и AI
+        </Footer>
       </Layout>
+
+      <style>{`
+        @media (max-width: 992px) {
+          .mobile-menu-btn {
+            display: inline-flex !important;
+          }
+        }
+      `}</style>
     </Layout>
   );
 };

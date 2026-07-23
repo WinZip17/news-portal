@@ -59,8 +59,9 @@ export class AppController {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>News Portal - SSR</title>
+        <title>News Portal - Nest JS SSR</title>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="stylesheet" href="/styles.css" />
         <style>${styleText}</style>
       </head>
       <body>
