@@ -23,6 +23,7 @@ import {
 import NewsDetailModal from '../components/NewsDetailModal';
 import { useNewsStore } from '../store/newsStoreProvider';
 import { isBrowser } from '../utils/isBrowser';
+import { useNavigate } from 'react-router-dom';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -30,6 +31,7 @@ const Home: React.FC = () => {
   const news = useNewsStore((s) => s.news);
   const loading = useNewsStore((s) => s.loading);
   const fetchNews = useNewsStore((s) => s.fetchNews);
+  const navigate = useNavigate();
 
   const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -93,7 +95,7 @@ const Home: React.FC = () => {
   };
 
   const setLocation = (url: string) => {
-    window.location.href = url;
+    navigate(url);
   };
 
   return (
