@@ -24,13 +24,16 @@ import {
   ClearOutlined,
 } from '@ant-design/icons';
 import NewsDetailModal from '../components/NewsDetailModal';
-import { useNewsStore } from '../store/newsStore';
+import { useNewsStore } from '../store/newsStoreProvider';
 
 const { Search } = Input;
 const { Title, Text, Paragraph } = Typography;
 
 const NewsList: React.FC = () => {
-  const { news, total, loading, fetchNews } = useNewsStore();
+  const news = useNewsStore((s) => s.news);
+  const loading = useNewsStore((s) => s.loading);
+  const total = useNewsStore((s) => s.total);
+  const fetchNews = useNewsStore((s) => s.fetchNews);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [sortBy, setSortBy] = useState('publishedAt');

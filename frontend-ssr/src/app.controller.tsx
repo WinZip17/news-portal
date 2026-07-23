@@ -7,6 +7,8 @@ import { createCache, extractStyle, StyleProvider } from '@ant-design/cssinjs';
 import App from './App';
 import { newsService } from './services/news.service';
 import type { NewsResponse } from './types';
+import { createNewsStore } from './store/newsStore';
+import { NewsStoreProvider } from './store/newsStoreProvider';
 
 const routes = ['/', '/news', '/login', '/register', '/profile', '/admin'];
 
@@ -27,22 +29,27 @@ export class AppController {
       limit: 0,
       totalPages: 0,
     };
+
     if (req.url === '/' || req.url.startsWith('/news')) {
       initialData = await newsService.fetchInitialData();
     }
 
+    const store = createNewsStore({
+      news: initialData.data ?? [],
+      total: initialData.total ?? 0,
+      loading: false,
+    });
+
     const cache = createCache();
 
     const html = renderToString(
-      React.createElement(
-        StyleProvider,
-        { cache },
-        React.createElement(
-          StaticRouter,
-          { location: req.url },
-          React.createElement(App),
-        ),
-      ),
+      <StyleProvider cache={cache}>
+        <NewsStoreProvider store={store}>
+          <StaticRouter location={req.url}>
+            <App />
+          </StaticRouter>
+        </NewsStoreProvider>
+      </StyleProvider>,
     );
 
     const styleText = extractStyle(cache);
@@ -59,9 +66,9 @@ export class AppController {
       </head>
       <body>
         <div id="root">${html}</div>
-         <script>
-            window.__INITIAL_DATA__ = ${JSON.stringify(initialData).replace(/</g, '\\u003c')};
-         </script>
+        <script>
+          window.__INITIAL_DATA__ = ${JSON.stringify(initialData).replace(/</g, '\\u003c')};
+        </script>
         <script src="/client.js"></script>
       </body>
       </html>

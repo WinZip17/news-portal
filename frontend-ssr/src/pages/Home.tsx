@@ -21,34 +21,44 @@ import {
   ClockCircleOutlined,
 } from '@ant-design/icons';
 import NewsDetailModal from '../components/NewsDetailModal';
-import { useNewsStore } from '../store/newsStore';
+import { useNewsStore } from '../store/newsStoreProvider';
 
 const { Title, Paragraph, Text } = Typography;
 
 const Home: React.FC = () => {
-  const { news, loading, fetchNews } = useNewsStore();
+  const news = useNewsStore((s) => s.news);
+  const loading = useNewsStore((s) => s.loading);
+  const fetchNews = useNewsStore((s) => s.fetchNews);
+
   const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+
+  console.log('Home news', news.length);
+
+  useEffect(() => {
+    if (news.length === 0) {
+      fetchNews({ limit: 6 });
+    }
+  }, [news.length, fetchNews]);
 
   const getToken = () => {
     // if (!window) return null;
     // return localStorage.getItem('accessToken');
     return false;
   };
+
   const token = getToken();
   const isAuthenticated = !!token;
-  console.log('news', news);
-  useEffect(() => {
-    // if (!news.length) fetchNews({ limit: 6 });
-  }, []);
 
   const formatDate = (dateString: string) => {
     const d = new Date(dateString);
     const now = new Date();
     const diff = Math.floor((now.getTime() - d.getTime()) / 60000);
+
     if (diff < 1) return 'только что';
     if (diff < 60) return `${diff} мин. назад`;
     if (diff < 1440) return `${Math.floor(diff / 60)} ч. назад`;
+
     return d.toLocaleDateString('ru-RU', {
       year: 'numeric',
       month: 'long',
@@ -85,7 +95,7 @@ const Home: React.FC = () => {
   };
 
   const setLocation = (url: string) => {
-    if (window) window.location.href = url;
+    window.location.href = url;
   };
 
   return (
@@ -117,6 +127,7 @@ const Home: React.FC = () => {
         >
           Актуальные новости с AI-рерайтом из проверенных источников.
         </Paragraph>
+
         <Space size="large">
           {!isAuthenticated ? (
             <>
@@ -167,12 +178,13 @@ const Home: React.FC = () => {
           <Card hoverable>
             <Statistic
               title="Новостей сегодня"
-              value={news?.length | 0}
+              value={news.length}
               prefix={<ReadOutlined />}
               loading={loading}
             />
           </Card>
         </Col>
+
         <Col xs={24} sm={8}>
           <Card hoverable>
             <Statistic
@@ -182,6 +194,7 @@ const Home: React.FC = () => {
             />
           </Card>
         </Col>
+
         <Col xs={24} sm={8}>
           <Card hoverable>
             <Statistic
@@ -194,8 +207,9 @@ const Home: React.FC = () => {
       </Row>
 
       <Title level={2}>Последние новости</Title>
+
       <Spin spinning={loading}>
-        {news?.length > 0 ? (
+        {news.length > 0 ? (
           <Row gutter={[24, 24]}>
             {news.map((item) => (
               <Col xs={24} sm={12} lg={8} key={item.id}>
@@ -222,10 +236,12 @@ const Home: React.FC = () => {
                         <Paragraph ellipsis={{ rows: 2 }}>
                           {item.summary?.substring(0, 120)}...
                         </Paragraph>
+
                         <Space wrap size={[4, 4]} style={{ marginTop: 8 }}>
                           <Tag color={getCategoryColor(item.category)}>
                             {getCategoryLabel(item.category)}
                           </Tag>
+
                           {item.isAiGenerated ? (
                             <Tag icon={<RobotOutlined />} color="blue">
                               AI-рерайт
@@ -235,6 +251,7 @@ const Home: React.FC = () => {
                               Оригинал
                             </Tag>
                           )}
+
                           <Text type="secondary" style={{ fontSize: 12 }}>
                             <ClockCircleOutlined />{' '}
                             {formatDate(item.publishedAt)}
