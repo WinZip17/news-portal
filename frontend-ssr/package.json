@@ -9,8 +9,6 @@
     "build": "nest build && npm run build:client",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
@@ -18,8 +16,10 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "build:client": "webpack --mode production",
-    "dev": "concurrently \"nest start --watch\" \"webpack --watch --mode development\""
+    "build:client": "webpack --config webpack.client.js --mode production",
+    "dev:server": "nest start --watch",
+    "dev:client": "webpack --watch --config webpack.client.js",
+    "dev": "concurrently -k \"npm run dev:server\" \"npm run dev:client\""
   },
   "dependencies": {
     "@ant-design/cssinjs": "^2.1.2",

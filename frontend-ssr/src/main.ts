@@ -6,9 +6,8 @@ import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // Статика ДО контроллеров, но только для файлов
-  app.useStaticAssets(join(__dirname, '..', 'public'), {
-    index: false, // Не отдавать index.html автоматически
+  app.useStaticAssets(join(process.cwd(), 'public'), {
+    index: false,
     setHeaders: (res, path) => {
       if (path.endsWith('.js') || path.endsWith('.css')) {
         res.setHeader('Cache-Control', 'public, max-age=31536000');

@@ -22,6 +22,7 @@ import {
 } from '@ant-design/icons';
 import NewsDetailModal from '../components/NewsDetailModal';
 import { useNewsStore } from '../store/newsStoreProvider';
+import { isBrowser } from '../utils/isBrowser';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -40,8 +41,8 @@ const Home: React.FC = () => {
   }, [news.length, fetchNews]);
 
   const getToken = () => {
-    if (!window) return null;
-    return localStorage.getItem('accessToken');
+    if (isBrowser()) return localStorage.getItem('accessToken');
+    return null;
   };
 
   const token = getToken();

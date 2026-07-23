@@ -1,6 +1,6 @@
 import axios from 'axios';
+import { isBrowser } from '../utils/isBrowser';
 
-const isBrowser = () => typeof window !== 'undefined';
 const api = axios.create({
   baseURL: isBrowser() ? '/api' : 'http://localhost:3001/api',
   timeout: 10000,
