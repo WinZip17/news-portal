@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { ThemeProvider, CssBaseline } from '@mui/material';
-import { store, useAppSelector, useAppDispatch } from '@/store';
+import { store, useAppSelector, useAppDispatch, setTheme } from '@/store';
 import { fetchCurrentUser } from '@/store/auth/authSlice';
 import { lightTheme, darkTheme } from '@/theme';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
@@ -20,10 +20,18 @@ function ThemeWrapper({ children }: { children: React.ReactNode }) {
 
 function AuthInit({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
+  const user = useAppSelector((s) => s.auth.user);
+
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (token) dispatch(fetchCurrentUser());
   }, []);
+
+  useEffect(() => {
+    if (user?.preferences?.theme) {
+      dispatch(setTheme(user.preferences.theme));
+    }
+  }, [user]);
   return <>{children}</>;
 }
 

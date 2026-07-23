@@ -26,7 +26,7 @@ import { authService } from '@/services/authService';
 import { newsService } from '@/services/newsService';
 import { News, User } from '@/types';
 import { getCategoryLabel } from '@/utils/getCategoryLabel';
-import { useAppSelector } from '@/store';
+import { setTheme, useAppDispatch, useAppSelector } from '@/store';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -39,7 +39,9 @@ export default function ProfilePage() {
   const [profileSuccess, setProfileSuccess] = useState('');
   const [prefsError, setPrefsError] = useState('');
   const [prefsSuccess, setPrefsSuccess] = useState('');
-  const [theme, setTheme] = useState(user?.preferences?.theme || 'dark');
+  const dispatch = useAppDispatch();
+  const currentTheme = useAppSelector((s) => s.ui.theme);
+
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
@@ -223,8 +225,8 @@ export default function ProfilePage() {
           )}
           <Select
             name="theme"
-            value={theme}
-            onChange={(e) => setTheme(e.target.value)}
+            value={currentTheme}
+            onChange={(e) => dispatch(setTheme(e.target.value as 'light' | 'dark'))}
             fullWidth
             sx={{ mb: 2 }}
           >

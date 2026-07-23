@@ -87,9 +87,6 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isAuthenticated = true;
         state.user = action.payload;
-        // if (action.payload.preferences?.theme) {
-        //   store.dispatch(setTheme(action.payload.preferences.theme));
-        // }
       })
       .addCase(fetchCurrentUser.rejected, (state) => {
         state.isLoading = false;
