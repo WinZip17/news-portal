@@ -13,7 +13,7 @@ const FrameworkSwitcher: React.FC = () => {
       </Button>
       <Button
         size="small"
-        onClick={() => (window.location.href = 'https://short-news.ru:3002')}
+        onClick={() => (window.location.href = 'https://nest.short-news.ru')}
       >
         🟢 NestJS SSR
       </Button>

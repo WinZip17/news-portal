@@ -7,7 +7,7 @@ const FrameworkSwitcher: React.FC = () => {
       <Button type="primary" size="small" onClick={() => (window.location.href = 'https://short-news.ru')}>
         ⚛️ React SPA
       </Button>
-      <Button size="small" onClick={() => (window.location.href = 'https://short-news.ru:3002')}>
+      <Button size="small" onClick={() => (window.location.href = 'https://nest.short-news.ru')}>
         🟢 NestJS SSR
       </Button>
       <Button size="small" disabled>
