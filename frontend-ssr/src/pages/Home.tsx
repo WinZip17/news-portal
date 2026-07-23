@@ -33,8 +33,6 @@ const Home: React.FC = () => {
   const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  console.log('Home news', news.length);
-
   useEffect(() => {
     if (news.length === 0) {
       fetchNews({ limit: 6 });
@@ -42,9 +40,8 @@ const Home: React.FC = () => {
   }, [news.length, fetchNews]);
 
   const getToken = () => {
-    // if (!window) return null;
-    // return localStorage.getItem('accessToken');
-    return false;
+    if (!window) return null;
+    return localStorage.getItem('accessToken');
   };
 
   const token = getToken();

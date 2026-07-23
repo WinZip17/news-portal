@@ -25,26 +25,21 @@ import {
 } from '@ant-design/icons';
 import axios from 'axios';
 import api from '../services/api';
+import { News, User } from '../types';
 
 const { Text } = Typography;
 
-interface News {
-  id: string;
-  title: string;
-  category: string;
-  isAiGenerated: boolean;
-  publishedAt: string;
-}
-
 const Profile: React.FC = () => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [favorites, setFavorites] = useState<News[]>([]);
   const [loading, setLoading] = useState(false);
 
   const getToken = () => {
-    if (!window) return null;
-    return localStorage.getItem('accessToken');
+    if (typeof window !== 'undefined')
+      return localStorage.getItem('accessToken');
+    return null;
   };
+
   const token = getToken();
 
   useEffect(() => {
