@@ -3,7 +3,7 @@ import { Button, Space } from 'antd';
 
 const FrameworkSwitcher: React.FC = () => {
   return (
-    <Space>
+    <Space style={{ display: 'none' }}>
       <Button type="primary" size="small" onClick={() => (window.location.href = 'https://short-news.ru')}>
         ⚛️ React SPA
       </Button>

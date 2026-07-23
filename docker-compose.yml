@@ -67,6 +67,16 @@ services:
       - news-portal-network
     restart: unless-stopped
 
+  frontend-ssr:
+    build:
+      context: ./frontend-ssr
+      dockerfile: Dockerfile
+    container_name: news-portal-ssr
+    ports:
+      - "3002:3002"
+    networks:
+      - news-portal-network
+    restart: unless-stopped
   prometheus:
     build:
       context: ./prometheus

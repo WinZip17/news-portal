@@ -35,11 +35,10 @@ jobs:
           port: ${{ secrets.VPS_PORT || 22 }}
           script: |
             set -e
-            
-            echo "🚀 Starting zero-downtime deployment..."
+
+            echo "🚀 Starting deployment..."
             cd /opt/news-portal
-            
-            # .env
+
             if [ ! -f .env ]; then
               echo "📝 Creating .env..."
               cat > .env << ENVEOF
@@ -50,41 +49,42 @@ jobs:
             NODE_ENV=production
             ENVEOF
             fi
-            
-            # Инфраструктура (если не запущена)
+
+            echo "📦 Starting infrastructure..."
             docker compose up -d postgres redis prometheus grafana 2>/dev/null || true
             until docker compose exec -T postgres pg_isready -U postgres 2>/dev/null; do sleep 3; done
             echo "✅ Database ready"
-            
-            # Бесшовный деплой backend
-            echo "🔨 Deploying backend..."
-            docker compose up -d --build --scale backend=2 backend 2>/dev/null || \
+
+            echo "🔨 Building backend..."
             docker compose up -d --build backend
             sleep 5
-            
-            # Проверка backend
             if ! docker compose ps backend | grep -q "Up"; then
               echo "❌ Backend failed!"
               docker compose logs backend --tail=20
               exit 1
             fi
             echo "✅ Backend running"
-            
-            # Бесшовный деплой frontend
-            echo "🎨 Deploying frontend..."
+
+            echo "🎨 Building React frontend..."
             docker compose up -d --build frontend
             sleep 5
-            
-            # Проверка frontend
             if ! docker compose ps frontend | grep -q "Up"; then
-              echo "❌ Frontend failed!"
+              echo "❌ React frontend failed!"
               docker compose logs frontend --tail=20
               exit 1
             fi
-            echo "✅ Frontend running"
-            
-            # Очистка старых образов
+            echo "✅ React frontend running"
+
+            echo "🟢 Building NestJS SSR frontend..."
+            docker compose up -d --build frontend-ssr
+            sleep 5
+            if ! docker compose ps frontend-ssr | grep -q "Up"; then
+              echo "❌ NestJS SSR frontend failed!"
+              docker compose logs frontend-ssr --tail=20
+              exit 1
+            fi
+            echo "✅ NestJS SSR frontend running"
+
             docker image prune -f || true
-            
             echo "✅ Deployment completed!"
             docker compose ps
