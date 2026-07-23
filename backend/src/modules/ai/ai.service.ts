@@ -86,7 +86,7 @@ export class AiService {
 
     this.logger.log(`📰 Fetching RSS articles for category: ${selectedCategory}`);
 
-    // 1. ОДИН запрос RSS — получаем в 2 раза больше статей
+    // Берём с запасом, потому что часть отсеется как дубли
     const articles = await this.rssFetcher.fetchNewsByCategory(selectedCategory, count * 2);
 
     if (!articles || articles.length === 0) {
@@ -99,47 +99,99 @@ export class AiService {
 
     this.logger.log(`📥 Got ${articles.length} articles from RSS`);
 
-    // 2. Фильтруем дубликаты
+    // Локальная защита от дублей внутри одной пачки
     const uniqueArticles: RssArticle[] = [];
     const seenUrls = new Set<string>();
     const seenTitles = new Set<string>();
-    for (const article of articles) {
-      // Проверка на дубликаты внутри самого массива
-      const url = normalizeUrl(article.link);
-      const normalizedTitle = article.title.trim().toLowerCase();
 
-      if (seenUrls.has(url) || seenTitles.has(normalizedTitle)) {
-        this.logger.warn(`⏭️ Duplicate in RSS batch: "${article.title.substring(0, 50)}..."`);
+    for (const article of articles) {
+      const normalizedUrl = normalizeUrl(article.link);
+      const normalizedTitle = this.normalizeText(article.title);
+
+      if (seenUrls.has(normalizedUrl) || seenTitles.has(normalizedTitle)) {
+        this.logger.warn(`⏭️ Duplicate in RSS batch: "${article.title.substring(0, 80)}..."`);
         continue;
       }
 
-      // Проверка на дубликаты в базе
-      const isDuplicate = await this.deduplicationService.checkDuplicate(article.title, article.link);
+      // Проверка по БД до AI
+      const duplicate = await this.deduplicationService.checkDuplicate({
+        title: article.title,
+        sourceUrl: article.link,
+        summary: article.summary,
+        content: article.content,
+      });
 
-      if (!isDuplicate.isDuplicate) {
-        uniqueArticles.push(article);
-        seenUrls.add(url);
-        seenTitles.add(normalizedTitle);
-      } else {
-        this.logger.warn(`⏭️ Duplicate in DB: "${article.title.substring(0, 50)}..."`);
+      if (duplicate.isDuplicate) {
+        this.logger.warn(`⏭️ Duplicate in DB (${duplicate.reason}): "${article.title.substring(0, 80)}..."`);
+        continue;
       }
 
-      if (uniqueArticles.length >= count) break;
+      uniqueArticles.push(article);
+      seenUrls.add(normalizedUrl);
+      seenTitles.add(normalizedTitle);
+
+      if (uniqueArticles.length >= count) {
+        break;
+      }
     }
 
     this.logger.log(`🔍 ${uniqueArticles.length} unique articles after dedup`);
 
-    // 3. Генерируем новости из уникальных статей
     const generatedNews = [];
+
     for (const article of uniqueArticles) {
       try {
-        const news = await this.rewriteArticle(article, selectedCategory);
-        if (news) {
-          generatedNews.push(news);
+        // rewriteArticle должен вернуть draft, а не сохранять сам
+        const draft = await this.rewriteArticle(article, selectedCategory);
+
+        if (!draft) {
+          continue;
         }
+
+        // Повторная проверка уже по итоговой новости
+        const finalDuplicate = await this.deduplicationService.checkDuplicate({
+          title: draft.title,
+          sourceUrl: article.link,
+          summary: draft.summary,
+          content: draft.content,
+        });
+
+        if (finalDuplicate.isDuplicate) {
+          this.logger.warn(`⏭️ Duplicate after rewrite (${finalDuplicate.reason}): "${draft.title.substring(0, 80)}..."`);
+          continue;
+        }
+
+        const news = this.newsRepository.create({
+          title: draft.title,
+          content: draft.content,
+          summary: draft.summary,
+          category: draft.category || selectedCategory,
+          tags: draft.tags || article.categories || [],
+          imageUrl: article.imageUrl || this.generateImageUrl(selectedCategory),
+          source: article.source,
+          sourceUrl: article.link,
+          isAiGenerated: true,
+          status: NewsStatus.PENDING,
+          publishedAt: new Date(),
+        });
+
+        try {
+          const saved = await this.newsRepository.save(news);
+          generatedNews.push(saved);
+          this.logger.log(`✅ News generated: ${saved.title}`);
+        } catch (error: any) {
+          // Защита от race condition / unique index violation
+          if (this.isUniqueViolation(error)) {
+            this.logger.warn(`⏭️ Unique constraint violation, skipping: "${draft.title.substring(0, 80)}..."`);
+            continue;
+          }
+
+          throw error;
+        }
+
         await this.delay(2000);
-      } catch (error) {
-        this.logger.error(`Failed to generate: ${error.message}`);
+      } catch (error: any) {
+        this.logger.error(`Failed to generate article: ${error.message}`);
       }
     }
 
@@ -151,6 +203,7 @@ export class AiService {
 
   private async rewriteArticle(article: RssArticle, category: NewsCategory) {
     const prompt = `Сделай рерайт новости на русском языке. Сохрани все факты, но полностью измени формулировки и структуру текста.
+
     ОРИГИНАЛЬНАЯ НОВОСТЬ:
     Заголовок: ${article.title}
     Источник: ${article.source}
@@ -160,7 +213,7 @@ export class AiService {
     {
       "title": "Новый заголовок (до 100 символов)",
       "summary": "Краткое описание (2-3 предложения)",
-      "content": "Полный текст новости в формате HTML с абзацами <p> (500-800 слов)",
+      "content": "Полный текст новости в формате HTML с абзацами <p>",
       "tags": ["тег1", "тег2", "тег3"],
       "category": "politics|economy|technology|science|sports|entertainment|health|world"
     }
@@ -168,9 +221,8 @@ export class AiService {
     Важно:
     - Сохрани все факты и цифры из оригинала
     - Измени структуру и формулировки
-    - Добавь контекст и анализ
     - Используй профессиональный журналистский стиль
-    - Подбери подходящую категорию из оригинально источника
+    - Категория должна быть одной из: politics, economy, technology, science, sports, entertainment, health, world
     - Ответ строго в формате JSON`;
 
     try {
@@ -180,7 +232,7 @@ export class AiService {
           {
             role: 'system',
             content:
-              'Ты профессиональный журналист и редактор. Твоя задача - делать качественный рерайт новостей на русском языке, сохраняя факты и добавляя аналитику. Отвечай только валидным JSON без переносов строк внутри строк.',
+              'Ты профессиональный журналист и редактор. Твоя задача — делать качественный рерайт новостей на русском языке, сохраняя факты. Отвечай только валидным JSON.',
           },
           {
             role: 'user',
@@ -191,7 +243,9 @@ export class AiService {
         max_completion_tokens: this.aiConfig.maxTokens,
         response_format: { type: 'json_object' },
       });
+
       const rawContent = completion.choices[0]?.message?.content || '{}';
+
       let result: AiRewriteResult = {
         title: '',
         summary: '',
@@ -199,115 +253,102 @@ export class AiService {
         category: '',
         tags: [],
       };
+
       try {
         result = JSON.parse(rawContent) as AiRewriteResult;
       } catch {
         this.logger.error('Failed to parse AI response, trying to fix...');
 
-        // Пробуем исправить незакрытые строки
-        const fixedContent = rawContent
-          .replace(/\n/g, ' ') // Убираем переносы строк
-          .replace(/\\/g, '\\\\') // Экранируем обратные слеши
-          .replace(/\r/g, ''); // Убираем carriage return
+        const fixedContent = rawContent.replace(/\n/g, ' ').replace(/\r/g, '').replace(/\\/g, '\\\\');
 
         try {
           result = JSON.parse(fixedContent) as AiRewriteResult;
         } catch {
-          // Извлекаем что можем через регулярки
           const titleMatch = rawContent.match(/"title"\s*:\s*"([^"]+)"/);
           const summaryMatch = rawContent.match(/"summary"\s*:\s*"([^"]+)"/);
-          const tagsMatch = rawContent.match(/"tags"\s*:\s*\[(.*?)\]/);
+          const contentMatch = rawContent.match(/"content"\s*:\s*"([^"]+)"/s);
+          const categoryMatch = rawContent.match(/"category"\s*:\s*"([^"]+)"/);
+          const tagsMatch = rawContent.match(/"tags"\s*:\s*\[(.*?)\]/s);
 
           result = {
             title: titleMatch?.[1] || article.title,
-            summary: summaryMatch?.[1] || article.summary,
-            content: article.content || article.summary,
-            category,
-            tags: tagsMatch ? tagsMatch[1].split(',').map((t: string) => t.replace(/"/g, '').trim()) : [],
+            summary: summaryMatch?.[1] || article.summary || '',
+            content: contentMatch?.[1] || article.content || article.summary || '',
+            category: categoryMatch?.[1] || category,
+            tags: tagsMatch
+              ? tagsMatch[1]
+                  .split(',')
+                  .map((t: string) => t.replace(/"/g, '').trim())
+                  .filter(Boolean)
+              : [],
           };
 
           this.logger.warn('Using fallback extraction from malformed JSON');
         }
       }
-      // Определяем категорию: сначала из ответа AI, потом из переданной
-      const certainCategory = this.validateCategory(result.category) || category;
 
-      const news = this.newsRepository.create({
-        title: result.title || article.title,
-        content: result.content || article.content,
-        summary: result.summary || article.summary,
-        category: certainCategory,
-        tags: result.tags || article.categories || [],
-        imageUrl: article.imageUrl || this.generateImageUrl(category),
-        source: article.source,
-        sourceUrl: article.link,
-        isAiGenerated: true,
-        status: NewsStatus.PENDING,
-        publishedAt: new Date(),
-      });
-      const minContentLength = 50;
-      const contentText = (result.content || article.content || '').replace(/<[^>]*>/g, '').trim();
-      if (contentText.length < minContentLength) {
+      const finalTitle = (result.title || article.title || '').trim();
+      const finalSummary = (result.summary || article.summary || '').trim();
+      const finalContent = (result.content || article.content || article.summary || '').trim();
+      const finalCategory = this.validateCategory(result.category) || category;
+      const finalTags = Array.isArray(result.tags) && result.tags.length > 0 ? result.tags : article.categories || [];
+
+      // Валидация контента
+      const contentText = finalContent.replace(/<[^>]*>/g, '').trim();
+      if (contentText.length < 50) {
         this.logger.warn(`⏭️ Content too short (${contentText.length} chars): "${contentText.substring(0, 50)}..."`);
         return null;
       }
 
-      // Проверяем что заголовок не пустой и не фолбэк
-      const title = result.title || article.title || '';
-      if (!title || title.includes('Контент находится в процессе генерации') || title.includes('Актуальные новости')) {
-        this.logger.warn(`⏭️ Invalid title: "${title}"`);
+      // Валидация заголовка
+      if (!finalTitle || finalTitle.includes('Контент находится в процессе генерации') || finalTitle.includes('Актуальные новости')) {
+        this.logger.warn(`⏭️ Invalid title: "${finalTitle}"`);
         return null;
       }
 
-      // Проверяем что контент не фолбэк
+      // Валидация fallback-контента
       if (contentText.includes('Контент находится в процессе генерации') || contentText.includes('временно недоступен')) {
         this.logger.warn('⏭️ Fallback content detected');
         return null;
       }
-      const saved = await this.newsRepository.save(news);
-      this.logger.log(`✅ News generated: ${saved.title}`);
-      return saved;
-    } catch (error) {
-      this.logger.error('Failed to rewrite article:', error.message);
 
-      // Сохраняем оригинал если AI не сработал
-      // Очищаем HTML-теги и форматируем текст
+      return {
+        title: finalTitle,
+        summary: finalSummary,
+        content: finalContent,
+        category: finalCategory,
+        tags: finalTags,
+      };
+    } catch (error: any) {
+      this.logger.error(`Failed to rewrite article: ${error.message}`);
+
+      // Fallback: возвращаем оригинальную новость в более чистом виде
       let cleanContent = article.content || article.summary || '';
 
-      // Удаляем все HTML-теги
       cleanContent = cleanContent.replace(/<[^>]*>/g, '');
-
-      // Удаляем множественные пробелы и переносы
       cleanContent = cleanContent.replace(/\s+/g, ' ').trim();
 
-      // Разбиваем на абзацы по точкам
       const paragraphs = cleanContent
         .split(/\.\s+/)
         .filter((p) => p.trim().length > 10)
         .map((p) => `<p>${p.trim()}.</p>`)
         .join('');
 
-      const news = this.newsRepository.create({
-        title: article.title.replace(/<[^>]*>/g, '').trim(),
-        content: paragraphs || `<p>${cleanContent}</p>`,
-        summary: (article.summary || '')
-          .replace(/<[^>]*>/g, '')
-          .trim()
-          .substring(0, 200),
-        category: category,
-        tags: article.categories || [],
-        imageUrl: article.imageUrl || this.generateImageUrl(category),
-        source: article.source,
-        sourceUrl: article.link,
-        isAiGenerated: false,
-        status: NewsStatus.PENDING,
-        publishedAt: new Date(),
-      });
       if (cleanContent.length < 50) {
         this.logger.warn(`⏭️ Original content too short (${cleanContent.length} chars), skipping`);
         return null;
       }
-      return this.newsRepository.save(news);
+
+      return {
+        title: article.title.replace(/<[^>]*>/g, '').trim(),
+        summary: (article.summary || '')
+          .replace(/<[^>]*>/g, '')
+          .trim()
+          .substring(0, 200),
+        content: paragraphs || `<p>${cleanContent}</p>`,
+        category,
+        tags: article.categories || [],
+      };
     }
   }
 
@@ -501,5 +542,20 @@ export class AiService {
 
   private delay(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  private normalizeText(text: string): string {
+    return (text || '')
+      .toLowerCase()
+      .replace(/ё/g, 'е')
+      .replace(/[^\p{L}\p{N}\s]+/gu, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  private isUniqueViolation(error: any): boolean {
+    // PostgreSQL unique violation
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    return error?.code === '23505' || error?.driverError?.code === '23505';
   }
 }
