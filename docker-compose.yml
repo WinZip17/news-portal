@@ -6,6 +6,7 @@ services:
       POSTGRES_DB: ${DB_DATABASE:-news_portal}
       POSTGRES_USER: ${DB_USERNAME:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+      NODE_ENV: production
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:

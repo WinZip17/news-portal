@@ -1,8 +1,13 @@
 import axios from 'axios';
 import { isBrowser } from '../utils/isBrowser';
 
+const baseURL =
+  process.env.NODE_ENV !== 'development' && !isBrowser()
+    ? 'http://localhost:3001/api'
+    : '/api';
+
 const api = axios.create({
-  baseURL: isBrowser() ? '/api' : 'http://localhost:3001/api',
+  baseURL,
   timeout: 10000,
   headers: { 'Content-Type': 'application/json' },
 });
