@@ -2,8 +2,8 @@ import React from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
-import { createNewsStore } from './store/newsStore';
-import { NewsStoreProvider } from './store/newsStoreProvider';
+import { AppProviders } from './store/AppProviders';
+import { createAppStores } from './store/createAppStores';
 import type { NewsResponse } from './types';
 
 declare global {
@@ -13,12 +13,7 @@ declare global {
 }
 
 const initialData = window.__INITIAL_DATA__;
-
-const store = createNewsStore({
-  news: initialData?.data ?? [],
-  total: initialData?.total ?? 0,
-  loading: false,
-});
+const { newsStore, uiStore, userStore } = createAppStores(initialData);
 
 const container = document.getElementById('root');
 
@@ -26,9 +21,13 @@ if (container) {
   hydrateRoot(
     container,
     <BrowserRouter>
-      <NewsStoreProvider store={store}>
+      <AppProviders
+        newsStore={newsStore}
+        uiStore={uiStore}
+        userStore={userStore}
+      >
         <App />
-      </NewsStoreProvider>
+      </AppProviders>
     </BrowserRouter>,
   );
 }

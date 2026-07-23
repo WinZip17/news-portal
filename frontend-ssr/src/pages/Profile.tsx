@@ -48,7 +48,7 @@ const Profile: React.FC = () => {
       return;
     }
     api
-      .get('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
+      .get('/auth/me', { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => setUser(r.data));
     loadFavorites();
   }, []);

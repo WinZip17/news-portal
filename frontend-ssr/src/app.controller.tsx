@@ -7,8 +7,8 @@ import { createCache, extractStyle, StyleProvider } from '@ant-design/cssinjs';
 import App from './App';
 import { newsService } from './services/news.service';
 import type { NewsResponse } from './types';
-import { createNewsStore } from './store/newsStore';
-import { NewsStoreProvider } from './store/newsStoreProvider';
+import { AppProviders } from './store/AppProviders';
+import { createAppStores } from './store/createAppStores';
 
 const routes = ['/', '/news', '/login', '/register', '/profile', '/admin'];
 
@@ -34,21 +34,20 @@ export class AppController {
       initialData = await newsService.fetchInitialData();
     }
 
-    const store = createNewsStore({
-      news: initialData.data ?? [],
-      total: initialData.total ?? 0,
-      loading: false,
-    });
-
+    const { newsStore, uiStore, userStore } = createAppStores(initialData);
     const cache = createCache();
 
     const html = renderToString(
       <StyleProvider cache={cache}>
-        <NewsStoreProvider store={store}>
+        <AppProviders
+          newsStore={newsStore}
+          uiStore={uiStore}
+          userStore={userStore}
+        >
           <StaticRouter location={req.url}>
             <App />
           </StaticRouter>
-        </NewsStoreProvider>
+        </AppProviders>
       </StyleProvider>,
     );
 
