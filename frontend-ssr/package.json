@@ -6,8 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build && npm run build:client",
+    "build:server": "nest build",
     "build:client": "webpack --config webpack.client.js --mode production",
+    "build": "npm run build:server && npm run build:client",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "node dist/main.js",
     "start:prod": "nest start",
