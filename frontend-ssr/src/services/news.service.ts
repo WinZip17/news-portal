@@ -34,7 +34,31 @@ export const newsService = {
     return response.data;
   },
 
-  async toggleFavorite(newsId: string): Promise<void> {
-    await api.post(`/news/${newsId}/favorite`);
+  async isLiked(newsId: string): Promise<boolean> {
+    const response = await api.get<{ liked: boolean }>(
+      `/news/${newsId}/like/check`,
+    );
+    return response.data.liked;
+  },
+
+  async toggleLike(newsId: string): Promise<{ liked: boolean; likes: number }> {
+    const response = await api.post<{ liked: boolean; likes: number }>(
+      `/news/${newsId}/like`,
+    );
+    return response.data;
+  },
+
+  async isFavorited(newsId: string): Promise<boolean> {
+    const response = await api.get<{ favorited: boolean }>(
+      `/news/${newsId}/favorite/check`,
+    );
+    return response.data.favorited;
+  },
+
+  async toggleFavorite(newsId: string): Promise<{ favorited: boolean }> {
+    const response = await api.post<{ favorited: boolean }>(
+      `/news/${newsId}/favorite`,
+    );
+    return response.data;
   },
 };
