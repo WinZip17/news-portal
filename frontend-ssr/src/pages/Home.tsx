@@ -25,28 +25,21 @@ import { useNewsStore } from '../store/newsStore';
 
 const { Title, Paragraph, Text } = Typography;
 
-interface News {
-  id: string;
-  title: string;
-  summary?: string;
-  category: string;
-  tags?: string[];
-  isAiGenerated: boolean;
-  views: number;
-  likes: number;
-  source?: string;
-  publishedAt: string;
-  imageUrl?: string;
-}
-
 const Home: React.FC = () => {
   const { news, loading, fetchNews } = useNewsStore();
   const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const isAuthenticated = !!localStorage.getItem('accessToken');
 
+  const getToken = () => {
+    // if (!window) return null;
+    // return localStorage.getItem('accessToken');
+    return false;
+  };
+  const token = getToken();
+  const isAuthenticated = !!token;
+  console.log('news', news);
   useEffect(() => {
-    if (!news.length) fetchNews({ limit: 6 });
+    // if (!news.length) fetchNews({ limit: 6 });
   }, []);
 
   const formatDate = (dateString: string) => {
@@ -91,6 +84,10 @@ const Home: React.FC = () => {
     return labels[cat] || cat;
   };
 
+  const setLocation = (url: string) => {
+    if (window) window.location.href = url;
+  };
+
   return (
     <div>
       <div
@@ -126,7 +123,7 @@ const Home: React.FC = () => {
               <Button
                 type="primary"
                 size="large"
-                onClick={() => (window.location.href = '/register')}
+                onClick={() => setLocation('/register')}
                 style={{
                   background: 'white',
                   color: '#667eea',
@@ -140,7 +137,7 @@ const Home: React.FC = () => {
               <Button
                 size="large"
                 ghost
-                onClick={() => (window.location.href = '/login')}
+                onClick={() => setLocation('/login')}
                 style={{ color: 'white', borderColor: 'white' }}
               >
                 Войти
@@ -150,7 +147,7 @@ const Home: React.FC = () => {
             <Button
               type="primary"
               size="large"
-              onClick={() => (window.location.href = '/news')}
+              onClick={() => setLocation('/news')}
               style={{
                 background: 'white',
                 color: '#667eea',

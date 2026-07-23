@@ -1,27 +1,13 @@
 import { create } from 'zustand';
 import api from '../services/api';
-export interface News {
-  id: string;
-  title: string;
-  content: string;
-  summary?: string;
-  imageUrl?: string;
-  category: string;
-  tags?: string[];
-  isAiGenerated: boolean;
-  views: number;
-  likes: number;
-  source?: string;
-  sourceUrl?: string;
-  author?: string;
-  publishedAt: string;
-}
+import type { News, NewsResponse } from '../types';
+
 interface NewsState {
   news: News[];
   total: number;
   loading: boolean;
   fetchNews: (params?: Record<string, string | number>) => Promise<void>;
-  hydrate: (data: { news: News[]; total: number }) => void;
+  hydrate: (data: NewsResponse) => void;
 }
 
 export const useNewsStore = create<NewsState>((set) => ({
@@ -32,7 +18,7 @@ export const useNewsStore = create<NewsState>((set) => ({
   fetchNews: async (params = {}) => {
     set({ loading: true });
     try {
-      const res = await api.get('/news', {
+      const res = await api.get<NewsResponse>('/news', {
         params: {
           limit: 12,
           sortBy: 'publishedAt',
@@ -47,6 +33,6 @@ export const useNewsStore = create<NewsState>((set) => ({
   },
 
   hydrate: (data) => {
-    set({ news: data.news, total: data.total, loading: false });
+    set({ news: data.data, total: data.total, loading: false });
   },
 }));

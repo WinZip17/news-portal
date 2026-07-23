@@ -24,60 +24,33 @@ import {
   ClearOutlined,
 } from '@ant-design/icons';
 import NewsDetailModal from '../components/NewsDetailModal';
-import axios from 'axios';
+import { useNewsStore } from '../store/newsStore';
 
 const { Search } = Input;
 const { Title, Text, Paragraph } = Typography;
 
-interface News {
-  id: string;
-  title: string;
-  summary?: string;
-  content?: string;
-  category: string;
-  tags?: string[];
-  isAiGenerated: boolean;
-  views: number;
-  likes: number;
-  source?: string;
-  publishedAt: string;
-}
-
 const NewsList: React.FC = () => {
-  const [news, setNews] = useState<News[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { news, total, loading, fetchNews } = useNewsStore();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [sortBy, setSortBy] = useState('publishedAt');
   const [aiFilter, setAiFilter] = useState('all');
   const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
   const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    loadNews();
+    const params: Record<string, string | number> = {
+      page,
+      sortBy,
+      sortOrder: 'DESC',
+    };
+    if (category !== 'all') params.category = category;
+    if (search) params.search = search;
+    if (aiFilter !== 'all')
+      params.isAiGenerated = aiFilter === 'true' ? 'true' : 'false';
+    fetchNews(params);
   }, [category, sortBy, aiFilter, page]);
-
-  const loadNews = async () => {
-    setLoading(true);
-    try {
-      const params: Record<string, string | number> = {
-        page,
-        limit: 12,
-        sortBy,
-        sortOrder: 'DESC',
-      };
-      if (category !== 'all') params.category = category;
-      if (search) params.search = search;
-      if (aiFilter !== 'all')
-        params.isAiGenerated = aiFilter === 'true' ? 'true' : 'false';
-      const res = await axios.get('/api/news', { params });
-      setNews(res.data.data);
-      setTotal(res.data.total);
-    } catch {}
-    setLoading(false);
-  };
 
   const handleSearch = (value: string) => {
     setSearch(value);
@@ -198,18 +171,18 @@ const NewsList: React.FC = () => {
       </Space>
 
       <Spin spinning={loading}>
-        {news?.length > 0 ? (
+        {news.length > 0 ? (
           <>
             <Row gutter={[16, 16]}>
               {news.map((item) => (
-                <Col style={{ width: '100%' }} key={item.id}>
+                <div key={item.id} style={{ width: '100%' }}>
                   <Card
                     hoverable
                     onClick={() => {
                       setSelectedNewsId(item.id);
                       setModalVisible(true);
                     }}
-                    style={{ borderRadius: 8, height: '100%' }}
+                    style={{ borderRadius: 8, marginBottom: 12 }}
                   >
                     <Text strong style={{ fontSize: 15 }}>
                       {item.title}
@@ -246,7 +219,7 @@ const NewsList: React.FC = () => {
                       </Text>
                     </Space>
                   </Card>
-                </Col>
+                </div>
               ))}
             </Row>
             {total > 12 && (

@@ -6,6 +6,7 @@ import { StaticRouter } from 'react-router-dom';
 import { createCache, extractStyle, StyleProvider } from '@ant-design/cssinjs';
 import App from './App';
 import { newsService } from './services/news.service';
+import type { NewsResponse } from './types';
 
 const routes = ['/', '/news', '/login', '/register', '/profile', '/admin'];
 
@@ -19,11 +20,16 @@ export class AppController {
   ) {
     if (req.url.startsWith('/api')) return next();
 
-    // Загружаем данные на сервере
-    const initialData =
-      req.url === '/' || req.url.startsWith('/news')
-        ? await newsService.fetchInitialData()
-        : { news: [], total: 0 };
+    let initialData: NewsResponse = {
+      data: [],
+      total: 0,
+      page: 0,
+      limit: 0,
+      totalPages: 0,
+    };
+    if (req.url === '/' || req.url.startsWith('/news')) {
+      initialData = await newsService.fetchInitialData();
+    }
 
     const cache = createCache();
 
@@ -53,7 +59,9 @@ export class AppController {
       </head>
       <body>
         <div id="root">${html}</div>
-        <script>window.__INITIAL_DATA__ = ${JSON.stringify(initialData)}</script>
+         <script>
+            window.__INITIAL_DATA__ = ${JSON.stringify(initialData).replace(/</g, '\\u003c')};
+         </script>
         <script src="/client.js"></script>
       </body>
       </html>

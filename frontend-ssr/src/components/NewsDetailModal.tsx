@@ -8,7 +8,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import axios from 'axios';
-import { News } from '../store/newsStore';
+import { News } from '../types';
 
 const { Title, Text, Paragraph } = Typography;
 
