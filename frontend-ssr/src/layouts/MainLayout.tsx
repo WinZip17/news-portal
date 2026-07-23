@@ -238,8 +238,12 @@ const MainLayout: React.FC = () => {
               {location.pathname.startsWith('/admin') && 'Админ панель'}
             </h2>
           </Space>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <FrameworkSwitcher current="nestjs" />
+          </div>
+
           <Space size="middle">
-            <FrameworkSwitcher />
             <Switch
               checkedChildren={<BulbFilled />}
               unCheckedChildren={<BulbOutlined />}

@@ -12,6 +12,7 @@
     "dev:db": "docker-compose up -d postgres",
     "dev:backend": "npm -w backend run start:dev",
     "dev:frontend": "npm -w frontend run dev",
+    "dev:frontend:nest": "npm -w frontend-ssr run dev",
     "dev:monitoring": "docker compose up -d prometheus grafana",
     "dev:all": "concurrently \"npm run dev\" \"npm run dev:monitoring\"",
     "stop:monitoring": "docker compose stop prometheus grafana",
