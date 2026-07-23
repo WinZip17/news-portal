@@ -9,7 +9,7 @@ RUN apk add --no-cache python3 make g++
 COPY package*.json ./
 
 # Устанавливаем зависимости
-RUN npm install --legacy-peer-deps
+RUN npm install
 
 # Копируем исходники
 COPY . .
