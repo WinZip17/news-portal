@@ -26,6 +26,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import FrameworkSwitcher from '../components/FrameworkSwitcher';
 import { useUserStore } from '../store/userStoreProvider';
 import { useUIStore } from '../store/uiStoreProvider';
+import { UserRole } from '../types';
 
 const { Header, Content, Sider, Footer } = Layout;
 
@@ -69,8 +70,9 @@ const MainLayout: React.FC = () => {
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
   const isAuthenticated = useUserStore((s) => s.isAuthenticated);
   const user = useUserStore((s) => s.user);
-  const setUser = useUserStore((s) => s.setUser);
-  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  const isAdmin =
+    user?.role === UserRole.ADMIN || user?.role === UserRole.SUPER_ADMIN;
+  const logout = useUserStore((s) => s.logout);
   const theme = useUIStore((s) => s.theme);
   const setTheme = useUIStore((s) => s.setTheme);
 
@@ -78,10 +80,7 @@ const MainLayout: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    setUser(null);
-    navigate('/login');
+    logout();
   };
 
   const navItems = useMemo(() => {
@@ -197,7 +196,7 @@ const MainLayout: React.FC = () => {
         onClose={() => setMobileMenuVisible(false)}
         open={mobileMenuVisible}
         styles={{ body: { padding: 0 } }}
-        width={250}
+        size={250}
       >
         <Menu
           mode="inline"

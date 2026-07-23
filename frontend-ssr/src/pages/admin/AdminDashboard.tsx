@@ -1,29 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Tabs } from 'antd';
 import { ReadOutlined, TeamOutlined, CrownOutlined } from '@ant-design/icons';
 import NewsManagement from './NewsManagement';
 import UsersManagement from './UsersManagement';
 import SuperAdminPanel from './SuperAdminPanel';
-import api from '../../services/api';
+import { useUserStore } from '../../store/userStoreProvider';
+import { UserRole } from '../../types';
 
 const AdminDashboard: React.FC = () => {
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      window.location.href = '/login';
-      return;
-    }
-    api
-      .get('/auth/me')
-      .then((r) => {
-        setIsSuperAdmin(r.data.role === 'super_admin');
-      })
-      .catch(() => {
-        window.location.href = '/login';
-      });
-  }, []);
+  const user = useUserStore((s) => s.user);
+  const isSuperAdmin = user?.role === UserRole.SUPER_ADMIN;
 
   const items = [
     {

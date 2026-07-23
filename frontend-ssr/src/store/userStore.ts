@@ -1,32 +1,14 @@
 import { createStore } from 'zustand/vanilla';
 import type { StoreApi } from 'zustand/vanilla';
-import api from '../services/api';
-
-export interface User {
-  id: string;
-  email: string;
-  username: string;
-  firstName?: string;
-  lastName?: string;
-  avatar?: string;
-  role: string;
-  isActive: boolean;
-  lastLoginAt?: string;
-  createdAt: string;
-  updatedAt: string;
-  preferences?: {
-    theme?: 'light' | 'dark';
-    language?: string;
-    notificationsEnabled?: boolean;
-    emailNotifications?: boolean;
-  };
-}
+import { authService } from '../services/auth.service';
+import { User } from '../types';
 
 export interface UserState {
   user: User | null;
   loading: boolean;
   isAuthenticated: boolean;
   fetchUser: () => Promise<void>;
+  logout: () => void;
   setUser: (user: User | null) => void;
 }
 
@@ -41,8 +23,8 @@ export const createUserStore = (): UserStore =>
     fetchUser: async () => {
       set({ loading: true });
       try {
-        const res = await api.get<User>('/auth/me');
-        set({ user: res.data, isAuthenticated: true, loading: false });
+        const res = await authService.getMe();
+        set({ user: res, isAuthenticated: true, loading: false });
       } catch {
         set({ user: null, isAuthenticated: false, loading: false });
       }
@@ -50,5 +32,12 @@ export const createUserStore = (): UserStore =>
 
     setUser: (user) => {
       set({ user, isAuthenticated: !!user });
+    },
+
+    logout: () => {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      set({ user: null, isAuthenticated: false });
+      window.location.href = '/';
     },
   }));

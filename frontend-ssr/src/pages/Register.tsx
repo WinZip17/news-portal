@@ -7,6 +7,7 @@ import {
   HomeOutlined,
 } from '@ant-design/icons';
 import axios from 'axios';
+import { authService } from '../services/auth.service';
 
 const { Title, Text } = Typography;
 
@@ -24,9 +25,9 @@ const Register: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      await axios.post('/api/auth/register', values);
+      await authService.register(values);
       message.success('Регистрация завершена успешно!');
-      window.location.href = '/login';
+      window.location.href = '/';
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         setError(err.response?.data?.message || 'Ошибка регистрации');

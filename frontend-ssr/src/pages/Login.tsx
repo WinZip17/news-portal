@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Typography, Alert } from 'antd';
 import { UserOutlined, LockOutlined, HomeOutlined } from '@ant-design/icons';
+import { authService } from '../services/auth.service';
 import axios from 'axios';
 
 const { Title, Text } = Typography;
@@ -13,9 +14,9 @@ const Login: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.post('/api/auth/login', values);
-      localStorage.setItem('accessToken', res.data.accessToken);
-      localStorage.setItem('refreshToken', res.data.refreshToken);
+      const data = await authService.login(values.email, values.password);
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
       window.location.href = '/';
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
@@ -39,7 +40,6 @@ const Login: React.FC = () => {
       <Title level={3} style={{ textAlign: 'center', marginBottom: 24 }}>
         Вход в аккаунт
       </Title>
-
       {error && (
         <Alert
           title={error}
@@ -49,7 +49,6 @@ const Login: React.FC = () => {
           style={{ marginBottom: 24 }}
         />
       )}
-
       <Form onFinish={onFinish} size="large">
         <Form.Item
           name="email"
@@ -75,7 +74,6 @@ const Login: React.FC = () => {
           </Button>
         </Form.Item>
       </Form>
-
       <div style={{ textAlign: 'center' }}>
         <Text>
           Нет аккаунта? <a href="/register">Зарегистрироваться</a>

@@ -7,8 +7,8 @@ import {
   LinkOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import axios from 'axios';
-import { News } from '../types';
+import { newsService } from '../services/news.service';
+import type { News } from '../types';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -17,9 +17,9 @@ const NewsDetailModal: React.FC<{ newsId: string }> = ({ newsId }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get(`/api/news/${newsId}`)
-      .then((r) => setNews(r.data))
+    newsService
+      .fetchById(newsId)
+      .then(setNews)
       .finally(() => setLoading(false));
   }, [newsId]);
 

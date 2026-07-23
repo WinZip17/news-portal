@@ -25,35 +25,21 @@ import {
   ClearOutlined,
 } from '@ant-design/icons';
 import NewsDetailModal from './NewsDetailModal';
-import axios from 'axios';
+import { newsService } from '../services/news.service';
+import { useNewsStore } from '../store/newsStoreProvider'
 
 const { Search } = Input;
 const { Title, Text, Paragraph } = Typography;
 
-interface News {
-  id: string;
-  title: string;
-  summary?: string;
-  content?: string;
-  category: string;
-  tags?: string[];
-  isAiGenerated: boolean;
-  views: number;
-  likes: number;
-  source?: string;
-  author?: string;
-  publishedAt: string;
-}
-
 const NewsList: React.FC = () => {
-  const [news, setNews] = useState<News[]>([]);
+  const news = useNewsStore((s) => s.news);
+  const total = useNewsStore((s) => s.total);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [sortBy, setSortBy] = useState('publishedAt');
   const [aiFilter, setAiFilter] = useState('all');
   const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
   const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -74,10 +60,7 @@ const NewsList: React.FC = () => {
       if (search) params.search = search;
       if (aiFilter !== 'all')
         params.isAiGenerated = aiFilter === 'true' ? 'true' : 'false';
-
-      const response = await axios.get('/api/news', { params });
-      setNews(response.data.data);
-      setTotal(response.data.total);
+      await newsService.fetchList(params);
     } catch {
       // Ошибка загрузки
     }

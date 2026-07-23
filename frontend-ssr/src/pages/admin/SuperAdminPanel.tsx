@@ -21,6 +21,7 @@ import {
 } from '@ant-design/icons';
 import api from '../../services/api';
 import type { ColumnsType } from 'antd/es/table';
+import { User } from '../../types'
 
 interface News {
   id: string;
@@ -36,14 +37,6 @@ interface News {
   sourceUrl?: string;
   imageUrl?: string;
   tags?: string[];
-}
-
-interface User {
-  id: string;
-  email: string;
-  username: string;
-  role: string;
-  isActive: boolean;
 }
 
 const { TextArea } = Input;

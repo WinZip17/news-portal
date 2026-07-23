@@ -23,58 +23,40 @@ import {
   ClockCircleOutlined,
   KeyOutlined,
 } from '@ant-design/icons';
-import axios from 'axios';
-import api from '../services/api';
-import { News, User } from '../types';
+import { authService } from '../services/auth.service';
+import { newsService } from '../services/news.service';
+import type { News, User } from '../types';
+import { useUserStore } from '../store/userStoreProvider';
 
 const { Text } = Typography;
 
 const Profile: React.FC = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const user = useUserStore((s) => s.user);
   const [favorites, setFavorites] = useState<News[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const getToken = () => {
-    if (typeof window !== 'undefined')
-      return localStorage.getItem('accessToken');
-    return null;
-  };
-
-  const token = getToken();
-
   useEffect(() => {
-    if (!token) {
-      window.location.href = '/login';
-      return;
-    }
-    api
-      .get('/auth/me', { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => setUser(r.data));
     loadFavorites();
   }, []);
 
   const loadFavorites = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('/api/news/favorites', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setFavorites(res.data.data);
-    } catch {}
+      const data = await newsService.fetchFavorites();
+      setFavorites(data.data);
+    } catch {
+      console.error('loadFavorites error');
+    }
     setLoading(false);
   };
 
-  const handleSaveProfile = async (values: any) => {
-    await axios.put('/api/auth/profile', values, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+  const handleSaveProfile = async (values: Record<string, string>) => {
+    await authService.updateProfile(values);
     message.success('Профиль обновлен');
   };
 
-  const handleSavePreferences = async (values: any) => {
-    await axios.put('/api/auth/preferences', values, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+  const handleSavePreferences = async (values: Record<string, unknown>) => {
+    await authService.updatePreferences(values);
     message.success('Настройки сохранены');
   };
 
@@ -82,18 +64,12 @@ const Profile: React.FC = () => {
     currentPassword: string;
     newPassword: string;
   }) => {
-    await axios.post('/api/auth/change-password', values, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    await authService.changePassword(values);
     message.success('Пароль изменен');
   };
 
   const handleRemoveFavorite = async (newsId: string) => {
-    await axios.post(
-      `/api/news/${newsId}/favorite`,
-      {},
-      { headers: { Authorization: `Bearer ${token}` } },
-    );
+    await newsService.toggleFavorite(newsId);
     loadFavorites();
   };
 
