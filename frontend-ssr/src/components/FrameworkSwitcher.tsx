@@ -6,8 +6,8 @@ interface FrameworkSwitcherProps {
 
 const frameworks = {
   react: { label: '⚛️ React SPA', url: 'https://short-news.ru' },
-  nestjs: { label: '🟢 NestJS SSR', url: 'https://nest.short-news.ru' },
-  nuxt: { label: '🟣 Nuxt', url: '#' },
+  nestjs: { label: '🟢 NestJS SSR + React', url: 'https://nest.short-news.ru' },
+  // nuxt: { label: '🟣 Nuxt', url: '#' },
 };
 
 const FrameworkSwitcher: React.FC<FrameworkSwitcherProps> = ({ current }) => {
