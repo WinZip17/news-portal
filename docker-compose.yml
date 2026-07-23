@@ -76,6 +76,16 @@ services:
     networks:
       - news-portal-network
     restart: unless-stopped
+
+  frontend-next:
+    build:
+      context: ./frontend-next
+      dockerfile: Dockerfile
+    container_name: news-portal-next
+    networks:
+      - news-portal-network
+    restart: unless-stopped
+
   prometheus:
     build:
       context: ./prometheus
