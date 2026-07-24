@@ -179,6 +179,7 @@
 <script setup lang="ts">
 import type { NewsItem, UserPreferences } from '~/types';
 import { useAuthService } from '~/services/auth.service.ts';
+import { useNewsService } from '~/services/news.service.ts';
 
 definePageMeta({
   middleware: 'auth',
@@ -188,6 +189,7 @@ const authStore = useAuthStore();
 const uiStore = useUIStore();
 const newsStore = useNewsStore();
 const authService = useAuthService();
+const newsService = useNewsService();
 
 const isUpdating = ref(false);
 const isChangingPassword = ref(false);
@@ -320,7 +322,7 @@ async function savePreferences() {
 async function loadFavorites() {
   try {
     favoritesLoading.value = true;
-    favorites.value = await newsStore.newsService.getFavorites();
+    favorites.value = await newsService.getFavorites();
   } catch (error) {
     console.error('Error loading favorites:', error);
   } finally {
