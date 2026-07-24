@@ -50,8 +50,11 @@ jobs:
             ENVEOF
             fi
 
+            echo "🛑 Stopping old containers..."
+            docker compose down --remove-orphans || true
+
             echo "📦 Starting infrastructure..."
-            docker compose up -d postgres redis prometheus grafana 2>/dev/null || true
+            docker compose up -d postgres redis prometheus grafana
             until docker compose exec -T postgres pg_isready -U postgres 2>/dev/null; do sleep 3; done
             echo "✅ Database ready"
 
@@ -59,9 +62,7 @@ jobs:
             docker compose up -d --build backend
             sleep 5
             if ! docker compose ps backend | grep -q "Up"; then
-              echo "❌ Backend failed!"
-              docker compose logs backend --tail=20
-              exit 1
+              echo "❌ Backend failed!"; docker compose logs backend --tail=20; exit 1
             fi
             echo "✅ Backend running"
 
@@ -69,9 +70,7 @@ jobs:
             docker compose up -d --build frontend
             sleep 5
             if ! docker compose ps frontend | grep -q "Up"; then
-              echo "❌ React frontend failed!"
-              docker compose logs frontend --tail=20
-              exit 1
+              echo "❌ React frontend failed!"; docker compose logs frontend --tail=20; exit 1
             fi
             echo "✅ React frontend running"
 
@@ -79,11 +78,17 @@ jobs:
             docker compose up -d --build frontend-ssr
             sleep 5
             if ! docker compose ps frontend-ssr | grep -q "Up"; then
-              echo "❌ NestJS SSR frontend failed!"
-              docker compose logs frontend-ssr --tail=20
-              exit 1
+              echo "❌ NestJS SSR failed!"; docker compose logs frontend-ssr --tail=20; exit 1
             fi
-            echo "✅ NestJS SSR frontend running"
+            echo "✅ NestJS SSR running"
+
+            echo "🔵 Building Next.js frontend..."
+            docker compose up -d --build frontend-next
+            sleep 5
+            if ! docker compose ps frontend-next | grep -q "Up"; then
+              echo "❌ Next.js failed!"; docker compose logs frontend-next --tail=20; exit 1
+            fi
+            echo "✅ Next.js running"
 
             docker image prune -f || true
             echo "✅ Deployment completed!"
