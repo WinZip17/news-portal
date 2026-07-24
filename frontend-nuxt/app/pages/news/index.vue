@@ -87,7 +87,7 @@
 
     <!-- Пустое состояние -->
     <div v-if="!newsStore.isLoading && newsStore.news.length === 0" class="empty-state">
-      <i class="pi pi-inbox" style="font-size: 4rem; color: var(--text-color-disabled)"></i>
+      <i class="pi pi-inbox" style="font-size: 4rem; color: var(--p-text-muted-color)"></i>
       <h3>Новости не найдены</h3>
       <p>Попробуйте изменить параметры поиска</p>
     </div>
@@ -188,16 +188,16 @@ function openNewsDetail(id: string) {
 .page-title {
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--text-color);
+  color: var(--p-text-color);
   margin-bottom: 2rem;
 }
 
 .filters-section {
-  background-color: var(--surface-card);
+  background-color: var(--p-surface-card);
   padding: 1.5rem;
-  border-radius: var(--border-radius);
+  border-radius: 6px;
   margin-bottom: 2rem;
-  border: 1px solid var(--surface-border);
+  border: 1px solid var(--p-surface-border);
 }
 
 .filters-grid {
@@ -234,12 +234,12 @@ function openNewsDetail(id: string) {
 .empty-state {
   text-align: center;
   padding: 4rem;
-  color: var(--text-color-disabled);
+  color: var(--p-text-muted-color);
 }
 
 .empty-state h3 {
   margin: 1rem 0 0.5rem;
-  color: var(--text-color);
+  color: var(--p-text-color);
 }
 
 @media (max-width: 768px) {

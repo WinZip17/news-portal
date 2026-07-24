@@ -13,7 +13,7 @@
       <Card class="status-card">
         <template #content>
           <div class="status-header">
-            <i class="pi pi-cloud" style="font-size: 2rem; color: var(--primary-color)"></i>
+            <i class="pi pi-cloud" style="font-size: 2rem; color: var(--p-primary-color)"></i>
             <div>
               <h3>Статус AI сервиса</h3>
               <p v-if="aiStatus === null">Проверка...</p>
@@ -38,21 +38,21 @@
             <div class="form-field">
               <label>Категория</label>
               <Dropdown
-                v-model="generateForm.category"
-                :options="categories"
-                option-label="label"
-                option-value="value"
-                placeholder="Выберите категорию"
-                class="w-full"
+                  v-model="generateForm.category"
+                  :options="categories"
+                  option-label="label"
+                  option-value="value"
+                  placeholder="Выберите категорию"
+                  class="w-full"
               />
             </div>
 
             <div class="form-field">
               <label>Тема (опционально)</label>
               <InputText
-                v-model="generateForm.topic"
-                placeholder="Например: искусственный интеллект"
-                class="w-full"
+                  v-model="generateForm.topic"
+                  placeholder="Например: искусственный интеллект"
+                  class="w-full"
               />
             </div>
 
@@ -62,11 +62,11 @@
             </div>
 
             <Button
-              label="Сгенерировать"
-              icon="pi pi-bolt"
-              severity="primary"
-              :loading="isGenerating"
-              @click="generateNews"
+                label="Сгенерировать"
+                icon="pi pi-bolt"
+                severity="primary"
+                :loading="isGenerating"
+                @click="generateNews"
             />
           </div>
         </template>
@@ -92,11 +92,11 @@
             </p>
 
             <Button
-              label="Запустить авто-генерацию"
-              icon="pi pi-cog"
-              severity="warning"
-              :loading="isAutoGenerating"
-              @click="autoGenerate"
+                label="Запустить авто-генерацию"
+                icon="pi pi-cog"
+                severity="warning"
+                :loading="isAutoGenerating"
+                @click="autoGenerate"
             />
           </div>
         </template>
@@ -222,7 +222,7 @@ async function autoGenerate() {
 .page-title {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--text-color);
+  color: var(--p-text-color);
   margin-bottom: 2rem;
 }
 
@@ -238,8 +238,8 @@ async function autoGenerate() {
 }
 
 .status-card {
-  background-color: var(--surface-card);
-  border: 1px solid var(--surface-border);
+  background-color: var(--p-surface-card);
+  border: 1px solid var(--p-surface-border);
 }
 
 .status-header {
@@ -249,7 +249,7 @@ async function autoGenerate() {
 }
 
 .status-header h3 {
-  color: var(--text-color);
+  color: var(--p-text-color);
   margin-bottom: 0.25rem;
 }
 
@@ -268,17 +268,17 @@ async function autoGenerate() {
 }
 
 .generate-card {
-  background-color: var(--surface-card);
-  border: 1px solid var(--surface-border);
+  background-color: var(--p-surface-card);
+  border: 1px solid var(--p-surface-border);
 }
 
 .card-header {
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--surface-border);
+  border-bottom: 1px solid var(--p-surface-border);
 }
 
 .card-header h3 {
-  color: var(--text-color);
+  color: var(--p-text-color);
   margin: 0;
 }
 
@@ -296,16 +296,16 @@ async function autoGenerate() {
 
 .form-field label {
   font-weight: 500;
-  color: var(--text-color);
+  color: var(--p-text-color);
   font-size: 0.875rem;
 }
 
 .generate-info {
-  color: var(--text-color-secondary);
+  color: var(--p-text-muted-color);
   font-size: 0.875rem;
   padding: 0.5rem;
-  background-color: var(--surface-hover);
-  border-radius: var(--border-radius);
+  background-color: var(--p-surface-hover);
+  border-radius: 6px;
 }
 
 @media (max-width: 768px) {

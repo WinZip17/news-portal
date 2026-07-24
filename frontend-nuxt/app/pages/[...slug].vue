@@ -62,7 +62,7 @@ setResponseStatus(404);
 .error-code {
   font-size: 8rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+  background: linear-gradient(135deg, var(--p-primary-color), var(--p-primary-hover-color));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -73,12 +73,12 @@ setResponseStatus(404);
 .not-found-content h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--text-color);
+  color: var(--p-text-color);
   margin-bottom: 0.5rem;
 }
 
 .not-found-content p {
-  color: var(--text-color-secondary);
+  color: var(--p-text-muted-color);
   font-size: 1.1rem;
   margin-bottom: 2rem;
 }
@@ -92,14 +92,14 @@ setResponseStatus(404);
 
 .not-found-links {
   text-align: left;
-  background-color: var(--surface-card);
+  background-color: var(--p-surface-card);
   padding: 1.5rem;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--surface-border);
+  border-radius: 6px;
+  border: 1px solid var(--p-surface-border);
 }
 
 .not-found-links h3 {
-  color: var(--text-color);
+  color: var(--p-text-color);
   margin-bottom: 1rem;
   font-size: 1rem;
 }
@@ -115,17 +115,17 @@ setResponseStatus(404);
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem;
-  background-color: var(--surface-hover);
-  border-radius: var(--border-radius);
-  color: var(--text-color);
+  background-color: var(--p-surface-hover);
+  border-radius: 6px;
+  color: var(--p-text-color);
   text-decoration: none;
-  transition: all var(--transition-duration);
+  transition: all 0.2s;
   font-weight: 500;
 }
 
 .quick-link:hover {
-  background-color: var(--highlight-bg);
-  color: var(--highlight-text-color);
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-color);
 }
 
 @media (max-width: 768px) {

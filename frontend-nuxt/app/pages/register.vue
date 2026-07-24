@@ -2,35 +2,32 @@
   <div class="auth-page">
     <div class="auth-card">
       <div class="auth-header">
-        <i class="pi pi-user-plus" style="font-size: 2.5rem; color: var(--primary-color)"></i>
+        <i class="pi pi-user-plus" style="font-size: 2.5rem; color: var(--p-primary-color)"></i>
         <h1>Регистрация</h1>
         <p>Создайте аккаунт для доступа ко всем функциям</p>
       </div>
 
       <form class="auth-form" @submit.prevent="handleRegister">
-        <div class="form-row">
-          <div class="form-field">
-            <label for="firstName">Имя</label>
-            <InputText
-              id="firstName"
-              v-model="firstName"
-              placeholder="Иван"
-              :invalid="!!errors.firstName"
-            />
-            <small v-if="errors.firstName" class="error-text">{{ errors.firstName }}</small>
-          </div>
-          <div class="form-field">
-            <label for="lastName">Фамилия</label>
-            <InputText
-              id="lastName"
-              v-model="lastName"
-              placeholder="Иванов"
-              :invalid="!!errors.lastName"
-            />
-            <small v-if="errors.lastName" class="error-text">{{ errors.lastName }}</small>
-          </div>
+        <div class="form-field">
+          <label for="firstName">Имя</label>
+          <InputText
+            id="firstName"
+            v-model="firstName"
+            placeholder="Иван"
+            :invalid="!!errors.firstName"
+          />
+          <small v-if="errors.firstName" class="error-text">{{ errors.firstName }}</small>
         </div>
-
+        <div class="form-field">
+          <label for="lastName">Фамилия</label>
+          <InputText
+            id="lastName"
+            v-model="lastName"
+            placeholder="Иванов"
+            :invalid="!!errors.lastName"
+          />
+          <small v-if="errors.lastName" class="error-text">{{ errors.lastName }}</small>
+        </div>
         <div class="form-field">
           <label for="username">Имя пользователя</label>
           <InputText
@@ -59,6 +56,7 @@
           <Password
             id="password"
             v-model="password"
+            fluid
             placeholder="Минимум 8 символов"
             :invalid="!!errors.password"
             toggle-mask
@@ -73,6 +71,7 @@
             v-model="confirmPassword"
             placeholder="Повторите пароль"
             :feedback="false"
+            fluid
             :invalid="!!errors.confirmPassword"
             toggle-mask
           />
@@ -180,12 +179,12 @@ async function handleRegister() {
 }
 
 .auth-card {
-  background-color: var(--surface-card);
+  background-color: var(--p-surface-card);
   border-radius: 1rem;
   padding: 2.5rem;
   width: 100%;
   max-width: 500px;
-  border: 1px solid var(--surface-border);
+  border: 1px solid var(--p-surface-border);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -197,24 +196,18 @@ async function handleRegister() {
 .auth-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--text-color);
+  color: var(--p-text-color);
   margin: 1rem 0 0.5rem;
 }
 
 .auth-header p {
-  color: var(--text-color-secondary);
+  color: var(--p-text-muted-color);
 }
 
 .auth-form {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
 }
 
 .form-field {
@@ -225,7 +218,7 @@ async function handleRegister() {
 
 .form-field label {
   font-weight: 500;
-  color: var(--text-color);
+  color: var(--p-text-color);
   font-size: 0.875rem;
 }
 
@@ -238,15 +231,15 @@ async function handleRegister() {
   text-align: center;
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 1px solid var(--surface-border);
+  border-top: 1px solid var(--p-surface-border);
 }
 
 .auth-footer p {
-  color: var(--text-color-secondary);
+  color: var(--p-text-muted-color);
 }
 
 .link {
-  color: var(--primary-color);
+  color: var(--p-primary-color);
   text-decoration: none;
   font-weight: 500;
 }

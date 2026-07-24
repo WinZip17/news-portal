@@ -36,7 +36,7 @@
     <section v-if="stats" class="stats-section">
       <div class="stats-grid">
         <div class="stat-card">
-          <i class="pi pi-file" style="font-size: 2rem; color: var(--primary-color)"></i>
+          <i class="pi pi-file" style="font-size: 2rem; color: var(--p-primary-color)"></i>
           <div class="stat-value">{{ stats.totalNews }}</div>
           <div class="stat-label">Всего новостей</div>
         </div>
@@ -85,7 +85,7 @@
       </div>
 
       <div v-if="!newsStore.isLoading && latestNews.length === 0" class="empty-state">
-        <i class="pi pi-inbox" style="font-size: 4rem; color: var(--text-color-disabled)"></i>
+        <i class="pi pi-inbox" style="font-size: 4rem; color: var(--p-text-muted-color)"></i>
         <p>Новостей пока нет</p>
       </div>
     </section>
@@ -107,7 +107,6 @@ const selectedNews = ref<NewsItem | null>(null);
 const stats = computed(() => newsStore.stats);
 const latestNews = computed(() => newsStore.news.slice(0, 6));
 
-// Загрузка данных при SSR и клиенте
 await useAsyncData('home-data', async () => {
   await Promise.all([newsStore.fetchStats(), newsStore.fetchNews()]);
 });
@@ -127,11 +126,11 @@ function openNewsDetail(id: string) {
 
 /* Hero секция */
 .hero-section {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+  background-color: var(--p-surface-card);
+  border: 1px solid var(--p-surface-border);
   padding: 4rem 2rem;
   border-radius: 1rem;
   margin-bottom: 3rem;
-  color: white;
 }
 
 .hero-content {
@@ -145,19 +144,18 @@ function openNewsDetail(id: string) {
   font-weight: 700;
   margin-bottom: 1rem;
   line-height: 1.2;
+  color: var(--p-text-color);
 }
 
 .hero-highlight {
-  background: linear-gradient(to right, #ffd700, #ffa500);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--p-primary-color);
 }
 
 .hero-description {
   font-size: 1.25rem;
   margin-bottom: 2rem;
-  opacity: 0.9;
+  color: var(--p-text-muted-color);
+  line-height: 1.6;
 }
 
 .hero-actions {
@@ -178,12 +176,12 @@ function openNewsDetail(id: string) {
 }
 
 .stat-card {
-  background-color: var(--surface-card);
+  background-color: var(--p-surface-card);
   padding: 2rem;
-  border-radius: var(--border-radius);
+  border-radius: 6px;
   text-align: center;
-  border: 1px solid var(--surface-border);
-  transition: transform var(--transition-duration);
+  border: 1px solid var(--p-surface-border);
+  transition: transform 0.3s;
 }
 
 .stat-card:hover {
@@ -193,12 +191,12 @@ function openNewsDetail(id: string) {
 .stat-value {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--text-color);
+  color: var(--p-text-color);
   margin: 0.5rem 0;
 }
 
 .stat-label {
-  color: var(--text-color-secondary);
+  color: var(--p-text-muted-color);
   font-size: 0.875rem;
   text-transform: uppercase;
   font-weight: 500;
@@ -219,11 +217,11 @@ function openNewsDetail(id: string) {
 .section-title {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--text-color);
+  color: var(--p-text-color);
 }
 
 .view-all {
-  color: var(--primary-color);
+  color: var(--p-primary-color);
   text-decoration: none;
   font-weight: 500;
   display: flex;
@@ -255,7 +253,7 @@ function openNewsDetail(id: string) {
 .empty-state {
   text-align: center;
   padding: 4rem;
-  color: var(--text-color-disabled);
+  color: var(--p-text-muted-color);
 }
 
 .empty-state p {

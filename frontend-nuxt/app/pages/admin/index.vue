@@ -4,7 +4,7 @@
 
     <div v-if="authStore.isModerator" class="dashboard-grid">
       <NuxtLink to="/admin/moderation" class="dashboard-card">
-        <i class="pi pi-check-circle" style="font-size: 2.5rem; color: var(--primary-color)"></i>
+        <i class="pi pi-check-circle" style="font-size: 2.5rem; color: var(--p-primary-color)"></i>
         <h3>Модерация</h3>
         <p>Управление новостями: подтверждение, отклонение, архивирование</p>
         <span class="card-link"> Перейти <i class="pi pi-arrow-right"></i> </span>
@@ -55,7 +55,7 @@ const authStore = useAuthStore();
 .page-title {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--text-color);
+  color: var(--p-text-color);
   margin-bottom: 2rem;
 }
 
@@ -66,12 +66,12 @@ const authStore = useAuthStore();
 }
 
 .dashboard-card {
-  background-color: var(--surface-card);
+  background-color: var(--p-surface-card);
   padding: 2rem;
   border-radius: 1rem;
-  border: 1px solid var(--surface-border);
+  border: 1px solid var(--p-surface-border);
   text-decoration: none;
-  transition: all var(--transition-duration);
+  transition: all 0.2s;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -80,16 +80,16 @@ const authStore = useAuthStore();
 .dashboard-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  border-color: var(--primary-color);
+  border-color: var(--p-primary-color);
 }
 
 .dashboard-card h3 {
-  color: var(--text-color);
+  color: var(--p-text-color);
   font-size: 1.25rem;
 }
 
 .dashboard-card p {
-  color: var(--text-color-secondary);
+  color: var(--p-text-muted-color);
   font-size: 0.875rem;
   line-height: 1.6;
   flex: 1;
@@ -99,7 +99,7 @@ const authStore = useAuthStore();
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--primary-color);
+  color: var(--p-primary-color);
   font-weight: 500;
   font-size: 0.875rem;
 }

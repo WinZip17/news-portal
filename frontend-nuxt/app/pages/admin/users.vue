@@ -349,7 +349,7 @@ function formatDate(date: string): string {
 .page-title {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--text-color);
+  color: var(--p-text-color);
   margin-bottom: 2rem;
 }
 
@@ -367,11 +367,11 @@ function formatDate(date: string): string {
 
 .user-name {
   font-weight: 500;
-  color: var(--text-color);
+  color: var(--p-text-color);
 }
 
 .user-email {
-  color: var(--text-color-secondary);
+  color: var(--p-text-muted-color);
   font-size: 0.875rem;
 }
 
@@ -400,7 +400,7 @@ function formatDate(date: string): string {
 
 .form-field label {
   font-weight: 500;
-  color: var(--text-color);
+  color: var(--p-text-color);
   font-size: 0.875rem;
 }
 

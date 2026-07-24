@@ -40,7 +40,7 @@
           <NuxtLink to="/profile" class="nav-link">
             <Avatar
               :label="userInitials"
-              style="background-color: var(--primary-color); color: white"
+              style="background-color: var(--p-primary-color); color: white"
               shape="circle"
             />
           </NuxtLink>
@@ -99,7 +99,6 @@
 </template>
 
 <script setup lang="ts">
-
 const authStore = useAuthStore();
 const uiStore = useUIStore();
 const router = useRouter();
@@ -128,8 +127,8 @@ watch(
 
 <style scoped>
 .app-header {
-  background-color: var(--surface-card);
-  border-bottom: 1px solid var(--surface-border);
+  background-color: var(--p-surface-card);
+  border-bottom: 1px solid var(--p-surface-border);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -150,13 +149,13 @@ watch(
   align-items: center;
   gap: 0.5rem;
   text-decoration: none;
-  color: var(--primary-color);
+  color: var(--p-primary-color);
   font-weight: 700;
   font-size: 1.25rem;
 }
 
 .logo-text {
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+  background: linear-gradient(135deg, var(--p-primary-color), var(--p-primary-hover-color));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -174,19 +173,19 @@ watch(
   gap: 0.5rem;
   padding: 0.5rem 1rem;
   text-decoration: none;
-  color: var(--text-color);
-  border-radius: var(--border-radius);
-  transition: all var(--transition-duration);
+  color: var(--p-text-color);
+  border-radius: 6px;
+  transition: all 0.2s;
   font-weight: 500;
 }
 
 .nav-link:hover {
-  background-color: var(--surface-hover);
+  background-color: var(--p-surface-hover);
 }
 
 .nav-link--active {
-  background-color: var(--highlight-bg);
-  color: var(--highlight-text-color);
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-color);
 }
 
 .header-actions {
@@ -202,8 +201,8 @@ watch(
 .mobile-menu {
   display: none;
   padding: 0.5rem;
-  background-color: var(--surface-card);
-  border-top: 1px solid var(--surface-border);
+  background-color: var(--p-surface-card);
+  border-top: 1px solid var(--p-surface-border);
 }
 
 .mobile-link {
@@ -212,13 +211,13 @@ watch(
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   text-decoration: none;
-  color: var(--text-color);
-  border-radius: var(--border-radius);
-  transition: background-color var(--transition-duration);
+  color: var(--p-text-color);
+  border-radius: 6px;
+  transition: background-color 0.2s;
 }
 
 .mobile-link:hover {
-  background-color: var(--surface-hover);
+  background-color: var(--p-surface-hover);
 }
 
 @media (max-width: 768px) {

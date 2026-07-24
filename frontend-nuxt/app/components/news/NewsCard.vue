@@ -36,20 +36,20 @@
     <template #footer>
       <div class="news-card-footer">
         <Button
-          v-tooltip.top="'В избранное'"
-          :icon="news.isFavorite ? 'pi pi-star-fill' : 'pi pi-star'"
-          :severity="news.isFavorite ? 'warning' : 'secondary'"
-          text
-          rounded
-          :disabled="!authStore.isAuthenticated"
-          @click.stop="handleToggleFavorite"
+            v-tooltip.top="'В избранное'"
+            :icon="news.isFavorite ? 'pi pi-star-fill' : 'pi pi-star'"
+            :severity="news.isFavorite ? 'warning' : 'secondary'"
+            text
+            rounded
+            :disabled="!authStore.isAuthenticated"
+            @click.stop="handleToggleFavorite"
         />
         <Button
-          label="Читать далее"
-          icon="pi pi-arrow-right"
-          severity="primary"
-          text
-          @click="openNewsDetail"
+            label="Читать далее"
+            icon="pi pi-arrow-right"
+            severity="primary"
+            text
+            @click="openNewsDetail"
         />
       </div>
     </template>
@@ -136,10 +136,10 @@ function formatDate(date: string): string {
   display: flex;
   flex-direction: column;
   transition:
-    transform var(--transition-duration),
-    box-shadow var(--transition-duration);
-  background-color: var(--surface-card);
-  border: 1px solid var(--surface-border);
+      transform 0.2s,
+      box-shadow 0.2s;
+  background-color: var(--p-surface-card);
+  border: 1px solid var(--p-surface-border);
 }
 
 .news-card:hover {
@@ -164,7 +164,7 @@ function formatDate(date: string): string {
   position: absolute;
   top: 0.75rem;
   left: 0.75rem;
-  background-color: var(--primary-color);
+  background-color: var(--p-primary-color);
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
@@ -180,7 +180,7 @@ function formatDate(date: string): string {
 .news-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--text-color);
+  color: var(--p-text-color);
   margin-bottom: 0.5rem;
   line-height: 1.4;
   display: -webkit-box;
@@ -190,7 +190,7 @@ function formatDate(date: string): string {
 }
 
 .news-summary {
-  color: var(--text-color-secondary);
+  color: var(--p-text-muted-color);
   font-size: 0.875rem;
   line-height: 1.6;
   margin-bottom: 0.75rem;
@@ -211,7 +211,7 @@ function formatDate(date: string): string {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  color: var(--text-color-secondary);
+  color: var(--p-text-muted-color);
   font-size: 0.75rem;
 }
 
@@ -222,9 +222,9 @@ function formatDate(date: string): string {
 }
 
 .tag {
-  color: var(--primary-color);
+  color: var(--p-primary-color);
   font-size: 0.75rem;
-  background-color: var(--highlight-bg);
+  background-color: var(--p-primary-50);
   padding: 0.125rem 0.5rem;
   border-radius: 12px;
 }
@@ -234,7 +234,7 @@ function formatDate(date: string): string {
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1rem;
-  border-top: 1px solid var(--surface-border);
+  border-top: 1px solid var(--p-surface-border);
 }
 
 @media (max-width: 768px) {

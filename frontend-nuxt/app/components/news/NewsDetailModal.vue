@@ -1,12 +1,12 @@
 <template>
   <Dialog
-    v-model:visible="visible"
-    :modal="true"
-    :header="news?.title"
-    :style="{ width: '90vw', maxWidth: '800px' }"
-    :breakpoints="{ '768px': '95vw' }"
-    :closable="true"
-    :dismissable-mask="true"
+      v-model:visible="visible"
+      :modal="true"
+      :header="news?.title"
+      :style="{ width: '90vw', maxWidth: '800px' }"
+      :breakpoints="{ '768px': '95vw' }"
+      :closable="true"
+      :dismissable-mask="true"
   >
     <div v-if="news" class="news-detail">
       <!-- Изображение -->
@@ -37,9 +37,9 @@
       <!-- Автор -->
       <div v-if="news.author" class="detail-author">
         <Avatar
-          :label="getAuthorInitials(news.author)"
-          style="background-color: var(--primary-color); color: white"
-          shape="circle"
+            :label="getAuthorInitials(news.author)"
+            style="background-color: var(--p-primary-color); color: white"
+            shape="circle"
         />
         <div>
           <p class="author-name">{{ news.author.firstName }} {{ news.author.lastName }}</p>
@@ -58,18 +58,18 @@
       <!-- Действия -->
       <div class="detail-actions">
         <Button
-          :icon="news.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"
-          :label="`${news.likes}`"
-          :severity="news.isLiked ? 'danger' : 'secondary'"
-          :disabled="!authStore.isAuthenticated"
-          @click="handleLike"
+            :icon="news.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"
+            :label="`${news.likes}`"
+            :severity="news.isLiked ? 'danger' : 'secondary'"
+            :disabled="!authStore.isAuthenticated"
+            @click="handleLike"
         />
         <Button
-          :icon="news.isFavorite ? 'pi pi-star-fill' : 'pi pi-star'"
-          :label="news.isFavorite ? 'В избранном' : 'В избранное'"
-          :severity="news.isFavorite ? 'warning' : 'secondary'"
-          :disabled="!authStore.isAuthenticated"
-          @click="handleToggleFavorite"
+            :icon="news.isFavorite ? 'pi pi-star-fill' : 'pi pi-star'"
+            :label="news.isFavorite ? 'В избранном' : 'В избранное'"
+            :severity="news.isFavorite ? 'warning' : 'secondary'"
+            :disabled="!authStore.isAuthenticated"
+            @click="handleToggleFavorite"
         />
         <Button icon="pi pi-share-alt" label="Поделиться" severity="info" @click="shareNews" />
       </div>
@@ -218,7 +218,7 @@ function formatDate(date: string): string {
   width: 100%;
   max-height: 400px;
   overflow: hidden;
-  border-radius: var(--border-radius);
+  border-radius: 6px;
   margin-bottom: 1.5rem;
 }
 
@@ -236,7 +236,7 @@ function formatDate(date: string): string {
 }
 
 .meta-badge {
-  background-color: var(--primary-color);
+  background-color: var(--p-primary-color);
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
@@ -251,7 +251,7 @@ function formatDate(date: string): string {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  color: var(--text-color-secondary);
+  color: var(--p-text-muted-color);
   font-size: 0.875rem;
 }
 
@@ -260,24 +260,24 @@ function formatDate(date: string): string {
   align-items: center;
   gap: 0.75rem;
   padding: 1rem;
-  background-color: var(--surface-hover);
-  border-radius: var(--border-radius);
+  background-color: var(--p-surface-hover);
+  border-radius: 6px;
   margin-bottom: 1.5rem;
 }
 
 .author-name {
   font-weight: 600;
-  color: var(--text-color);
+  color: var(--p-text-color);
 }
 
 .author-username {
-  color: var(--text-color-secondary);
+  color: var(--p-text-muted-color);
   font-size: 0.875rem;
 }
 
 .detail-content {
   line-height: 1.8;
-  color: var(--text-color);
+  color: var(--p-text-color);
   margin-bottom: 1.5rem;
 }
 
@@ -293,8 +293,8 @@ function formatDate(date: string): string {
 }
 
 .tag {
-  background-color: var(--highlight-bg);
-  color: var(--primary-color);
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-color);
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-size: 0.875rem;
@@ -305,8 +305,8 @@ function formatDate(date: string): string {
   gap: 0.75rem;
   flex-wrap: wrap;
   padding: 1rem 0;
-  border-top: 1px solid var(--surface-border);
-  border-bottom: 1px solid var(--surface-border);
+  border-top: 1px solid var(--p-surface-border);
+  border-bottom: 1px solid var(--p-surface-border);
   margin-bottom: 1rem;
 }
 
@@ -316,7 +316,7 @@ function formatDate(date: string): string {
 }
 
 .detail-source a {
-  color: var(--primary-color);
+  color: var(--p-primary-color);
   text-decoration: none;
   display: inline-flex;
   align-items: center;

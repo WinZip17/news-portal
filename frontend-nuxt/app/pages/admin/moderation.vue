@@ -5,11 +5,11 @@
     <!-- Фильтр по статусу -->
     <div class="filter-bar">
       <SelectButton
-        v-model="statusFilter"
-        :options="statusOptions"
-        option-label="label"
-        option-value="value"
-        @change="loadNews"
+          v-model="statusFilter"
+          :options="statusOptions"
+          option-label="label"
+          option-value="value"
+          @change="loadNews"
       />
     </div>
 
@@ -19,12 +19,12 @@
 
     <div v-else class="moderation-list">
       <DataTable
-        :value="newsStore.news"
-        :paginator="true"
-        :rows="10"
-        :rows-per-page-options="[10, 20, 50]"
-        paginator-template="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-        current-page-report-template="Показано с {first} по {last} из {totalRecords}"
+          :value="newsStore.news"
+          :paginator="true"
+          :rows="10"
+          :rows-per-page-options="[10, 20, 50]"
+          paginator-template="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+          current-page-report-template="Показано с {first} по {last} из {totalRecords}"
       >
         <Column field="title" header="Заголовок" :sortable="true">
           <template #body="{ data }">
@@ -57,39 +57,39 @@
           <template #body="{ data }">
             <div class="actions-cell">
               <Button
-                v-if="data.status === 'pending'"
-                v-tooltip.top="'Одобрить'"
-                icon="pi pi-check"
-                severity="success"
-                text
-                rounded
-                @click="confirmModeration(data.id, 'published')"
+                  v-if="data.status === 'pending'"
+                  v-tooltip.top="'Одобрить'"
+                  icon="pi pi-check"
+                  severity="success"
+                  text
+                  rounded
+                  @click="confirmModeration(data.id, 'published')"
               />
               <Button
-                v-if="data.status === 'pending'"
-                v-tooltip.top="'Отклонить'"
-                icon="pi pi-times"
-                severity="danger"
-                text
-                rounded
-                @click="confirmModeration(data.id, 'rejected')"
+                  v-if="data.status === 'pending'"
+                  v-tooltip.top="'Отклонить'"
+                  icon="pi pi-times"
+                  severity="danger"
+                  text
+                  rounded
+                  @click="confirmModeration(data.id, 'rejected')"
               />
               <Button
-                v-if="data.status === 'published'"
-                v-tooltip.top="'В архив'"
-                icon="pi pi-inbox"
-                severity="warning"
-                text
-                rounded
-                @click="confirmModeration(data.id, 'archived')"
+                  v-if="data.status === 'published'"
+                  v-tooltip.top="'В архив'"
+                  icon="pi pi-inbox"
+                  severity="warning"
+                  text
+                  rounded
+                  @click="confirmModeration(data.id, 'archived')"
               />
               <Button
-                v-tooltip.top="'Просмотр'"
-                icon="pi pi-eye"
-                severity="info"
-                text
-                rounded
-                @click="viewNews(data)"
+                  v-tooltip.top="'Просмотр'"
+                  icon="pi pi-eye"
+                  severity="info"
+                  text
+                  rounded
+                  @click="viewNews(data)"
               />
             </div>
           </template>
@@ -102,16 +102,16 @@
 
     <!-- Просмотр новости -->
     <Dialog
-      v-model:visible="viewDialog"
-      :header="selectedNews?.title"
-      :style="{ width: '700px' }"
-      :modal="true"
+        v-model:visible="viewDialog"
+        :header="selectedNews?.title"
+        :style="{ width: '700px' }"
+        :modal="true"
     >
       <div v-if="selectedNews" class="news-preview">
         <div class="preview-meta">
           <Tag
-            :severity="getStatusSeverity(selectedNews.status)"
-            :value="getStatusLabel(selectedNews.status)"
+              :severity="getStatusSeverity(selectedNews.status)"
+              :value="getStatusLabel(selectedNews.status)"
           />
           <span class="preview-category">{{ getCategoryLabel(selectedNews.category) }}</span>
         </div>
@@ -250,7 +250,7 @@ function viewNews(news: NewsItem) {
 .page-title {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--text-color);
+  color: var(--p-text-color);
   margin-bottom: 2rem;
 }
 
@@ -272,7 +272,7 @@ function viewNews(news: NewsItem) {
 
 .news-title {
   font-weight: 500;
-  color: var(--text-color);
+  color: var(--p-text-color);
 }
 
 .ai-badge {
@@ -286,8 +286,8 @@ function viewNews(news: NewsItem) {
 }
 
 .category-badge {
-  background-color: var(--highlight-bg);
-  color: var(--highlight-text-color);
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-color);
   padding: 0.25rem 0.5rem;
   border-radius: 12px;
   font-size: 0.75rem;
@@ -310,13 +310,13 @@ function viewNews(news: NewsItem) {
 }
 
 .preview-category {
-  color: var(--text-color-secondary);
+  color: var(--p-text-muted-color);
   font-weight: 500;
 }
 
 .preview-content {
   line-height: 1.8;
-  color: var(--text-color);
+  color: var(--p-text-color);
 }
 
 @media (max-width: 768px) {

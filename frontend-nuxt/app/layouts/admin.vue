@@ -33,7 +33,7 @@ definePageMeta({
 .admin-content {
   flex: 1;
   padding: 2rem;
-  background-color: var(--surface-ground);
+  background-color: var(--p-surface-ground);
 }
 
 @media (max-width: 768px) {

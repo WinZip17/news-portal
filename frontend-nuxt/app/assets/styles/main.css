@@ -1,3 +1,4 @@
+/* app/assets/styles/main.css */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 * {
@@ -8,9 +9,9 @@
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background-color: var(--surface-ground);
-    color: var(--text-color);
-    transition: background-color var(--transition-duration), color var(--transition-duration);
+    background-color: var(--p-surface-ground);
+    color: var(--p-text-color);
+    transition: background-color 0.3s, color 0.3s;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -37,14 +38,14 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--surface-ground);
+    background: var(--p-surface-ground);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--surface-border);
+    background: var(--p-surface-border);
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--text-color-disabled);
+    background: var(--p-text-muted-color);
 }

@@ -15,7 +15,7 @@
               <Avatar
                 :label="userInitials"
                 size="xlarge"
-                style="background-color: var(--primary-color); color: white"
+                style="background-color: var(--p-primary-color); color: white"
                 shape="circle"
               />
               <div>
@@ -149,7 +149,7 @@
             </div>
 
             <div v-else-if="favorites.length === 0" class="empty-state">
-              <i class="pi pi-star" style="font-size: 3rem; color: var(--text-color-disabled)"></i>
+              <i class="pi pi-star" style="font-size: 3rem; color: var(--p-text-muted-color)"></i>
               <p>У вас пока нет избранных новостей</p>
             </div>
 
@@ -356,7 +356,7 @@ function handleFavoriteChange(id: string) {
 .page-title {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--text-color);
+  color: var(--p-text-color);
   margin-bottom: 2rem;
 }
 
@@ -367,9 +367,9 @@ function handleFavoriteChange(id: string) {
 }
 
 .profile-content {
-  background-color: var(--surface-card);
+  background-color: var(--p-surface-card);
   border-radius: 1rem;
-  border: 1px solid var(--surface-border);
+  border: 1px solid var(--p-surface-border);
   overflow: hidden;
 }
 
@@ -383,21 +383,21 @@ function handleFavoriteChange(id: string) {
   gap: 1.5rem;
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid var(--surface-border);
+  border-bottom: 1px solid var(--p-surface-border);
 }
 
 .profile-header h2 {
-  color: var(--text-color);
+  color: var(--p-text-color);
   margin-bottom: 0.25rem;
 }
 
 .profile-header p {
-  color: var(--text-color-secondary);
+  color: var(--p-text-muted-color);
   margin-bottom: 0.5rem;
 }
 
 .role-badge {
-  background-color: var(--primary-color);
+  background-color: var(--p-primary-color);
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
@@ -425,7 +425,7 @@ function handleFavoriteChange(id: string) {
 
 .form-field label {
   font-weight: 500;
-  color: var(--text-color);
+  color: var(--p-text-color);
   font-size: 0.875rem;
 }
 
@@ -434,7 +434,7 @@ function handleFavoriteChange(id: string) {
 }
 
 .settings-section h3 {
-  color: var(--text-color);
+  color: var(--p-text-color);
   margin-bottom: 1rem;
 }
 
@@ -456,7 +456,7 @@ function handleFavoriteChange(id: string) {
 }
 
 .toggle-item label {
-  color: var(--text-color);
+  color: var(--p-text-color);
   font-weight: 500;
 }
 
@@ -469,7 +469,7 @@ function handleFavoriteChange(id: string) {
 .empty-state {
   text-align: center;
   padding: 3rem;
-  color: var(--text-color-disabled);
+  color: var(--p-text-muted-color);
 }
 
 .empty-state p {

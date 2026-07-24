@@ -2,7 +2,7 @@
   <div class="auth-page">
     <div class="auth-card">
       <div class="auth-header">
-        <i class="pi pi-sign-in" style="font-size: 2.5rem; color: var(--primary-color)"></i>
+        <i class="pi pi-sign-in" style="font-size: 2.5rem; color: var(--p-primary-color)"></i>
         <h1>Вход в аккаунт</h1>
         <p>Войдите, чтобы получить доступ ко всем возможностям</p>
       </div>
@@ -28,6 +28,7 @@
             v-model="password"
             placeholder="Введите пароль"
             :feedback="false"
+            fluid
             :invalid="!!errors.password"
             toggle-mask
             class="w-full"
@@ -68,11 +69,6 @@
 </template>
 
 <script setup lang="ts">
-import InputText from 'primevue/inputtext';
-import Password from 'primevue/password';
-import Checkbox from 'primevue/checkbox';
-import Message from 'primevue/message';
-
 definePageMeta({
   middleware: 'guest',
 });
@@ -133,12 +129,12 @@ async function handleLogin() {
 }
 
 .auth-card {
-  background-color: var(--surface-card);
+  background-color: var(--p-surface-card);
   border-radius: 1rem;
   padding: 2.5rem;
   width: 100%;
   max-width: 450px;
-  border: 1px solid var(--surface-border);
+  border: 1px solid var(--p-surface-border);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -150,12 +146,12 @@ async function handleLogin() {
 .auth-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--text-color);
+  color: var(--p-text-color);
   margin: 1rem 0 0.5rem;
 }
 
 .auth-header p {
-  color: var(--text-color-secondary);
+  color: var(--p-text-muted-color);
 }
 
 .auth-form {
@@ -172,7 +168,7 @@ async function handleLogin() {
 
 .form-field label {
   font-weight: 500;
-  color: var(--text-color);
+  color: var(--p-text-color);
   font-size: 0.875rem;
 }
 
@@ -194,13 +190,13 @@ async function handleLogin() {
 }
 
 .checkbox-field label {
-  color: var(--text-color-secondary);
+  color: var(--p-text-muted-color);
   font-size: 0.875rem;
   cursor: pointer;
 }
 
 .forgot-link {
-  color: var(--primary-color);
+  color: var(--p-primary-color);
   text-decoration: none;
   font-size: 0.875rem;
 }
@@ -213,15 +209,15 @@ async function handleLogin() {
   text-align: center;
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 1px solid var(--surface-border);
+  border-top: 1px solid var(--p-surface-border);
 }
 
 .auth-footer p {
-  color: var(--text-color-secondary);
+  color: var(--p-text-muted-color);
 }
 
 .link {
-  color: var(--primary-color);
+  color: var(--p-primary-color);
   text-decoration: none;
   font-weight: 500;
 }

@@ -299,7 +299,7 @@ function confirmDelete(news: NewsItem) {
 .page-title {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--text-color);
+  color: var(--p-text-color);
 }
 
 .news-form {
@@ -322,7 +322,7 @@ function confirmDelete(news: NewsItem) {
 
 .form-field label {
   font-weight: 500;
-  color: var(--text-color);
+  color: var(--p-text-color);
   font-size: 0.875rem;
 }
 

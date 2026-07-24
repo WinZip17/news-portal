@@ -32,8 +32,8 @@
 
 <style scoped>
 .app-footer {
-  background-color: var(--surface-card);
-  border-top: 1px solid var(--surface-border);
+  background-color: var(--p-surface-card);
+  border-top: 1px solid var(--p-surface-border);
   margin-top: auto;
 }
 
@@ -53,7 +53,7 @@
 }
 
 .footer-title {
-  color: var(--primary-color);
+  color: var(--p-primary-color);
   font-size: 1.25rem;
   display: flex;
   align-items: center;
@@ -61,34 +61,34 @@
 }
 
 .footer-subtitle {
-  color: var(--text-color);
+  color: var(--p-text-color);
   font-size: 1rem;
   margin-bottom: 0.5rem;
 }
 
 .footer-text {
-  color: var(--text-color-secondary);
+  color: var(--p-text-muted-color);
   line-height: 1.6;
 }
 
 .footer-link {
-  color: var(--text-color-secondary);
+  color: var(--p-text-muted-color);
   text-decoration: none;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: color var(--transition-duration);
+  transition: color 0.2s;
 }
 
 .footer-link:hover {
-  color: var(--primary-color);
+  color: var(--p-primary-color);
 }
 
 .footer-bottom {
-  border-top: 1px solid var(--surface-border);
+  border-top: 1px solid var(--p-surface-border);
   padding: 1.5rem;
   text-align: center;
-  color: var(--text-color-secondary);
+  color: var(--p-text-muted-color);
   font-size: 0.875rem;
 }
 
