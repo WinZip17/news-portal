@@ -22,12 +22,16 @@ export default defineNuxtConfig({
     },
   },
 
-  css: ['primeicons/primeicons.css', '~/assets/styles/main.css'],
+  css: [
+    'primeicons/primeicons.css',
+    '~/assets/styles/main.css',
+    '~/assets/styles/primevue-variables.css',
+  ],
 
   nitro: {
     devProxy: {
       '/api': {
-        target: 'http://localhost:3001',
+        target: 'http://localhost:3001/api',
         changeOrigin: true,
         prependPath: true,
       },
@@ -79,6 +83,7 @@ export default defineNuxtConfig({
   vite: {
     build: {
       target: 'esnext',
+      cssCodeSplit: false,
     },
   },
   compatibilityDate: '2026-07-24',

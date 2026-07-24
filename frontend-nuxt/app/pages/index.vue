@@ -37,22 +37,22 @@
       <div class="stats-grid">
         <div class="stat-card">
           <i class="pi pi-file" style="font-size: 2rem; color: var(--p-primary-color)"></i>
-          <div class="stat-value">{{ stats.totalNews }}</div>
+          <div class="stat-value">{{ stats?.totalNews }}</div>
           <div class="stat-label">Всего новостей</div>
         </div>
         <div class="stat-card">
           <i class="pi pi-check-circle" style="font-size: 2rem; color: #22c55e"></i>
-          <div class="stat-value">{{ stats.publishedNews }}</div>
+          <div class="stat-value">{{ stats?.publishedNews }}</div>
           <div class="stat-label">Опубликовано</div>
         </div>
         <div class="stat-card">
           <i class="pi pi-users" style="font-size: 2rem; color: #f59e0b"></i>
-          <div class="stat-value">{{ stats.totalUsers }}</div>
+          <div class="stat-value">{{ stats?.totalUsers }}</div>
           <div class="stat-label">Пользователей</div>
         </div>
         <div class="stat-card">
           <i class="pi pi-heart" style="font-size: 2rem; color: #ef4444"></i>
-          <div class="stat-value">{{ stats.totalLikes }}</div>
+          <div class="stat-value">{{ stats?.totalLikes }}</div>
           <div class="stat-label">Лайков</div>
         </div>
       </div>

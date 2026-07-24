@@ -1,0 +1,45 @@
+/* app/assets/styles/primevue-variables.css */
+
+:root {
+    /* Светлая тема */
+    --p-primary-color: #3B82F6;
+    --p-primary-hover-color: #2563EB;
+    --p-primary-active-color: #1D4ED8;
+    --p-primary-contrast-color: #FFFFFF;
+    --p-primary-50: #EFF6FF;
+    --p-primary-100: #DBEAFE;
+    --p-primary-200: #BFDBFE;
+
+    --p-surface-ground: #F8F9FA;
+    --p-surface-section: #FFFFFF;
+    --p-surface-card: #FFFFFF;
+    --p-surface-overlay: #FFFFFF;
+    --p-surface-border: #DFE7EF;
+    --p-surface-hover: #F6F9FC;
+
+    --p-text-color: #495057;
+    --p-text-muted-color: #6C757D;
+    --p-text-disabled-color: #ADB5BD;
+}
+
+.p-dark {
+    /* Тёмная тема */
+    --p-primary-color: #60A5FA;
+    --p-primary-hover-color: #3B82F6;
+    --p-primary-active-color: #2563EB;
+    --p-primary-contrast-color: #FFFFFF;
+    --p-primary-50: #1E3A5F;
+    --p-primary-100: #1E3A5F;
+    --p-primary-200: #1E40AF;
+
+    --p-surface-ground: #111827;
+    --p-surface-section: #1F2937;
+    --p-surface-card: #1F2937;
+    --p-surface-overlay: #1F2937;
+    --p-surface-border: #374151;
+    --p-surface-hover: #374151;
+
+    --p-text-color: #F9FAFB;
+    --p-text-muted-color: #D1D5DB;
+    --p-text-disabled-color: #6B7280;
+}

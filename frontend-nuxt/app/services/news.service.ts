@@ -1,9 +1,16 @@
-import type { CreateNewsDto, ModerationBody, NewsFilter, NewsItem, StatsResponse } from '~/types';
+import type {
+  CreateNewsDto,
+  ModerationBody,
+  NewsFilter,
+  NewsItem,
+  NewsResponse,
+  StatsResponse,
+} from '~/types';
 
 export function useNewsService() {
   const { apiFetch } = useApi();
 
-  async function getNews(filter?: NewsFilter): Promise<NewsItem[]> {
+  async function getNews(filter?: NewsFilter): Promise<NewsResponse> {
     const params = new URLSearchParams();
 
     if (filter) {
@@ -19,7 +26,7 @@ export function useNewsService() {
     }
 
     const query = params.toString();
-    return apiFetch<NewsItem[]>(`/news${query ? `?${query}` : ''}`);
+    return apiFetch<NewsResponse>(`/news${query ? `?${query}` : ''}`);
   }
 
   async function getNewsById(id: string): Promise<NewsItem> {

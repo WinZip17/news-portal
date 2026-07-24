@@ -22,7 +22,10 @@ export const useNewsStore = defineStore('news', () => {
     try {
       isLoading.value = true;
       error.value = null;
-      news.value = await newsService.getNews(filter.value);
+      const data = await newsService.getNews(filter.value);
+      console.log('data', data);
+      news.value = data.data;
+      console.log(' news.value', news.value);
     } catch (err: any) {
       error.value = err.message;
     } finally {
@@ -108,6 +111,7 @@ export const useNewsStore = defineStore('news', () => {
   async function fetchStats(): Promise<void> {
     try {
       stats.value = await newsService.getStats();
+      console.log('stats.value', stats.value);
     } catch (err: any) {
       error.value = err.message;
     }

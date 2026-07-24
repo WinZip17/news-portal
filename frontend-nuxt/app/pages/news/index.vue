@@ -2,60 +2,43 @@
   <div class="news-page">
     <h1 class="page-title">Новости</h1>
 
-    <!-- Фильтры -->
-    <div class="filters-section">
-      <div class="filters-grid">
-        <!-- Поиск -->
-        <div class="filter-item">
-          <span class="p-input-icon-left w-full">
-            <i class="pi pi-search" />
+    <!-- Фильтры в Toolbar -->
+    <Toolbar class="filters-toolbar">
+      <template #start>
+        <div class="filters-row">
+          <IconField>
+            <InputIcon class="pi pi-search" />
             <InputText
               v-model="searchQuery"
               placeholder="Поиск новостей..."
-              class="w-full"
               @input="debouncedSearch"
             />
-          </span>
-        </div>
+          </IconField>
 
-        <!-- Категория -->
-        <div class="filter-item">
           <Dropdown
             v-model="selectedCategory"
             :options="categories"
             option-label="label"
             option-value="value"
             placeholder="Все категории"
-            class="w-full"
             @change="applyFilters"
           />
-        </div>
 
-        <!-- Сортировка -->
-        <div class="filter-item">
           <Dropdown
             v-model="sortBy"
             :options="sortOptions"
             option-label="label"
             option-value="value"
             placeholder="Сортировка"
-            class="w-full"
             @change="applyFilters"
           />
         </div>
+      </template>
 
-        <!-- Сброс -->
-        <div class="filter-item">
-          <Button
-            label="Сбросить"
-            icon="pi pi-refresh"
-            severity="secondary"
-            class="w-full"
-            @click="resetFilters"
-          />
-        </div>
-      </div>
-    </div>
+      <template #end>
+        <Button label="Сбросить" icon="pi pi-refresh" severity="secondary" @click="resetFilters" />
+      </template>
+    </Toolbar>
 
     <!-- Сетка новостей -->
     <div v-if="newsStore.isLoading" class="loading-container">
@@ -129,7 +112,6 @@ const sortOptions = [
   { label: 'По лайкам', value: 'likes' },
 ];
 
-// Загрузка данных
 await useAsyncData('news-list', () => {
   return newsStore.fetchNews();
 });
@@ -144,7 +126,6 @@ function applyFilters() {
     category: selectedCategory.value || undefined,
   };
 
-  // Парсим сортировку
   if (sortBy.value) {
     const [field, order] = sortBy.value.split('_');
     filter.sortBy = field;
@@ -192,19 +173,21 @@ function openNewsDetail(id: string) {
   margin-bottom: 2rem;
 }
 
-.filters-section {
-  background-color: var(--p-surface-card);
-  padding: 1.5rem;
-  border-radius: 6px;
+.filters-toolbar {
   margin-bottom: 2rem;
-  border: 1px solid var(--p-surface-border);
+  border-radius: 6px;
 }
 
-.filters-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr auto;
-  gap: 1rem;
+.filters-row {
+  display: flex;
+  gap: 0.75rem;
   align-items: center;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.filters-row > * {
+  min-width: 200px;
 }
 
 .news-grid {
@@ -247,8 +230,14 @@ function openNewsDetail(id: string) {
     font-size: 1.75rem;
   }
 
-  .filters-grid {
-    grid-template-columns: 1fr;
+  .filters-row {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .filters-row > * {
+    width: 100%;
+    min-width: unset;
   }
 
   .news-grid {

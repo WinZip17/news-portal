@@ -1,4 +1,5 @@
-// types/index.ts
+import { News } from 'frontend/src/types'
+
 export enum NewsCategory {
   POLITICS = 'politics',
   ECONOMY = 'economy',
@@ -169,4 +170,12 @@ export interface StatsResponse {
   totalUsers: number;
   totalLikes: number;
   newsByCategory: Record<string, number>;
+}
+
+export interface NewsResponse {
+  data: News[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
