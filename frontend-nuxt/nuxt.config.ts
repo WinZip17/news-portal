@@ -1,4 +1,4 @@
-// nuxt.config.ts
+import Aura from '@primeuix/themes/aura';
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
@@ -7,43 +7,22 @@ export default defineNuxtConfig({
   modules: ['@pinia/nuxt', '@vueuse/nuxt', '@primevue/nuxt-module'],
 
   primevue: {
+    autoImport: true,
     options: {
-      theme: 'none',
+      theme: {
+        preset: Aura,
+        options: {
+          darkModeSelector: '.p-dark',
+        },
+      },
       ripple: true,
     },
     components: {
-      include: [
-        'Button',
-        'InputText',
-        'Password',
-        'Checkbox',
-        'Dropdown',
-        'Dialog',
-        'DataTable',
-        'Column',
-        'Tag',
-        'SelectButton',
-        'Card',
-        'Avatar',
-        'Toast',
-        'ConfirmDialog',
-        'ProgressSpinner',
-        'Message',
-        'Paginator',
-        'ToggleSwitch',
-        'TabView',
-        'TabPanel',
-        'InputNumber',
-        'Divider',
-      ],
+      include: ['*'],
     },
   },
 
-  css: [
-    'primeicons/primeicons.css',
-    '@/app/assets/styles/main.css',
-    '@/app/assets/styles/themes.css',
-  ],
+  css: ['primeicons/primeicons.css', '~/assets/styles/main.css'],
 
   nitro: {
     devProxy: {
@@ -86,10 +65,6 @@ export default defineNuxtConfig({
 
   experimental: {
     sharedPrerenderData: false,
-    compileTemplate: true,
-    resetAsyncDataToUndefined: true,
-    templateUtils: true,
-    relativeWatchPaths: true,
     defaults: {
       useAsyncData: {
         deep: true,
@@ -106,4 +81,5 @@ export default defineNuxtConfig({
       target: 'esnext',
     },
   },
+  compatibilityDate: '2026-07-24',
 });
