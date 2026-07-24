@@ -24,7 +24,6 @@ import {
   Home as HomeIcon,
   Article as NewsIcon,
   Person as ProfileIcon,
-  Login as LoginIcon,
   Dashboard as AdminIcon,
   DarkMode,
   LightMode,
@@ -120,14 +119,16 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                 <MenuIcon />
               </IconButton>
             )}
-            <Typography variant="h6" sx={{ flex: 1 }}>
+            <Typography variant="h6">
               {pathname === '/' && 'Главная'}
               {pathname === '/news' && 'Новости'}
               {pathname === '/profile' && 'Профиль'}
               {pathname === '/admin' && 'Админ-панель'}
             </Typography>
 
-            <FrameworkSwitcher current="next" />
+            <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+              <FrameworkSwitcher current="next" />
+            </Box>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 2 }}>
               <Switch

@@ -1,5 +1,5 @@
 import api from './api';
-import type { News, NewsResponse } from '@/types';
+import type { News, NewsResponse, NewsStats } from '@/types';
 
 export const newsService = {
   async getNews(params?: Record<string, string | number>): Promise<NewsResponse> {
@@ -50,6 +50,11 @@ export const newsService = {
 
   async moderateNews(id: string, status: string): Promise<News> {
     const response = await api.patch<News>(`/news/${id}/moderate`, { status });
+    return response.data;
+  },
+
+  async getStats(): Promise<NewsStats> {
+    const response = await api.get<NewsStats>('/news/stats');
     return response.data;
   },
 };

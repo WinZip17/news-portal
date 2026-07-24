@@ -45,3 +45,11 @@ export interface AuthResponse {
   user: User;
   expiresIn: number;
 }
+export interface NewsStats {
+  newsToday: number;
+  totalUsers: number;
+  totalAiNews: number;
+  totalNews: number;
+  totalViews: number;
+  pendingNews: number;
+}

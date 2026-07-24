@@ -21,12 +21,16 @@ import {
   Group as GroupIcon,
   SmartToy as AIIcon,
   Close as CloseIcon,
+  Visibility as VisibilityIcon,
+  Pending as PendingIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { newsService } from '@/services/newsService';
 import { News } from '@/types';
 import NewsDetail from '@/components/NewsDetail';
-import { useAppSelector } from '@/store';
+import { useAppDispatch, useAppSelector } from '@/store';
+import { fetchStats } from '@/store/news/newsSlice';
+import { getCategoryLabel } from '@/utils/getCategoryLabel';
 
 export default function HomePage() {
   const router = useRouter();
@@ -34,12 +38,15 @@ export default function HomePage() {
   const [loading, setLoading] = React.useState(true);
   const [selectedNews, setSelectedNews] = React.useState<News | null>(null);
   const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated);
+  const dispatch = useAppDispatch();
+  const stats = useAppSelector((s) => s.news.stats);
 
   useEffect(() => {
     newsService.getNews({ limit: 6 }).then((res) => {
       setNews(res.data);
       setLoading(false);
     });
+    dispatch(fetchStats());
   }, []);
 
   return (
@@ -97,16 +104,19 @@ export default function HomePage() {
       {/* Статистика */}
       <Grid container spacing={3} sx={{ mb: 6 }}>
         {[
-          { icon: <ArticleIcon />, label: 'Новостей сегодня', value: news.length },
-          { icon: <GroupIcon />, label: 'Пользователей', value: 1523 },
-          { icon: <AIIcon />, label: 'AI-рерайт', value: 856 },
+          { icon: <ArticleIcon />, label: 'Новостей сегодня', value: stats.newsToday },
+          { icon: <GroupIcon />, label: 'Пользователей', value: stats.totalUsers },
+          { icon: <AIIcon />, label: 'AI-рерайт', value: stats.totalAiNews },
+          { icon: <ArticleIcon />, label: 'Всего новостей', value: stats.totalNews },
+          { icon: <VisibilityIcon />, label: 'Просмотров', value: stats.totalViews },
+          { icon: <PendingIcon />, label: 'На модерации', value: stats.pendingNews },
         ].map((stat, i) => (
-          <Grid size={{ xs: 12, sm: 4 }} key={i}>
+          <Grid size={{ xs: 6, sm: 4, md: 2 }} key={i}>
             <Card>
               <CardContent sx={{ textAlign: 'center' }}>
-                <Box sx={{ color: 'primary.main', mb: 1 }}>{stat.icon}</Box>
-                <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                  {loading ? <Skeleton /> : stat.value}
+                <Box sx={{ color: 'primary.main', mb: 1, fontSize: 28 }}>{stat.icon}</Box>
+                <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                  {stat.value}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   {stat.label}
@@ -155,7 +165,7 @@ export default function HomePage() {
                       </Typography>
                       <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
                         <Chip
-                          label={item.category}
+                          label={getCategoryLabel(item.category)}
                           size="small"
                           color="primary"
                           variant="outlined"

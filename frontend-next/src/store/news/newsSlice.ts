@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { newsService } from '@/services/newsService';
-import type { News, NewsResponse } from '@/types';
+import type { News, NewsResponse, NewsStats } from '@/types';
 
 interface NewsState {
   news: News[];
@@ -11,6 +11,7 @@ interface NewsState {
   totalPages: number;
   isLoading: boolean;
   error: string | null;
+  stats: NewsStats;
 }
 
 const initialState: NewsState = {
@@ -22,6 +23,14 @@ const initialState: NewsState = {
   totalPages: 0,
   isLoading: false,
   error: null,
+  stats: {
+    newsToday: 0,
+    totalUsers: 0,
+    totalAiNews: 0,
+    totalNews: 0,
+    pendingNews: 0,
+    totalViews: 0,
+  },
 };
 
 export const fetchNews = createAsyncThunk(
@@ -45,6 +54,15 @@ export const fetchNewsById = createAsyncThunk(
     }
   },
 );
+
+export const fetchStats = createAsyncThunk('news/fetchStats', async (_, { rejectWithValue }) => {
+  try {
+    const response = await newsService.getStats();
+    return response;
+  } catch (err: unknown) {
+    return rejectWithValue(err instanceof Error ? err.message : 'Failed to fetch stats');
+  }
+});
 
 const newsSlice = createSlice({
   name: 'news',
@@ -81,6 +99,9 @@ const newsSlice = createSlice({
       .addCase(fetchNewsById.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+      })
+      .addCase(fetchStats.fulfilled, (state, action: PayloadAction<NewsStats>) => {
+        state.stats = action.payload;
       });
   },
 });

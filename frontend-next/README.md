@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🔵 News Portal - Next.js Frontend
 
-## Getting Started
+Фронтенд на Next.js с Material-UI для новостного портала. Третий по счёту фронтенд в монорепозитории, дополняет React SPA и NestJS SSR.
 
-First, run the development server:
+## 🛠 Технологии
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Next.js 16** — React фреймворк с App Router
+- **TypeScript** — типизация
+- **Redux Toolkit** — управление состоянием
+- **Material-UI (MUI) 6** — UI компоненты
+- **Axios** — HTTP клиент
+- **ESLint + Prettier** — линтинг и форматирование
+
+## 🚀 Быстрый старт
+
+```text
+npm install — установка зависимостей
+npm run dev — запуск в режиме разработки (порт 3003)
+npm run build — сборка для продакшена
+npm start — запуск продакшен версии
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Приложение будет доступно на http://localhost:3003
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 Структура проекта
+```text
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+frontend-next/
+├── public/                  # Статические файлы
+├── src/
+│   ├── app/                 # App Router страницы
+│   │   ├── layout.tsx       # Корневой layout с темой и Redux
+│   │   ├── page.tsx         # Главная страница
+│   │   ├── news/page.tsx    # Лента новостей
+│   │   ├── login/page.tsx   # Вход
+│   │   ├── register/page.tsx # Регистрация
+│   │   ├── profile/page.tsx # Личный кабинет
+│   │   └── admin/page.tsx   # Админ-панель
+│   ├── components/          # React компоненты
+│   │   ├── MainLayout.tsx        # Главный layout с сайдбаром
+│   │   ├── NewsDetail.tsx        # Детальный просмотр новости
+│   │   └── FrameworkSwitcher.tsx  # Переключатель фреймворков
+│   ├── services/            # API сервисы
+│   │   ├── api.ts                # HTTP клиент (Axios)
+│   │   ├── authService.ts        # Авторизация
+│   │   └── newsService.ts        # Новости
+│   ├── store/               # Redux Toolkit
+│   │   ├── index.ts              # Конфигурация store
+│   │   ├── auth/authSlice.ts     # Авторизация
+│   │   ├── news/newsSlice.ts     # Новости
+│   │   └── ui/uiSlice.ts         # UI (тема)
+│   ├── types/               # TypeScript типы
+│   ├── utils/               # Утилиты
+│   └── theme.ts             # MUI тема (light/dark)
+├── Dockerfile               # Docker образ
+├── next.config.ts           # Конфигурация Next.js
+├── .prettierrc              # Настройки Prettier
+├── eslint.config.mjs        # Конфигурация ESLint
+├── tsconfig.json            # TypeScript конфиг
+└── package.json             # Зависимости
 
-## Learn More
+```
+## 📄 Страницы
 
-To learn more about Next.js, take a look at the following resources:
+| Путь | Страница | Доступ |
+|------|----------|--------|
+| / | Главная | Все |
+| /news | Лента новостей | Все |
+| /login | Вход | Гость |
+| /register | Регистрация | Гость |
+| /profile | Личный кабинет | 🔒 |
+| /admin | Админ-панель | 🔒 Модер/Админ |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🎨 Особенности дизайна
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Material-UI с кастомной темой
+- Тёмный/светлый режим
+- Адаптивный сайдбар с мобильным меню
+- Карточки новостей с чипсами категорий
+- Модальные окна для редактирования
+- Тулы для длинных заголовков
 
-## Deploy on Vercel
+## 🔧 Прокси API
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+В next.config.ts настроены rewrites:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+/api/:path* → http://localhost:3001/api/:path*
+
+На проде запросы идут через nginx на основном домене.
+
+## 🐳 Docker
+
+```text
+docker build -t news-portal-next . — сборка образа
+docker run -p 3003:3003 news-portal-next — запуск контейнера
+```
+
+## 📝 Лицензия
+
+MIT

@@ -22,6 +22,7 @@ import { Search as SearchIcon, Close as CloseIcon, SmartToy as AIIcon } from '@m
 import { newsService } from '@/services/newsService';
 import { News } from '@/types';
 import NewsDetail from '@/components/NewsDetail';
+import { getCategoryLabel } from '@/utils/getCategoryLabel';
 
 export default function NewsPage() {
   const [news, setNews] = useState<News[]>([]);
@@ -176,7 +177,7 @@ export default function NewsPage() {
                         sx={{ display: 'flex', gap: 0.5, alignItems: 'center', flexWrap: 'wrap' }}
                       >
                         <Chip
-                          label={item.category}
+                          label={getCategoryLabel(item.category)}
                           size="small"
                           color="primary"
                           variant="outlined"
