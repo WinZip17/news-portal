@@ -233,15 +233,6 @@ export default function ProfilePage() {
             <MenuItem value="light">Светлая</MenuItem>
             <MenuItem value="dark">Темная</MenuItem>
           </Select>
-          <FormControlLabel
-            control={
-              <Switch
-                name="notificationsEnabled"
-                defaultChecked={user.preferences?.notificationsEnabled ?? true}
-              />
-            }
-            label="Уведомления"
-          />
           <Box>
             <Button type="submit" variant="contained" sx={{ mt: 2 }}>
               Сохранить
