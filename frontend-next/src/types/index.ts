@@ -38,3 +38,10 @@ export interface User {
     language?: string;
   };
 }
+
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  user: User;
+  expiresIn: number;
+}

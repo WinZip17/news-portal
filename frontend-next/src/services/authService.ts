@@ -1,7 +1,6 @@
 import api from './api';
-import { User } from '@/types';
+import type { AuthResponse, User } from '@/types';
 import { AxiosError } from 'axios';
-import { AuthResponse } from 'frontend/src/types';
 
 interface LoginResponse {
   accessToken: string;
