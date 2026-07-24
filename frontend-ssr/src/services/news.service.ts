@@ -1,5 +1,5 @@
 import api from './api';
-import type { News, NewsResponse } from '../types';
+import type { News, NewsResponse, NewsStats } from '../types';
 
 export const newsService = {
   async fetchInitialData(): Promise<NewsResponse> {
@@ -59,6 +59,11 @@ export const newsService = {
     const response = await api.post<{ favorited: boolean }>(
       `/news/${newsId}/favorite`,
     );
+    return response.data;
+  },
+
+  async getStats(): Promise<NewsStats> {
+    const response = await api.get<NewsStats>('/news/stats');
     return response.data;
   },
 };

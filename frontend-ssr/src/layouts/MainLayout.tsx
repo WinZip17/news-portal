@@ -56,13 +56,6 @@ const allNavItems: NavItem[] = [
     label: 'Админ-панель',
     requiresAdmin: true,
   },
-  {
-    key: 'login',
-    path: '/login',
-    icon: <LoginOutlined />,
-    label: 'Войти',
-    requiresAuth: false,
-  },
 ];
 
 const MainLayout: React.FC = () => {

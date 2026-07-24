@@ -18,12 +18,14 @@ import {
   RocketOutlined,
   RobotOutlined,
   LinkOutlined,
-  ClockCircleOutlined,
+  ClockCircleOutlined, EyeOutlined,
 } from '@ant-design/icons';
 import NewsDetailModal from '../components/NewsDetailModal';
 import { useNewsStore } from '../store/newsStoreProvider';
 import { isBrowser } from '../utils/isBrowser';
 import { useNavigate } from 'react-router-dom';
+import { NewsStats } from '../types';
+import { newsService } from '../services/news.service';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -33,6 +35,7 @@ const Home: React.FC = () => {
   const fetchNews = useNewsStore((s) => s.fetchNews);
   const navigate = useNavigate();
 
+  const [stats, setStats] = useState<NewsStats | null>(null);
   const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -40,6 +43,7 @@ const Home: React.FC = () => {
     if (news.length === 0) {
       fetchNews({ limit: 6 });
     }
+    newsService.getStats().then(setStats);
   }, [news.length, fetchNews]);
 
   const getToken = () => {
@@ -174,33 +178,68 @@ const Home: React.FC = () => {
       </div>
 
       <Row gutter={[24, 24]} style={{ marginBottom: 48 }}>
-        <Col xs={24} sm={8}>
+        <Col xs={12} sm={8} md={4}>
           <Card hoverable>
             <Statistic
-              title="Новостей сегодня"
-              value={news.length}
+              title="Сегодня"
+              value={stats?.newsToday || 0}
               prefix={<ReadOutlined />}
-              loading={loading}
+              loading={!stats}
             />
           </Card>
         </Col>
-
-        <Col xs={24} sm={8}>
+        <Col xs={12} sm={8} md={4}>
           <Card hoverable>
             <Statistic
               title="Пользователей"
-              value={1523}
+              value={stats?.totalUsers || 0}
               prefix={<TeamOutlined />}
+              loading={!stats}
             />
           </Card>
         </Col>
-
-        <Col xs={24} sm={8}>
+        <Col xs={12} sm={8} md={4}>
           <Card hoverable>
             <Statistic
               title="AI-рерайт"
-              value={856}
+              value={stats?.totalAiNews || 0}
               prefix={<RobotOutlined />}
+              loading={!stats}
+            />
+          </Card>
+        </Col>
+        <Col xs={12} sm={8} md={4}>
+          <Card hoverable>
+            <Statistic
+              title="Всего новостей"
+              value={stats?.totalNews || 0}
+              prefix={<ReadOutlined />}
+              loading={!stats}
+            />
+          </Card>
+        </Col>
+        <Col xs={12} sm={8} md={4}>
+          <Card hoverable>
+            <Statistic
+              title="Просмотров"
+              value={stats?.totalViews || 0}
+              prefix={<EyeOutlined />}
+              loading={!stats}
+            />
+          </Card>
+        </Col>
+        <Col xs={12} sm={8} md={4}>
+          <Card hoverable>
+            <Statistic
+              title="На модерации"
+              value={stats?.pendingNews || 0}
+              prefix={<ClockCircleOutlined />}
+              styles={
+                stats?.pendingNews
+                  ? { content: { color: '#faad14' } }
+                  : undefined
+              }
+              loading={!stats}
             />
           </Card>
         </Col>
