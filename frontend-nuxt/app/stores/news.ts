@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
-import type { CreateNewsDto, ModerationBody, NewsFilter, NewsItem, StatsResponse, } from '@/app/types';
+import type { CreateNewsDto, ModerationBody, NewsFilter, NewsItem, StatsResponse } from '~/types';
+import { useNewsService } from '~/services/news.service.ts';
 
 export const useNewsStore = defineStore('news', () => {
   const news = ref<NewsItem[]>([]);

@@ -122,14 +122,7 @@
 </template>
 
 <script setup lang="ts">
-import type { NewsItem, NewsStatus } from '@/app/types';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import Tag from 'primevue/tag';
-import SelectButton from 'primevue/selectbutton';
-import ConfirmDialog from 'primevue/confirmdialog';
-import Dialog from 'primevue/dialog';
-import { useConfirm } from 'primevue/useconfirm';
+import type { NewsItem, NewsStatus } from '~/types';
 
 definePageMeta({
   layout: 'admin',

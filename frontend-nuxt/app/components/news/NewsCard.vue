@@ -57,10 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import type { NewsItem } from '@/app/types';
-import Card from 'primevue/card';
-import { useAuthStore } from '@/app/stores/auth';
-import { useNewsStore } from '@/app/stores/news';
+import type { NewsItem } from '~/types';
 
 const props = defineProps<{
   news: NewsItem;

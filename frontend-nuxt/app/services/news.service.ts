@@ -1,5 +1,4 @@
-import type { CreateNewsDto, ModerationBody, NewsFilter, NewsItem, StatsResponse, } from '@/app/types';
-import { useApi } from '@/app/services/api';
+import type { CreateNewsDto, ModerationBody, NewsFilter, NewsItem, StatsResponse } from '~/types';
 
 export function useNewsService() {
   const { apiFetch } = useApi();

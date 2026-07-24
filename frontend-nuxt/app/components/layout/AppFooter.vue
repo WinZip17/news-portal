@@ -2,7 +2,7 @@
   <footer class="app-footer">
     <div class="footer-container">
       <div class="footer-section">
-        <h3 class="footer-title"><i class="pi pi-globe"></i> NewsHub</h3>
+        <h3 class="footer-title"><i class="pi pi-globe"></i> Short News</h3>
         <p class="footer-text">Современный новостной портал с AI-генерацией контента</p>
       </div>
 
@@ -15,17 +15,17 @@
 
       <div class="footer-section">
         <h4 class="footer-subtitle">Контакты</h4>
-        <a href="mailto:info@newshub.ru" class="footer-link">
-          <i class="pi pi-envelope"></i> info@newshub.ru
+        <a href="mailto:wydo17@yandex.ru" class="footer-link">
+          <i class="pi pi-envelope"></i> wydo17@yandex.ru
         </a>
-        <a href="tel:+78001234567" class="footer-link">
-          <i class="pi pi-phone"></i> 8 (800) 123-45-67
+        <a href="tel:+79494741600" class="footer-link">
+          <i class="pi pi-phone"></i> +7 (949) 474-16-00
         </a>
       </div>
     </div>
 
     <div class="footer-bottom">
-      <p>&copy; {{ new Date().getFullYear() }} NewsHub. Все права защищены.</p>
+      <p>&copy; {{ new Date().getFullYear() }} Short News. Все права защищены.</p>
     </div>
   </footer>
 </template>

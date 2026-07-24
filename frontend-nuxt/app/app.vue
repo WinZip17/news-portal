@@ -10,11 +10,6 @@
 </template>
 
 <script setup lang="ts">
-import Toast from 'primevue/toast';
-import ConfirmDialog from 'primevue/confirmdialog';
-import { useAuthStore } from '@/app/stores/auth';
-import { useUIStore } from '@/app/stores/ui';
-
 const authStore = useAuthStore();
 const uiStore = useUIStore();
 

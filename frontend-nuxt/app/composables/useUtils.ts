@@ -1,31 +1,43 @@
+// Типы для форматирования дат
+type DateFormatOption = {
+  year?: 'numeric' | '2-digit';
+  month?: 'numeric' | '2-digit' | 'long' | 'short' | 'narrow';
+  day?: 'numeric' | '2-digit';
+  hour?: 'numeric' | '2-digit';
+  minute?: 'numeric' | '2-digit';
+  second?: 'numeric' | '2-digit';
+};
+
+const DATE_FORMAT_OPTIONS: Record<string, DateFormatOption> = {
+  short: {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  },
+  long: {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  },
+  full: {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  },
+};
+
 export function useUtils() {
-  function formatDate(date: string | Date, format: 'short' | 'long' | 'full' = 'short'): string {
+  function formatDate(
+    date: string | Date,
+    format: keyof typeof DATE_FORMAT_OPTIONS = 'short',
+  ): string {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-
-    const options: Intl.DateTimeFormatOptions = {
-      short: {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      },
-      long: {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      },
-      full: {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      },
-    }[format];
-
-    return dateObj.toLocaleDateString('ru-RU', options);
+    return dateObj.toLocaleDateString('ru-RU', DATE_FORMAT_OPTIONS[format]);
   }
 
   function getCategoryLabel(category: string): string {

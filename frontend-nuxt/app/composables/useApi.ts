@@ -1,4 +1,3 @@
-// app/composables/useApi.ts
 import { useStorage } from '@vueuse/core';
 
 export function useApi() {

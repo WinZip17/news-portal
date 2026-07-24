@@ -114,12 +114,8 @@
 </template>
 
 <script setup lang="ts">
-import type { NewsCategory } from '@/app/types';
-import Card from 'primevue/card';
-import Dropdown from 'primevue/dropdown';
-import InputText from 'primevue/inputtext';
-import InputNumber from 'primevue/inputnumber';
-import Message from 'primevue/message';
+import type { NewsCategory } from '~/types';
+import { useAiService } from '~/services/ai.service.ts';
 
 definePageMeta({
   layout: 'admin',

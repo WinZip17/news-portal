@@ -81,7 +81,6 @@
           :key="item.id"
           :news="item"
           @click="openNewsDetail(item.id)"
-          @favorite="handleFavorite"
         />
       </div>
 
@@ -92,21 +91,12 @@
     </section>
 
     <!-- Модальное окно новости -->
-    <NewsDetailModal
-      v-model:visible="detailModalVisible"
-      :news="selectedNews"
-      @like="handleLike"
-      @favorite="handleFavorite"
-    />
+    <NewsDetailModal v-model:visible="detailModalVisible" :news="selectedNews" />
   </div>
 </template>
 
 <script setup lang="ts">
-import type { NewsItem } from '@/app/types';
-import NewsCard from '@/app/components/news/NewsCard.vue';
-import NewsDetailModal from '@/app/components/news/NewsDetailModal.vue';
-import ProgressSpinner from 'primevue/progressspinner';
-import Message from 'primevue/message';
+import type { NewsItem } from '~/types';
 
 const authStore = useAuthStore();
 const newsStore = useNewsStore();
@@ -123,18 +113,10 @@ await useAsyncData('home-data', async () => {
 });
 
 function openNewsDetail(id: string) {
-  selectedNews.value = newsStore.news.find((n) => n.id === id) || null;
+  selectedNews.value = newsStore.news.find((n: NewsItem) => n.id === id) || null;
   if (selectedNews.value) {
     detailModalVisible.value = true;
   }
-}
-
-function handleLike(id: string) {
-  // Обновление уже происходит в сторе
-}
-
-function handleFavorite(id: string) {
-  // Обновление уже происходит в сторе
 }
 </script>
 

@@ -107,15 +107,9 @@
 </template>
 
 <script setup lang="ts">
-import type { NewsItem, CreateNewsDto, NewsCategory, NewsStatus } from '@/app/types';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import Dialog from 'primevue/dialog';
-import Dropdown from 'primevue/dropdown';
-import InputText from 'primevue/inputtext';
-import Textarea from 'primevue/textarea';
-import ConfirmDialog from 'primevue/confirmdialog';
-import { useConfirm } from 'primevue/useconfirm';
+import type { NewsItem, CreateNewsDto, NewsCategory } from '~/types';
+import { NewsStatus } from '~/types';
+import { useUtils } from '~/composables/useUtils.ts';
 
 definePageMeta({
   layout: 'admin',
@@ -139,7 +133,7 @@ const newsForm = ref({
   source: '',
   sourceUrl: '',
   category: '' as NewsCategory,
-  status: 'published' as NewsStatus,
+  status: NewsStatus.PUBLISHED,
   tags: [] as string[],
 });
 
@@ -202,7 +196,7 @@ function createNews() {
     source: '',
     sourceUrl: '',
     category: '' as NewsCategory,
-    status: 'published',
+    status: NewsStatus.PUBLISHED,
     tags: [],
   };
   newsDialog.value = true;

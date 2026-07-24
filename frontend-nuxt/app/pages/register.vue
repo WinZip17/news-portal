@@ -106,11 +106,6 @@
 </template>
 
 <script setup lang="ts">
-import InputText from 'primevue/inputtext';
-import Password from 'primevue/password';
-import Message from 'primevue/message';
-import { useAuthStore } from '@/stores/auth.ts';
-
 definePageMeta({
   middleware: 'guest',
 });

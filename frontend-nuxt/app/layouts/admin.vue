@@ -11,8 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import AppHeader from '@/app/components/layout/AppHeader.vue';
-import AdminSidebar from '@/app/components/admin/AdminSidebar.vue';
+import AppHeader from '~/components/layout/AppHeader.vue';
 
 definePageMeta({
   middleware: 'auth',

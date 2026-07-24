@@ -86,9 +86,7 @@
 </template>
 
 <script setup lang="ts">
-import type { NewsItem, UserResponse } from '@/app/types';
-import Dialog from 'primevue/dialog';
-import Avatar from 'primevue/avatar';
+import type { NewsItem, UserResponse } from '~/types';
 
 const props = defineProps<{
   news: NewsItem | null;

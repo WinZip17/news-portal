@@ -1,5 +1,4 @@
-// app/middleware/auth.ts
-import { useApi } from '~/services/api.ts';
+import { useApi } from '~/composables/useApi.ts'
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const authStore = useAuthStore();

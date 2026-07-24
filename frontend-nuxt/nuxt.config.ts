@@ -58,7 +58,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBase: '/api',
-      appName: 'NewsHub',
+      appName: 'ShortNews',
       appVersion: '1.0.0',
     },
   },

@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
-import type { LoginDto, RegisterDto, UserResponse } from '@/app/types';
-import { useAuthService } from '@/app/services/auth.service';
-import { useApi } from '@/app/services/api';
+import type { LoginDto, RegisterDto, UserResponse } from '~/types';
+import { useAuthService } from '~/services/auth.service.ts';
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<UserResponse | null>(null);

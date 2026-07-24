@@ -39,8 +39,6 @@
 </template>
 
 <script setup lang="ts">
-import Message from 'primevue/message';
-
 definePageMeta({
   layout: 'admin',
   middleware: 'auth',

@@ -72,7 +72,6 @@
         :key="item.id"
         :news="item"
         @click="openNewsDetail(item.id)"
-        @favorite="handleFavorite"
       />
     </div>
 
@@ -94,24 +93,12 @@
     </div>
 
     <!-- Модальное окно -->
-    <NewsDetailModal
-      v-model:visible="detailModalVisible"
-      :news="selectedNews"
-      @like="handleLike"
-      @favorite="handleFavorite"
-    />
+    <NewsDetailModal v-model:visible="detailModalVisible" :news="selectedNews" />
   </div>
 </template>
 
 <script setup lang="ts">
-import type { NewsItem, NewsCategory } from '@/app/types';
-import NewsCard from '@/app/components/news/NewsCard.vue';
-import NewsDetailModal from '@/app/components/news/NewsDetailModal.vue';
-import ProgressSpinner from 'primevue/progressspinner';
-import Message from 'primevue/message';
-import Dropdown from 'primevue/dropdown';
-import InputText from 'primevue/inputtext';
-import Paginator from 'primevue/paginator';
+import type { NewsItem, NewsCategory } from '~/types';
 import { useDebounceFn } from '@vueuse/core';
 
 const newsStore = useNewsStore();
@@ -185,18 +172,10 @@ function onPageChange(event: any) {
 }
 
 function openNewsDetail(id: string) {
-  selectedNews.value = newsStore.news.find((n) => n.id === id) || null;
+  selectedNews.value = newsStore.news.find((n: NewsItem) => n.id === id) || null;
   if (selectedNews.value) {
     detailModalVisible.value = true;
   }
-}
-
-function handleLike(id: string) {
-  // Уже обработано в сторе
-}
-
-function handleFavorite(id: string) {
-  // Уже обработано в сторе
 }
 </script>
 

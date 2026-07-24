@@ -3,7 +3,7 @@
     <div class="header-container">
       <NuxtLink to="/" class="logo">
         <i class="pi pi-globe" style="font-size: 1.5rem"></i>
-        <span class="logo-text">NewsHub</span>
+        <span class="logo-text">Short News</span>
       </NuxtLink>
 
       <!-- Desktop Navigation -->
@@ -99,7 +99,6 @@
 </template>
 
 <script setup lang="ts">
-import { useUIStore } from '@/app/stores/ui';
 
 const authStore = useAuthStore();
 const uiStore = useUIStore();

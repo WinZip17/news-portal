@@ -1,4 +1,3 @@
-<!-- app/components/admin/AdminSidebar.vue -->
 <template>
   <aside class="admin-sidebar">
     <nav class="sidebar-nav">

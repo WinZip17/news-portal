@@ -6,8 +6,7 @@ import type {
   UpdateUserDto,
   UserPreferences,
   UserResponse,
-} from '@/app/types';
-import { useApi } from '@/app/services/api';
+} from '~/types';
 
 export function useAuthService() {
   const { apiFetch, accessToken, refreshToken } = useApi();

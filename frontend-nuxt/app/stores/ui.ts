@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
-import { usePreferredDark, useStorage } from '@vueuse/core';
-import { useAuthStore } from '@/app/stores/auth';
-import { useAuthService } from '@/app/services/auth.service';
+import { useStorage, usePreferredDark } from '@vueuse/core';
+import { useAuthService } from '~/services/auth.service.ts';
 
 export const useUIStore = defineStore('ui', () => {
   const theme = useStorage<'light' | 'dark'>('theme', 'light');
@@ -18,14 +17,13 @@ export const useUIStore = defineStore('ui', () => {
   function toggleTheme(): void {
     theme.value = theme.value === 'light' ? 'dark' : 'light';
     applyTheme();
-
-    // Синхронизация с бекендом, если пользователь авторизован
     syncThemeWithServer();
   }
 
   function setTheme(newTheme: 'light' | 'dark'): void {
     theme.value = newTheme;
     applyTheme();
+    syncThemeWithServer();
   }
 
   function applyTheme(): void {
@@ -44,6 +42,7 @@ export const useUIStore = defineStore('ui', () => {
         await authService.updatePreferences({ theme: theme.value });
       } catch {
         // Не критично, если не удалось синхронизировать
+        console.warn('Не удалось синхронизировать тему с сервером');
       }
     }
   }
@@ -53,6 +52,6 @@ export const useUIStore = defineStore('ui', () => {
     initTheme,
     toggleTheme,
     setTheme,
-    applyTheme,
+    syncThemeWithServer,
   };
 });

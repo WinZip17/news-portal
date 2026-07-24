@@ -9,7 +9,7 @@
     <div v-else-if="authStore.user" class="profile-content">
       <TabView>
         <!-- Профиль -->
-        <TabPanel header="Профиль">
+        <TabPanel header="Профиль" value="profile">
           <div class="tab-content">
             <div class="profile-header">
               <Avatar
@@ -63,7 +63,7 @@
         </TabPanel>
 
         <!-- Смена пароля -->
-        <TabPanel header="Смена пароля">
+        <TabPanel header="Смена пароля" value="password">
           <div class="tab-content">
             <form class="password-form" @submit.prevent="changePassword">
               <div class="form-field">
@@ -96,20 +96,20 @@
         </TabPanel>
 
         <!-- Настройки -->
-        <TabPanel header="Настройки">
+        <TabPanel header="Настройки" value="settings">
           <div class="tab-content">
             <div class="settings-section">
               <h3>Тема оформления</h3>
               <div class="theme-selector">
                 <Button
-                  :label="'Светлая'"
-                  :icon="'pi pi-sun'"
+                  label="Светлая"
+                  icon="pi pi-sun"
                   :severity="uiStore.theme === 'light' ? 'primary' : 'secondary'"
                   @click="setTheme('light')"
                 />
                 <Button
-                  :label="'Темная'"
-                  :icon="'pi pi-moon'"
+                  label="Темная"
+                  icon="pi pi-moon"
                   :severity="uiStore.theme === 'dark' ? 'primary' : 'secondary'"
                   @click="setTheme('dark')"
                 />
@@ -142,7 +142,7 @@
         </TabPanel>
 
         <!-- Избранное -->
-        <TabPanel header="Избранное">
+        <TabPanel header="Избранное" value="favorites">
           <div class="tab-content">
             <div v-if="favoritesLoading" class="loading-container">
               <ProgressSpinner />
@@ -177,15 +177,8 @@
 </template>
 
 <script setup lang="ts">
-import type { NewsItem, UserPreferences } from '@/app/types';
-import NewsCard from '@/app/components/news/NewsCard.vue';
-import NewsDetailModal from '@/app/components/news/NewsDetailModal.vue';
-import ProgressSpinner from 'primevue/progressspinner';
-import Message from 'primevue/message';
-import ToggleSwitch from 'primevue/toggleswitch';
-import Divider from 'primevue/divider';
-import TabView from 'primevue/tabview';
-import TabPanel from 'primevue/tabpanel';
+import type { NewsItem, UserPreferences } from '~/types';
+import { useAuthService } from '~/services/auth.service.ts';
 
 definePageMeta({
   middleware: 'auth',

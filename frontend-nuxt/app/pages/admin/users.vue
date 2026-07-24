@@ -143,15 +143,8 @@
 </template>
 
 <script setup lang="ts">
-import type { UserResponse, UpdateUserDto, UserRole } from '@/app/types';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import Tag from 'primevue/tag';
-import Dialog from 'primevue/dialog';
-import Dropdown from 'primevue/dropdown';
-import ToggleSwitch from 'primevue/toggleswitch';
-import ConfirmDialog from 'primevue/confirmdialog';
-import { useConfirm } from 'primevue/useconfirm';
+import type { UserResponse, UpdateUserDto, UserRole } from '~/types';
+import { useAuthService } from '~/services/auth.service.ts';
 
 definePageMeta({
   layout: 'admin',
