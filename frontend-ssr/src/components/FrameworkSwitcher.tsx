@@ -7,7 +7,7 @@ interface FrameworkSwitcherProps {
 const frameworks = {
   react: { label: '⚛️ React SPA', url: 'https://short-news.ru' },
   nestjs: { label: '🟢 NestJS SSR + React', url: 'https://nest.short-news.ru' },
-  // nuxt: { label: '🟣 Nuxt', url: '#' },
+  nuxt: { label: '🔵 Next.js', url: 'https://next.short-news.ru' },
 };
 
 const FrameworkSwitcher: React.FC<FrameworkSwitcherProps> = ({ current }) => {
@@ -35,7 +35,7 @@ const FrameworkSwitcher: React.FC<FrameworkSwitcherProps> = ({ current }) => {
       }}
     >
       {Object.entries(frameworks).map(([key, { label }]) => (
-        <option key={key} value={key} disabled={key === 'nuxt'}>
+        <option key={key} value={key}>
           {label}
         </option>
       ))}
