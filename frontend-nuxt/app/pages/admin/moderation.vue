@@ -1,0 +1,334 @@
+<template>
+  <div class="moderation-page">
+    <h1 class="page-title">Модерация новостей</h1>
+
+    <!-- Фильтр по статусу -->
+    <div class="filter-bar">
+      <SelectButton
+        v-model="statusFilter"
+        :options="statusOptions"
+        option-label="label"
+        option-value="value"
+        @change="loadNews"
+      />
+    </div>
+
+    <div v-if="newsStore.isLoading" class="loading-container">
+      <ProgressSpinner />
+    </div>
+
+    <div v-else class="moderation-list">
+      <DataTable
+        :value="newsStore.news"
+        :paginator="true"
+        :rows="10"
+        :rows-per-page-options="[10, 20, 50]"
+        paginator-template="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+        current-page-report-template="Показано с {first} по {last} из {totalRecords}"
+      >
+        <Column field="title" header="Заголовок" :sortable="true">
+          <template #body="{ data }">
+            <div class="news-title-cell">
+              <span class="news-title">{{ data.title }}</span>
+              <span v-if="data.isAiGenerated" class="ai-badge">AI</span>
+            </div>
+          </template>
+        </Column>
+
+        <Column field="category" header="Категория" :sortable="true">
+          <template #body="{ data }">
+            <span class="category-badge">{{ getCategoryLabel(data.category) }}</span>
+          </template>
+        </Column>
+
+        <Column field="status" header="Статус" :sortable="true">
+          <template #body="{ data }">
+            <Tag :severity="getStatusSeverity(data.status)" :value="getStatusLabel(data.status)" />
+          </template>
+        </Column>
+
+        <Column field="createdAt" header="Дата" :sortable="true">
+          <template #body="{ data }">
+            {{ formatDate(data.createdAt) }}
+          </template>
+        </Column>
+
+        <Column header="Действия" style="width: 250px">
+          <template #body="{ data }">
+            <div class="actions-cell">
+              <Button
+                v-if="data.status === 'pending'"
+                v-tooltip.top="'Одобрить'"
+                icon="pi pi-check"
+                severity="success"
+                text
+                rounded
+                @click="confirmModeration(data.id, 'published')"
+              />
+              <Button
+                v-if="data.status === 'pending'"
+                v-tooltip.top="'Отклонить'"
+                icon="pi pi-times"
+                severity="danger"
+                text
+                rounded
+                @click="confirmModeration(data.id, 'rejected')"
+              />
+              <Button
+                v-if="data.status === 'published'"
+                v-tooltip.top="'В архив'"
+                icon="pi pi-inbox"
+                severity="warning"
+                text
+                rounded
+                @click="confirmModeration(data.id, 'archived')"
+              />
+              <Button
+                v-tooltip.top="'Просмотр'"
+                icon="pi pi-eye"
+                severity="info"
+                text
+                rounded
+                @click="viewNews(data)"
+              />
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
+
+    <!-- Диалог подтверждения -->
+    <ConfirmDialog />
+
+    <!-- Просмотр новости -->
+    <Dialog
+      v-model:visible="viewDialog"
+      :header="selectedNews?.title"
+      :style="{ width: '700px' }"
+      :modal="true"
+    >
+      <div v-if="selectedNews" class="news-preview">
+        <div class="preview-meta">
+          <Tag
+            :severity="getStatusSeverity(selectedNews.status)"
+            :value="getStatusLabel(selectedNews.status)"
+          />
+          <span class="preview-category">{{ getCategoryLabel(selectedNews.category) }}</span>
+        </div>
+        <div class="preview-content" v-html="selectedNews.content"></div>
+      </div>
+    </Dialog>
+  </div>
+</template>
+
+<script setup lang="ts">
+import type { NewsItem, NewsStatus } from '@/app/types';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Tag from 'primevue/tag';
+import SelectButton from 'primevue/selectbutton';
+import ConfirmDialog from 'primevue/confirmdialog';
+import Dialog from 'primevue/dialog';
+import { useConfirm } from 'primevue/useconfirm';
+
+definePageMeta({
+  layout: 'admin',
+  middleware: 'auth',
+});
+
+const newsStore = useNewsStore();
+const authStore = useAuthStore();
+const confirm = useConfirm();
+const toast = useToast();
+
+const statusFilter = ref('pending');
+const viewDialog = ref(false);
+const selectedNews = ref<NewsItem | null>(null);
+
+const statusOptions = [
+  { label: 'На проверке', value: 'pending' },
+  { label: 'Опубликованные', value: 'published' },
+  { label: 'Отклоненные', value: 'rejected' },
+  { label: 'Архив', value: 'archived' },
+];
+
+// Проверка прав
+if (!authStore.isModerator) {
+  navigateTo('/');
+}
+
+// Загрузка новостей
+onMounted(() => {
+  loadNews();
+});
+
+function loadNews() {
+  newsStore.setFilter({ status: statusFilter.value as NewsStatus });
+  newsStore.fetchNews();
+}
+
+function getCategoryLabel(category: string): string {
+  const labels: Record<string, string> = {
+    politics: 'Политика',
+    economy: 'Экономика',
+    technology: 'Технологии',
+    science: 'Наука',
+    sports: 'Спорт',
+    entertainment: 'Развлечения',
+    health: 'Здоровье',
+    world: 'Мир',
+    other: 'Другое',
+  };
+  return labels[category] || category;
+}
+
+function getStatusLabel(status: string): string {
+  const labels: Record<string, string> = {
+    draft: 'Черновик',
+    pending: 'На проверке',
+    published: 'Опубликовано',
+    rejected: 'Отклонено',
+    archived: 'В архиве',
+  };
+  return labels[status] || status;
+}
+
+function getStatusSeverity(status: string): string {
+  const severities: Record<string, string> = {
+    draft: 'secondary',
+    pending: 'warning',
+    published: 'success',
+    rejected: 'danger',
+    archived: 'info',
+  };
+  return severities[status] || 'secondary';
+}
+
+function formatDate(date: string): string {
+  return new Date(date).toLocaleDateString('ru-RU', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
+function confirmModeration(id: string, status: string) {
+  const statusLabel = getStatusLabel(status);
+
+  confirm.require({
+    message: `Вы уверены, что хотите изменить статус на "${statusLabel}"?`,
+    header: 'Подтверждение',
+    icon: 'pi pi-question-circle',
+    acceptLabel: 'Да',
+    rejectLabel: 'Отмена',
+    accept: async () => {
+      try {
+        await newsStore.moderateNews(id, { status: status as NewsStatus });
+        toast.add({
+          severity: 'success',
+          summary: 'Успешно',
+          detail: `Новость ${statusLabel.toLowerCase()}`,
+          life: 3000,
+        });
+        loadNews();
+      } catch (error: any) {
+        toast.add({
+          severity: 'error',
+          summary: 'Ошибка',
+          detail: error.message || 'Не удалось изменить статус',
+          life: 3000,
+        });
+      }
+    },
+  });
+}
+
+function viewNews(news: NewsItem) {
+  selectedNews.value = news;
+  viewDialog.value = true;
+}
+</script>
+
+<style scoped>
+.moderation-page {
+  max-width: 100%;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 2rem;
+}
+
+.filter-bar {
+  margin-bottom: 1.5rem;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.news-title-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.news-title {
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.ai-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.125rem 0.375rem;
+  border-radius: 8px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.category-badge {
+  background-color: var(--highlight-bg);
+  color: var(--highlight-text-color);
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.news-preview {
+  padding: 1rem 0;
+}
+
+.preview-meta {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+.preview-category {
+  color: var(--text-color-secondary);
+  font-weight: 500;
+}
+
+.preview-content {
+  line-height: 1.8;
+  color: var(--text-color);
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 1.5rem;
+  }
+}
+</style>

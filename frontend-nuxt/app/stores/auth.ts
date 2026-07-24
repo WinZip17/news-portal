@@ -1,0 +1,98 @@
+import { defineStore } from 'pinia';
+import type { LoginDto, RegisterDto, UserResponse } from '@/app/types';
+import { useAuthService } from '@/app/services/auth.service';
+import { useApi } from '@/app/services/api';
+
+export const useAuthStore = defineStore('auth', () => {
+  const user = ref<UserResponse | null>(null);
+  const isAuthenticated = ref(false);
+  const isLoading = ref(false);
+  const error = ref<string | null>(null);
+
+  const authService = useAuthService();
+  const { accessToken } = useApi();
+
+  async function checkAuth(): Promise<void> {
+    if (!accessToken.value) {
+      isAuthenticated.value = false;
+      user.value = null;
+      return;
+    }
+
+    try {
+      isLoading.value = true;
+      const userData = await authService.getCurrentUser();
+      user.value = userData;
+      isAuthenticated.value = true;
+    } catch {
+      isAuthenticated.value = false;
+      user.value = null;
+      accessToken.value = null;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  async function login(data: LoginDto): Promise<void> {
+    try {
+      isLoading.value = true;
+      error.value = null;
+      const response = await authService.login(data);
+      user.value = response.user;
+      isAuthenticated.value = true;
+    } catch (err: any) {
+      error.value = err.message;
+      throw err;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  async function register(data: RegisterDto): Promise<void> {
+    try {
+      isLoading.value = true;
+      error.value = null;
+      const response = await authService.register(data);
+      user.value = response.user;
+      isAuthenticated.value = true;
+    } catch (err: any) {
+      error.value = err.message;
+      throw err;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  async function logout(): Promise<void> {
+    await authService.logout();
+    user.value = null;
+    isAuthenticated.value = false;
+    navigateTo('/');
+  }
+
+  const isAdmin = computed(() => {
+    return user.value?.role === 'admin' || user.value?.role === 'super_admin';
+  });
+
+  const isModerator = computed(() => {
+    return user.value?.role === 'moderator' || isAdmin.value;
+  });
+
+  const isSuperAdmin = computed(() => {
+    return user.value?.role === 'super_admin';
+  });
+
+  return {
+    user,
+    isAuthenticated,
+    isLoading,
+    error,
+    isAdmin,
+    isModerator,
+    isSuperAdmin,
+    checkAuth,
+    login,
+    register,
+    logout,
+  };
+});

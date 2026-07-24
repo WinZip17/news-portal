@@ -1,13 +1,21 @@
 {
   "name": "frontend-nuxt",
-  "type": "module",
+  "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
+    "dev": "nuxt dev --port 3004",
     "build": "nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
+    "start": "node .output/server/index.mjs",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "generate": "nuxt generate",
+    "lint": "eslint . --ext .vue,.js,.ts",
+    "lint:fix": "eslint . --ext .vue,.js,.ts --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "type-check": "vue-tsc --noEmit",
+    "check": "npm run lint && npm run format:check && npm run type-check",
+    "prepare": "nuxt prepare"
   },
   "dependencies": {
     "@pinia/nuxt": "^1.0.1",
@@ -23,10 +31,15 @@
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.16.0",
+    "@nuxt/eslint-config": "^1.16.0",
     "@types/node": "^26.1.1",
+    "eslint": "^10.7.0",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-nuxt": "^4.0.0",
+    "eslint-plugin-prettier": "^5.5.6",
     "eslint-plugin-vue": "^10.10.0",
     "prettier": "^3.9.6",
+    "typescript": "^6.0.3",
     "vue-tsc": "^3.3.8"
   }
 }
