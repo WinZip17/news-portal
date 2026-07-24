@@ -1,6 +1,6 @@
 import { IsString, IsEnum, IsOptional, IsArray, IsBoolean, IsUrl, MinLength, MaxLength } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { NewsCategory } from '../../../entities';
+import { NewsCategory } from '../../../types'
 
 export class CreateNewsDto {
   @ApiProperty({

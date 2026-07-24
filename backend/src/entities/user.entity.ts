@@ -8,13 +8,7 @@ import {
 } from 'typeorm';
 import { News } from './news.entity';
 import { Exclude } from 'class-transformer';
-
-export enum UserRole {
-  USER = 'user',
-  MODERATOR = 'moderator',
-  ADMIN = 'admin',
-  SUPER_ADMIN = 'super_admin',
-}
+import { UserRole } from '../types'
 
 @Entity('users')
 export class User {

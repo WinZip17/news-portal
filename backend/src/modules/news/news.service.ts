@@ -1,12 +1,12 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan, ILike, Between, In, MoreThanOrEqual, FindOptionsWhere } from 'typeorm';
-import { News, NewsCategory, NewsStatus, Favorite, Like } from '../../entities';
+import { News, Favorite, Like } from '../../entities';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { NewsStatsDto } from './dto/stats.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { NewsFilter } from '../../types';
+import { NewsCategory, NewsFilter, NewsStatus } from '../../types';
 
 @Injectable()
 export class NewsService {

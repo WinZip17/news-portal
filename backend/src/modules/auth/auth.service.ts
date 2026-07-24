@@ -5,15 +5,9 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { AuthResponse, TokenResponse, UserResponse, UserPreferences } from '../../types';
-import { User, UserRole } from '../../entities';
+import { AuthResponse, TokenResponse, UserResponse, UserPreferences, ProfileUpdateData, UserRole } from '../../types';
+import { User } from '../../entities';
 import { UpdateUserDto } from './dto/update-user.dto';
-
-interface ProfileUpdateData {
-  firstName?: string;
-  lastName?: string;
-  avatar?: string;
-}
 
 @Injectable()
 export class AuthService {

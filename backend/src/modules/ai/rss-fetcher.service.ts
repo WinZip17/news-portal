@@ -1,32 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import RssParser from 'rss-parser';
+import { RssArticle, RssFeedItem } from '../../types'
 
-interface RssFeedItem {
-  title?: string;
-  'content:encoded'?: string;
-  content?: string;
-  description?: string;
-  contentSnippet?: string;
-  link?: string;
-  pubDate?: string;
-  creator?: string;
-  author?: string;
-  enclosure?: { url: string };
-  'media:content'?: { url: string };
-  categories?: string[];
-}
-
-export interface RssArticle {
-  title: string;
-  content: string;
-  summary: string;
-  link: string;
-  pubDate: Date;
-  source: string;
-  author: string;
-  imageUrl: string;
-  categories: string[];
-}
 @Injectable()
 export class RssFetcherService {
   private readonly logger = new Logger(RssFetcherService.name);

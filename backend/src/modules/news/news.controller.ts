@@ -6,18 +6,9 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from '../auth/auth.service';
-import { News, NewsStatus } from '../../entities';
+import { News } from '../../entities';
 import { escapeXml } from '../../utils/escapeXml';
-import { NewsFilter } from '../../types';
-
-interface RequestWithUser {
-  user: { id: string };
-}
-
-interface ModerationBody {
-  status: NewsStatus;
-  comment?: string;
-}
+import { ModerationBody, NewsFilter, NewsStatus, RequestWithUser } from '../../types';
 
 @ApiTags('News')
 @Controller('news')

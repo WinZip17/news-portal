@@ -7,11 +7,7 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserPreferences, UserResponse } from '../../types';
-
-interface RequestWithUser {
-  user: { id: string };
-}
+import { RequestWithUser, UserPreferences, UserResponse } from '../../types';
 
 @ApiTags('Auth')
 @Controller('auth')

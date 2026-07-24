@@ -3,13 +3,13 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import OpenAI from 'openai';
-import { News, NewsCategory, NewsStatus } from '../../entities';
+import { News } from '../../entities';
 import { AiConfig } from './config/ai.config';
 import { GenerateNewsDto } from './dto/generate-news.dto';
-import { RssFetcherService, RssArticle } from './rss-fetcher.service';
+import { RssFetcherService } from './rss-fetcher.service';
 import { DeduplicationService } from './deduplication.service';
 import { normalizeUrl } from '../../utils/normalizeUrl';
-import { AiRewriteResult } from '../../types';
+import { AiRewriteResult, NewsCategory, NewsStatus, RssArticle } from '../../types';
 
 @Injectable()
 export class AiService {

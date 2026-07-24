@@ -1,6 +1,6 @@
-import { IsString, IsOptional, IsArray, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsEnum } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { NewsCategory } from '../../../entities';
+import { NewsCategory } from '../../../types';
 
 export class GenerateNewsDto {
   @ApiPropertyOptional({
