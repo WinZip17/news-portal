@@ -11,7 +11,7 @@
     <div v-if="news" class="news-detail">
       <!-- Изображение -->
       <div v-if="news.imageUrl" class="detail-image">
-        <img :src="news.imageUrl" :alt="news.title" />
+        <img :src="news.imageUrl" :alt="news.title" loading="lazy" decoding="async" />
       </div>
 
       <!-- Мета информация -->

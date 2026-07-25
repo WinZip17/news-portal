@@ -2,7 +2,7 @@
   <Card class="news-card" :pt="cardStyles">
     <template #header>
       <div v-if="news.imageUrl" class="news-card-image">
-        <img :src="news.imageUrl" :alt="news.title" loading="lazy" />
+        <img :src="news.imageUrl" :alt="news.title" loading="lazy" decoding="async" />
         <span class="news-category-badge">{{ categoryLabel }}</span>
       </div>
     </template>
@@ -154,12 +154,14 @@ function formatDate(date: string): string {
   width: 100%;
   height: 200px;
   overflow: hidden;
+  background-color: var(--p-surface-hover);
 }
 
 .news-card-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  aspect-ratio: 2 / 1;
 }
 
 .news-category-badge {
