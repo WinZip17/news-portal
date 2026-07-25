@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -97,6 +97,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     <Box sx={{ display: 'flex', minHeight: '100vh', maxWidth: '100vw', overflowX: 'hidden' }}>
       {!isMobile && (
         <Drawer
+          className={'fix-drawer'}
           variant="permanent"
           sx={{ width: 240, flexShrink: 0, '& .MuiDrawer-paper': { width: 240 } }}
         >

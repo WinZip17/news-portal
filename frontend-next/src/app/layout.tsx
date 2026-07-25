@@ -1,4 +1,5 @@
 'use client';
+import './globals.css';
 import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { ThemeProvider, CssBaseline } from '@mui/material';
