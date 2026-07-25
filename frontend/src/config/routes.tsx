@@ -1,34 +1,11 @@
-import React, { lazy, Suspense } from 'react';
-import { Spin } from 'antd';
+import React, { Suspense } from 'react';
 import Home from '@/pages/Home';
-// Layouts
 import MainLayout from '@/components/layout/MainLayout';
 import AuthLayout from '@/components/layout/AuthLayout';
-
-// Auth components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import PublicRoute from '@/components/auth/PublicRoute';
-
-// Lazy loaded pages
-const Login = lazy(() => import('@/pages/Login'));
-const Register = lazy(() => import('@/pages/Register'));
-const NewsList = lazy(() => import('@/pages/NewsList'));
-const Profile = lazy(() => import('@/pages/Profile'));
-const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
-const NotFound = lazy(() => import('@/pages/NotFound.tsx'));
-
-const PageLoader: React.FC = () => (
-  <div
-    style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      minHeight: 400,
-    }}
-  >
-    <Spin size="large" />
-  </div>
-);
+import { PageLoader } from '@/components/PageLoader.tsx';
+import { AdminDashboard, Login, NewsList, NotFound, Profile, Register } from '@/config/routes.lazy.ts';
 
 export const routes = [
   {
