@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Card, Row, Col, Typography, Button, Space, Statistic, Spin, Empty, Tag, Modal } from 'antd';
+import { Card, Row, Col, Typography, Button, Space, Statistic, Spin, Empty, Tag, Modal, Skeleton } from 'antd';
 import {
   ReadOutlined,
   TeamOutlined,
@@ -29,35 +29,22 @@ const Home: React.FC = () => {
   const { selectedNewsId, modalVisible, openNews, closeNews } = useNewsModal();
 
   useEffect(() => {
-    fetchNews({
-      limit: 9,
-      sortBy: 'publishedAt',
-      sortOrder: 'DESC',
-    });
+    fetchNews({ limit: 9, sortBy: 'publishedAt', sortOrder: 'DESC' });
     loadStats();
   }, []);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return 'только что';
-    if (diffMins < 60) return `${diffMins} мин. назад`;
-    if (diffHours < 24) return `${diffHours} ч. назад`;
-    if (diffDays < 7) return `${diffDays} дн. назад`;
-
-    return date.toLocaleDateString('ru-RU', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    const diff = Math.floor((now.getTime() - date.getTime()) / 60000);
+    if (diff < 1) return 'только что';
+    if (diff < 60) return `${diff} мин. назад`;
+    if (diff < 1440) return `${Math.floor(diff / 60)} ч. назад`;
+    if (diff < 7 * 1440) return `${Math.floor(diff / 1440)} дн. назад`;
+    return date.toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
-  const getCategoryColor = (category: string) => {
+  const getCategoryColor = (cat: string) => {
     const colors: Record<string, string> = {
       politics: 'blue',
       economy: 'green',
@@ -69,10 +56,10 @@ const Home: React.FC = () => {
       world: 'geekblue',
       other: 'default',
     };
-    return colors[category] || 'default';
+    return colors[cat] || 'default';
   };
 
-  const getCategoryLabel = (category: string) => {
+  const getCategoryLabel = (cat: string) => {
     const labels: Record<string, string> = {
       politics: 'Политика',
       economy: 'Экономика',
@@ -84,16 +71,22 @@ const Home: React.FC = () => {
       world: 'Мир',
       other: 'Другое',
     };
-    return labels[category] || category;
+    return labels[cat] || cat;
   };
+
   const loadStats = async () => {
     try {
       const data = await newsService.getStats();
       setStats(data);
-    } catch (error) {
-      console.error('Failed to load stats:', error);
-    }
+    } catch {}
   };
+
+  const NewsSkeleton = () => (
+    <Card style={{ height: '100%' }}>
+      <Skeleton.Image className={'skeleton-image'} style={{ width: '100%', height: 200 }} active />
+      <Skeleton active paragraph={{ rows: 3 }} style={{ marginTop: 16 }} />
+    </Card>
+  );
 
   return (
     <div>
@@ -102,7 +95,8 @@ const Home: React.FC = () => {
         <meta name="description" content="Быстрые и короткие новости с AI-рерайтом. Минимум слов, максимум фактов." />
         <link rel="canonical" href={window.location.origin} />
       </Helmet>
-      {/* Hero секция */}
+
+      {/* Hero */}
       <div
         style={{
           textAlign: 'center',
@@ -116,15 +110,7 @@ const Home: React.FC = () => {
         <Title level={1} style={{ color: 'white', fontSize: '3em', marginBottom: 16 }}>
           📰 News Portal
         </Title>
-        <Paragraph
-          style={{
-            color: 'rgba(255,255,255,0.9)',
-            fontSize: '1.2em',
-            marginBottom: 32,
-            maxWidth: 600,
-            margin: '0 auto 32px',
-          }}
-        >
+        <Paragraph style={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.2em', marginBottom: 32, maxWidth: 600, margin: '0 auto 32px' }}>
           Актуальные новости с AI-рерайтом из проверенных источников.
         </Paragraph>
         <Space size="large">
@@ -209,12 +195,21 @@ const Home: React.FC = () => {
         </Space>
 
         <Spin spinning={isLoading}>
-          {news.length > 0 ? (
+          {isLoading ? (
+            <Row gutter={[24, 24]}>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Col xs={24} sm={12} lg={8} key={i}>
+                  <NewsSkeleton />
+                </Col>
+              ))}
+            </Row>
+          ) : news.length > 0 ? (
             <Row gutter={[24, 24]}>
               {news.slice(0, 6).map((item) => (
                 <Col xs={24} sm={12} lg={8} key={item.id}>
                   <Card
                     hoverable
+                    style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
                     cover={
                       item.imageUrl ? (
                         <img alt={item.title} src={item.imageUrl} style={{ height: 200, objectFit: 'cover' }} />
@@ -237,49 +232,48 @@ const Home: React.FC = () => {
                     onClick={() => openNews(item.id)}
                     actions={[<span key="views">👁 {item.views || 0}</span>, <span key="likes">❤️ {item.likes || 0}</span>]}
                   >
-                    <Card.Meta
-                      title={item.title}
-                      description={
-                        <>
-                          <Paragraph ellipsis={{ rows: 2 }} style={{ marginBottom: 12 }}>
-                            {item.summary?.substring(0, 120) || 'Описание отсутствует'}...
-                          </Paragraph>
-                          <Space wrap size={[4, 4]}>
-                            <Tag color={getCategoryColor(item.category)}>{getCategoryLabel(item.category)}</Tag>
-                            {item.isAiGenerated ? (
-                              <Tag icon={<RobotOutlined />} color="blue">
-                                AI-рерайт
-                              </Tag>
-                            ) : (
-                              <Tag icon={<LinkOutlined />} color="green">
-                                Оригинал
-                              </Tag>
-                            )}
-                            {item.source && <Tag color="purple">{item.source}</Tag>}
-                          </Space>
-                          <div style={{ marginTop: 8, color: '#999', fontSize: '12px' }}>
-                            <ClockCircleOutlined /> {formatDate(item.publishedAt)}
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                      <Card.Meta
+                        title={item.title}
+                        description={
+                          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                            <Paragraph ellipsis={{ rows: 2 }} style={{ marginBottom: 12 }}>
+                              {item.summary?.substring(0, 120) || 'Описание отсутствует'}...
+                            </Paragraph>
+                            <Space wrap size={[4, 4]} style={{ marginTop: 'auto' }}>
+                              <Tag color={getCategoryColor(item.category)}>{getCategoryLabel(item.category)}</Tag>
+                              {item.isAiGenerated ? (
+                                <Tag icon={<RobotOutlined />} color="blue">
+                                  AI-рерайт
+                                </Tag>
+                              ) : (
+                                <Tag icon={<LinkOutlined />} color="green">
+                                  Оригинал
+                                </Tag>
+                              )}
+                              {item.source && <Tag color="purple">{item.source}</Tag>}
+                            </Space>
+                            <div style={{ marginTop: 8, color: '#999', fontSize: '12px' }}>
+                              <ClockCircleOutlined /> {formatDate(item.publishedAt)}
+                            </div>
                           </div>
-                        </>
-                      }
-                    />
+                        }
+                      />
+                    </div>
                   </Card>
                 </Col>
               ))}
             </Row>
           ) : (
-            !isLoading && (
-              <Empty description="Новости пока не загружены" style={{ padding: '40px 0' }}>
-                <Button type="primary" onClick={() => fetchNews({ limit: 6 })}>
-                  Загрузить новости
-                </Button>
-              </Empty>
-            )
+            <Empty description="Новости пока не загружены" style={{ padding: '40px 0' }}>
+              <Button type="primary" onClick={() => fetchNews({ limit: 6 })}>
+                Загрузить новости
+              </Button>
+            </Empty>
           )}
         </Spin>
       </div>
 
-      {/* Модальное окно */}
       <Modal open={modalVisible} onCancel={closeNews} footer={null} width={900} centered destroyOnHidden style={{ top: 20 }}>
         {selectedNewsId && <NewsDetailModal newsId={selectedNewsId} />}
       </Modal>
