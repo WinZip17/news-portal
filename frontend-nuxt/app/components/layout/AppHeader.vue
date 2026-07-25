@@ -6,23 +6,27 @@
         <span class="logo-text">Short News</span>
       </NuxtLink>
 
-      <!-- Desktop Navigation -->
-      <nav class="nav-desktop">
-        <NuxtLink to="/news" class="nav-link" active-class="nav-link--active">
-          <i class="pi pi-list"></i>
-          <span>Новости</span>
-        </NuxtLink>
+      <!-- Desktop Navigation + Framework Switcher -->
+      <div class="header-nav-wrapper">
+        <nav class="nav-desktop">
+          <NuxtLink to="/news" class="nav-link" active-class="nav-link--active">
+            <i class="pi pi-list"></i>
+            <span>Новости</span>
+          </NuxtLink>
 
-        <NuxtLink
-          v-if="authStore.isModerator"
-          to="/admin"
-          class="nav-link"
-          active-class="nav-link--active"
-        >
-          <i class="pi pi-shield"></i>
-          <span>Админка</span>
-        </NuxtLink>
-      </nav>
+          <NuxtLink
+            v-if="authStore.isModerator"
+            to="/admin"
+            class="nav-link"
+            active-class="nav-link--active"
+          >
+            <i class="pi pi-shield"></i>
+            <span>Админка</span>
+          </NuxtLink>
+        </nav>
+
+        <FrameworkSwitcher />
+      </div>
 
       <div class="header-actions">
         <!-- Theme Toggle -->
@@ -75,6 +79,10 @@
 
     <!-- Mobile Menu -->
     <div v-if="mobileMenuOpen" class="mobile-menu">
+      <div class="mobile-switcher">
+        <FrameworkSwitcher />
+      </div>
+
       <NuxtLink to="/news" class="mobile-link" @click="mobileMenuOpen = false">
         <i class="pi pi-list"></i> Новости
       </NuxtLink>
@@ -99,6 +107,8 @@
 </template>
 
 <script setup lang="ts">
+import FrameworkSwitcher from '~/components/common/FrameworkSwitcher.vue';
+
 const authStore = useAuthStore();
 const uiStore = useUIStore();
 const router = useRouter();
@@ -161,10 +171,18 @@ watch(
   background-clip: text;
 }
 
+/* Обёртка для навигации и свитчера */
+.header-nav-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
 .nav-desktop {
   display: flex;
   gap: 0.5rem;
-  flex: 1;
 }
 
 .nav-link {
@@ -205,6 +223,10 @@ watch(
   border-top: 1px solid var(--p-surface-border);
 }
 
+.mobile-switcher {
+  padding: 0.5rem 0.75rem 0.75rem;
+}
+
 .mobile-link {
   display: flex;
   align-items: center;
@@ -221,7 +243,7 @@ watch(
 }
 
 @media (max-width: 768px) {
-  .nav-desktop {
+  .header-nav-wrapper {
     display: none;
   }
 
