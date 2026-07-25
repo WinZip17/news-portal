@@ -112,9 +112,13 @@ export default defineNuxtConfig({
   },
 
   vite: {
+    css: {
+      preprocessorMaxWorkers: true,
+    },
     build: {
       target: 'esnext',
       cssCodeSplit: false,
+      cssMinify: true,
     },
   },
   compatibilityDate: '2026-07-24',
