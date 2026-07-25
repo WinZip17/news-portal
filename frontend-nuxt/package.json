@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nuxt dev --port 3004",
     "build": "nuxt prepare && nuxt build",
-    "start": "node .output/server/index.mjs",
+    "start": "NITRO_PORT=3004 NITRO_HOST=0.0.0.0 node .output/server/index.mjs",
     "preview": "nuxt preview  --port 3004",
     "generate": "nuxt generate",
     "lint": "eslint . --ext .vue,.js,.ts",
