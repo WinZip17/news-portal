@@ -17,4 +17,4 @@ COPY --from=builder /app/.output ./.output
 
 EXPOSE 3004
 
-CMD ["node", ".output/server/index.mjs"]
+CMD ["node", ".output/server/index.mjs", "--port", "3004"]
