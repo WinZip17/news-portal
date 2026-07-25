@@ -1,5 +1,3 @@
-import { News } from 'frontend/src/types'
-
 export enum NewsCategory {
   POLITICS = 'politics',
   ECONOMY = 'economy',
@@ -173,7 +171,7 @@ export interface StatsResponse {
 }
 
 export interface NewsResponse {
-  data: News[];
+  data: NewsItem[];
   total: number;
   page: number;
   limit: number;
