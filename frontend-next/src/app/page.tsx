@@ -14,6 +14,8 @@ import {
   Dialog,
   DialogContent,
   IconButton,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import {
   Rocket as RocketIcon,
@@ -34,6 +36,8 @@ import { getCategoryLabel } from '@/utils/getCategoryLabel';
 
 export default function HomePage() {
   const router = useRouter();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [news, setNews] = React.useState<News[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [selectedNews, setSelectedNews] = React.useState<News | null>(null);
@@ -50,39 +54,58 @@ export default function HomePage() {
   }, []);
 
   return (
-    <>
+    <Box sx={{ maxWidth: '100%', overflowX: 'hidden', px: { xs: 1, sm: 2 } }}>
       {/* Hero */}
       <Box
         sx={{
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          py: 8,
+          py: { xs: 4, md: 8 },
+          px: { xs: 2, md: 4 },
           textAlign: 'center',
           color: 'white',
           borderRadius: 4,
-          mb: 6,
+          mb: { xs: 4, md: 6 },
         }}
       >
-        <Typography variant="h3" sx={{ fontWeight: 700 }} gutterBottom>
+        <Typography
+          variant="h3"
+          sx={{ fontWeight: 700, fontSize: { xs: '1.8rem', sm: '2.5rem', md: '3rem' } }}
+          gutterBottom
+        >
           📰 News Portal
         </Typography>
-        <Typography variant="h6" sx={{ mb: 4, opacity: 0.9, maxWidth: 600, mx: 'auto' }}>
+        <Typography
+          variant="h6"
+          sx={{
+            mb: 4,
+            opacity: 0.9,
+            maxWidth: 600,
+            mx: 'auto',
+            fontSize: { xs: '0.9rem', sm: '1.1rem' },
+          }}
+        >
           Актуальные новости с AI-рерайтом из проверенных источников.
         </Typography>
         {!isAuthenticated ? (
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Button
               variant="contained"
-              size="large"
+              size={isMobile ? 'medium' : 'large'}
               startIcon={<RocketIcon />}
-              sx={{ bgcolor: 'white', color: '#667eea', '&:hover': { bgcolor: '#f0f0f0' } }}
-              onClick={() => router.push('/register')}
+              sx={{
+                bgcolor: 'white',
+                color: '#667eea',
+                '&:hover': { bgcolor: '#f0f0f0' },
+                whiteSpace: 'nowrap',
+              }}
+              onClick={() => router.push('/news')}
             >
               Начать бесплатно
             </Button>
             <Button
               variant="outlined"
-              size="large"
-              sx={{ color: 'white', borderColor: 'white' }}
+              size={isMobile ? 'medium' : 'large'}
+              sx={{ color: 'white', borderColor: 'white', whiteSpace: 'nowrap' }}
               onClick={() => router.push('/login')}
             >
               Войти
@@ -91,7 +114,7 @@ export default function HomePage() {
         ) : (
           <Button
             variant="contained"
-            size="large"
+            size={isMobile ? 'medium' : 'large'}
             startIcon={<ArticleIcon />}
             sx={{ bgcolor: 'white', color: '#667eea', '&:hover': { bgcolor: '#f0f0f0' } }}
             onClick={() => router.push('/news')}
@@ -102,23 +125,39 @@ export default function HomePage() {
       </Box>
 
       {/* Статистика */}
-      <Grid container spacing={3} sx={{ mb: 6 }}>
+      <Grid container spacing={{ xs: 1, sm: 2, md: 3 }} sx={{ mb: { xs: 4, md: 6 } }}>
         {[
-          { icon: <ArticleIcon />, label: 'Новостей сегодня', value: stats.newsToday },
+          { icon: <ArticleIcon />, label: 'Сегодня', value: stats.newsToday },
           { icon: <GroupIcon />, label: 'Пользователей', value: stats.totalUsers },
           { icon: <AIIcon />, label: 'AI-рерайт', value: stats.totalAiNews },
-          { icon: <ArticleIcon />, label: 'Всего новостей', value: stats.totalNews },
+          { icon: <ArticleIcon />, label: 'Всего', value: stats.totalNews },
           { icon: <VisibilityIcon />, label: 'Просмотров', value: stats.totalViews },
           { icon: <PendingIcon />, label: 'На модерации', value: stats.pendingNews },
         ].map((stat, i) => (
           <Grid size={{ xs: 6, sm: 4, md: 2 }} key={i}>
             <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Box sx={{ color: 'primary.main', mb: 1, fontSize: 28 }}>{stat.icon}</Box>
-                <Typography variant="h5" sx={{ fontWeight: 700 }}>
+              <CardContent
+                sx={{
+                  textAlign: 'center',
+                  py: { xs: 1.5, sm: 2 },
+                  px: { xs: 1, sm: 2 },
+                  '&:last-child': { pb: { xs: 1.5, sm: 2 } },
+                }}
+              >
+                <Box sx={{ color: 'primary.main', mb: 0.5, fontSize: { xs: 22, sm: 28 } }}>
+                  {stat.icon}
+                </Box>
+                <Typography
+                  variant="h5"
+                  sx={{ fontWeight: 700, fontSize: { xs: '1rem', sm: '1.5rem' } }}
+                >
                   {stat.value}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' } }}
+                >
                   {stat.label}
                 </Typography>
               </CardContent>
@@ -128,10 +167,10 @@ export default function HomePage() {
       </Grid>
 
       {/* Последние новости */}
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom sx={{ fontSize: { xs: '1.3rem', sm: '2rem' } }}>
         Последние новости
       </Typography>
-      <Grid container spacing={3}>
+      <Grid container spacing={{ xs: 1.5, sm: 2, md: 3 }}>
         {loading
           ? Array.from({ length: 6 }).map((_, i) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i}>
@@ -151,19 +190,43 @@ export default function HomePage() {
                     {item.imageUrl && (
                       <CardMedia
                         component="img"
-                        height="160"
+                        height={isMobile ? 120 : 160}
                         image={item.imageUrl}
                         alt={item.title}
                       />
                     )}
-                    <CardContent>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 600 }} gutterBottom noWrap>
+                    <CardContent
+                      sx={{
+                        py: { xs: 1.5, sm: 2 },
+                        px: { xs: 1.5, sm: 2 },
+                        '&:last-child': { pb: { xs: 1.5, sm: 2 } },
+                      }}
+                    >
+                      <Typography
+                        variant="subtitle1"
+                        sx={{
+                          fontWeight: 600,
+                          fontSize: { xs: '0.9rem', sm: '1rem' },
+                          wordBreak: 'break-word',
+                        }}
+                        gutterBottom
+                      >
                         {item.title}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                          mb: 1.5,
+                          fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                          wordBreak: 'break-word',
+                        }}
+                      >
                         {item.summary?.substring(0, 100)}...
                       </Typography>
-                      <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                      <Box
+                        sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', alignItems: 'center' }}
+                      >
                         <Chip
                           label={getCategoryLabel(item.category)}
                           size="small"
@@ -173,7 +236,11 @@ export default function HomePage() {
                         {item.isAiGenerated && (
                           <Chip icon={<AIIcon />} label="AI" size="small" color="secondary" />
                         )}
-                        <Typography variant="caption" color="text.secondary" sx={{ ml: 'auto' }}>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ ml: 'auto', whiteSpace: 'nowrap' }}
+                        >
                           {new Date(item.publishedAt).toLocaleDateString('ru-RU')}
                         </Typography>
                       </Box>
@@ -185,17 +252,23 @@ export default function HomePage() {
       </Grid>
 
       {/* Модалка новости */}
-      <Dialog open={!!selectedNews} onClose={() => setSelectedNews(null)} maxWidth="md" fullWidth>
+      <Dialog
+        open={!!selectedNews}
+        onClose={() => setSelectedNews(null)}
+        maxWidth="md"
+        fullWidth
+        fullScreen={isMobile}
+      >
         <IconButton
           onClick={() => setSelectedNews(null)}
-          sx={{ position: 'absolute', right: 8, top: 8 }}
+          sx={{ position: 'absolute', right: 8, top: 8, zIndex: 1 }}
         >
           <CloseIcon />
         </IconButton>
-        <DialogContent sx={{ p: 3 }}>
+        <DialogContent sx={{ p: { xs: 2, sm: 3 } }}>
           {selectedNews && <NewsDetail news={selectedNews} />}
         </DialogContent>
       </Dialog>
-    </>
+    </Box>
   );
 }

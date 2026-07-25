@@ -61,7 +61,7 @@ const NewsList: React.FC = () => {
   };
 
   const getCategoryColor = (cat: string) => {
-    const colors: Record<string, string> = {
+    const c: Record<string, string> = {
       politics: 'blue',
       economy: 'green',
       technology: 'purple',
@@ -71,11 +71,11 @@ const NewsList: React.FC = () => {
       health: 'red',
       world: 'geekblue',
     };
-    return colors[cat] || 'default';
+    return c[cat] || 'default';
   };
 
   const getCategoryLabel = (cat: string) => {
-    const labels: Record<string, string> = {
+    const l: Record<string, string> = {
       politics: 'Политика',
       economy: 'Экономика',
       technology: 'Технологии',
@@ -85,7 +85,7 @@ const NewsList: React.FC = () => {
       health: 'Здоровье',
       world: 'Мир',
     };
-    return labels[cat] || cat;
+    return l[cat] || cat;
   };
 
   const formatDate = (dateString: string) => {
@@ -104,15 +104,30 @@ const NewsList: React.FC = () => {
 
   const hasFilters = category !== 'all' || aiFilter !== 'all' || search;
 
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 576;
+
   return (
-    <div style={{ maxWidth: 960, margin: '0 auto' }}>
-      <Title level={2}>📰 Лента новостей</Title>
-      <Space wrap style={{ marginBottom: 16 }}>
+    <div
+      style={{
+        maxWidth: 960,
+        margin: '0 auto',
+        padding: '0 8px',
+        overflowX: 'hidden',
+      }}
+    >
+      <Title level={2} style={{ fontSize: 'clamp(1.2em, 6vw, 1.5em)' }}>
+        📰 Лента новостей
+      </Title>
+
+      <Space wrap size={[8, 8]} style={{ marginBottom: 16, width: '100%' }}>
         <Search
           placeholder="Поиск..."
           allowClear
           onSearch={handleSearch}
-          style={{ minWidth: 200 }}
+          style={{
+            width: isMobile ? '100%' : 200,
+            minWidth: isMobile ? 'auto' : 200,
+          }}
           prefix={<SearchOutlined />}
         />
         <Select
@@ -121,7 +136,10 @@ const NewsList: React.FC = () => {
             setCategory(v);
             setPage(1);
           }}
-          style={{ minWidth: 160 }}
+          style={{
+            width: isMobile ? '100%' : 160,
+            minWidth: isMobile ? 'auto' : 160,
+          }}
         >
           <Select.Option value="all">📂 Все</Select.Option>
           <Select.Option value="politics">🏛 Политика</Select.Option>
@@ -139,7 +157,10 @@ const NewsList: React.FC = () => {
             setSortBy(v);
             setPage(1);
           }}
-          style={{ minWidth: 140 }}
+          style={{
+            width: isMobile ? '100%' : 140,
+            minWidth: isMobile ? 'auto' : 140,
+          }}
         >
           <Select.Option value="publishedAt">🕒 По дате</Select.Option>
           <Select.Option value="views">👁 По просмотрам</Select.Option>
@@ -151,7 +172,10 @@ const NewsList: React.FC = () => {
             setAiFilter(v);
             setPage(1);
           }}
-          style={{ minWidth: 150 }}
+          style={{
+            width: isMobile ? '100%' : 150,
+            minWidth: isMobile ? 'auto' : 150,
+          }}
         >
           <Select.Option value="all">📋 Все</Select.Option>
           <Select.Option value="true">🤖 AI-рерайт</Select.Option>
@@ -176,55 +200,75 @@ const NewsList: React.FC = () => {
       <Spin spinning={loading}>
         {news.length > 0 ? (
           <>
-            <Row gutter={[16, 16]}>
-              {news.map((item) => (
-                <div key={item.id} style={{ width: '100%' }}>
-                  <Card
-                    hoverable
-                    onClick={() => {
-                      setSelectedNewsId(item.id);
-                      setModalVisible(true);
-                    }}
-                    style={{ borderRadius: 8, marginBottom: 12 }}
+            {news.map((item) => (
+              <div key={item.id} style={{ width: '100%', maxWidth: '100%' }}>
+                <Card
+                  hoverable
+                  onClick={() => {
+                    setSelectedNewsId(item.id);
+                    setModalVisible(true);
+                  }}
+                  style={{
+                    borderRadius: 8,
+                    marginBottom: 12,
+                    maxWidth: '100%',
+                  }}
+                  styles={{ body: { padding: isMobile ? 12 : 16 } }}
+                >
+                  <Text
+                    strong
+                    style={{ fontSize: 15, wordBreak: 'break-word' }}
                   >
-                    <Text strong style={{ fontSize: 15 }}>
-                      {item.title}
-                    </Text>
-                    <Paragraph
-                      ellipsis={{ rows: 2 }}
-                      style={{ margin: '8px 0', color: '#666', fontSize: 13 }}
-                    >
-                      {item.summary ||
-                        item.content?.substring(0, 150) ||
-                        'Описание отсутствует'}
-                    </Paragraph>
-                    <Space wrap size={[4, 4]}>
-                      <Tag color={getCategoryColor(item.category)}>
-                        {getCategoryLabel(item.category)}
+                    {item.title}
+                  </Text>
+                  <Paragraph
+                    ellipsis={{ rows: 2 }}
+                    style={{
+                      margin: '8px 0',
+                      color: '#666',
+                      fontSize: 13,
+                      wordBreak: 'break-word',
+                    }}
+                  >
+                    {item.summary ||
+                      item.content?.substring(0, 150) ||
+                      'Описание отсутствует'}
+                  </Paragraph>
+                  <Space wrap size={[4, 4]} style={{ maxWidth: '100%' }}>
+                    <Tag color={getCategoryColor(item.category)}>
+                      {getCategoryLabel(item.category)}
+                    </Tag>
+                    {item.isAiGenerated ? (
+                      <Tag icon={<RobotOutlined />} color="blue">
+                        AI
                       </Tag>
-                      {item.isAiGenerated ? (
-                        <Tag icon={<RobotOutlined />} color="blue">
-                          AI
-                        </Tag>
-                      ) : (
-                        <Tag icon={<LinkOutlined />} color="green">
-                          Оригинал
-                        </Tag>
-                      )}
-                      <Text type="secondary" style={{ fontSize: 11 }}>
-                        <ClockCircleOutlined /> {formatDate(item.publishedAt)}
-                      </Text>
-                      <Text type="secondary" style={{ fontSize: 11 }}>
-                        <EyeOutlined /> {item.views || 0}
-                      </Text>
-                      <Text type="secondary" style={{ fontSize: 11 }}>
-                        <HeartOutlined /> {item.likes || 0}
-                      </Text>
-                    </Space>
-                  </Card>
-                </div>
-              ))}
-            </Row>
+                    ) : (
+                      <Tag icon={<LinkOutlined />} color="green">
+                        Оригинал
+                      </Tag>
+                    )}
+                    <Text
+                      type="secondary"
+                      style={{ fontSize: 11, whiteSpace: 'nowrap' }}
+                    >
+                      <ClockCircleOutlined /> {formatDate(item.publishedAt)}
+                    </Text>
+                    <Text
+                      type="secondary"
+                      style={{ fontSize: 11, whiteSpace: 'nowrap' }}
+                    >
+                      <EyeOutlined /> {item.views || 0}
+                    </Text>
+                    <Text
+                      type="secondary"
+                      style={{ fontSize: 11, whiteSpace: 'nowrap' }}
+                    >
+                      <HeartOutlined /> {item.likes || 0}
+                    </Text>
+                  </Space>
+                </Card>
+              </div>
+            ))}
             {total > 12 && (
               <div style={{ textAlign: 'center', marginTop: 24 }}>
                 <Pagination
@@ -233,6 +277,8 @@ const NewsList: React.FC = () => {
                   pageSize={12}
                   onChange={setPage}
                   showSizeChanger={false}
+                  size={isMobile ? 'small' : 'medium'}
+                  responsive
                 />
               </div>
             )}
@@ -248,8 +294,9 @@ const NewsList: React.FC = () => {
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={null}
-        width={900}
-        centered
+        width={isMobile ? '100%' : 900}
+        style={{ top: isMobile ? 0 : 20, maxWidth: '100vw' }}
+        centered={!isMobile}
         destroyOnHidden
       >
         {selectedNewsId && <NewsDetailModal newsId={selectedNewsId} />}
