@@ -280,6 +280,12 @@ function confirmDelete(news: NewsItem) {
         });
       }
     },
+    reject: () => {
+      confirm.close();
+    },
+    onHide: () => {
+      confirm.close();
+    },
   });
 }
 </script>

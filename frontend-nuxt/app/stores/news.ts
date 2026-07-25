@@ -1,11 +1,5 @@
 import { defineStore } from 'pinia';
-import type {
-  CreateNewsDto,
-  ModerationBody,
-  NewsFilter,
-  NewsItem,
-  StatsResponse,
-} from '~/types';
+import type { CreateNewsDto, ModerationBody, NewsFilter, NewsItem, StatsResponse } from '~/types';
 import { useNewsService } from '~/services/news.service.ts';
 
 export const useNewsStore = defineStore('news', () => {
@@ -106,7 +100,8 @@ export const useNewsStore = defineStore('news', () => {
   async function fetchFavorites(): Promise<void> {
     try {
       isLoading.value = true;
-      favorites.value = await newsService.getFavorites();
+      const favoritesData = await newsService.getFavorites();
+      favorites.value = favoritesData.data;
     } catch (err: any) {
       error.value = err.message;
     } finally {

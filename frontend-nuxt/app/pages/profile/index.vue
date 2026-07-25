@@ -88,6 +88,7 @@
                 type="submit"
                 label="Сменить пароль"
                 icon="pi pi-lock"
+                class="mt-3"
                 severity="warning"
                 :loading="isChangingPassword"
               />
@@ -322,7 +323,8 @@ async function savePreferences() {
 async function loadFavorites() {
   try {
     favoritesLoading.value = true;
-    favorites.value = await newsService.getFavorites();
+    const favoritesData = await newsService.getFavorites();
+    favorites.value = favoritesData.data;
   } catch (error) {
     console.error('Error loading favorites:', error);
   } finally {

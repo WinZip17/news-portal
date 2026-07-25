@@ -343,6 +343,12 @@ function confirmDelete(user: UserResponse) {
         });
       }
     },
+    reject: () => {
+      confirm.close();
+    },
+    onHide: () => {
+      confirm.close();
+    },
   });
 }
 

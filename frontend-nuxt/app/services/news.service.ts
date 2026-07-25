@@ -74,8 +74,8 @@ export function useNewsService() {
     return apiFetch<boolean>(`/news/${id}/favorite/check`);
   }
 
-  async function getFavorites(): Promise<NewsItem[]> {
-    return apiFetch<NewsItem[]>('/news/favorites');
+  async function getFavorites(): Promise<NewsResponse> {
+    return apiFetch<NewsResponse>('/news/favorites');
   }
 
   async function getPersonalized(): Promise<NewsItem[]> {
