@@ -36,7 +36,13 @@
       </template>
 
       <template #end>
-        <Button label="Сбросить" icon="pi pi-refresh" severity="secondary" @click="resetFilters" />
+        <Button
+          label="Сбросить"
+          aria-label="Сбросить"
+          icon="pi pi-refresh"
+          severity="secondary"
+          @click="resetFilters"
+        />
       </template>
     </Toolbar>
 

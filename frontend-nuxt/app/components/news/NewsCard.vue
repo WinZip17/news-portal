@@ -36,20 +36,22 @@
     <template #footer>
       <div class="news-card-footer">
         <Button
-            v-tooltip.top="'В избранное'"
-            :icon="news.isFavorite ? 'pi pi-star-fill' : 'pi pi-star'"
-            :severity="news.isFavorite ? 'warning' : 'secondary'"
-            text
-            rounded
-            :disabled="!authStore.isAuthenticated"
-            @click.stop="handleToggleFavorite"
+          v-tooltip.top="'В избранное'"
+          :icon="news.isFavorite ? 'pi pi-star-fill' : 'pi pi-star'"
+          :severity="news.isFavorite ? 'warning' : 'secondary'"
+          text
+          rounded
+          aria-label="Добавить в избранное"
+          :disabled="!authStore.isAuthenticated"
+          @click.stop="handleToggleFavorite"
         />
         <Button
-            label="Читать далее"
-            icon="pi pi-arrow-right"
-            severity="primary"
-            text
-            @click="openNewsDetail"
+          label="Читать далее"
+          icon="pi pi-arrow-right"
+          severity="primary"
+          aria-label="Читать далее"
+          text
+          @click="openNewsDetail"
         />
       </div>
     </template>
@@ -136,8 +138,8 @@ function formatDate(date: string): string {
   display: flex;
   flex-direction: column;
   transition:
-      transform 0.2s,
-      box-shadow 0.2s;
+    transform 0.2s,
+    box-shadow 0.2s;
   background-color: var(--p-surface-card);
   border: 1px solid var(--p-surface-border);
 }

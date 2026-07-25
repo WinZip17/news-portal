@@ -2,7 +2,13 @@
   <div class="admin-news-page">
     <div class="page-header">
       <h1 class="page-title">Управление новостями</h1>
-      <Button label="Создать новость" icon="pi pi-plus" severity="primary" @click="createNews" />
+      <Button
+        label="Создать новость"
+        aria-label="Создать новость"
+        icon="pi pi-plus"
+        severity="primary"
+        @click="createNews"
+      />
     </div>
 
     <DataTable :value="newsStore.news" :paginator="true" :rows="10" :loading="newsStore.isLoading">

@@ -1,12 +1,12 @@
 <template>
   <Dialog
-      v-model:visible="visible"
-      :modal="true"
-      :header="news?.title"
-      :style="{ width: '90vw', maxWidth: '800px' }"
-      :breakpoints="{ '768px': '95vw' }"
-      :closable="true"
-      :dismissable-mask="true"
+    v-model:visible="visible"
+    :modal="true"
+    :header="news?.title"
+    :style="{ width: '90vw', maxWidth: '800px' }"
+    :breakpoints="{ '768px': '95vw' }"
+    :closable="true"
+    :dismissable-mask="true"
   >
     <div v-if="news" class="news-detail">
       <!-- Изображение -->
@@ -37,9 +37,9 @@
       <!-- Автор -->
       <div v-if="news.author" class="detail-author">
         <Avatar
-            :label="getAuthorInitials(news.author)"
-            style="background-color: var(--p-primary-color); color: white"
-            shape="circle"
+          :label="getAuthorInitials(news.author)"
+          style="background-color: var(--p-primary-color); color: white"
+          shape="circle"
         />
         <div>
           <p class="author-name">{{ news.author.firstName }} {{ news.author.lastName }}</p>
@@ -58,20 +58,28 @@
       <!-- Действия -->
       <div class="detail-actions">
         <Button
-            :icon="news.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"
-            :label="`${news.likes}`"
-            :severity="news.isLiked ? 'danger' : 'secondary'"
-            :disabled="!authStore.isAuthenticated"
-            @click="handleLike"
+          :icon="news.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"
+          :label="`${news.likes}`"
+          :aria-label="`${news.likes}`"
+          :severity="news.isLiked ? 'danger' : 'secondary'"
+          :disabled="!authStore.isAuthenticated"
+          @click="handleLike"
         />
         <Button
-            :icon="news.isFavorite ? 'pi pi-star-fill' : 'pi pi-star'"
-            :label="news.isFavorite ? 'В избранном' : 'В избранное'"
-            :severity="news.isFavorite ? 'warning' : 'secondary'"
-            :disabled="!authStore.isAuthenticated"
-            @click="handleToggleFavorite"
+          :icon="news.isFavorite ? 'pi pi-star-fill' : 'pi pi-star'"
+          :label="news.isFavorite ? 'В избранном' : 'В избранное'"
+          :aria-label="news.isFavorite ? 'В избранном' : 'В избранное'"
+          :severity="news.isFavorite ? 'warning' : 'secondary'"
+          :disabled="!authStore.isAuthenticated"
+          @click="handleToggleFavorite"
         />
-        <Button icon="pi pi-share-alt" label="Поделиться" severity="info" @click="shareNews" />
+        <Button
+          icon="pi pi-share-alt"
+          label="Поделиться"
+          aria-label="Поделиться"
+          severity="info"
+          @click="shareNews"
+        />
       </div>
 
       <!-- Источник -->

@@ -7,7 +7,13 @@
 
       <div class="not-found-actions">
         <NuxtLink to="/">
-          <Button label="На главную" icon="pi pi-home" severity="primary" size="large" />
+          <Button
+            label="На главную"
+            aria-label="На главную"
+            icon="pi pi-home"
+            severity="primary"
+            size="large"
+          />
         </NuxtLink>
         <Button
           label="Назад"

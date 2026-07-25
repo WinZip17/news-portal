@@ -15,6 +15,7 @@
           <NuxtLink to="/news">
             <Button
               label="Читать новости"
+              aria-label="Читать новости"
               icon="pi pi-arrow-right"
               severity="primary"
               size="large"
@@ -23,6 +24,7 @@
           <NuxtLink v-if="!authStore.isAuthenticated" to="/register">
             <Button
               label="Присоединиться"
+              aria-label="Присоединиться"
               icon="pi pi-user-plus"
               severity="secondary"
               size="large"

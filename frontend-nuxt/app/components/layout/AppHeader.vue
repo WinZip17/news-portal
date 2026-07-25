@@ -35,7 +35,7 @@
           severity="secondary"
           text
           rounded
-          aria-label="Toggle theme"
+          aria-label="Переключить тему"
           @click="uiStore.toggleTheme()"
         />
 
@@ -50,6 +50,7 @@
           </NuxtLink>
           <Button
             label="Выйти"
+            aria-label="Выйти"
             icon="pi pi-sign-out"
             severity="danger"
             text
@@ -58,16 +59,22 @@
         </template>
         <template v-else>
           <NuxtLink to="/login">
-            <Button label="Войти" icon="pi pi-sign-in" severity="primary" text />
+            <Button label="Войти" aria-label="Войти" icon="pi pi-sign-in" severity="primary" text />
           </NuxtLink>
           <NuxtLink to="/register">
-            <Button label="Регистрация" icon="pi pi-user-plus" severity="secondary" />
+            <Button
+              label="Регистрация"
+              aria-label="Регистрация"
+              icon="pi pi-user-plus"
+              severity="secondary"
+            />
           </NuxtLink>
         </template>
 
         <!-- Mobile Menu Toggle -->
         <Button
           icon="pi pi-bars"
+          aria-label="Переключить меню"
           severity="secondary"
           text
           rounded

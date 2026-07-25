@@ -38,21 +38,21 @@
             <div class="form-field">
               <label>Категория</label>
               <Dropdown
-                  v-model="generateForm.category"
-                  :options="categories"
-                  option-label="label"
-                  option-value="value"
-                  placeholder="Выберите категорию"
-                  class="w-full"
+                v-model="generateForm.category"
+                :options="categories"
+                option-label="label"
+                option-value="value"
+                placeholder="Выберите категорию"
+                class="w-full"
               />
             </div>
 
             <div class="form-field">
               <label>Тема (опционально)</label>
               <InputText
-                  v-model="generateForm.topic"
-                  placeholder="Например: искусственный интеллект"
-                  class="w-full"
+                v-model="generateForm.topic"
+                placeholder="Например: искусственный интеллект"
+                class="w-full"
               />
             </div>
 
@@ -62,11 +62,12 @@
             </div>
 
             <Button
-                label="Сгенерировать"
-                icon="pi pi-bolt"
-                severity="primary"
-                :loading="isGenerating"
-                @click="generateNews"
+              label="Сгенерировать"
+              aria-label="Сгенерировать"
+              icon="pi pi-bolt"
+              severity="primary"
+              :loading="isGenerating"
+              @click="generateNews"
             />
           </div>
         </template>
@@ -92,11 +93,12 @@
             </p>
 
             <Button
-                label="Запустить авто-генерацию"
-                icon="pi pi-cog"
-                severity="warning"
-                :loading="isAutoGenerating"
-                @click="autoGenerate"
+              label="Запустить авто-генерацию"
+              aria-label="Запустить авто-генерацию"
+              icon="pi pi-cog"
+              severity="warning"
+              :loading="isAutoGenerating"
+              @click="autoGenerate"
             />
           </div>
         </template>

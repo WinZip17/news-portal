@@ -3,6 +3,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: { lang: 'ru' },
+      title: 'Короткие новости — AI-рерайт из проверенных источников | Факты без манипуляций',
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1',
       link: [
@@ -12,6 +13,11 @@ export default defineNuxtConfig({
         { rel: 'canonical', href: 'https://short-news.ru/' },
       ],
       meta: [
+        {
+          name: 'description',
+          content:
+            'News Portal — быстрые и короткие новости с AI-рерайтом. Минимум слов, максимум фактов. Читайте суть за 30 секунд без кликбейта и манипуляций.',
+        },
         { name: 'author', content: 'News Portal' },
         { name: 'robots', content: 'index, follow, max-snippet:-1, max-image-preview:large' },
         { name: 'theme-color', content: '#020420' },
