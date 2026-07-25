@@ -194,84 +194,82 @@ const Home: React.FC = () => {
           </Button>
         </Space>
 
-        <Spin spinning={isLoading}>
-          {isLoading ? (
-            <Row gutter={[24, 24]}>
-              {Array.from({ length: 6 }).map((_, i) => (
-                <Col xs={24} sm={12} lg={8} key={i}>
-                  <NewsSkeleton />
-                </Col>
-              ))}
-            </Row>
-          ) : news.length > 0 ? (
-            <Row gutter={[24, 24]}>
-              {news.slice(0, 6).map((item) => (
-                <Col xs={24} sm={12} lg={8} key={item.id}>
-                  <Card
-                    hoverable
-                    style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-                    cover={
-                      item.imageUrl ? (
-                        <img alt={item.title} src={item.imageUrl} style={{ height: 200, objectFit: 'cover' }} />
-                      ) : (
-                        <div
-                          style={{
-                            height: 200,
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: 'white',
-                            fontSize: '48px',
-                          }}
-                        >
-                          📰
-                        </div>
-                      )
-                    }
-                    onClick={() => openNews(item.id)}
-                    actions={[<span key="views">👁 {item.views || 0}</span>, <span key="likes">❤️ {item.likes || 0}</span>]}
-                  >
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                      <Card.Meta
-                        title={item.title}
-                        description={
-                          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                            <Paragraph ellipsis={{ rows: 2 }} style={{ marginBottom: 12 }}>
-                              {item.summary?.substring(0, 120) || 'Описание отсутствует'}...
-                            </Paragraph>
-                            <Space wrap size={[4, 4]} style={{ marginTop: 'auto' }}>
-                              <Tag color={getCategoryColor(item.category)}>{getCategoryLabel(item.category)}</Tag>
-                              {item.isAiGenerated ? (
-                                <Tag icon={<RobotOutlined />} color="blue">
-                                  AI-рерайт
-                                </Tag>
-                              ) : (
-                                <Tag icon={<LinkOutlined />} color="green">
-                                  Оригинал
-                                </Tag>
-                              )}
-                              {item.source && <Tag color="purple">{item.source}</Tag>}
-                            </Space>
-                            <div style={{ marginTop: 8, color: '#999', fontSize: '12px' }}>
-                              <ClockCircleOutlined /> {formatDate(item.publishedAt)}
-                            </div>
+        {isLoading ? (
+          <Row gutter={[24, 24]}>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Col xs={24} sm={12} lg={8} key={i}>
+                <NewsSkeleton />
+              </Col>
+            ))}
+          </Row>
+        ) : news.length > 0 ? (
+          <Row gutter={[24, 24]}>
+            {news.slice(0, 6).map((item) => (
+              <Col xs={24} sm={12} lg={8} key={item.id}>
+                <Card
+                  hoverable
+                  style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+                  cover={
+                    item.imageUrl ? (
+                      <img alt={item.title} src={item.imageUrl} style={{ height: 200, objectFit: 'cover' }} />
+                    ) : (
+                      <div
+                        style={{
+                          height: 200,
+                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: 'white',
+                          fontSize: '48px',
+                        }}
+                      >
+                        📰
+                      </div>
+                    )
+                  }
+                  onClick={() => openNews(item.id)}
+                  actions={[<span key="views">👁 {item.views || 0}</span>, <span key="likes">❤️ {item.likes || 0}</span>]}
+                >
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <Card.Meta
+                      title={item.title}
+                      description={
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                          <Paragraph ellipsis={{ rows: 2 }} style={{ marginBottom: 12 }}>
+                            {item.summary?.substring(0, 120) || 'Описание отсутствует'}...
+                          </Paragraph>
+                          <Space wrap size={[4, 4]} style={{ marginTop: 'auto' }}>
+                            <Tag color={getCategoryColor(item.category)}>{getCategoryLabel(item.category)}</Tag>
+                            {item.isAiGenerated ? (
+                              <Tag icon={<RobotOutlined />} color="blue">
+                                AI-рерайт
+                              </Tag>
+                            ) : (
+                              <Tag icon={<LinkOutlined />} color="green">
+                                Оригинал
+                              </Tag>
+                            )}
+                            {item.source && <Tag color="purple">{item.source}</Tag>}
+                          </Space>
+                          <div style={{ marginTop: 8, color: '#999', fontSize: '12px' }}>
+                            <ClockCircleOutlined /> {formatDate(item.publishedAt)}
                           </div>
-                        }
-                      />
-                    </div>
-                  </Card>
-                </Col>
-              ))}
-            </Row>
-          ) : (
-            <Empty description="Новости пока не загружены" style={{ padding: '40px 0' }}>
-              <Button type="primary" onClick={() => fetchNews({ limit: 6 })}>
-                Загрузить новости
-              </Button>
-            </Empty>
-          )}
-        </Spin>
+                        </div>
+                      }
+                    />
+                  </div>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        ) : (
+          <Empty description="Новости пока не загружены" style={{ padding: '40px 0' }}>
+            <Button type="primary" onClick={() => fetchNews({ limit: 6 })}>
+              Загрузить новости
+            </Button>
+          </Empty>
+        )}
       </div>
 
       <Modal open={modalVisible} onCancel={closeNews} footer={null} width={900} centered destroyOnHidden style={{ top: 20 }}>
