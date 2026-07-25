@@ -94,7 +94,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   );
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', maxWidth: '100vw', overflowX: 'hidden' }}>
+    <Box
+      component="main"
+      sx={{ display: 'flex', minHeight: '100vh', maxWidth: '100vw', overflowX: 'hidden' }}
+    >
       {!isMobile && (
         <Drawer
           className={'fix-drawer'}

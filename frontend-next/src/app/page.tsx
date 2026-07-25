@@ -185,8 +185,8 @@ export default function HomePage() {
             ))
           : news.map((item) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={item.id}>
-                <Card>
-                  <CardActionArea onClick={() => setSelectedNews(item)}>
+                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <CardActionArea onClick={() => setSelectedNews(item)} sx={{ flex: 1 }}>
                     {item.imageUrl && (
                       <CardMedia
                         component="img"
@@ -225,7 +225,13 @@ export default function HomePage() {
                         {item.summary?.substring(0, 100)}...
                       </Typography>
                       <Box
-                        sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', alignItems: 'center' }}
+                        sx={{
+                          display: 'flex',
+                          gap: 0.5,
+                          flexWrap: 'wrap',
+                          alignItems: 'center',
+                          mt: 'auto',
+                        }}
                       >
                         <Chip
                           label={getCategoryLabel(item.category)}
