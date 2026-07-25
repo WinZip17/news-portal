@@ -1,8 +1,8 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
-import { VitePWA } from 'vite-plugin-pwa'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   plugins: [
@@ -96,4 +96,15 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/test-setup.ts',
   },
-})
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/antd') || id.includes('@ant-design/icons')) return 'antd';
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) return 'react';
+          if (id.includes('node_modules/react-router-dom')) return 'router';
+        },
+      },
+    },
+  },
+});
