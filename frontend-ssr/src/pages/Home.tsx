@@ -18,7 +18,8 @@ import {
   RocketOutlined,
   RobotOutlined,
   LinkOutlined,
-  ClockCircleOutlined, EyeOutlined,
+  ClockCircleOutlined,
+  EyeOutlined,
 } from '@ant-design/icons';
 import NewsDetailModal from '../components/NewsDetailModal';
 import { useNewsStore } from '../store/newsStoreProvider';
@@ -103,36 +104,43 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div>
+    <div style={{ maxWidth: '100%', overflowX: 'hidden' }}>
       <div
         style={{
           textAlign: 'center',
           marginBottom: 48,
-          padding: '48px 24px',
+          padding: 'clamp(24px, 5vw, 48px) clamp(12px, 3vw, 24px)',
           borderRadius: 12,
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           color: 'white',
+          wordBreak: 'break-word',
         }}
       >
         <Title
           level={1}
-          style={{ color: 'white', fontSize: '3em', marginBottom: 16 }}
+          style={{
+            color: 'white',
+            fontSize: 'clamp(1.5em, 8vw, 3em)',
+            marginBottom: 16,
+            wordBreak: 'break-word',
+          }}
         >
           📰 News Portal
         </Title>
         <Paragraph
           style={{
             color: 'rgba(255,255,255,0.9)',
-            fontSize: '1.2em',
+            fontSize: 'clamp(0.9em, 3vw, 1.2em)',
             marginBottom: 32,
             maxWidth: 600,
             margin: '0 auto 32px',
+            padding: '0 8px',
           }}
         >
           Актуальные новости с AI-рерайтом из проверенных источников.
         </Paragraph>
 
-        <Space size="large">
+        <Space size="large" wrap>
           {!isAuthenticated ? (
             <>
               <Button
@@ -144,6 +152,7 @@ const Home: React.FC = () => {
                   color: '#667eea',
                   border: 'none',
                   fontWeight: 'bold',
+                  whiteSpace: 'nowrap',
                 }}
                 icon={<RocketOutlined />}
               >
@@ -153,7 +162,11 @@ const Home: React.FC = () => {
                 size="large"
                 ghost
                 onClick={() => setLocation('/login')}
-                style={{ color: 'white', borderColor: 'white' }}
+                style={{
+                  color: 'white',
+                  borderColor: 'white',
+                  whiteSpace: 'nowrap',
+                }}
               >
                 Войти
               </Button>
@@ -177,7 +190,8 @@ const Home: React.FC = () => {
         </Space>
       </div>
 
-      <Row gutter={[24, 24]} style={{ marginBottom: 48 }}>
+      {/* Статистика */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 48 }}>
         <Col xs={12} sm={8} md={4}>
           <Card hoverable>
             <Statistic
@@ -249,7 +263,7 @@ const Home: React.FC = () => {
 
       <Spin spinning={loading}>
         {news.length > 0 ? (
-          <Row gutter={[24, 24]}>
+          <Row gutter={[16, 16]}>
             {news.map((item) => (
               <Col xs={24} sm={12} lg={8} key={item.id}>
                 <Card
@@ -263,24 +277,33 @@ const Home: React.FC = () => {
                       <img
                         alt={item.title}
                         src={item.imageUrl}
-                        style={{ height: 200, objectFit: 'cover' }}
+                        style={{
+                          height: 200,
+                          objectFit: 'cover',
+                          maxWidth: '100%',
+                        }}
                       />
                     ) : null
                   }
                 >
                   <Card.Meta
-                    title={item.title}
+                    title={
+                      <span style={{ wordBreak: 'break-word' }}>
+                        {item.title}
+                      </span>
+                    }
                     description={
                       <>
-                        <Paragraph ellipsis={{ rows: 2 }}>
+                        <Paragraph
+                          ellipsis={{ rows: 2 }}
+                          style={{ wordBreak: 'break-word' }}
+                        >
                           {item.summary?.substring(0, 120)}...
                         </Paragraph>
-
                         <Space wrap size={[4, 4]} style={{ marginTop: 8 }}>
                           <Tag color={getCategoryColor(item.category)}>
                             {getCategoryLabel(item.category)}
                           </Tag>
-
                           {item.isAiGenerated ? (
                             <Tag icon={<RobotOutlined />} color="blue">
                               AI-рерайт
@@ -290,7 +313,6 @@ const Home: React.FC = () => {
                               Оригинал
                             </Tag>
                           )}
-
                           <Text type="secondary" style={{ fontSize: 12 }}>
                             <ClockCircleOutlined />{' '}
                             {formatDate(item.publishedAt)}
@@ -312,7 +334,6 @@ const Home: React.FC = () => {
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={null}
-        width={900}
         centered
         destroyOnHidden
       >

@@ -68,9 +68,10 @@ const MainLayout: React.FC = () => {
   const logout = useUserStore((s) => s.logout);
   const theme = useUIStore((s) => s.theme);
   const setTheme = useUIStore((s) => s.setTheme);
-
   const location = useLocation();
   const navigate = useNavigate();
+
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   const handleLogout = () => {
     logout();
@@ -80,7 +81,6 @@ const MainLayout: React.FC = () => {
     return allNavItems.filter((item) => {
       if (item.requiresAuth && !isAuthenticated) return false;
       if (item.requiresAdmin && !isAdmin) return false;
-      if (item.key === 'login' && isAuthenticated) return false;
       return true;
     });
   }, [isAuthenticated, isAdmin]);
@@ -139,8 +139,9 @@ const MainLayout: React.FC = () => {
       ];
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      {/* Десктопный сайдбар */}
+    <Layout
+      style={{ minHeight: '100vh', maxWidth: '100vw', overflowX: 'hidden' }}
+    >
       <Sider
         collapsible
         collapsed={collapsed}
@@ -182,7 +183,6 @@ const MainLayout: React.FC = () => {
         />
       </Sider>
 
-      {/* Мобильное меню */}
       <Drawer
         title="Меню"
         placement="left"
@@ -201,11 +201,15 @@ const MainLayout: React.FC = () => {
       </Drawer>
 
       <Layout
-        style={{ marginLeft: collapsed ? 0 : 200, transition: 'all 0.2s' }}
+        style={{
+          marginLeft: collapsed ? 0 : 200,
+          transition: 'all 0.2s',
+          maxWidth: '100%',
+        }}
       >
         <Header
           style={{
-            padding: '0 24px',
+            padding: isMobile ? '0 8px' : '0 24px',
             background: theme === 'dark' ? '#001529' : '#fff',
             display: 'flex',
             alignItems: 'center',
@@ -214,9 +218,11 @@ const MainLayout: React.FC = () => {
             position: 'sticky',
             top: 0,
             zIndex: 99,
+            gap: 8,
+            flexWrap: 'nowrap',
           }}
         >
-          <Space>
+          <Space size={4}>
             <Button
               type="text"
               icon={<MenuOutlined />}
@@ -224,19 +230,19 @@ const MainLayout: React.FC = () => {
               className="mobile-menu-btn"
               style={{ display: 'none' }}
             />
-            <h2 style={{ margin: 0 }}>
-              {location.pathname === '/' && 'Главная'}
-              {location.pathname === '/news' && 'Новости'}
-              {location.pathname === '/profile' && 'Профиль'}
-              {location.pathname.startsWith('/admin') && 'Админ панель'}
-            </h2>
+            {!isMobile && (
+              <h2 style={{ margin: 0, whiteSpace: 'nowrap', fontSize: 18 }}>
+                {location.pathname === '/' && 'Главная'}
+                {location.pathname === '/news' && 'Новости'}
+                {location.pathname === '/profile' && 'Профиль'}
+                {location.pathname.startsWith('/admin') && 'Админ панель'}
+              </h2>
+            )}
           </Space>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <FrameworkSwitcher current="nestjs" />
-          </div>
+          <FrameworkSwitcher current="nestjs" />
 
-          <Space size="middle">
+          <Space size="small">
             <Switch
               checkedChildren={<BulbFilled />}
               unCheckedChildren={<BulbOutlined />}
@@ -250,34 +256,46 @@ const MainLayout: React.FC = () => {
                   icon={!user?.avatar && <UserOutlined />}
                   size="small"
                 />
-                <span
-                  style={{
-                    maxWidth: 100,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  {isAuthenticated ? user?.username : 'Гость'}
-                </span>
+                {!isMobile && (
+                  <span
+                    style={{
+                      maxWidth: 80,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {isAuthenticated ? user?.username : 'Гость'}
+                  </span>
+                )}
               </Space>
             </Dropdown>
           </Space>
         </Header>
 
-        <Content style={{ margin: '24px', minHeight: 280 }}>
+        <Content
+          style={{
+            margin: isMobile ? '12px 8px' : '24px',
+            minHeight: 280,
+            maxWidth: '100%',
+          }}
+        >
           <Outlet />
         </Content>
 
-        <Footer style={{ textAlign: 'center' }}>
+        <Footer
+          style={{ textAlign: 'center', padding: isMobile ? '12px' : 24 }}
+        >
           News Portal ©{new Date().getFullYear()} - Создано с ❤️ и AI
         </Footer>
       </Layout>
 
       <style>{`
         @media (max-width: 992px) {
-          .mobile-menu-btn {
-            display: inline-flex !important;
-          }
+          .mobile-menu-btn { display: inline-flex !important; }
+        }
+        @media (max-width: 768px) {
+          .ant-layout-header { padding: 0 8px !important; }
         }
       `}</style>
     </Layout>

@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -51,12 +51,11 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const filteredNav = navItems.filter((item) => {
     if (item.auth && !isAuthenticated) return false;
     if (item.admin && !isAdmin) return false;
-    if (item.path === '/login' && isAuthenticated) return false;
     return true;
   });
 
@@ -95,9 +94,12 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   );
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', maxWidth: '100vw', overflowX: 'hidden' }}>
       {!isMobile && (
-        <Drawer variant="permanent" sx={{ width: 240, '& .MuiDrawer-paper': { width: 240 } }}>
+        <Drawer
+          variant="permanent"
+          sx={{ width: 240, flexShrink: 0, '& .MuiDrawer-paper': { width: 240 } }}
+        >
           {drawer}
         </Drawer>
       )}
@@ -106,39 +108,55 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         {drawer}
       </Drawer>
 
-      <Box sx={{ flex: 1 }}>
+      <Box sx={{ flex: 1, maxWidth: '100%' }}>
         <AppBar position="sticky">
-          <Toolbar>
+          <Toolbar sx={{ gap: 1, px: { xs: 1, sm: 2 }, minHeight: { xs: 48, sm: 64 } }}>
             {isMobile && (
               <IconButton
                 color="inherit"
                 edge="start"
                 onClick={() => setDrawerOpen(true)}
-                sx={{ mr: 1 }}
+                size="small"
               >
                 <MenuIcon />
               </IconButton>
             )}
-            <Typography variant="h6">
-              {pathname === '/' && 'Главная'}
-              {pathname === '/news' && 'Новости'}
-              {pathname === '/profile' && 'Профиль'}
-              {pathname === '/admin' && 'Админ-панель'}
-            </Typography>
+            {!isMobile && (
+              <Typography
+                variant="h6"
+                sx={{ whiteSpace: 'nowrap', fontSize: { sm: '1rem', md: '1.25rem' } }}
+              >
+                {pathname === '/' && 'Главная'}
+                {pathname === '/news' && 'Новости'}
+                {pathname === '/profile' && 'Профиль'}
+                {pathname === '/admin' && 'Админ-панель'}
+              </Typography>
+            )}
 
             <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
               <FrameworkSwitcher current="next" />
             </Box>
 
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <Switch
                 checked={themeMode === 'dark'}
                 onChange={() => dispatch(toggleTheme())}
                 icon={<LightMode />}
                 checkedIcon={<DarkMode />}
+                size={isMobile ? 'small' : 'medium'}
               />
-              <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
-                <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
+              <IconButton
+                onClick={(e) => setAnchorEl(e.currentTarget)}
+                size={isMobile ? 'small' : 'medium'}
+              >
+                <Avatar
+                  sx={{
+                    width: isMobile ? 24 : 32,
+                    height: isMobile ? 24 : 32,
+                    bgcolor: 'primary.main',
+                    fontSize: isMobile ? 14 : 16,
+                  }}
+                >
                   {user?.username?.[0]?.toUpperCase() || 'G'}
                 </Avatar>
               </IconButton>
@@ -162,11 +180,22 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           </Toolbar>
         </AppBar>
 
-        <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Container
+          maxWidth={false}
+          sx={{ py: { xs: 1.5, md: 4 }, px: { xs: 1, sm: 2, md: 3 }, maxWidth: '100%' }}
+        >
           {children}
         </Container>
 
-        <Box component="footer" sx={{ textAlign: 'center', py: 2, color: 'text.secondary' }}>
+        <Box
+          component="footer"
+          sx={{
+            textAlign: 'center',
+            py: { xs: 1, md: 2 },
+            color: 'text.secondary',
+            fontSize: { xs: '0.75rem', sm: '0.875rem' },
+          }}
+        >
           News Portal ©{new Date().getFullYear()} - Создано с ❤️ и AI
         </Box>
       </Box>

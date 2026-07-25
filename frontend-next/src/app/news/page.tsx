@@ -17,6 +17,8 @@ import {
   DialogContent,
   IconButton,
   Button,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { Search as SearchIcon, Close as CloseIcon, SmartToy as AIIcon } from '@mui/icons-material';
 import { newsService } from '@/services/newsService';
@@ -25,6 +27,8 @@ import NewsDetail from '@/components/NewsDetail';
 import { getCategoryLabel } from '@/utils/getCategoryLabel';
 
 export default function NewsPage() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -71,13 +75,16 @@ export default function NewsPage() {
   ];
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography variant="h4" gutterBottom>
+    <Container
+      maxWidth={false}
+      sx={{ py: { xs: 2, md: 4 }, px: { xs: 1, sm: 2 }, maxWidth: '100%', overflowX: 'hidden' }}
+    >
+      <Typography variant="h4" gutterBottom sx={{ fontSize: { xs: '1.3rem', sm: '2rem' } }}>
         📰 Лента новостей
       </Typography>
 
       {/* Фильтры */}
-      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 3 }}>
+      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 3 }}>
         <TextField
           size="small"
           placeholder="Поиск..."
@@ -87,7 +94,7 @@ export default function NewsPage() {
           slotProps={{
             input: { startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} /> },
           }}
-          sx={{ minWidth: 200 }}
+          sx={{ minWidth: isMobile ? '100%' : 200, flex: isMobile ? 1 : undefined }}
         />
         <TextField
           select
@@ -97,7 +104,7 @@ export default function NewsPage() {
             setCategory(e.target.value);
             setPage(1);
           }}
-          sx={{ minWidth: 180 }}
+          sx={{ minWidth: isMobile ? '100%' : 160, flex: isMobile ? 1 : undefined }}
         >
           {categories.map((c) => (
             <MenuItem key={c.value} value={c.value}>
@@ -113,7 +120,7 @@ export default function NewsPage() {
             setSortBy(e.target.value);
             setPage(1);
           }}
-          sx={{ minWidth: 140 }}
+          sx={{ minWidth: isMobile ? '100%' : 140, flex: isMobile ? 1 : undefined }}
         >
           <MenuItem value="publishedAt">🕒 По дате</MenuItem>
           <MenuItem value="views">👁 По просмотрам</MenuItem>
@@ -127,7 +134,7 @@ export default function NewsPage() {
             setAiFilter(e.target.value);
             setPage(1);
           }}
-          sx={{ minWidth: 150 }}
+          sx={{ minWidth: isMobile ? '100%' : 150, flex: isMobile ? 1 : undefined }}
         >
           <MenuItem value="all">📋 Все</MenuItem>
           <MenuItem value="true">🤖 AI-рерайт</MenuItem>
@@ -149,7 +156,7 @@ export default function NewsPage() {
       </Box>
 
       {/* Список новостей */}
-      <Grid container spacing={2}>
+      <Grid container spacing={1.5}>
         {loading
           ? Array.from({ length: 6 }).map((_, i) => (
               <Grid size={{ xs: 12 }} key={i}>
@@ -166,11 +173,28 @@ export default function NewsPage() {
               <Grid size={{ xs: 12 }} key={item.id}>
                 <Card>
                   <CardActionArea onClick={() => setSelectedNews(item)}>
-                    <CardContent>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                    <CardContent
+                      sx={{ py: { xs: 1.5, sm: 2 }, '&:last-child': { pb: { xs: 1.5, sm: 2 } } }}
+                    >
+                      <Typography
+                        variant="subtitle1"
+                        sx={{
+                          fontWeight: 600,
+                          fontSize: { xs: '0.9rem', sm: '1rem' },
+                          wordBreak: 'break-word',
+                        }}
+                      >
                         {item.title}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                          mb: 1,
+                          fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                          wordBreak: 'break-word',
+                        }}
+                      >
                         {item.summary?.substring(0, 150)}...
                       </Typography>
                       <Box
@@ -185,7 +209,11 @@ export default function NewsPage() {
                         {item.isAiGenerated && (
                           <Chip icon={<AIIcon />} label="AI" size="small" color="secondary" />
                         )}
-                        <Typography variant="caption" color="text.secondary" sx={{ ml: 'auto' }}>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ ml: 'auto', whiteSpace: 'nowrap' }}
+                        >
                           👁 {item.views} · ❤️ {item.likes} ·{' '}
                           {new Date(item.publishedAt).toLocaleDateString('ru-RU')}
                         </Typography>
@@ -199,18 +227,30 @@ export default function NewsPage() {
 
       {total > 12 && (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-          <Pagination count={Math.ceil(total / 12)} page={page} onChange={(_, p) => setPage(p)} />
+          <Pagination
+            count={Math.ceil(total / 12)}
+            page={page}
+            onChange={(_, p) => setPage(p)}
+            size={isMobile ? 'small' : 'medium'}
+            siblingCount={isMobile ? 0 : 1}
+          />
         </Box>
       )}
 
-      <Dialog open={!!selectedNews} onClose={() => setSelectedNews(null)} maxWidth="md" fullWidth>
+      <Dialog
+        open={!!selectedNews}
+        onClose={() => setSelectedNews(null)}
+        maxWidth="md"
+        fullWidth
+        fullScreen={isMobile}
+      >
         <IconButton
           onClick={() => setSelectedNews(null)}
-          sx={{ position: 'absolute', right: 8, top: 8 }}
+          sx={{ position: 'absolute', right: 8, top: 8, zIndex: 1 }}
         >
           <CloseIcon />
         </IconButton>
-        <DialogContent sx={{ p: 3 }}>
+        <DialogContent sx={{ p: { xs: 2, sm: 3 } }}>
           {selectedNews && <NewsDetail news={selectedNews} />}
         </DialogContent>
       </Dialog>
