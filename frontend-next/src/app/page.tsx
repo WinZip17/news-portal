@@ -186,7 +186,15 @@ export default function HomePage() {
           : news.map((item) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={item.id}>
                 <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                  <CardActionArea onClick={() => setSelectedNews(item)} sx={{ flex: 1 }}>
+                  <CardActionArea
+                    onClick={() => setSelectedNews(item)}
+                    sx={{
+                      flex: 1,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'stretch',
+                    }}
+                  >
                     {item.imageUrl && (
                       <CardMedia
                         component="img"
@@ -197,6 +205,9 @@ export default function HomePage() {
                     )}
                     <CardContent
                       sx={{
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
                         py: { xs: 1.5, sm: 2 },
                         px: { xs: 1.5, sm: 2 },
                         '&:last-child': { pb: { xs: 1.5, sm: 2 } },
