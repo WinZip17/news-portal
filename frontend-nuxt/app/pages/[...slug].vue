@@ -30,7 +30,9 @@
           <NuxtLink to="/news" class="quick-link">
             <i class="pi pi-list"></i> Все новости
           </NuxtLink>
-          <NuxtLink to="/login" class="quick-link"> <i class="pi pi-sign-in"></i> Войти </NuxtLink>
+          <NuxtLink to="/login" class="quick-link" aria-label="Войти">
+            <i class="pi pi-sign-in"></i> Войти
+          </NuxtLink>
           <NuxtLink to="/register" class="quick-link">
             <i class="pi pi-user-plus"></i> Регистрация
           </NuxtLink>

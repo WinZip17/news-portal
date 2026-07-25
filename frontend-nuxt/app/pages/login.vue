@@ -51,6 +51,7 @@
         <Button
           type="submit"
           label="Войти"
+          aria-label="Войти"
           icon="pi pi-sign-in"
           severity="primary"
           :loading="authStore.isLoading"
