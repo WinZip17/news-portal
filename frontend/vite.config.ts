@@ -9,6 +9,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: null,
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'News Portal - Короткие новости без манипуляций',
