@@ -102,7 +102,11 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         <Drawer
           className={'fix-drawer'}
           variant="permanent"
-          sx={{ width: 240, flexShrink: 0, '& .MuiDrawer-paper': { width: 240 } }}
+          sx={{
+            width: 240,
+            flexShrink: 0,
+            '& .MuiDrawer-paper': { width: 241 },
+          }}
         >
           {drawer}
         </Drawer>
