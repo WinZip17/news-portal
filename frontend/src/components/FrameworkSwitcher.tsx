@@ -6,9 +6,9 @@ interface FrameworkSwitcherProps {
 
 const frameworks = {
   react: { label: '⚛️ React SPA', url: 'https://short-news.ru' },
-  nestjs: { label: '🟢 NestJS SSR + React', url: 'https://nest.short-news.ru' },
   next: { label: '🔵 Next.js', url: 'https://next.short-news.ru' },
   nuxt: { label: '🟣 Nuxt', url: 'https://nuxt.short-news.ru' },
+  nestjs: { label: '🟢 NestJS SSR + React', url: 'https://nest.short-news.ru' },
 };
 
 const FrameworkSwitcher: React.FC<FrameworkSwitcherProps> = ({ current }) => {
@@ -23,6 +23,7 @@ const FrameworkSwitcher: React.FC<FrameworkSwitcherProps> = ({ current }) => {
     <select
       value={current}
       onChange={handleChange}
+      aria-label="Выбор фреймворка"
       style={{
         padding: '6px 12px',
         borderRadius: 6,

@@ -1,5 +1,10 @@
 <template>
-  <select :value="currentValue" class="framework-switcher" @change="handleChange">
+  <select
+    :value="currentValue"
+    class="framework-switcher"
+    aria-label="Выбор фреймворка"
+    @change="handleChange"
+  >
     <option v-for="(framework, key) in frameworks" :key="key" :value="key">
       {{ framework.label }}
     </option>
@@ -16,9 +21,9 @@ type FrameworkKey = 'react' | 'nestjs' | 'next' | 'nuxt';
 
 const frameworks: Record<FrameworkKey, Framework> = {
   react: { label: '⚛️ React SPA', url: 'https://short-news.ru' },
-  nestjs: { label: '🟢 NestJS SSR + React', url: 'https://nest.short-news.ru' },
   next: { label: '🔵 Next.js', url: 'https://next.short-news.ru' },
   nuxt: { label: '🟣 Nuxt', url: 'https://nuxt.short-news.ru' },
+  nestjs: { label: '🟢 NestJS SSR + React', url: 'https://nest.short-news.ru' },
 };
 const currentValue = ref('nuxt');
 function handleChange(e: Event) {

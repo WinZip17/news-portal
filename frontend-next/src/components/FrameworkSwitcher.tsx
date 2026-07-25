@@ -6,9 +6,9 @@ interface Props {
 
 const frameworks = {
   react: { label: '⚛️ React SPA', url: 'https://short-news.ru' },
-  nestjs: { label: '🟢 NestJS SSR', url: 'https://nest.short-news.ru' },
   next: { label: '🔵 Next.js', url: 'https://next.short-news.ru' },
   nuxt: { label: '🟣 Nuxt', url: 'https://nuxt.short-news.ru' },
+  nestjs: { label: '🟢 NestJS SSR', url: 'https://nest.short-news.ru' },
 };
 
 export default function FrameworkSwitcher({ current }: Props) {
@@ -19,6 +19,7 @@ export default function FrameworkSwitcher({ current }: Props) {
         const value = e.target.value as keyof typeof frameworks;
         if (value !== current) window.location.href = frameworks[value].url;
       }}
+      aria-label="Выбор фреймворка"
       style={{
         padding: '6px 12px',
         borderRadius: 6,

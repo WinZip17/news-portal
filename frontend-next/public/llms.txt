@@ -4,16 +4,16 @@
 
 ## Основные страницы
 
-- [Главная](https://short-news.ru/) — последние новости и статистика
-- [Лента новостей](https://short-news.ru/news) — фильтрация по категориям
-- [Вход](https://short-news.ru/login) — авторизация
-- [Регистрация](https://short-news.ru/register) — создание аккаунта
+- [Главная](https://next.short-news.ru/) — последние новости и статистика
+- [Лента новостей](https://next.short-news.ru/news) — фильтрация по категориям
+- [Вход](https://next.short-news.ru/login) — авторизация
+- [Регистрация](https://next.short-news.ru/register) — создание аккаунта
 
 ## API
 
-- [Swagger документация](https://short-news.ru/api/docs)
-- [Список новостей](https://short-news.ru/api/news) (JSON)
-- [Статистика](https://short-news.ru/api/news/stats)
+- [Swagger документация](https://next.short-news.ru/api/docs)
+- [Список новостей](https://next.short-news.ru/api/news) (JSON)
+- [Статистика](https://next.short-news.ru/api/news/stats)
 
 ## О проекте
 
