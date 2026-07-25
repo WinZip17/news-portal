@@ -13,6 +13,10 @@ FROM node:24-alpine
 
 WORKDIR /app
 
+ENV NODE_ENV=production
+ENV NITRO_HOST=0.0.0.0
+ENV NITRO_PORT=3004
+
 COPY --from=builder /app/.output ./.output
 
 EXPOSE 3004
