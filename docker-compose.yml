@@ -68,15 +68,6 @@ services:
       - news-portal-network
     restart: unless-stopped
 
-  frontend-ssr:
-    build:
-      context: ./frontend-ssr
-      dockerfile: Dockerfile
-    container_name: news-portal-ssr
-    networks:
-      - news-portal-network
-    restart: unless-stopped
-
   frontend-next:
     build:
       context: ./frontend-next

@@ -22,7 +22,7 @@
 |------|------|
 | Бэкенд | NestJS, TypeORM, PostgreSQL, JWT, Swagger |
 | AI | DeepSeek API, RSS Parser |
-| Фронтенды | React SPA, Next.js (MUI), NestJS SSR (Ant Design), Nuxt (PrimeVue) |
+| Фронтенды | React SPA, Next.js (MUI), Nuxt (PrimeVue) |
 | DevOps | Docker, GitHub Actions, Nginx, Let's Encrypt |
 | Мониторинг | Prometheus, Grafana |
 
@@ -31,7 +31,6 @@
 | Фреймворк | URL |
 |-----------|-----|
 | React SPA | https://short-news.ru |
-| NestJS SSR | https://nest.short-news.ru |
 | Next.js | https://next.short-news.ru |
 | Nuxt | https://nuxt.short-news.ru |
 

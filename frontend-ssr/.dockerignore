@@ -1,6 +1,0 @@
-node_modules
-dist
-public/client.js
-.git
-.env
-*.md
