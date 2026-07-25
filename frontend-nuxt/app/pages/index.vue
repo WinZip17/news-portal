@@ -33,27 +33,28 @@
     </section>
 
     <!-- Статистика -->
+    <!-- Статистика -->
     <section v-if="stats" class="stats-section">
       <div class="stats-grid">
         <div class="stat-card">
           <i class="pi pi-file" style="font-size: 2rem; color: var(--p-primary-color)"></i>
-          <div class="stat-value">{{ stats?.totalNews }}</div>
+          <div class="stat-value">{{ stats.totalNews }}</div>
           <div class="stat-label">Всего новостей</div>
         </div>
         <div class="stat-card">
-          <i class="pi pi-check-circle" style="font-size: 2rem; color: #22c55e"></i>
-          <div class="stat-value">{{ stats?.publishedNews }}</div>
-          <div class="stat-label">Опубликовано</div>
+          <i class="pi pi-clock" style="font-size: 2rem; color: #22c55e"></i>
+          <div class="stat-value">{{ stats.newsToday }}</div>
+          <div class="stat-label">Сегодня</div>
         </div>
         <div class="stat-card">
           <i class="pi pi-users" style="font-size: 2rem; color: #f59e0b"></i>
-          <div class="stat-value">{{ stats?.totalUsers }}</div>
+          <div class="stat-value">{{ stats.totalUsers }}</div>
           <div class="stat-label">Пользователей</div>
         </div>
         <div class="stat-card">
-          <i class="pi pi-heart" style="font-size: 2rem; color: #ef4444"></i>
-          <div class="stat-value">{{ stats?.totalLikes }}</div>
-          <div class="stat-label">Лайков</div>
+          <i class="pi pi-eye" style="font-size: 2rem; color: #8b5cf6"></i>
+          <div class="stat-value">{{ stats.totalViews }}</div>
+          <div class="stat-label">Просмотров</div>
         </div>
       </div>
     </section>
@@ -107,9 +108,8 @@ const selectedNews = ref<NewsItem | null>(null);
 const stats = computed(() => newsStore.stats);
 const latestNews = computed(() => newsStore.news.slice(0, 6));
 
-await useAsyncData('home-data', async () => {
-  await Promise.all([newsStore.fetchStats(), newsStore.fetchNews()]);
-});
+await newsStore.fetchStats();
+await newsStore.fetchNews();
 
 function openNewsDetail(id: string) {
   selectedNews.value = newsStore.news.find((n: NewsItem) => n.id === id) || null;

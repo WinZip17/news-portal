@@ -1,5 +1,11 @@
 import { defineStore } from 'pinia';
-import type { CreateNewsDto, ModerationBody, NewsFilter, NewsItem, StatsResponse } from '~/types';
+import type {
+  CreateNewsDto,
+  ModerationBody,
+  NewsFilter,
+  NewsItem,
+  StatsResponse,
+} from '~/types';
 import { useNewsService } from '~/services/news.service.ts';
 
 export const useNewsStore = defineStore('news', () => {
@@ -15,6 +21,7 @@ export const useNewsStore = defineStore('news', () => {
     sortBy: 'publishedAt',
     sortOrder: 'DESC',
   });
+  const isLoaded = ref(false);
 
   const newsService = useNewsService();
 
@@ -23,9 +30,8 @@ export const useNewsStore = defineStore('news', () => {
       isLoading.value = true;
       error.value = null;
       const data = await newsService.getNews(filter.value);
-      console.log('data', data);
       news.value = data.data;
-      console.log(' news.value', news.value);
+      isLoaded.value = true;
     } catch (err: any) {
       error.value = err.message;
     } finally {
@@ -108,10 +114,11 @@ export const useNewsStore = defineStore('news', () => {
     }
   }
 
-  async function fetchStats(): Promise<void> {
+  async function fetchStats(force = false): Promise<StatsResponse | undefined> {
+    if (stats.value && !force) return;
     try {
+      const newsService = useNewsService();
       stats.value = await newsService.getStats();
-      console.log('stats.value', stats.value);
     } catch (err: any) {
       error.value = err.message;
     }

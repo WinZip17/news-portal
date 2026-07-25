@@ -112,9 +112,7 @@ const sortOptions = [
   { label: 'По лайкам', value: 'likes' },
 ];
 
-await useAsyncData('news-list', () => {
-  return newsStore.fetchNews();
-});
+await newsStore.fetchNews();
 
 const debouncedSearch = useDebounceFn(() => {
   applyFilters();

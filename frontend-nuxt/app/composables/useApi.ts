@@ -5,9 +5,15 @@ export function useApi() {
   const refreshTokenValue = useStorage<string | null>('refreshToken', null);
 
   const config = useRuntimeConfig();
-  // const API_BASE = config.public.apiBase as string;
-  console.log('config.public.apiBase', config.public.apiBase);
-  const API_BASE = import.meta.client ? '/api' : 'http://localhost:3001/api';
+
+  function getBaseApi() {
+    if (import.meta.dev) {
+      return import.meta.client ? '/api' : 'http://localhost:3001/api';
+    }
+    return config.public.apiBase as string;
+  }
+
+  const API_BASE = getBaseApi();
   async function apiFetch<T>(url: string, options: RequestInit = {}): Promise<T> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
