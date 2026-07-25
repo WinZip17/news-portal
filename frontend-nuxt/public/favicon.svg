@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+    <!-- Фон -->
+    <rect width="512" height="512" rx="100" fill="#1a1a2e"/>
+
+    <!-- Газета -->
+    <rect x="106" y="96" width="300" height="340" rx="12" fill="#16213e" stroke="#0f3460" stroke-width="6"/>
+
+    <!-- Линии текста -->
+    <rect x="140" y="140" width="230" height="16" rx="8" fill="#e94560"/>
+    <rect x="140" y="176" width="200" height="10" rx="5" fill="#0f3460"/>
+    <rect x="140" y="200" width="220" height="10" rx="5" fill="#0f3460"/>
+    <rect x="140" y="224" width="180" height="10" rx="5" fill="#0f3460"/>
+    <rect x="140" y="248" width="210" height="10" rx="5" fill="#0f3460"/>
+    <rect x="140" y="272" width="160" height="10" rx="5" fill="#0f3460"/>
+
+    <!-- Картинка -->
+    <rect x="140" y="300" width="140" height="90" rx="8" fill="#0f3460"/>
+    <circle cx="190" cy="330" r="15" fill="#16213e"/>
+    <polygon points="190,320 198,330 182,330" fill="#e94560"/>
+
+    <!-- AI значок -->
+    <rect x="290" y="300" width="90" height="28" rx="14" fill="#6c5ce7"/>
+    <text x="335" y="320" text-anchor="middle" font-size="14" fill="white" font-family="Arial, sans-serif" font-weight="bold">AI</text>
+
+    <!-- Молния (быстрота) -->
+    <circle cx="380" cy="140" r="30" fill="#16213e" stroke="#fdcb6e" stroke-width="4"/>
+    <polygon points="380,120 372,145 380,142 378,160 392,138 383,140" fill="#fdcb6e"/>
+</svg>

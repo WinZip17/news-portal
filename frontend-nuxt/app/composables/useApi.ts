@@ -11,7 +11,7 @@ export function useApi() {
     if (import.meta.dev) {
       return import.meta.client ? '/api' : 'http://localhost:3001/api';
     }
-    return config.public.apiBase as string;
+    return import.meta.client ? (config.public.apiBase as string) : 'http://backend:3001/api';
   }
 
   const API_BASE = getBaseApi();
