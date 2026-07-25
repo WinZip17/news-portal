@@ -89,7 +89,13 @@ jobs:
               echo "❌ Next.js failed!"; docker compose logs frontend-next --tail=20; exit 1
             fi
             echo "✅ Next.js running"
-
+            echo "🟣 Building Nuxt frontend..."
+            docker compose up -d --build frontend-nuxt
+            sleep 5
+            if ! docker compose ps frontend-nuxt | grep -q "Up"; then
+            echo "❌ Nuxt failed!"; docker compose logs frontend-nuxt --tail=20; exit 1
+            fi
+            echo "✅ Nuxt running"
             docker image prune -f || true
             echo "✅ Deployment completed!"
             docker compose ps
