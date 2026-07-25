@@ -1,3 +1,4 @@
+// app/composables/useApi.ts
 import { useStorage } from '@vueuse/core';
 
 export function useApi() {
@@ -29,7 +30,8 @@ export function useApi() {
       headers,
     });
 
-    if (response.status === 401 && refreshTokenValue.value) {
+    // Если 401 и есть refreshToken, пробуем обновить
+    if (response.status === 401 && refreshTokenValue.value && !url.includes('/auth/refresh')) {
       const refreshed = await refreshAccessToken();
       if (refreshed) {
         headers['Authorization'] = `Bearer ${accessToken.value}`;
@@ -39,10 +41,15 @@ export function useApi() {
         });
 
         if (!retryResponse.ok) {
-          throw new Error(`HTTP ${retryResponse.status}`);
+          const error = await retryResponse.json().catch(() => ({ message: 'Unauthorized' }));
+          throw new Error(error.message || 'Unauthorized');
         }
 
-        return retryResponse.status === 204 ? ({} as T) : retryResponse.json();
+        if (retryResponse.status === 204 || retryResponse.headers.get('content-length') === '0') {
+          return {} as T;
+        }
+
+        return retryResponse.json();
       } else {
         accessToken.value = null;
         refreshTokenValue.value = null;
@@ -56,7 +63,18 @@ export function useApi() {
       throw new Error(error.message || `HTTP ${response.status}`);
     }
 
-    return response.status === 204 ? ({} as T) : response.json();
+    const contentLength = response.headers.get('content-length');
+    const contentType = response.headers.get('content-type');
+
+    if (
+      response.status === 204 ||
+      contentLength === '0' ||
+      !contentType?.includes('application/json')
+    ) {
+      return {} as T;
+    }
+
+    return response.json();
   }
 
   async function refreshAccessToken(): Promise<boolean> {

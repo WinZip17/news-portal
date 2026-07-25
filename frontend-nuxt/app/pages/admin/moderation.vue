@@ -5,11 +5,11 @@
     <!-- Фильтр по статусу -->
     <div class="filter-bar">
       <SelectButton
-          v-model="statusFilter"
-          :options="statusOptions"
-          option-label="label"
-          option-value="value"
-          @change="loadNews"
+        v-model="statusFilter"
+        :options="statusOptions"
+        option-label="label"
+        option-value="value"
+        @change="loadNews"
       />
     </div>
 
@@ -19,12 +19,12 @@
 
     <div v-else class="moderation-list">
       <DataTable
-          :value="newsStore.news"
-          :paginator="true"
-          :rows="10"
-          :rows-per-page-options="[10, 20, 50]"
-          paginator-template="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-          current-page-report-template="Показано с {first} по {last} из {totalRecords}"
+        :value="newsStore.news"
+        :paginator="true"
+        :rows="10"
+        :rows-per-page-options="[10, 20, 50]"
+        paginator-template="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+        current-page-report-template="Показано с {first} по {last} из {totalRecords}"
       >
         <Column field="title" header="Заголовок" :sortable="true">
           <template #body="{ data }">
@@ -57,39 +57,40 @@
           <template #body="{ data }">
             <div class="actions-cell">
               <Button
-                  v-if="data.status === 'pending'"
-                  v-tooltip.top="'Одобрить'"
-                  icon="pi pi-check"
-                  severity="success"
-                  text
-                  rounded
-                  @click="confirmModeration(data.id, 'published')"
+                v-if="data.status === 'pending'"
+                v-tooltip.top="'Одобрить'"
+                icon="pi pi-check"
+                severity="success"
+                text
+                rounded
+                :loading="moderatingId === data.id"
+                @click="moderateNews(data.id, 'published')"
               />
               <Button
-                  v-if="data.status === 'pending'"
-                  v-tooltip.top="'Отклонить'"
-                  icon="pi pi-times"
-                  severity="danger"
-                  text
-                  rounded
-                  @click="confirmModeration(data.id, 'rejected')"
+                v-if="data.status === 'pending'"
+                v-tooltip.top="'Отклонить'"
+                icon="pi pi-times"
+                severity="danger"
+                text
+                rounded
+                @click="confirmReject(data.id)"
               />
               <Button
-                  v-if="data.status === 'published'"
-                  v-tooltip.top="'В архив'"
-                  icon="pi pi-inbox"
-                  severity="warning"
-                  text
-                  rounded
-                  @click="confirmModeration(data.id, 'archived')"
+                v-if="data.status === 'published'"
+                v-tooltip.top="'В архив'"
+                icon="pi pi-inbox"
+                severity="warning"
+                text
+                rounded
+                @click="confirmArchive(data.id)"
               />
               <Button
-                  v-tooltip.top="'Просмотр'"
-                  icon="pi pi-eye"
-                  severity="info"
-                  text
-                  rounded
-                  @click="viewNews(data)"
+                v-tooltip.top="'Просмотр'"
+                icon="pi pi-eye"
+                severity="info"
+                text
+                rounded
+                @click="viewNews(data)"
               />
             </div>
           </template>
@@ -102,16 +103,16 @@
 
     <!-- Просмотр новости -->
     <Dialog
-        v-model:visible="viewDialog"
-        :header="selectedNews?.title"
-        :style="{ width: '700px' }"
-        :modal="true"
+      v-model:visible="viewDialog"
+      :header="selectedNews?.title"
+      :style="{ width: '700px' }"
+      :modal="true"
     >
       <div v-if="selectedNews" class="news-preview">
         <div class="preview-meta">
           <Tag
-              :severity="getStatusSeverity(selectedNews.status)"
-              :value="getStatusLabel(selectedNews.status)"
+            :severity="getStatusSeverity(selectedNews.status)"
+            :value="getStatusLabel(selectedNews.status)"
           />
           <span class="preview-category">{{ getCategoryLabel(selectedNews.category) }}</span>
         </div>
@@ -137,6 +138,7 @@ const toast = useToast();
 const statusFilter = ref('pending');
 const viewDialog = ref(false);
 const selectedNews = ref<NewsItem | null>(null);
+const moderatingId = ref<string | null>(null);
 
 const statusOptions = [
   { label: 'На проверке', value: 'pending' },
@@ -145,12 +147,10 @@ const statusOptions = [
   { label: 'Архив', value: 'archived' },
 ];
 
-// Проверка прав
 if (!authStore.isModerator) {
   navigateTo('/');
 }
 
-// Загрузка новостей
 onMounted(() => {
   loadNews();
 });
@@ -205,33 +205,67 @@ function formatDate(date: string): string {
   });
 }
 
-function confirmModeration(id: string, status: string) {
-  const statusLabel = getStatusLabel(status);
+// Одобрить — без подтверждения
+async function moderateNews(id: string, status: string) {
+  try {
+    moderatingId.value = id;
+    await newsStore.moderateNews(id, { status: status as NewsStatus });
+    toast.add({
+      severity: 'success',
+      summary: 'Успешно',
+      detail: `Новость ${getStatusLabel(status).toLowerCase()}`,
+      life: 3000,
+    });
+    loadNews();
+  } catch (error: any) {
+    toast.add({
+      severity: 'error',
+      summary: 'Ошибка',
+      detail: error.message || 'Не удалось изменить статус',
+      life: 3000,
+    });
+  } finally {
+    moderatingId.value = null;
+  }
+}
 
+// Отклонить — с подтверждением
+function confirmReject(id: string) {
   confirm.require({
-    message: `Вы уверены, что хотите изменить статус на "${statusLabel}"?`,
+    message: 'Вы уверены, что хотите отклонить новость?',
+    header: 'Подтверждение',
+    icon: 'pi pi-exclamation-triangle',
+    acceptLabel: 'Отклонить',
+    rejectLabel: 'Отмена',
+    acceptClass: 'p-button-danger',
+    accept: () => {
+      moderateNews(id, 'rejected');
+    },
+    reject: () => {
+      confirm.close();
+    },
+    onHide: () => {
+      confirm.close();
+    },
+  });
+}
+// В архив — с подтверждением
+function confirmArchive(id: string) {
+  confirm.require({
+    message: 'Вы уверены, что хотите переместить новость в архив?',
     header: 'Подтверждение',
     icon: 'pi pi-question-circle',
-    acceptLabel: 'Да',
+    acceptLabel: 'В архив',
     rejectLabel: 'Отмена',
-    accept: async () => {
-      try {
-        await newsStore.moderateNews(id, { status: status as NewsStatus });
-        toast.add({
-          severity: 'success',
-          summary: 'Успешно',
-          detail: `Новость ${statusLabel.toLowerCase()}`,
-          life: 3000,
-        });
-        loadNews();
-      } catch (error: any) {
-        toast.add({
-          severity: 'error',
-          summary: 'Ошибка',
-          detail: error.message || 'Не удалось изменить статус',
-          life: 3000,
-        });
-      }
+    acceptClass: 'p-button-warning',
+    accept: () => {
+      moderateNews(id, 'archived');
+    },
+    reject: () => {
+      confirm.close();
+    },
+    onHide: () => {
+      confirm.close();
     },
   });
 }

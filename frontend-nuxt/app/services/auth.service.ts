@@ -5,7 +5,7 @@ import type {
   RegisterDto,
   UpdateUserDto,
   UserPreferences,
-  UserResponse,
+  UserResponse, UsersResponse,
 } from '~/types';
 
 export function useAuthService() {
@@ -76,8 +76,8 @@ export function useAuthService() {
     });
   }
 
-  async function getUsers(): Promise<UserResponse[]> {
-    return apiFetch<UserResponse[]>('/auth/users');
+  async function getUsers(): Promise<UsersResponse> {
+    return apiFetch<UsersResponse>('/auth/users');
   }
 
   async function updateUser(id: string, data: UpdateUserDto): Promise<UserResponse> {

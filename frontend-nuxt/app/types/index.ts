@@ -48,7 +48,10 @@ export interface UserResponse {
   createdAt: string;
   updatedAt: string;
 }
-
+export interface UsersResponse {
+  data: UserResponse[];
+  total: number;
+}
 export interface TokenResponse {
   accessToken: string;
   refreshToken: string;

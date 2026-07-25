@@ -8,19 +8,20 @@
 
     <div v-else>
       <DataTable
-        :value="users"
+        :value="usersList"
         :paginator="true"
         :rows="10"
         :rows-per-page-options="[10, 20, 50]"
         paginator-template="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
         current-page-report-template="Показано с {first} по {last} из {totalRecords}"
+        data-key="id"
       >
         <Column header="Пользователь">
           <template #body="{ data }">
             <div class="user-cell">
               <Avatar
                 :label="getInitials(data)"
-                style="background-color: var(--primary-color); color: white"
+                style="background-color: var(--p-primary-color); color: white"
                 shape="circle"
                 size="large"
               />
@@ -88,53 +89,71 @@
       header="Редактирование пользователя"
       :style="{ width: '500px' }"
       :modal="true"
+      :pt="{
+        content: { class: 'p-0' },
+        footer: { class: 'p-0' },
+      }"
     >
-      <form v-if="editingUser" class="edit-form" @submit.prevent="saveUser">
-        <div class="form-field">
-          <label>Email</label>
-          <InputText v-model="editForm.email" class="w-full" />
-        </div>
+      <template v-if="editingUser">
+        <form class="edit-form" @submit.prevent="saveUser">
+          <div class="form-field">
+            <label>Email</label>
+            <InputText v-model="editForm.email" class="w-full" />
+          </div>
 
-        <div class="form-field">
-          <label>Username</label>
-          <InputText v-model="editForm.username" class="w-full" />
-        </div>
+          <div class="form-field">
+            <label>Username</label>
+            <InputText v-model="editForm.username" class="w-full" />
+          </div>
 
-        <div class="form-row">
           <div class="form-field">
             <label>Имя</label>
-            <InputText v-model="editForm.firstName" class="w-full" />
+            <InputText v-model="editForm.firstName" />
           </div>
           <div class="form-field">
             <label>Фамилия</label>
-            <InputText v-model="editForm.lastName" class="w-full" />
+            <InputText v-model="editForm.lastName" />
           </div>
-        </div>
 
-        <div class="form-field">
-          <label>Роль</label>
-          <Dropdown
-            v-model="editForm.role"
-            :options="availableRoles"
-            option-label="label"
-            option-value="value"
-            class="w-full"
-            :disabled="!authStore.isSuperAdmin"
-          />
-        </div>
+          <div class="form-field">
+            <label>Роль</label>
+            <Dropdown
+              v-model="editForm.role"
+              :options="availableRoles"
+              option-label="label"
+              option-value="value"
+              class="w-full"
+              :disabled="!authStore.isSuperAdmin"
+            />
+          </div>
 
-        <div class="form-field">
-          <label>Активен</label>
-          <ToggleSwitch v-model="editForm.isActive" />
-        </div>
+          <div class="form-field">
+            <label>Активен</label>
+            <ToggleSwitch v-model="editForm.isActive" />
+          </div>
 
-        <Message v-if="editError" severity="error">{{ editError }}</Message>
+          <Message v-if="editError" severity="error" :closable="false">
+            {{ editError }}
+          </Message>
 
-        <div class="form-actions">
-          <Button label="Отмена" severity="secondary" @click="editDialog = false" />
-          <Button type="submit" label="Сохранить" severity="primary" :loading="isSaving" />
-        </div>
-      </form>
+          <div class="form-actions">
+            <Button
+              label="Отмена"
+              icon="pi pi-times"
+              severity="secondary"
+              outlined
+              @click="editDialog = false"
+            />
+            <Button
+              type="submit"
+              label="Сохранить"
+              icon="pi pi-check"
+              severity="primary"
+              :loading="isSaving"
+            />
+          </div>
+        </form>
+      </template>
     </Dialog>
 
     <!-- Диалог подтверждения удаления -->
@@ -179,7 +198,9 @@ const availableRoles = [
   { label: 'Супер-админ', value: 'super_admin' },
 ];
 
-// Проверка прав
+// Передаём копию массива, чтобы DataTable не мутировал исходный
+const usersList = computed(() => [...users.value]);
+
 if (!authStore.isAdmin) {
   navigateTo('/');
 }
@@ -191,7 +212,8 @@ onMounted(() => {
 async function loadUsers() {
   try {
     isLoading.value = true;
-    users.value = await authService.getUsers();
+    const usersData = await authService.getUsers();
+    users.value = usersData.data;
   } catch (error: any) {
     toast.add({
       severity: 'error',
@@ -231,26 +253,18 @@ function getRoleSeverity(role: string): string {
 }
 
 function canEditUser(user: UserResponse): boolean {
-  // Супер-админ может редактировать всех
   if (authStore.isSuperAdmin) return true;
-
-  // Админ может редактировать обычных пользователей и модераторов
   if (authStore.isAdmin && (user.role === 'user' || user.role === 'moderator')) {
     return true;
   }
-
   return false;
 }
 
 function canDeleteUser(user: UserResponse): boolean {
-  // Нельзя удалить самого себя
   if (user.id === authStore.user?.id) return false;
-
-  // Супер-админ может удалять всех кроме админов и супер-админов
   if (authStore.isSuperAdmin && user.role !== 'admin' && user.role !== 'super_admin') {
     return true;
   }
-
   return false;
 }
 
@@ -383,7 +397,7 @@ function formatDate(date: string): string {
 .edit-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .form-row {
@@ -408,7 +422,7 @@ function formatDate(date: string): string {
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
-  margin-top: 1rem;
+  padding-top: 0.5rem;
 }
 
 @media (max-width: 768px) {
