@@ -213,6 +213,7 @@ export default function HomePage() {
                     >
                       <Typography
                         variant="subtitle1"
+                        component="p"
                         sx={{
                           fontWeight: 600,
                           fontSize: { xs: '0.9rem', sm: '1rem' },
