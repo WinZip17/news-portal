@@ -38,6 +38,10 @@ export default defineNuxtConfig({
     },
   },
 
+  features: {
+    inlineStyles: true,
+  },
+
   devtools: { enabled: true },
 
   ssr: true,
@@ -56,7 +60,34 @@ export default defineNuxtConfig({
       ripple: true,
     },
     components: {
-      include: ['*'],
+      include: [
+        'Button',
+        'InputText',
+        'Password',
+        'Checkbox',
+        'Dropdown',
+        'Dialog',
+        'DataTable',
+        'Column',
+        'Tag',
+        'SelectButton',
+        'Card',
+        'Avatar',
+        'Toast',
+        'ConfirmDialog',
+        'ProgressSpinner',
+        'Message',
+        'Paginator',
+        'ToggleSwitch',
+        'TabView',
+        'TabPanel',
+        'InputNumber',
+        'Divider',
+        'Toolbar',
+        'IconField',
+        'InputIcon',
+        'Textarea',
+      ],
     },
   },
 
