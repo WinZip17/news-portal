@@ -14,7 +14,6 @@ import {
   Avatar,
   Menu,
   MenuItem,
-  Switch,
   Container,
   useMediaQuery,
   useTheme,
@@ -148,14 +147,12 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             </Box>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <Switch
-                checked={themeMode === 'dark'}
-                onChange={() => dispatch(toggleTheme())}
-                icon={<LightMode />}
-                checkedIcon={<DarkMode />}
-                aria-label="Выбор цветовой схемы"
-                size={isMobile ? 'small' : 'medium'}
-              />
+              <IconButton
+                onClick={() => dispatch(toggleTheme())}
+                aria-label={themeMode === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'}
+              >
+                {themeMode === 'dark' ? <LightMode /> : <DarkMode />}
+              </IconButton>
               <IconButton
                 onClick={(e) => setAnchorEl(e.currentTarget)}
                 aria-label="Открыть меню пользователя"
