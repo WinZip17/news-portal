@@ -308,6 +308,7 @@ async function changePassword() {
 }
 
 function setTheme(theme: 'light' | 'dark') {
+  authStore.sendSaveTheme(theme);
   uiStore.setTheme(theme);
 }
 
@@ -344,7 +345,7 @@ async function removeFromFavorites(id: string) {
   favorites.value = favorites.value.filter((n) => n.id !== id);
 }
 
-function handleFavoriteChange(id: string) {
+function handleFavoriteChange() {
   loadFavorites();
 }
 </script>

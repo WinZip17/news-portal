@@ -1,4 +1,5 @@
 import Aura from '@primeuix/themes/aura';
+
 export default defineNuxtConfig({
   app: {
     head: {
@@ -80,6 +81,7 @@ export default defineNuxtConfig({
       apiBase: '/api',
       appName: 'ShortNews',
       appVersion: '1.0.0',
+      theme: 'light',
     },
   },
 

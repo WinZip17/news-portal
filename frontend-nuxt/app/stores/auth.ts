@@ -3,6 +3,7 @@ import type { LoginDto, RegisterDto, UserResponse } from '~/types';
 import { useAuthService } from '~/services/auth.service.ts';
 
 export const useAuthStore = defineStore('auth', () => {
+  const uiStore = useUIStore();
   const user = ref<UserResponse | null>(null);
   const isAuthenticated = ref(false);
   const isLoading = ref(false);
@@ -20,8 +21,10 @@ export const useAuthStore = defineStore('auth', () => {
 
     try {
       isLoading.value = true;
-      const userData = await authService.getCurrentUser();
-      user.value = userData;
+      user.value = await authService.getCurrentUser();
+      if (user.value?.preferences?.theme && user.value.preferences.theme !== uiStore.theme) {
+        uiStore.setTheme(user.value.preferences.theme);
+      }
       isAuthenticated.value = true;
     } catch {
       isAuthenticated.value = false;
@@ -80,7 +83,15 @@ export const useAuthStore = defineStore('auth', () => {
   const isSuperAdmin = computed(() => {
     return user.value?.role === 'super_admin';
   });
-
+  async function sendSaveTheme(theme: 'light' | 'dark'): Promise<void> {
+    if (isAuthenticated.value) {
+      try {
+        await authService.updatePreferences({ theme });
+      } catch {
+        console.warn('Не удалось синхронизировать тему с сервером');
+      }
+    }
+  }
   return {
     user,
     isAuthenticated,
@@ -93,5 +104,6 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     register,
     logout,
+    sendSaveTheme,
   };
 });

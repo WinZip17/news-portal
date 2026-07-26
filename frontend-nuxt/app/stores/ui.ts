@@ -1,36 +1,45 @@
 import { defineStore } from 'pinia';
-import { usePreferredDark } from '@vueuse/core';
-import { useAuthService } from '~/services/auth.service.ts';
 
 export const useUIStore = defineStore('ui', () => {
-  const preferredDark = usePreferredDark();
   const theme = ref<'light' | 'dark'>('light');
+  const isServerInit = ref(false);
+
+  const themeCookie = useCookie('theme', {
+    default: () => 'light',
+    watch: true,
+    maxAge: 60 * 60 * 24 * 365, // 1 год
+  });
+
+  function setThemeCookie(value: string): void {
+    if (import.meta.client) {
+      const expires = new Date();
+      expires.setFullYear(expires.getFullYear() + 1);
+      document.cookie = `theme=${value};path=/;expires=${expires.toUTCString()};SameSite=Lax`;
+    }
+  }
 
   function initTheme(): void {
-    if (import.meta.client) {
-      const saved = localStorage.getItem('theme');
+    if (import.meta.client && !isServerInit.value) {
+      const saved = themeCookie.value;
       if (saved === 'dark' || saved === 'light') {
         theme.value = saved;
-      } else {
-        theme.value = preferredDark.value ? 'dark' : 'light';
-        localStorage.setItem('theme', theme.value);
       }
+      setThemeCookie(theme.value);
       applyTheme();
     }
   }
 
   function toggleTheme(): void {
     theme.value = theme.value === 'light' ? 'dark' : 'light';
-    localStorage.setItem('theme', theme.value);
+    setThemeCookie(theme.value);
     applyTheme();
-    syncThemeWithServer();
+    // syncThemeWithServer();
   }
 
   function setTheme(newTheme: 'light' | 'dark'): void {
     theme.value = newTheme;
-    localStorage.setItem('theme', theme.value);
+    setThemeCookie(theme.value);
     applyTheme();
-    syncThemeWithServer();
   }
 
   function applyTheme(): void {
@@ -44,23 +53,12 @@ export const useUIStore = defineStore('ui', () => {
     }
   }
 
-  async function syncThemeWithServer(): Promise<void> {
-    const authStore = useAuthStore();
-    if (authStore.isAuthenticated) {
-      try {
-        const authService = useAuthService();
-        await authService.updatePreferences({ theme: theme.value });
-      } catch {
-        console.warn('Не удалось синхронизировать тему с сервером');
-      }
+  function setServerTheme(initTheme: string) {
+    if (initTheme === 'light' || initTheme === 'dark') {
+      isServerInit.value = true;
+      theme.value = initTheme;
     }
   }
 
-  return {
-    theme,
-    initTheme,
-    toggleTheme,
-    setTheme,
-    syncThemeWithServer,
-  };
+  return { theme, initTheme, toggleTheme, setTheme, setServerTheme };
 });

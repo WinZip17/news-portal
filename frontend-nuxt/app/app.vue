@@ -12,21 +12,11 @@
 const authStore = useAuthStore();
 const uiStore = useUIStore();
 
-// Инициализация при старте
 onMounted(async () => {
   uiStore.initTheme();
   await authStore.checkAuth();
 });
 
-// Синхронизация темы с бекендом при изменении
-watch(
-  () => uiStore.theme,
-  () => {
-    if (authStore.isAuthenticated) {
-      uiStore.syncThemeWithServer();
-    }
-  },
-);
 useHead({
   style: [
     {
