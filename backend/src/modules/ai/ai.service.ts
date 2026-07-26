@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { CronJob } from 'cron';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import OpenAI from 'openai';
@@ -15,6 +16,7 @@ import { AiRewriteResult, NewsCategory, NewsStatus, RssArticle } from '../../typ
 export class AiService {
   private readonly logger = new Logger(AiService.name);
   private openai: OpenAI;
+  private cronSchedule: string = '0 5,18 * * *';
 
   constructor(
     @InjectRepository(News)
@@ -22,6 +24,7 @@ export class AiService {
     private aiConfig: AiConfig,
     private rssFetcher: RssFetcherService,
     private deduplicationService: DeduplicationService,
+    private schedulerRegistry: SchedulerRegistry,
   ) {
     if (this.aiConfig.apiKey) {
       this.openai = new OpenAI({
@@ -29,6 +32,29 @@ export class AiService {
         baseURL: 'https://api.deepseek.com/v1',
       });
     }
+    this.startCronJob();
+  }
+
+  private startCronJob(): void {
+    const job = new CronJob(
+      this.cronSchedule,
+      async () => {
+        this.logger.log('🚀 Starting automatic news generation...');
+        await this.autoGenerateManually(2);
+      },
+      null,
+      false,
+      'Europe/Moscow',
+    );
+
+    this.schedulerRegistry.addCronJob('autoGenerate', job);
+    job.start();
+    this.logger.log(`⏰ Cron scheduled: ${this.cronSchedule}`);
+  }
+
+  async autoGenerateNews() {
+    this.logger.log('🚀 Starting automatic news generation...');
+    return this.autoGenerateManually(2); // По 2 новости на категорию
   }
 
   /**
@@ -36,9 +62,8 @@ export class AiService {
    */
   async autoGenerateManually(countPerCategory: number = 1) {
     this.logger.log(`🚀 Manual generation: ${countPerCategory} news per category`);
-
     const categories = this.aiConfig.categories;
-    const results: { [key: string]: number } = {};
+    const results: Record<string, number> = {};
     let totalGenerated = 0;
 
     for (const category of categories) {
@@ -55,8 +80,9 @@ export class AiService {
 
         this.logger.log(`✅ ${category}: ${result.news.length} news generated`);
         await this.delay(5000);
-      } catch (error) {
-        this.logger.error(`Failed for ${category}: ${error.message}`);
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        this.logger.error(`Failed for ${category}: ${message}`);
         results[category] = 0;
       }
     }
@@ -66,14 +92,6 @@ export class AiService {
       totalGenerated,
       byCategory: results,
     };
-  }
-
-  @Cron(CronExpression.EVERY_6_HOURS, {
-    timeZone: 'Europe/Moscow',
-  })
-  async autoGenerateNews() {
-    this.logger.log('🚀 Starting automatic news generation...');
-    return this.autoGenerateManually(2); // По 2 новости на категорию
   }
 
   async generateNews(dto: GenerateNewsDto) {
@@ -557,5 +575,16 @@ export class AiService {
     // PostgreSQL unique violation
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return error?.code === '23505' || error?.driverError?.code === '23505';
+  }
+
+  getCronSchedule(): string {
+    return this.cronSchedule;
+  }
+
+  updateCronSchedule(cron: string): { cron: string } {
+    this.cronSchedule = cron;
+    this.schedulerRegistry.deleteCronJob('autoGenerate');
+    this.startCronJob();
+    return { cron: this.cronSchedule };
   }
 }

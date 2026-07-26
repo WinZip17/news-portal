@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Tag, Space, Select, message, Popconfirm, Modal, Input, Switch } from 'antd';
-import { ReadOutlined, TeamOutlined, EditOutlined, DeleteOutlined, CrownOutlined, RocketOutlined } from '@ant-design/icons';
+import { ReadOutlined, TeamOutlined, EditOutlined, DeleteOutlined, CrownOutlined, RocketOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { newsService } from '@/services/newsService';
 import { userService } from '@/services/userService';
 import { News, NewsStatus, NewsCategory } from '@/types/news';
 import { User } from '@/types/auth';
 import type { ColumnsType } from 'antd/es/table';
 import { aiService } from '@/services/aiService.ts';
+import { apiService } from '@/services/api.ts';
 
 const { TextArea } = Input;
 
@@ -21,9 +22,21 @@ const SuperAdminPanel: React.FC = () => {
   const [modalType, setModalType] = useState<'user' | 'news'>('user');
   const [generating, setGenerating] = useState(false);
 
+  // Cron state
+  const [cronModal, setCronModal] = useState(false);
+  const [cronSchedule, setCronSchedule] = useState('0 5,18 * * *');
+  const [cronLoading, setCronLoading] = useState(false);
+
   useEffect(() => {
     table === 'news' ? loadNews() : loadUsers();
   }, [table]);
+
+  useEffect(() => {
+    apiService
+      .get('/ai/cron')
+      .then((r) => setCronSchedule(r.data.cron))
+      .catch(() => {});
+  }, []);
 
   const loadNews = async () => {
     setLoading(true);
@@ -111,6 +124,29 @@ const SuperAdminPanel: React.FC = () => {
     }
   };
 
+  const handleAutoGenerate = async () => {
+    setGenerating(true);
+    try {
+      const result = await aiService.autoGenerate(2);
+      message.success(`Сгенерировано ${result.totalGenerated} новостей`);
+    } catch {
+      message.error('Ошибка генерации');
+    }
+    setGenerating(false);
+  };
+
+  const handleUpdateCron = async () => {
+    setCronLoading(true);
+    try {
+      await api.put('/ai/cron', { cron: cronSchedule });
+      message.success('Расписание обновлено');
+      setCronModal(false);
+    } catch {
+      message.error('Ошибка обновления расписания');
+    }
+    setCronLoading(false);
+  };
+
   const newsColumns: ColumnsType<News> = [
     { title: 'Заголовок', dataIndex: 'title', key: 'title', ellipsis: true },
     { title: 'Категория', dataIndex: 'category', key: 'category', width: 120, render: (c) => <Tag>{c}</Tag> },
@@ -159,23 +195,13 @@ const SuperAdminPanel: React.FC = () => {
     },
   ];
 
-  const handleAutoGenerate = async () => {
-    setGenerating(true);
-    try {
-      const result = await aiService.autoGenerate(2); // по 2 новости на категорию
-      message.success(`Сгенерировано ${result.totalGenerated} новостей`);
-    } catch {
-      message.error('Ошибка генерации');
-    }
-    setGenerating(false);
-  };
-
   return (
     <div>
       <h2>
         <CrownOutlined style={{ color: 'gold', marginRight: 8 }} />
         Панель суперадмина
       </h2>
+
       <Space style={{ marginBottom: 16 }}>
         <Select value={table} onChange={setTable} style={{ width: 200 }}>
           <Select.Option value="news">
@@ -187,6 +213,9 @@ const SuperAdminPanel: React.FC = () => {
         </Select>
         <Button type="primary" icon={<RocketOutlined />} loading={generating} onClick={handleAutoGenerate}>
           Сгенерировать новости
+        </Button>
+        <Button icon={<ClockCircleOutlined />} onClick={() => setCronModal(true)}>
+          Расписание
         </Button>
       </Space>
 
@@ -220,7 +249,6 @@ const SuperAdminPanel: React.FC = () => {
             />
           </Space>
         )}
-
         {modalType === 'news' && editNews && (
           <Space direction="vertical" style={{ width: '100%' }}>
             <Input value={editNews.title} onChange={(e) => setEditNews({ ...editNews, title: e.target.value })} placeholder="Заголовок" />
@@ -261,6 +289,21 @@ const SuperAdminPanel: React.FC = () => {
             />
           </Space>
         )}
+      </Modal>
+
+      <Modal
+        title="Настройка расписания генерации"
+        open={cronModal}
+        onOk={handleUpdateCron}
+        onCancel={() => setCronModal(false)}
+        confirmLoading={cronLoading}
+      >
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <Input value={cronSchedule} onChange={(e) => setCronSchedule(e.target.value)} placeholder="0 5,18 * * *" />
+          <span style={{ color: '#666', fontSize: 12 }}>
+            Формат: минута час день месяц день_недели. Пример: 0 5,18 * * * — каждый день в 5:00 и 18:00
+          </span>
+        </Space>
       </Modal>
     </div>
   );

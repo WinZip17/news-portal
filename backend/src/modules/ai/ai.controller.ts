@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Put } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { AiService } from './ai.service';
 import { GenerateNewsDto } from './dto/generate-news.dto';
@@ -50,5 +50,23 @@ export class AiController {
   async autoGenerate(@Body('countPerCategory') countPerCategory?: number) {
     const count = countPerCategory || 1;
     return this.aiService.autoGenerateManually(count);
+  }
+
+  @Put('cron')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('super_admin')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Обновление расписания крона' })
+  async updateCron(@Body() dto: { cron: string }) {
+    return this.aiService.updateCronSchedule(dto.cron);
+  }
+
+  @Get('cron')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('super_admin')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Получить текущее расписание крона' })
+  async getCron() {
+    return { cron: this.aiService.getCronSchedule() };
   }
 }
