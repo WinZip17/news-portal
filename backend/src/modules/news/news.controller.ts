@@ -66,7 +66,7 @@ export class NewsController {
   @Header('Content-Type', 'application/xml')
   async getSitemap() {
     const news = await this.newsService.findAll({ status: NewsStatus.PUBLISHED, limit: 1000 });
-    const baseUrl = process.env.SITE_URL || 'https://short-news.ru/';
+    const baseUrl = process.env.SITE_URL || 'https://short-news.ru';
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
                 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
