@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -84,6 +84,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
               cursor: 'pointer',
               bgcolor: pathname === item.path ? 'action.selected' : 'transparent',
             }}
+            aria-label={item.label}
           >
             <ListItemIcon>{item.icon}</ListItemIcon>
             <ListItemText primary={item.label} />
@@ -124,6 +125,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                 color="inherit"
                 edge="start"
                 onClick={() => setDrawerOpen(true)}
+                aria-label="Открыть меню"
                 size="small"
               >
                 <MenuIcon />
@@ -131,7 +133,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             )}
             {!isMobile && (
               <Typography
-                variant="h6"
+                variant="h5"
                 sx={{ whiteSpace: 'nowrap', fontSize: { sm: '1rem', md: '1.25rem' } }}
               >
                 {pathname === '/' && 'Главная'}
@@ -151,10 +153,12 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                 onChange={() => dispatch(toggleTheme())}
                 icon={<LightMode />}
                 checkedIcon={<DarkMode />}
+                aria-label="Выбор цветовой схемы"
                 size={isMobile ? 'small' : 'medium'}
               />
               <IconButton
                 onClick={(e) => setAnchorEl(e.currentTarget)}
+                aria-label="Открыть меню пользователя"
                 size={isMobile ? 'small' : 'medium'}
               >
                 <Avatar
@@ -171,15 +175,23 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
               <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)}>
                 {isAuthenticated
                   ? [
-                      <MenuItem key="profile" onClick={() => router.push('/profile')}>
+                      <MenuItem
+                        key="profile"
+                        onClick={() => router.push('/profile')}
+                        aria-label="Открыть профиль"
+                      >
                         Профиль
                       </MenuItem>,
-                      <MenuItem key="logout" onClick={handleLogout}>
+                      <MenuItem key="logout" onClick={handleLogout} aria-label="Выйти">
                         Выйти
                       </MenuItem>,
                     ]
                   : [
-                      <MenuItem key="login" onClick={() => router.push('/login')}>
+                      <MenuItem
+                        key="login"
+                        onClick={() => router.push('/login')}
+                        aria-label="Войти"
+                      >
                         Войти
                       </MenuItem>,
                     ]}

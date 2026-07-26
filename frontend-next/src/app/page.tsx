@@ -75,7 +75,7 @@ export default function HomePage() {
           📰 News Portal
         </Typography>
         <Typography
-          variant="h6"
+          variant="h4"
           sx={{
             mb: 4,
             opacity: 0.9,
@@ -92,12 +92,8 @@ export default function HomePage() {
               variant="contained"
               size={isMobile ? 'medium' : 'large'}
               startIcon={<RocketIcon />}
-              sx={{
-                bgcolor: 'white',
-                color: '#667eea',
-                '&:hover': { bgcolor: '#f0f0f0' },
-                whiteSpace: 'nowrap',
-              }}
+              color="info"
+              aria-label="Читать новости"
               onClick={() => router.push('/news')}
             >
               Начать бесплатно
@@ -107,6 +103,7 @@ export default function HomePage() {
               size={isMobile ? 'medium' : 'large'}
               sx={{ color: 'white', borderColor: 'white', whiteSpace: 'nowrap' }}
               onClick={() => router.push('/login')}
+              aria-label="Войти"
             >
               Войти
             </Button>
@@ -118,6 +115,7 @@ export default function HomePage() {
             startIcon={<ArticleIcon />}
             sx={{ bgcolor: 'white', color: '#667eea', '&:hover': { bgcolor: '#f0f0f0' } }}
             onClick={() => router.push('/news')}
+            aria-label="Читать новости"
           >
             Читать новости
           </Button>
