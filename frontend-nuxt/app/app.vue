@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" :style="{ visibility: ready ? 'visible' : 'hidden' }">
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
@@ -11,9 +11,11 @@
 <script setup lang="ts">
 const authStore = useAuthStore();
 const uiStore = useUIStore();
+const ready = ref(false);
 
 onMounted(async () => {
   uiStore.initTheme();
+  ready.value = true;
   await authStore.checkAuth();
 });
 

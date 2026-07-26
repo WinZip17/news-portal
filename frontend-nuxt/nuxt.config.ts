@@ -39,7 +39,7 @@ export default defineNuxtConfig({
   },
 
   features: {
-    inlineStyles: true,
+    inlineStyles: !import.meta.dev,
   },
 
   devtools: { enabled: true },
