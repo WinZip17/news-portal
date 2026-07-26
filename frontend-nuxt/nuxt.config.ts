@@ -38,10 +38,6 @@ export default defineNuxtConfig({
     },
   },
 
-  features: {
-    inlineStyles: !import.meta.dev,
-  },
-
   devtools: { enabled: true },
 
   ssr: true,
