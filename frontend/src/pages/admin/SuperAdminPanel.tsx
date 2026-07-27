@@ -202,7 +202,7 @@ const SuperAdminPanel: React.FC = () => {
         Панель суперадмина
       </h2>
 
-      <Space style={{ marginBottom: 16 }}>
+      <Space style={{ marginBottom: 16, maxWidth: '100%', overflow: 'auto', paddingBottom: 8 }}>
         <Select value={table} onChange={setTable} style={{ width: 200 }}>
           <Select.Option value="news">
             <ReadOutlined /> Новости

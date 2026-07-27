@@ -34,7 +34,6 @@ const MainLayout: React.FC = () => {
     navigate('/login');
   };
 
-  // Основные пункты меню
   const mainMenuItems: MenuProps['items'] = [
     {
       key: '/',
@@ -66,7 +65,6 @@ const MainLayout: React.FC = () => {
       : []),
   ];
 
-  // Меню пользователя
   const userMenuItems: MenuProps['items'] = isAuthenticated
     ? [
         {
@@ -100,7 +98,6 @@ const MainLayout: React.FC = () => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      {/* Десктопный сайдбар */}
       <Sider
         collapsible
         collapsed={collapsed}
@@ -146,7 +143,6 @@ const MainLayout: React.FC = () => {
         />
       </Sider>
 
-      {/* Мобильное меню */}
       <Drawer
         title="Меню"
         placement="left"
@@ -170,7 +166,7 @@ const MainLayout: React.FC = () => {
       <Layout style={{ marginLeft: collapsed ? 0 : 200, transition: 'all 0.2s' }}>
         <Header
           style={{
-            padding: '0 24px',
+            padding: '0 16px',
             background: theme === 'dark' ? '#001529' : '#fff',
             display: 'flex',
             alignItems: 'center',
@@ -179,9 +175,10 @@ const MainLayout: React.FC = () => {
             position: 'sticky',
             top: 0,
             zIndex: 99,
+            gap: 8,
           }}
         >
-          <Space>
+          <Space size={4}>
             <Button
               type="text"
               icon={<MenuOutlined />}
@@ -189,26 +186,48 @@ const MainLayout: React.FC = () => {
               className="mobile-menu-btn"
               style={{ display: 'none' }}
             />
-            <h2 style={{ margin: 0 }}>
+            <h2
+              style={{
+                margin: 0,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                maxWidth: '35vw',
+                fontSize: 18,
+              }}
+            >
               {location.pathname === '/' && 'Главная'}
               {location.pathname === '/news' && 'Новости'}
               {location.pathname === '/profile' && 'Профиль'}
               {location.pathname.startsWith('/admin') && 'Админ панель'}
             </h2>
           </Space>
-          <FrameworkSwitcher current="react" />
-          <Space size="middle">
+
+          <span className="hide-on-mobile">
+            <FrameworkSwitcher current="react" />
+          </span>
+
+          <Space size="small">
             <Switch
               checkedChildren={<BulbFilled />}
               unCheckedChildren={<BulbOutlined />}
               checked={theme === 'dark'}
               onChange={() => dispatch(toggleTheme())}
             />
-
             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
               <Space style={{ cursor: 'pointer' }}>
                 <Avatar src={user?.avatar} icon={!user?.avatar && <UserOutlined />} size="small" />
-                <span style={{ maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis' }}>{isAuthenticated ? user?.username : 'Гость'}</span>
+                <span
+                  style={{
+                    maxWidth: 80,
+                    display: 'block',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {isAuthenticated ? user?.username : 'Гость'}
+                </span>
               </Space>
             </Dropdown>
           </Space>
@@ -225,6 +244,9 @@ const MainLayout: React.FC = () => {
         @media (max-width: 992px) {
           .mobile-menu-btn {
             display: inline-flex !important;
+          }
+          .hide-on-mobile {
+            display: none !important;
           }
         }
       `}</style>
