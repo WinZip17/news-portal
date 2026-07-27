@@ -4,7 +4,7 @@ import { CronJob } from 'cron';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import OpenAI from 'openai';
-import { News } from '../../entities';
+import { News, Settings } from '../../entities';
 import { AiConfig } from './config/ai.config';
 import { GenerateNewsDto } from './dto/generate-news.dto';
 import { RssFetcherService } from './rss-fetcher.service';
@@ -20,6 +20,8 @@ export class AiService {
 
   constructor(
     @InjectRepository(News)
+    @InjectRepository(Settings)
+    private settingsRepository: Repository<Settings>,
     private newsRepository: Repository<News>,
     private aiConfig: AiConfig,
     private rssFetcher: RssFetcherService,
@@ -32,10 +34,27 @@ export class AiService {
         baseURL: 'https://api.deepseek.com/v1',
       });
     }
+    this.loadAndStartCron();
+  }
+
+  private async loadAndStartCron(): Promise<void> {
+    try {
+      const setting = await this.settingsRepository.findOne({ where: { key: 'cron_schedule' } });
+      if (setting?.value) {
+        this.cronSchedule = setting.value;
+      }
+    } catch {
+      console.error('loadAndStartCron error');
+    }
     this.startCronJob();
   }
 
   private startCronJob(): void {
+    try {
+      this.schedulerRegistry.deleteCronJob('autoGenerate');
+    } catch {
+      console.error('startCronJob error');
+    }
     const job = new CronJob(
       this.cronSchedule,
       async () => {
@@ -581,8 +600,9 @@ export class AiService {
     return this.cronSchedule;
   }
 
-  updateCronSchedule(cron: string): { cron: string } {
+  async updateCronSchedule(cron: string): Promise<{ cron: string }> {
     this.cronSchedule = cron;
+    await this.settingsRepository.upsert({ key: 'cron_schedule', value: cron }, ['key']);
     this.schedulerRegistry.deleteCronJob('autoGenerate');
     this.startCronJob();
     return { cron: this.cronSchedule };
