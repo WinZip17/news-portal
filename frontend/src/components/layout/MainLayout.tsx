@@ -4,7 +4,6 @@ import { Layout, Menu, Button, Avatar, Dropdown, Space, Switch, Drawer } from 'a
 import {
   HomeOutlined,
   ReadOutlined,
-  SettingOutlined,
   UserOutlined,
   LoginOutlined,
   LogoutOutlined,
@@ -72,12 +71,6 @@ const MainLayout: React.FC = () => {
           icon: <UserOutlined />,
           label: 'Профиль',
           onClick: () => navigate('/profile'),
-        },
-        {
-          key: 'settings',
-          icon: <SettingOutlined />,
-          label: 'Настройки',
-          onClick: () => navigate('/settings'),
         },
         { type: 'divider' },
         {
