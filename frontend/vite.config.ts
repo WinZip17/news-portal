@@ -107,6 +107,7 @@ export default defineConfig({
     setupFiles: './src/test-setup.ts',
   },
   build: {
+    sourcemap: true,
     rollupOptions: {
       output: {
         manualChunks(id) {
