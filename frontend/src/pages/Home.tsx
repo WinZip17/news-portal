@@ -18,7 +18,6 @@ import NewsDetailModal from '@/components/NewsDetailModal';
 import { useNewsModal } from '@/hooks/useNewsModal.ts';
 import { newsService } from '@/services/newsService.ts';
 import { NewsStats } from '@/types';
-
 const { Title, Paragraph } = Typography;
 
 const Home: React.FC = () => {
@@ -29,8 +28,11 @@ const Home: React.FC = () => {
   const { selectedNewsId, modalVisible, openNews, closeNews } = useNewsModal();
 
   useEffect(() => {
-    fetchNews({ limit: 9, sortBy: 'publishedAt', sortOrder: 'DESC' });
-    loadStats();
+    const id = requestIdleCallback(() => {
+      fetchNews({ limit: 9, sortBy: 'publishedAt', sortOrder: 'DESC' });
+      loadStats();
+    });
+    return () => cancelIdleCallback(id);
   }, []);
 
   const formatDate = (dateString: string) => {
