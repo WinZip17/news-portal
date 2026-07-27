@@ -117,5 +117,14 @@ export default defineConfig({
         },
       },
     },
+    modulePreload: {
+      polyfill: true,
+      resolveDependencies: (filename, deps) => {
+        if (filename.includes('index') || filename.includes('App')) {
+          return deps.filter((d) => d.includes('react') || d.includes('antd'));
+        }
+        return [];
+      },
+    },
   },
 });
