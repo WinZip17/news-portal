@@ -138,7 +138,7 @@ const SuperAdminPanel: React.FC = () => {
   const handleUpdateCron = async () => {
     setCronLoading(true);
     try {
-      await api.put('/ai/cron', { cron: cronSchedule });
+      await apiService.put('/ai/cron', { cron: cronSchedule });
       message.success('Расписание обновлено');
       setCronModal(false);
     } catch {
