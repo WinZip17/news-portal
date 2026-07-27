@@ -20,9 +20,9 @@ export class AiService {
 
   constructor(
     @InjectRepository(News)
+    private newsRepository: Repository<News>,
     @InjectRepository(Settings)
     private settingsRepository: Repository<Settings>,
-    private newsRepository: Repository<News>,
     private aiConfig: AiConfig,
     private rssFetcher: RssFetcherService,
     private deduplicationService: DeduplicationService,
