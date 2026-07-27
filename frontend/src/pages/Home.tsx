@@ -213,7 +213,7 @@ const Home: React.FC = () => {
                   style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
                   cover={
                     item.imageUrl ? (
-                      <img alt={item.title} src={item.imageUrl} style={{ height: 200, objectFit: 'cover' }} />
+                      <img alt={item.title} src={item.imageUrl} loading={'lazy'} style={{ height: 200, objectFit: 'cover' }} />
                     ) : (
                       <div
                         style={{
