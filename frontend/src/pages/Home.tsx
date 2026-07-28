@@ -1,4 +1,4 @@
-import React, { lazy, useEffect } from 'react';
+import React, { lazy, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Row, Typography, Button, Space, Empty, Modal } from 'antd';
 import { ReadOutlined, RocketOutlined, ArrowRightOutlined } from '@ant-design/icons';
@@ -18,11 +18,13 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { news, fetchNews, isLoading } = useNews();
+  const [init, setInit] = useState(false);
   const { selectedNewsId, modalVisible, openNews, closeNews } = useNewsModal();
 
   useEffect(() => {
     const id = requestIdleCallback(() => {
       fetchNews({ limit: 6, sortBy: 'publishedAt', sortOrder: 'DESC' });
+      setInit(true);
     });
     return () => cancelIdleCallback(id);
   }, []);
@@ -93,12 +95,8 @@ const Home: React.FC = () => {
           </Button>
         </Space>
 
-        {isLoading ? (
-          <Row gutter={[24, 24]}>
-            {Array.from({ length: 6 }).map((_, i) => (
-              <NewsSkeleton key={i} />
-            ))}
-          </Row>
+        {isLoading || !init ? (
+          <NewsSkeleton />
         ) : news.length > 0 ? (
           <Row gutter={[24, 24]}>
             {news.map((item) => (

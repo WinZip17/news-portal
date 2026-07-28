@@ -54,6 +54,7 @@ const NewsCard: React.FC<NewsCardPropsType> = ({ item, openNews }) => {
       <Card
         hoverable
         style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+        styles={{ actions: { marginTop: 'auto' } }}
         cover={
           item.imageUrl ? (
             <img alt={item.title} src={item.imageUrl} loading={'lazy'} style={{ height: 200, objectFit: 'cover' }} />
