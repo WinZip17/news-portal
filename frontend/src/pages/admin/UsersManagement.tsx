@@ -4,6 +4,7 @@ import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { userService } from '@/services/userService';
 import type { ColumnsType } from 'antd/es/table';
 import type { User } from '@/types';
+import { formatLocaleDate } from '@/utils/formatDate.ts';
 
 const UsersManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -114,14 +115,14 @@ const UsersManagement: React.FC = () => {
       dataIndex: 'createdAt',
       key: 'date',
       width: 130,
-      render: (date) => new Date(date).toLocaleDateString('ru-RU'),
+      render: (date) => formatLocaleDate(date),
     },
     {
       title: 'Последний вход',
       dataIndex: 'lastLoginAt',
       key: 'login',
       width: 130,
-      render: (date) => (date ? new Date(date).toLocaleDateString('ru-RU') : '—'),
+      render: (date) => (date ? formatLocaleDate(date) : '—'),
     },
     {
       title: 'Действия',

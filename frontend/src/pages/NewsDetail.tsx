@@ -15,6 +15,8 @@ import {
 } from '@ant-design/icons';
 import { useNews } from '@/hooks/useNews';
 import { getCategoryLabel } from '@/utils/getCategoryLabel.ts';
+import { getCategoryColor } from '@/utils/getCategoryColor.ts';
+import { formatFullDate } from '@/utils/formatDate.ts';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -51,31 +53,6 @@ const NewsDetail: React.FC = () => {
         navigator.clipboard.writeText(window.location.href);
       }
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ru-RU', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
-  const getCategoryColor = (category: string) => {
-    const colors: Record<string, string> = {
-      politics: 'blue',
-      economy: 'green',
-      technology: 'purple',
-      science: 'cyan',
-      sports: 'orange',
-      entertainment: 'magenta',
-      health: 'red',
-      world: 'geekblue',
-      other: 'default',
-    };
-    return colors[category] || 'default';
   };
 
   const getStatusColor = (status: string) => {
@@ -218,7 +195,7 @@ const NewsDetail: React.FC = () => {
         {/* Мета-информация */}
         <Space wrap size="middle" style={{ color: '#666', marginBottom: 20 }}>
           <Text type="secondary">
-            <CalendarOutlined /> {formatDate(currentNews.publishedAt)}
+            <CalendarOutlined /> {formatFullDate(currentNews.publishedAt)}
           </Text>
           {currentNews.author && (
             <Text type="secondary">

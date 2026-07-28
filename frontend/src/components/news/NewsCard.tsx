@@ -3,53 +3,15 @@ import { Card, Col, Typography, Space, Tag } from 'antd';
 import { RobotOutlined, LinkOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { News } from '@/types';
 import { TAG_STYLE } from '@/constants/styles.ts';
+import { getCategoryColor } from '@/utils/getCategoryColor.ts';
+import { getCategoryLabel } from '@/utils/getCategoryLabel.ts';
+import { getTimeAgoString } from '@/utils/formatDate.ts';
 
 const { Paragraph } = Typography;
 
 type NewsCardPropsType = { item: News; openNews: (id: string) => void };
 
 const NewsCard: React.FC<NewsCardPropsType> = ({ item, openNews }) => {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = Math.floor((now.getTime() - date.getTime()) / 60000);
-    if (diff < 1) return 'только что';
-    if (diff < 60) return `${diff} мин. назад`;
-    if (diff < 1440) return `${Math.floor(diff / 60)} ч. назад`;
-    if (diff < 7 * 1440) return `${Math.floor(diff / 1440)} дн. назад`;
-    return date.toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric' });
-  };
-
-  const getCategoryColor = (cat: string) => {
-    const colors: Record<string, string> = {
-      politics: 'blue',
-      economy: 'green',
-      technology: 'purple',
-      science: 'cyan',
-      sports: 'orange',
-      entertainment: 'magenta',
-      health: 'red',
-      world: 'geekblue',
-      other: 'default',
-    };
-    return colors[cat] || 'default';
-  };
-
-  const getCategoryLabel = (cat: string) => {
-    const labels: Record<string, string> = {
-      politics: 'Политика',
-      economy: 'Экономика',
-      technology: 'Технологии',
-      science: 'Наука',
-      sports: 'Спорт',
-      entertainment: 'Развлечения',
-      health: 'Здоровье',
-      world: 'Мир',
-      other: 'Другое',
-    };
-    return labels[cat] || cat;
-  };
-
   return (
     <Col xs={24} sm={12} lg={8}>
       <Card
@@ -106,7 +68,7 @@ const NewsCard: React.FC<NewsCardPropsType> = ({ item, openNews }) => {
                   )}
                 </Space>
                 <div style={{ marginTop: 8, color: '#999', fontSize: '12px' }}>
-                  <ClockCircleOutlined /> {formatDate(item.publishedAt)}
+                  <ClockCircleOutlined /> {getTimeAgoString(item.publishedAt)}
                 </div>
               </div>
             }

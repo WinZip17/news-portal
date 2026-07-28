@@ -12,6 +12,7 @@ import {
 import { newsService } from '@/services/newsService.ts';
 import type { ColumnsType } from 'antd/es/table';
 import { News, NewsStatus } from '@/types';
+import { formatLocaleDate } from '@/utils/formatDate.ts';
 
 const NewsManagement: React.FC = () => {
   const [news, setNews] = useState<News[]>([]);
@@ -75,7 +76,7 @@ const NewsManagement: React.FC = () => {
           <Tag color="green">Пользователь</Tag>
         ),
     },
-    { title: 'Дата', dataIndex: 'createdAt', key: 'date', width: 110, render: (d) => new Date(d).toLocaleDateString('ru-RU') },
+    { title: 'Дата', dataIndex: 'createdAt', key: 'date', width: 110, render: (d) => formatLocaleDate(d) },
     { title: 'Просмотры', dataIndex: 'views', key: 'views', width: 80 },
     {
       title: 'Действия',

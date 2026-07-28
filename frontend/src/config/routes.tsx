@@ -42,11 +42,7 @@ export const routes = [
       },
       {
         path: '/news',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <NewsList />
-          </Suspense>
-        ),
+        element: <NewsList />,
       },
       // Защищенные маршруты
       {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Spin, Typography, Tag, Space, Divider, Image, Alert, Button, message } from 'antd';
 import {
   ClockCircleOutlined,
@@ -17,6 +17,9 @@ import { useNews } from '@/hooks/useNews.ts';
 import NewsSEO from '@/components/NewsSEO.tsx';
 import { AxiosError } from 'axios';
 import { TAG_STYLE } from '@/constants/styles.ts';
+import { getCategoryColor } from '@/utils/getCategoryColor.ts';
+import { formatFullDate } from '@/utils/formatDate.ts';
+import { getCategoryLabel } from '@/utils/getCategoryLabel.ts';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -29,7 +32,19 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
   const [isFavorited, setIsFavorited] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
-
+  const seoProps = useMemo(
+    () => ({
+      title: currentNews?.title || '',
+      summary: currentNews?.summary,
+      imageUrl: currentNews?.imageUrl,
+      publishedAt: currentNews?.publishedAt,
+      category: currentNews?.category,
+      tags: currentNews?.tags,
+      author: currentNews?.author,
+      url: `${window.location.origin}/?news=${currentNews?.id || ''}`,
+    }),
+    [currentNews?.id],
+  );
   useEffect(() => {
     if (newsId) {
       fetchNewsById(newsId).then(() => {
@@ -123,55 +138,9 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
     return <div>Новость не найдена</div>;
   }
 
-  const formatDate = (dateString: string) =>
-    new Date(dateString).toLocaleDateString('ru-RU', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-
-  const getCategoryColor = (category: string) => {
-    const colors: Record<string, string> = {
-      politics: 'blue',
-      economy: 'green',
-      technology: 'purple',
-      science: 'cyan',
-      sports: 'orange',
-      entertainment: 'magenta',
-      health: 'red',
-      world: 'geekblue',
-    };
-    return colors[category] || 'default';
-  };
-
-  const getCategoryLabel = (category: string) => {
-    const labels: Record<string, string> = {
-      politics: 'Политика',
-      economy: 'Экономика',
-      technology: 'Технологии',
-      science: 'Наука',
-      sports: 'Спорт',
-      entertainment: 'Развлечения',
-      health: 'Здоровье',
-      world: 'Мир',
-    };
-    return labels[category] || category;
-  };
-
   return (
     <div>
-      <NewsSEO
-        title={currentNews.title}
-        summary={currentNews.summary}
-        imageUrl={currentNews.imageUrl}
-        publishedAt={currentNews.publishedAt}
-        category={currentNews.category}
-        tags={currentNews.tags}
-        author={currentNews.author}
-        url={`${window.location.origin}/?news=${currentNews.id}`}
-      />
+      {currentNews && <NewsSEO {...seoProps} />}
 
       <Alert
         title={currentNews.isAiGenerated ? '🤖 AI-рерайт новости' : '📄 Оригинальная новость'}
@@ -189,7 +158,7 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
 
       <Space wrap size="middle" style={{ marginBottom: 16, color: '#666' }}>
         <Text type="secondary">
-          <ClockCircleOutlined /> {formatDate(currentNews.publishedAt)}
+          <ClockCircleOutlined /> {formatFullDate(currentNews.publishedAt)}
         </Text>
         <Text type="secondary">
           <EyeOutlined /> {currentNews.views || 0} просмотров

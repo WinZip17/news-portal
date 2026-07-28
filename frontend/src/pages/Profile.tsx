@@ -17,6 +17,7 @@ import { News } from '@/types';
 import { useNewsModal } from '@/hooks/useNewsModal.ts';
 import NewsDetailModal from '@/components/NewsDetailModal';
 import { Typography } from 'antd';
+import { formatLocaleDate } from '@/utils/formatDate.ts';
 
 const { Text } = Typography;
 
@@ -92,8 +93,6 @@ const Profile: React.FC = () => {
     await newsService.toggleFavorite(newsId);
     loadFavorites();
   };
-
-  const formatDate = (date: string) => new Date(date).toLocaleDateString('ru-RU');
 
   const tabItems = [
     {
@@ -257,7 +256,7 @@ const Profile: React.FC = () => {
                       </Tag>
                     )}
                     <Text type="secondary" style={{ fontSize: '12px' }}>
-                      <ClockCircleOutlined /> {formatDate(item.publishedAt)}
+                      <ClockCircleOutlined /> {formatLocaleDate(item.publishedAt)}
                     </Text>
                   </Space>
                 </div>

@@ -8,6 +8,7 @@ import { User } from '@/types/auth';
 import type { ColumnsType } from 'antd/es/table';
 import { aiService } from '@/services/aiService.ts';
 import { apiService } from '@/services/api.ts';
+import { formatLocaleDate } from '@/utils/formatDate.ts';
 
 const { TextArea } = Input;
 
@@ -151,7 +152,7 @@ const SuperAdminPanel: React.FC = () => {
     { title: 'Заголовок', dataIndex: 'title', key: 'title', ellipsis: true },
     { title: 'Категория', dataIndex: 'category', key: 'category', width: 120, render: (c) => <Tag>{c}</Tag> },
     { title: 'Статус', dataIndex: 'status', key: 'status', width: 120, render: (s) => <Tag>{s}</Tag> },
-    { title: 'Дата', dataIndex: 'createdAt', key: 'date', width: 110, render: (d) => new Date(d).toLocaleDateString('ru-RU') },
+    { title: 'Дата', dataIndex: 'createdAt', key: 'date', width: 110, render: (d) => formatLocaleDate(d) },
     {
       title: 'Действия',
       key: 'actions',
