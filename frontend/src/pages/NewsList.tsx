@@ -1,9 +1,8 @@
-import React, { lazy } from 'react';
+import React, { lazy, useEffect } from 'react';
 import { Pagination, Empty, Spin, Typography, Divider, Button, Modal, Row, Col, Card, Skeleton } from 'antd';
 import { useNews } from '@/hooks/useNews';
 import { useNewsModal } from '@/hooks/useNewsModal.ts';
 import { Helmet } from 'react-helmet-async';
-import { useNewsList } from '@/hooks/useNewsList.ts';
 
 const { Title, Text } = Typography;
 
@@ -12,19 +11,14 @@ const NewsListCard = lazy(() => import('@/components/news/NewsListCard'));
 const NewsListFilters = lazy(() => import('@/components/news/NewsListFilters'));
 
 const NewsList: React.FC = () => {
-  const { news, isLoading, pagination, fetchNews, error } = useNews();
+  const { news, isLoading, pagination, fetchNews, error, filters, initialLoading, clearAllFilters, setPage } = useNews();
   const { selectedNewsId, modalVisible, openNews, closeNews } = useNewsModal();
-  const {
-    searchParams,
-    initialLoading,
-    hasActiveFilters,
-    handleSearch,
-    handleAiFilterChange,
-    handleClearFilters,
-    handlePageChange,
-    handleCategoryChange,
-    handleSortChange,
-  } = useNewsList();
+
+  useEffect(() => {
+    fetchNews();
+  }, [JSON.stringify(filters)]);
+
+  const hasActiveFilters = Object.keys(filters).length > 0;
 
   return (
     <div style={{ maxWidth: 960, margin: '0 auto' }}>
@@ -37,15 +31,7 @@ const NewsList: React.FC = () => {
         📰 Лента новостей
       </Title>
 
-      <NewsListFilters
-        hasActiveFilters={hasActiveFilters}
-        searchParams={searchParams}
-        handleSearch={handleSearch}
-        handleCategoryChange={handleCategoryChange}
-        handleSortChange={handleSortChange}
-        handleAiFilterChange={handleAiFilterChange}
-        handleClearFilters={handleClearFilters}
-      />
+      <NewsListFilters hasActiveFilters={hasActiveFilters} />
       {hasActiveFilters && (
         <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
           Показаны результаты с фильтрами
@@ -57,7 +43,7 @@ const NewsList: React.FC = () => {
       <Spin spinning={isLoading}>
         {error ? (
           <Empty description={<Text type="danger">Ошибка: {error}</Text>}>
-            <Button onClick={() => fetchNews(pagination)}>Повторить</Button>
+            <Button onClick={() => fetchNews()}>Повторить</Button>
           </Empty>
         ) : initialLoading ? (
           <Row gutter={[16, 16]}>
@@ -82,7 +68,7 @@ const NewsList: React.FC = () => {
                   current={pagination.page}
                   total={pagination.total}
                   pageSize={pagination.limit}
-                  onChange={handlePageChange}
+                  onChange={setPage}
                   showSizeChanger={false}
                   showQuickJumper
                 />
@@ -91,7 +77,7 @@ const NewsList: React.FC = () => {
           </>
         ) : (
           <Empty description={hasActiveFilters ? 'Ничего не найдено' : 'Новостей пока нет'} style={{ padding: '40px 0' }}>
-            {hasActiveFilters ? <Button onClick={handleClearFilters}>Сбросить</Button> : <Button onClick={() => fetchNews()}>Обновить</Button>}
+            {hasActiveFilters ? <Button onClick={clearAllFilters}>Сбросить</Button> : <Button onClick={() => fetchNews()}>Обновить</Button>}
           </Empty>
         )}
       </Spin>

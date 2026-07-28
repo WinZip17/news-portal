@@ -50,34 +50,6 @@ const NewsSEO: React.FC<NewsSEOProps> = ({ title, summary, imageUrl, publishedAt
       {tags?.map((tag) => (
         <meta key={tag} property="article:tag" content={tag} />
       ))}
-
-      {/* Структурированные данные Schema.org */}
-      <script type="application/ld+json">
-        {JSON.stringify({
-          '@context': 'https://schema.org',
-          '@type': 'NewsArticle',
-          headline: title,
-          description: description,
-          image: image,
-          datePublished: publishedTime,
-          author: {
-            '@type': 'Organization',
-            name: author || siteName,
-          },
-          publisher: {
-            '@type': 'Organization',
-            name: siteName,
-            logo: {
-              '@type': 'ImageObject',
-              url: 'https://news-portal.ru/favicon.svg',
-            },
-          },
-          mainEntityOfPage: {
-            '@type': 'WebPage',
-            '@id': url,
-          },
-        })}
-      </script>
     </Helmet>
   );
 };

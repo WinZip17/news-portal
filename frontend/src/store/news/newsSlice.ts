@@ -20,6 +20,7 @@ interface NewsState {
   filters: NewsFilter;
   personalizedNews: News[];
   stats: NewsStats | null;
+  initialLoading: boolean;
 }
 
 interface ApiErrorResponse {
@@ -37,14 +38,10 @@ const initialState: NewsState = {
   isLoadingStats: false,
   error: null,
   errorStats: null,
-  filters: {
-    page: 1,
-    limit: 10,
-    sortBy: 'publishedAt',
-    sortOrder: 'DESC',
-  },
+  filters: {},
   personalizedNews: [],
   stats: null,
+  initialLoading: true,
 };
 
 const handleApiError = (error: unknown): string => {
@@ -54,9 +51,10 @@ const handleApiError = (error: unknown): string => {
   return error instanceof Error ? error.message : 'Unknown error';
 };
 
-export const fetchNews = createAsyncThunk<NewsResponse, NewsFilter>('news/fetchNews', async (filters, { rejectWithValue }) => {
+export const fetchNews = createAsyncThunk<NewsResponse, void>('news/fetchNews', async (_, { getState, rejectWithValue }) => {
   try {
-    return await newsService.getNews(filters);
+    const state = getState() as RootState;
+    return await newsService.getNews(state.news.filters);
   } catch (error: unknown) {
     return rejectWithValue(handleApiError(error));
   }
@@ -138,11 +136,30 @@ const newsSlice = createSlice({
   name: 'news',
   initialState,
   reducers: {
-    setFilters: (state, action: PayloadAction<NewsFilter>) => {
-      state.filters = { ...state.filters, ...action.payload };
+    setFilter: (state, action: PayloadAction<Partial<NewsFilter>>) => {
+      state.filters = { ...state.filters, ...action.payload, page: undefined };
+    },
+    setPage: (state, action: PayloadAction<number>) => {
+      state.filters.page = action.payload;
+    },
+    setSearch: (state, action: PayloadAction<string | undefined>) => {
+      state.filters.search = action.payload || undefined;
+      state.filters.page = undefined;
+    },
+    setCategory: (state, action: PayloadAction<string | undefined>) => {
+      state.filters.category = action.payload as NewsFilter['category'];
+      state.filters.page = undefined;
+    },
+    setSortBy: (state, action: PayloadAction<string | undefined>) => {
+      state.filters.sortBy = action.payload as NewsFilter['sortBy'];
+      state.filters.page = undefined;
+    },
+    setAiFilter: (state, action: PayloadAction<boolean | undefined>) => {
+      state.filters.isAiGenerated = action.payload;
+      state.filters.page = undefined;
     },
     clearFilters: (state) => {
-      state.filters = initialState.filters;
+      state.filters = {};
     },
     setCurrentNews: (state, action: PayloadAction<News | null>) => {
       state.currentNews = action.payload;
@@ -165,10 +182,12 @@ const newsSlice = createSlice({
         state.page = action.payload.page;
         state.limit = action.payload.limit;
         state.totalPages = action.payload.totalPages;
+        state.initialLoading = false;
       })
       .addCase(fetchNews.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+        state.initialLoading = false;
       });
 
     builder
@@ -198,6 +217,7 @@ const newsSlice = createSlice({
         state.isLoadingStats = false;
         state.errorStats = action.payload as string;
       });
+
     builder
       .addCase(createNews.pending, (state) => {
         state.isLoading = true;
@@ -220,12 +240,8 @@ const newsSlice = createSlice({
       .addCase(updateNews.fulfilled, (state, action) => {
         state.isLoading = false;
         const index = state.news.findIndex((item) => item.id === action.payload.id);
-        if (index !== -1) {
-          state.news[index] = action.payload;
-        }
-        if (state.currentNews?.id === action.payload.id) {
-          state.currentNews = action.payload;
-        }
+        if (index !== -1) state.news[index] = action.payload;
+        if (state.currentNews?.id === action.payload.id) state.currentNews = action.payload;
       })
       .addCase(updateNews.rejected, (state, action) => {
         state.isLoading = false;
@@ -240,9 +256,7 @@ const newsSlice = createSlice({
       .addCase(deleteNews.fulfilled, (state, action) => {
         state.isLoading = false;
         state.news = state.news.filter((item) => item.id !== action.payload);
-        if (state.currentNews?.id === action.payload) {
-          state.currentNews = null;
-        }
+        if (state.currentNews?.id === action.payload) state.currentNews = null;
       })
       .addCase(deleteNews.rejected, (state, action) => {
         state.isLoading = false;
@@ -256,12 +270,8 @@ const newsSlice = createSlice({
       .addCase(moderateNews.fulfilled, (state, action) => {
         state.isLoading = false;
         const index = state.news.findIndex((item) => item.id === action.payload.id);
-        if (index !== -1) {
-          state.news[index] = action.payload;
-        }
-        if (state.currentNews?.id === action.payload.id) {
-          state.currentNews = action.payload;
-        }
+        if (index !== -1) state.news[index] = action.payload;
+        if (state.currentNews?.id === action.payload.id) state.currentNews = action.payload;
       })
       .addCase(moderateNews.rejected, (state, action) => {
         state.isLoading = false;
@@ -270,12 +280,8 @@ const newsSlice = createSlice({
 
     builder.addCase(likeNews.fulfilled, (state, action) => {
       const index = state.news.findIndex((item) => item.id === action.payload.id);
-      if (index !== -1) {
-        state.news[index] = action.payload;
-      }
-      if (state.currentNews?.id === action.payload.id) {
-        state.currentNews = action.payload;
-      }
+      if (index !== -1) state.news[index] = action.payload;
+      if (state.currentNews?.id === action.payload.id) state.currentNews = action.payload;
     });
 
     builder
@@ -293,13 +299,15 @@ const newsSlice = createSlice({
   },
 });
 
-export const { setFilters, clearFilters, setCurrentNews, clearNewsError, resetNews } = newsSlice.actions;
+export const { setFilter, setPage, setSearch, setCategory, setSortBy, setAiFilter, clearFilters, setCurrentNews, clearNewsError, resetNews } =
+  newsSlice.actions;
 
 export const selectNews = (state: RootState) => state.news.news;
 export const selectCurrentNews = (state: RootState) => state.news.currentNews;
 export const selectNewsLoading = (state: RootState) => state.news.isLoading;
 export const selectNewsError = (state: RootState) => state.news.error;
 export const selectNewsFilters = (state: RootState) => state.news.filters;
+export const selectInitialLoading = (state: RootState) => state.news.initialLoading;
 export const selectNewsPagination = createSelector([selectNewsState], (news) => ({
   total: news.total,
   page: news.page,

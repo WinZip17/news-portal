@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { fetchStats, selectStats, selectStatsLoading, useAppDispatch, useAppSelector } from '@/store';
 import {
   fetchNews,
   fetchNewsById,
@@ -9,7 +8,7 @@ import {
   moderateNews,
   likeNews,
   fetchPersonalizedNews,
-  setFilters,
+  setFilter,
   clearNewsError,
   selectNews,
   selectCurrentNews,
@@ -18,6 +17,18 @@ import {
   selectNewsFilters,
   selectNewsPagination,
   selectPersonalizedNews,
+  setSearch,
+  setCategory,
+  setSortBy,
+  setAiFilter,
+  clearFilters,
+  setPage,
+  selectInitialLoading,
+  fetchStats,
+  selectStats,
+  selectStatsLoading,
+  useAppDispatch,
+  useAppSelector,
 } from '@/store';
 import type { News, NewsFilter } from '@/types';
 
@@ -36,8 +47,8 @@ export const useNews = () => {
   const handleFetchNews = useCallback(
     (filterParams?: NewsFilter) => {
       const params = { ...filters, ...filterParams };
-      dispatch(setFilters(params));
-      return dispatch(fetchNews(params)).unwrap();
+      dispatch(setFilter(params));
+      return dispatch(fetchNews()).unwrap();
     },
     [dispatch, filters],
   );
@@ -97,7 +108,7 @@ export const useNews = () => {
 
   const handleSetFilters = useCallback(
     (newFilters: NewsFilter) => {
-      dispatch(setFilters(newFilters));
+      dispatch(setFilter(newFilters));
     },
     [dispatch],
   );
@@ -122,6 +133,7 @@ export const useNews = () => {
     personalizedNews,
     stats,
     isLoadingStats,
+    initialLoading: useAppSelector(selectInitialLoading),
     fetchNews: handleFetchNews,
     fetchStats: handleFetchStats,
     fetchNewsById: handleFetchNewsById,
@@ -134,5 +146,14 @@ export const useNews = () => {
     setFilters: handleSetFilters,
     clearError: handleClearError,
     loadMore,
+    setSearch: (v: string) => dispatch(setSearch(v || undefined)),
+    setCategory: (v: string) => dispatch(setCategory(v !== 'all' ? v : undefined)),
+    setSortBy: (v: string) => dispatch(setSortBy(v !== 'publishedAt' ? v : undefined)),
+    setAiFilter: (v: string) => {
+      if (v === 'all') dispatch(setAiFilter(undefined));
+      else dispatch(setAiFilter(v === 'true'));
+    },
+    clearAllFilters: () => dispatch(clearFilters()),
+    setPage: (p: number) => dispatch(setPage(p)),
   };
 };
