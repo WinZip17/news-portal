@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from '@/store';
+import { fetchStats, selectStats, selectStatsLoading, useAppDispatch, useAppSelector } from '@/store';
 import {
   fetchNews,
   fetchNewsById,
@@ -10,7 +10,7 @@ import {
   likeNews,
   fetchPersonalizedNews,
   setFilters,
-  clearNewsError, // Обновленное имя
+  clearNewsError,
   selectNews,
   selectCurrentNews,
   selectNewsLoading,
@@ -30,6 +30,8 @@ export const useNews = () => {
   const filters = useAppSelector(selectNewsFilters);
   const pagination = useAppSelector(selectNewsPagination);
   const personalizedNews = useAppSelector(selectPersonalizedNews);
+  const stats = useAppSelector(selectStats);
+  const isLoadingStats = useAppSelector(selectStatsLoading);
 
   const handleFetchNews = useCallback(
     (filterParams?: NewsFilter) => {
@@ -46,6 +48,10 @@ export const useNews = () => {
     },
     [dispatch],
   );
+
+  const handleFetchStats = useCallback(() => {
+    return dispatch(fetchStats()).unwrap();
+  }, [dispatch]);
 
   const handleCreateNews = useCallback(
     (data: Partial<News>) => {
@@ -114,7 +120,10 @@ export const useNews = () => {
     filters,
     pagination,
     personalizedNews,
+    stats,
+    isLoadingStats,
     fetchNews: handleFetchNews,
+    fetchStats: handleFetchStats,
     fetchNewsById: handleFetchNewsById,
     createNews: handleCreateNews,
     updateNews: handleUpdateNews,

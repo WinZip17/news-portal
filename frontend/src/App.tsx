@@ -8,7 +8,6 @@ import { useAuth } from '@/hooks/useAuth';
 import AppErrorBoundary from '@/components/common/ErrorBoundary';
 import { routes } from '@/config/routes';
 import ruRU from 'antd/locale/ru_RU';
-import enUS from 'antd/locale/en_US';
 import YandexMetrika from '@/components/YandexMetrika.tsx';
 
 const AppRoutes: React.FC = () => {
@@ -37,11 +36,9 @@ const AppContent: React.FC = () => {
     }
   }, [user]);
 
-  const getLocale = (lang: string) => (lang === 'ru' ? ruRU : enUS);
-
   return (
     <ConfigProvider
-      locale={getLocale(user?.preferences?.language || 'ru')}
+      locale={ruRU}
       theme={{
         algorithm: theme === 'dark' ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
         token: {

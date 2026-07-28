@@ -1,94 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React, { lazy, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Card, Row, Col, Typography, Button, Space, Statistic, Spin, Empty, Tag, Modal, Skeleton } from 'antd';
-import {
-  ReadOutlined,
-  TeamOutlined,
-  RocketOutlined,
-  ArrowRightOutlined,
-  RobotOutlined,
-  LinkOutlined,
-  ClockCircleOutlined,
-  EyeOutlined,
-} from '@ant-design/icons';
+import { Row, Typography, Button, Space, Empty, Modal } from 'antd';
+import { ReadOutlined, RocketOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useNews } from '@/hooks/useNews';
-import NewsDetailModal from '@/components/NewsDetailModal';
 import { useNewsModal } from '@/hooks/useNewsModal.ts';
-import { newsService } from '@/services/newsService.ts';
-import { NewsStats } from '@/types';
+
 const { Title, Paragraph } = Typography;
+
+const NewsSkeleton = lazy(() => import('@/components/news/NewsSkerleton.tsx'));
+const NewsStats = lazy(() => import('@/components/news/NewsStats.tsx'));
+const NewsCard = lazy(() => import('@/components/news/NewsCard.tsx'));
+const NewsDetailModal = lazy(() => import('@/components/NewsDetailModal'));
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { news, fetchNews, isLoading } = useNews();
-  const [stats, setStats] = useState<NewsStats | null>(null);
   const { selectedNewsId, modalVisible, openNews, closeNews } = useNewsModal();
 
   useEffect(() => {
     const id = requestIdleCallback(() => {
-      fetchNews({ limit: 9, sortBy: 'publishedAt', sortOrder: 'DESC' });
-      loadStats();
+      fetchNews({ limit: 6, sortBy: 'publishedAt', sortOrder: 'DESC' });
     });
     return () => cancelIdleCallback(id);
   }, []);
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = Math.floor((now.getTime() - date.getTime()) / 60000);
-    if (diff < 1) return 'только что';
-    if (diff < 60) return `${diff} мин. назад`;
-    if (diff < 1440) return `${Math.floor(diff / 60)} ч. назад`;
-    if (diff < 7 * 1440) return `${Math.floor(diff / 1440)} дн. назад`;
-    return date.toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric' });
-  };
-
-  const getCategoryColor = (cat: string) => {
-    const colors: Record<string, string> = {
-      politics: 'blue',
-      economy: 'green',
-      technology: 'purple',
-      science: 'cyan',
-      sports: 'orange',
-      entertainment: 'magenta',
-      health: 'red',
-      world: 'geekblue',
-      other: 'default',
-    };
-    return colors[cat] || 'default';
-  };
-
-  const getCategoryLabel = (cat: string) => {
-    const labels: Record<string, string> = {
-      politics: 'Политика',
-      economy: 'Экономика',
-      technology: 'Технологии',
-      science: 'Наука',
-      sports: 'Спорт',
-      entertainment: 'Развлечения',
-      health: 'Здоровье',
-      world: 'Мир',
-      other: 'Другое',
-    };
-    return labels[cat] || cat;
-  };
-
-  const loadStats = async () => {
-    try {
-      const data = await newsService.getStats();
-      setStats(data);
-    } catch {}
-  };
-
-  const NewsSkeleton = () => (
-    <Card style={{ height: '100%' }}>
-      <Skeleton.Image className={'skeleton-image'} style={{ width: '100%', height: 200 }} active />
-      <Skeleton active paragraph={{ rows: 3 }} style={{ marginTop: 16 }} />
-    </Card>
-  );
 
   return (
     <div>
@@ -98,7 +35,6 @@ const Home: React.FC = () => {
         <link rel="canonical" href={window.location.origin} />
       </Helmet>
 
-      {/* Hero */}
       <div
         style={{
           textAlign: 'center',
@@ -145,47 +81,8 @@ const Home: React.FC = () => {
         </Space>
       </div>
 
-      {/* Статистика */}
-      <Row gutter={[24, 24]} style={{ marginBottom: 48 }}>
-        <Col xs={12} sm={8} md={4}>
-          <Card hoverable>
-            <Statistic title="Сегодня" value={stats?.newsToday || 0} prefix={<ReadOutlined />} loading={!stats} />
-          </Card>
-        </Col>
-        <Col xs={12} sm={8} md={4}>
-          <Card hoverable>
-            <Statistic title="Пользователей" value={stats?.totalUsers || 0} prefix={<TeamOutlined />} loading={!stats} />
-          </Card>
-        </Col>
-        <Col xs={12} sm={8} md={4}>
-          <Card hoverable>
-            <Statistic title="AI-рерайт" value={stats?.totalAiNews || 0} prefix={<RobotOutlined />} loading={!stats} />
-          </Card>
-        </Col>
-        <Col xs={12} sm={8} md={4}>
-          <Card hoverable>
-            <Statistic title="Всего новостей" value={stats?.totalNews || 0} prefix={<ReadOutlined />} loading={!stats} />
-          </Card>
-        </Col>
-        <Col xs={12} sm={8} md={4}>
-          <Card hoverable>
-            <Statistic title="Просмотров" value={stats?.totalViews || 0} prefix={<EyeOutlined />} loading={!stats} />
-          </Card>
-        </Col>
-        <Col xs={12} sm={8} md={4}>
-          <Card hoverable>
-            <Statistic
-              title="На модерации"
-              value={stats?.pendingNews || 0}
-              prefix={<ClockCircleOutlined />}
-              styles={stats?.pendingNews ? { content: { color: '#faad14' } } : undefined}
-              loading={!stats}
-            />
-          </Card>
-        </Col>
-      </Row>
+      <NewsStats />
 
-      {/* Последние новости */}
       <div style={{ marginBottom: 24 }}>
         <Space style={{ justifyContent: 'space-between', width: '100%', marginBottom: 16 }}>
           <Title level={2} style={{ margin: 0 }}>
@@ -199,70 +96,13 @@ const Home: React.FC = () => {
         {isLoading ? (
           <Row gutter={[24, 24]}>
             {Array.from({ length: 6 }).map((_, i) => (
-              <Col xs={24} sm={12} lg={8} key={i}>
-                <NewsSkeleton />
-              </Col>
+              <NewsSkeleton key={i} />
             ))}
           </Row>
         ) : news.length > 0 ? (
           <Row gutter={[24, 24]}>
-            {news.slice(0, 6).map((item) => (
-              <Col xs={24} sm={12} lg={8} key={item.id}>
-                <Card
-                  hoverable
-                  style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-                  cover={
-                    item.imageUrl ? (
-                      <img alt={item.title} src={item.imageUrl} loading={'lazy'} style={{ height: 200, objectFit: 'cover' }} />
-                    ) : (
-                      <div
-                        style={{
-                          height: 200,
-                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: 'white',
-                          fontSize: '48px',
-                        }}
-                      >
-                        📰
-                      </div>
-                    )
-                  }
-                  onClick={() => openNews(item.id)}
-                  actions={[<span key="views">👁 {item.views || 0}</span>, <span key="likes">❤️ {item.likes || 0}</span>]}
-                >
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <Card.Meta
-                      title={item.title}
-                      description={
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                          <Paragraph ellipsis={{ rows: 2 }} style={{ marginBottom: 12 }}>
-                            {item.summary?.substring(0, 120) || 'Описание отсутствует'}...
-                          </Paragraph>
-                          <Space wrap size={[4, 4]} style={{ marginTop: 'auto' }}>
-                            <Tag color={getCategoryColor(item.category)}>{getCategoryLabel(item.category)}</Tag>
-                            {item.isAiGenerated ? (
-                              <Tag icon={<RobotOutlined />} color="blue">
-                                AI-рерайт
-                              </Tag>
-                            ) : (
-                              <Tag icon={<LinkOutlined />} color="green">
-                                Оригинал
-                              </Tag>
-                            )}
-                            {item.source && <Tag color="purple">{item.source}</Tag>}
-                          </Space>
-                          <div style={{ marginTop: 8, color: '#999', fontSize: '12px' }}>
-                            <ClockCircleOutlined /> {formatDate(item.publishedAt)}
-                          </div>
-                        </div>
-                      }
-                    />
-                  </div>
-                </Card>
-              </Col>
+            {news.map((item) => (
+              <NewsCard key={item.id} item={item} openNews={openNews} />
             ))}
           </Row>
         ) : (

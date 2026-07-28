@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@reduxjs/toolkit';
-import { News, NewsFilter, NewsResponse } from '@/types';
+import { News, NewsFilter, NewsResponse, NewsStats } from '@/types';
 import { newsService } from '@/services/newsService';
 import type { RootState } from '@/store';
 import { AxiosError } from 'axios';
@@ -14,9 +14,12 @@ interface NewsState {
   limit: number;
   totalPages: number;
   isLoading: boolean;
+  isLoadingStats: boolean;
   error: string | null;
+  errorStats: string | null;
   filters: NewsFilter;
   personalizedNews: News[];
+  stats: NewsStats | null;
 }
 
 interface ApiErrorResponse {
@@ -31,7 +34,9 @@ const initialState: NewsState = {
   limit: 10,
   totalPages: 0,
   isLoading: false,
+  isLoadingStats: false,
   error: null,
+  errorStats: null,
   filters: {
     page: 1,
     limit: 10,
@@ -39,6 +44,7 @@ const initialState: NewsState = {
     sortOrder: 'DESC',
   },
   personalizedNews: [],
+  stats: null,
 };
 
 const handleApiError = (error: unknown): string => {
@@ -59,6 +65,14 @@ export const fetchNews = createAsyncThunk<NewsResponse, NewsFilter>('news/fetchN
 export const fetchNewsById = createAsyncThunk<News, string>('news/fetchNewsById', async (id, { rejectWithValue }) => {
   try {
     return await newsService.getNewsById(id);
+  } catch (error: unknown) {
+    return rejectWithValue(handleApiError(error));
+  }
+});
+
+export const fetchStats = createAsyncThunk<NewsStats>('news/getStats', async (_, { rejectWithValue }) => {
+  try {
+    return await newsService.getStats();
   } catch (error: unknown) {
     return rejectWithValue(handleApiError(error));
   }
@@ -172,6 +186,19 @@ const newsSlice = createSlice({
       });
 
     builder
+      .addCase(fetchStats.pending, (state) => {
+        state.isLoadingStats = true;
+        state.errorStats = null;
+      })
+      .addCase(fetchStats.fulfilled, (state, action) => {
+        state.isLoadingStats = false;
+        state.stats = action.payload;
+      })
+      .addCase(fetchStats.rejected, (state, action) => {
+        state.isLoadingStats = false;
+        state.errorStats = action.payload as string;
+      });
+    builder
       .addCase(createNews.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -280,5 +307,7 @@ export const selectNewsPagination = createSelector([selectNewsState], (news) => 
   totalPages: news.totalPages,
 }));
 export const selectPersonalizedNews = (state: RootState) => state.news.personalizedNews;
+export const selectStats = (state: RootState) => state.news.stats;
+export const selectStatsLoading = (state: RootState) => state.news.isLoadingStats;
 
 export default newsSlice.reducer;
