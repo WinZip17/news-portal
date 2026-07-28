@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Col, Typography, Space, Tag } from 'antd';
 import { RobotOutlined, LinkOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { News } from '@/types';
+import { TAG_STYLE } from '@/constants/styles.ts';
 
 const { Paragraph } = Typography;
 
@@ -86,17 +87,23 @@ const NewsCard: React.FC<NewsCardPropsType> = ({ item, openNews }) => {
                   {item.summary?.substring(0, 120) || 'Описание отсутствует'}...
                 </Paragraph>
                 <Space wrap size={[4, 4]} style={{ marginTop: 'auto' }}>
-                  <Tag color={getCategoryColor(item.category)}>{getCategoryLabel(item.category)}</Tag>
+                  <Tag color={getCategoryColor(item.category)} style={TAG_STYLE}>
+                    {getCategoryLabel(item.category)}
+                  </Tag>
                   {item.isAiGenerated ? (
-                    <Tag icon={<RobotOutlined />} color="blue">
+                    <Tag icon={<RobotOutlined />} color="blue" style={TAG_STYLE}>
                       AI-рерайт
                     </Tag>
                   ) : (
-                    <Tag icon={<LinkOutlined />} color="green">
+                    <Tag icon={<LinkOutlined />} color="green" style={TAG_STYLE}>
                       Оригинал
                     </Tag>
                   )}
-                  {item.source && <Tag color="purple">{item.source}</Tag>}
+                  {item.source && (
+                    <Tag color="purple" style={TAG_STYLE}>
+                      {item.source}
+                    </Tag>
+                  )}
                 </Space>
                 <div style={{ marginTop: 8, color: '#999', fontSize: '12px' }}>
                   <ClockCircleOutlined /> {formatDate(item.publishedAt)}

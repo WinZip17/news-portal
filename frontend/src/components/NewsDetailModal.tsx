@@ -16,6 +16,7 @@ import { newsService } from '@/services/newsService.ts';
 import { useNews } from '@/hooks/useNews.ts';
 import NewsSEO from '@/components/NewsSEO.tsx';
 import { AxiosError } from 'axios';
+import { TAG_STYLE } from '@/constants/styles.ts';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -159,8 +160,6 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
     return labels[category] || category;
   };
 
-  const tagStyle = { maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' } as React.CSSProperties;
-
   return (
     <div>
       <NewsSEO
@@ -221,25 +220,25 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
       </Space>
 
       <Space wrap style={{ marginBottom: 16 }}>
-        <Tag color={getCategoryColor(currentNews.category)} style={tagStyle}>
+        <Tag color={getCategoryColor(currentNews.category)} style={TAG_STYLE}>
           {getCategoryLabel(currentNews.category)}
         </Tag>
         {currentNews.isAiGenerated ? (
-          <Tag icon={<RobotOutlined />} color="blue" style={tagStyle}>
+          <Tag icon={<RobotOutlined />} color="blue" style={TAG_STYLE}>
             AI-рерайт
           </Tag>
         ) : (
-          <Tag icon={<LinkOutlined />} color="green" style={tagStyle}>
+          <Tag icon={<LinkOutlined />} color="green" style={TAG_STYLE}>
             Оригинал
           </Tag>
         )}
         {currentNews.source && (
-          <Tag color="purple" style={tagStyle}>
+          <Tag color="purple" style={TAG_STYLE}>
             {currentNews.source}
           </Tag>
         )}
         {currentNews.tags?.map((tag) => (
-          <Tag key={tag} style={tagStyle}>
+          <Tag key={tag} style={TAG_STYLE}>
             {tag}
           </Tag>
         ))}
