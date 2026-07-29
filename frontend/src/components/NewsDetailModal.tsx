@@ -55,10 +55,7 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
         }
       });
     }
-    return () => {
-      console.log('return');
-      setCurrentNews();
-    };
+    return () => setCurrentNews();
   }, []);
 
   const checkLike = async () => {
