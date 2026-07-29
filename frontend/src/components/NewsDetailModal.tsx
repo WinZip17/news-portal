@@ -28,7 +28,7 @@ interface Props {
 }
 
 const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
-  const { currentNews, isLoading, fetchNewsById } = useNews();
+  const { currentNews, isLoading, fetchNewsById, setCurrentNews } = useNews();
   const [isFavorited, setIsFavorited] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
@@ -55,7 +55,8 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
         }
       });
     }
-  }, [newsId]);
+    return () => setCurrentNews();
+  }, []);
 
   const checkLike = async () => {
     const token = localStorage.getItem('accessToken');

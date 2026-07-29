@@ -29,6 +29,7 @@ import {
   selectStatsLoading,
   useAppDispatch,
   useAppSelector,
+  setCurrentNews,
 } from '@/store';
 import type { News, NewsFilter } from '@/types';
 
@@ -117,6 +118,10 @@ export const useNews = () => {
     dispatch(clearNewsError()); // Используем новое имя
   }, [dispatch]);
 
+  const handleSetCurrentNews = useCallback(() => {
+    dispatch(setCurrentNews(null));
+  }, [dispatch]);
+
   const loadMore = useCallback(() => {
     if (pagination.page < pagination.totalPages) {
       handleFetchNews({ page: pagination.page + 1 });
@@ -145,6 +150,7 @@ export const useNews = () => {
     fetchPersonalizedNews: handleFetchPersonalizedNews,
     setFilters: handleSetFilters,
     clearError: handleClearError,
+    setCurrentNews: handleSetCurrentNews,
     loadMore,
     setSearch: (v: string) => dispatch(setSearch(v || undefined)),
     setCategory: (v: string) => dispatch(setCategory(v !== 'all' ? v : undefined)),
