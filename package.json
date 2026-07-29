@@ -5,7 +5,7 @@
   "private": true,
   "license": "MIT",
   "description": "News portal with AI-generated content",
-  "workspaces": ["frontend", "backend", "frontend-next", "frontend-nuxt"],
+  "workspaces": ["frontend", "backend", "frontend-next", "frontend-nuxt", "frontend-vue"],
   "scripts": {
     "install:all": "npm install",
     "dev": "concurrently -n \"DB,BE,FE\" -c \"yellow,blue,green\" \"npm run dev:db\" \"npm run dev:backend\" \"npm run dev:frontend\"",
@@ -13,6 +13,7 @@
     "dev:backend": "npm -w backend run start:dev",
     "dev:frontend": "npm -w frontend run dev",
     "dev:frontend:nuxt": "npm -w frontend-nuxt run dev",
+    "dev:frontend:vue": "npm -w frontend-vue run dev",
     "dev:monitoring": "docker compose up -d prometheus grafana",
     "dev:all": "concurrently \"npm run dev\" \"npm run dev:monitoring\"",
     "stop:monitoring": "docker compose stop prometheus grafana",
