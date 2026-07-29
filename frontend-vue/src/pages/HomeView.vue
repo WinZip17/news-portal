@@ -1,19 +1,29 @@
+<script setup lang="ts">
+import { useTheme } from '@/composables/useTheme'
+
+const { isDarkTheme, toggleTheme } = useTheme()
+</script>
+
 <template>
   <v-container class="fill-height">
-    <v-row justify="center" align="center">
-      <v-col cols="12" md="8" lg="6">
-        <v-card elevation="4">
+    <v-row justify="center">
+      <v-col cols="8">
+        <v-card>
           <v-card-title>
-            News Portal Vue
+            News Portal
           </v-card-title>
 
           <v-card-text>
-            Vuetify успешно подключен 🚀
+            Theme:
+            {{ isDarkTheme ? 'Dark' : 'Light' }}
           </v-card-text>
 
           <v-card-actions>
-            <v-btn color="primary">
-              Начать
+            <v-btn
+              color="primary"
+              @click="toggleTheme"
+            >
+              Toggle theme
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -21,7 +31,3 @@
     </v-row>
   </v-container>
 </template>
-
-<style scoped>
-
-</style>
