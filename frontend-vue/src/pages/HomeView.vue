@@ -1,16 +1,27 @@
 <template>
-  <div class="home">
-    <h1>News Portal Vue</h1>
-    <p>Application is running 🚀</p>
-  </div>
+  <v-container class="fill-height">
+    <v-row justify="center" align="center">
+      <v-col cols="12" md="8" lg="6">
+        <v-card elevation="4">
+          <v-card-title>
+            News Portal Vue
+          </v-card-title>
+
+          <v-card-text>
+            Vuetify успешно подключен 🚀
+          </v-card-text>
+
+          <v-card-actions>
+            <v-btn color="primary">
+              Начать
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <style scoped>
-.home {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-}
+
 </style>
