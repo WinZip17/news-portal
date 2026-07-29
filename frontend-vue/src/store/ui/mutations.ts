@@ -12,6 +12,10 @@ export const mutations: MutationTree<UIState> = {
     state.sidebarOpen = !state.sidebarOpen
   },
 
+  setState(state, payload: UIState) {
+    Object.assign(state, payload)
+  },
+
   setLoading(state, loading: boolean) {
     state.loading = loading
   },

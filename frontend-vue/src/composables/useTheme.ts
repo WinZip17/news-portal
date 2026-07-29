@@ -1,12 +1,10 @@
 import { computed } from 'vue'
-import { useTheme as useVuetifyTheme } from 'vuetify'
 
 import { ThemeName } from '@/constants/theme'
 import { useStore } from '@/store/useStore'
 
 export function useTheme() {
   const store = useStore()
-  const vuetifyTheme = useVuetifyTheme()
 
   const theme = computed(() => store.state.ui.theme)
 
@@ -14,10 +12,8 @@ export function useTheme() {
     () => theme.value === ThemeName.Dark,
   )
 
-  function setTheme(newTheme: ThemeName) {
-    store.dispatch('ui/changeTheme', newTheme)
-
-    vuetifyTheme.global.name.value = newTheme
+  function setTheme(theme: ThemeName) {
+    store.dispatch('ui/changeTheme', theme)
   }
 
   function toggleTheme() {

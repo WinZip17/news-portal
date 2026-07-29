@@ -1,9 +1,11 @@
 import { createStore } from 'vuex'
-
 import { ui } from './ui'
 
-export default createStore({
-  modules: {
-    ui,
-  },
-})
+export function createAppStore(plugins = []) {
+  return createStore({
+    modules: {
+      ui
+    },
+    plugins
+  })
+}
