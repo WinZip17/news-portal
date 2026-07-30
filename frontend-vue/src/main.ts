@@ -7,6 +7,7 @@ import { createAppVuetify } from '@/plugins'
 import { createThemeSyncPlugin } from '@/plugins/store/themeSync.ts'
 import { createAppStore } from '@/store'
 import { createPersistPlugin } from '@/plugins/store/persist.ts'
+import { setupInterceptors } from '@/api/interceptors'
 
 const vuetify = createAppVuetify()
 
@@ -16,7 +17,7 @@ const store = createAppStore([
 ])
 
 const app = createApp(App)
-
+setupInterceptors()
 app.use(store, key)
 app.use(router)
 app.use(vuetify)
