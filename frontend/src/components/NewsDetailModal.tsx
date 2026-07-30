@@ -62,8 +62,8 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
     const token = localStorage.getItem('accessToken');
     if (!token) return;
     try {
-      const favorited = await newsService.isFavorited(newsId);
-      setIsFavorited(favorited);
+      const isFavorite = await newsService.isFavorited(newsId);
+      setIsFavorited(isFavorite);
     } catch {
       console.error('Ошибка загрузки избранного');
     }
