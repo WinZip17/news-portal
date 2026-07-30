@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Spin, Typography, Tag, Space, Divider, Image, Alert, Button, message } from 'antd';
 import {
   ClockCircleOutlined,
@@ -15,7 +15,7 @@ import {
 import { newsService } from '@/services/newsService.ts';
 import { useNews } from '@/hooks/useNews.ts';
 import NewsSEO from '@/components/NewsSEO.tsx';
-import { AxiosError } from 'axios';
+import axios from 'axios';
 import { TAG_STYLE } from '@/constants/styles.ts';
 import { getCategoryColor } from '@/utils/getCategoryColor.ts';
 import { formatFullDate } from '@/utils/formatDate.ts';
@@ -31,7 +31,8 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
   const { currentNews, isLoading, fetchNewsById, setCurrentNews } = useNews();
   const [isFavorited, setIsFavorited] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(0);
+  const [likesCount, setLikesCount] = useState<number | null>(null);
+
   const seoProps = useMemo(
     () => ({
       title: currentNews?.title || '',
@@ -45,40 +46,46 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
     }),
     [currentNews?.id],
   );
-  useEffect(() => {
-    if (newsId) {
-      fetchNewsById(newsId).then(() => {
-        const token = localStorage.getItem('accessToken');
-        if (token) {
-          checkFavorite();
-          checkLike();
-        }
-      });
-    }
-    return () => setCurrentNews();
-  }, []);
 
-  const checkLike = async () => {
+  const checkLike = useCallback(async () => {
     const token = localStorage.getItem('accessToken');
     if (!token) return;
     try {
       const liked = await newsService.isLiked(newsId);
       setIsLiked(liked);
     } catch {
-      // Не авторизован
+      console.error('Ошибка загрузки реакций');
     }
-  };
+  }, [newsId]);
 
-  const checkFavorite = async () => {
+  const checkFavorite = useCallback(async () => {
     const token = localStorage.getItem('accessToken');
     if (!token) return;
     try {
       const favorited = await newsService.isFavorited(newsId);
       setIsFavorited(favorited);
     } catch {
-      // Не авторизован
+      console.error('Ошибка загрузки избранного');
     }
-  };
+  }, [newsId]);
+
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      if (!newsId) return;
+      await fetchNewsById(newsId);
+      if (!mounted) return;
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        await Promise.all([checkFavorite(), checkLike()]);
+      }
+    };
+    void load();
+    return () => {
+      mounted = false;
+      setCurrentNews();
+    };
+  }, [newsId, fetchNewsById, checkFavorite, checkLike, setCurrentNews]);
 
   const handleToggleFavorite = async () => {
     const token = localStorage.getItem('accessToken');
@@ -86,12 +93,13 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
       message.info('Войдите, чтобы добавлять в избранное');
       return;
     }
+
     try {
       const result = await newsService.toggleFavorite(newsId);
       setIsFavorited(result.favorited);
       message.success(result.favorited ? 'Добавлено в избранное' : 'Удалено из избранного');
     } catch (error: unknown) {
-      if (error instanceof AxiosError && error.response?.status === 401) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
         message.info('Войдите, чтобы добавлять в избранное');
       } else {
         message.error('Ошибка');
@@ -105,25 +113,33 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
       message.info('Войдите, чтобы ставить лайки');
       return;
     }
+
     try {
       const result = await newsService.toggleLike(newsId);
       setIsLiked(result.liked);
       setLikesCount(result.likes);
     } catch (error: unknown) {
-      console.error('Like error:', error instanceof AxiosError ? error.response?.data : error);
+      console.error('Like error:', axios.isAxiosError(error) ? error.response?.data : error);
       message.error('Ошибка');
     }
   };
 
   const handleShare = async () => {
-    if (currentNews) {
-      const url = `${window.location.origin}/?news=${currentNews.id}`;
-      try {
-        await navigator.share({ title: currentNews.title, text: currentNews.summary, url });
-      } catch {
-        await navigator.clipboard.writeText(url);
-        message.success('Ссылка скопирована');
+    if (!currentNews) return;
+    const url = `${window.location.origin}/?news=${currentNews.id}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: currentNews.title,
+          text: currentNews.summary || currentNews.title,
+          url,
+        });
+        return;
       }
+      await navigator.clipboard.writeText(url);
+      message.success('Ссылка скопирована');
+    } catch {
+      message.error('Не удалось поделиться ссылкой');
     }
   };
 
@@ -139,9 +155,11 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
     return <div>Новость не найдена</div>;
   }
 
+  const displayedLikes = likesCount ?? currentNews.likes ?? 0;
+
   return (
     <div>
-      {currentNews && <NewsSEO {...seoProps} />}
+      <NewsSEO {...seoProps} />
 
       <Alert
         title={currentNews.isAiGenerated ? '🤖 AI-рерайт новости' : '📄 Оригинальная новость'}
@@ -173,7 +191,7 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
 
       <Space style={{ marginBottom: 16, marginLeft: 16 }}>
         <Button icon={isLiked ? <LikeFilled /> : <LikeOutlined />} onClick={handleLike} size="small" danger={isLiked}>
-          {likesCount || currentNews?.likes || 0}
+          {displayedLikes}
         </Button>
         <Button
           icon={isFavorited ? <HeartFilled /> : <HeartOutlined />}

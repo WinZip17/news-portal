@@ -14,7 +14,6 @@ import {
   selectIsAuthenticated,
   selectAuthLoading,
   selectAuthError,
-  store,
   setTheme,
 } from '@/store';
 import { LoginCredentials, RegisterData, User, UserPreferences } from '@/types';
@@ -63,14 +62,14 @@ export const useAuth = () => {
         const updatedUser = await dispatch(updatePreferences(preferences)).unwrap();
 
         if (preferences.theme) {
-          store.dispatch(setTheme(preferences.theme));
+          dispatch(setTheme(preferences.theme));
         }
 
         message.success('Настройки сохранены');
         return updatedUser;
-      } catch {
+      } catch (error) {
         message.error('Ошибка сохранения настроек');
-        throw new Error('Ошибка сохранения настроек');
+        throw error;
       }
     },
     [dispatch],
