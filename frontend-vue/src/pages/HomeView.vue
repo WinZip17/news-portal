@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { useUIStore } from '@/stores';
-const { isDark, toggleTheme, theme } = useUIStore();
+import { storeToRefs } from 'pinia';
+const uiStore = useUIStore();
+const { isDark, theme } = storeToRefs(uiStore);
+const { toggleTheme } = uiStore;
 </script>
 
 <template>
