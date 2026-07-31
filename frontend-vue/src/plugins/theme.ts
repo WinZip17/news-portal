@@ -1,6 +1,6 @@
-import type { ThemeDefinition } from 'vuetify'
+import type { ThemeDefinition } from 'vuetify';
 
-import { colors } from '@/constants/theme'
+import { colors } from '@/constants/theme';
 
 export const lightTheme: ThemeDefinition = {
   dark: false,
@@ -16,9 +16,9 @@ export const lightTheme: ThemeDefinition = {
     success: colors.success,
     warning: colors.warning,
     error: colors.error,
-    info: colors.info,
-  },
-}
+    info: colors.info
+  }
+};
 
 export const darkTheme: ThemeDefinition = {
   dark: true,
@@ -40,6 +40,6 @@ export const darkTheme: ThemeDefinition = {
 
     error: '#EF5350',
 
-    info: '#42A5F5',
-  },
-}
+    info: '#42A5F5'
+  }
+};

@@ -1,10 +1,10 @@
-import 'vuetify/styles'
-import '@mdi/font/css/materialdesignicons.css'
+import 'vuetify/styles';
+import '@mdi/font/css/materialdesignicons.css';
 
-import { createVuetify } from 'vuetify'
+import { createVuetify } from 'vuetify';
 
-import { darkTheme, lightTheme } from './theme'
-import { ThemeName } from '@/constants/theme'
+import { darkTheme, lightTheme } from './theme';
+import { ThemeName } from '@/constants/theme';
 
 export function createAppVuetify() {
   return createVuetify({
@@ -12,8 +12,8 @@ export function createAppVuetify() {
       defaultTheme: ThemeName.Light,
       themes: {
         [ThemeName.Light]: lightTheme,
-        [ThemeName.Dark]: darkTheme,
-      },
-    },
-  })
+        [ThemeName.Dark]: darkTheme
+      }
+    }
+  });
 }

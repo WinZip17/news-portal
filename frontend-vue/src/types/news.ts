@@ -27,7 +27,7 @@ export enum NewsCategory {
   ENTERTAINMENT = 'entertainment',
   HEALTH = 'health',
   WORLD = 'world',
-  OTHER = 'other',
+  OTHER = 'other'
 }
 
 export enum NewsStatus {
@@ -35,7 +35,7 @@ export enum NewsStatus {
   PENDING = 'pending',
   PUBLISHED = 'published',
   REJECTED = 'rejected',
-  ARCHIVED = 'archived',
+  ARCHIVED = 'archived'
 }
 
 export interface NewsFilter {

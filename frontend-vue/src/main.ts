@@ -1,25 +1,17 @@
-import { createApp } from 'vue'
+import { createApp } from 'vue';
 
-import App from './App.vue'
-import router from './router'
-import { key } from '@/store/injectionKey'
-import { createAppVuetify } from '@/plugins'
-import { createThemeSyncPlugin } from '@/plugins/store/themeSync.ts'
-import { createAppStore } from '@/store'
-import { createPersistPlugin } from '@/plugins/store/persist.ts'
-import { setupInterceptors } from '@/api/interceptors'
+import App from './App.vue';
+import router from './router';
+import { createAppVuetify } from '@/plugins';
+import { setupInterceptors } from '@/api/interceptors';
 
-const vuetify = createAppVuetify()
+const vuetify = createAppVuetify();
+import { pinia } from './stores';
 
-const store = createAppStore([
-  createPersistPlugin(),
-  createThemeSyncPlugin(vuetify.theme)
-])
+const app = createApp(App);
+setupInterceptors();
+app.use(pinia);
+app.use(router);
+app.use(vuetify);
 
-const app = createApp(App)
-setupInterceptors()
-app.use(store, key)
-app.use(router)
-app.use(vuetify)
-
-app.mount('#app')
+app.mount('#app');

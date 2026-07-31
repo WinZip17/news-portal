@@ -9,8 +9,8 @@ export const colors = {
   info: '#2196F3',
 
   background: '#F5F5F5',
-  surface: '#FFFFFF',
-}
+  surface: '#FFFFFF'
+};
 
 export enum ThemeName {
   Light = 'light',
