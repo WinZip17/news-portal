@@ -1,6 +1,6 @@
 {
-  "name": "News Portal - Короткие новости без манипуляций",
-  "short_name": "News Portal",
+  "name": "Short News - Короткие новости без манипуляций",
+  "short_name": "Short News",
   "description": "Быстрые и короткие новости с AI-рерайтом. Минимум слов, максимум фактов.",
   "start_url": "/",
   "display": "standalone",

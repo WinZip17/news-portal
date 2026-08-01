@@ -91,7 +91,7 @@ export class NewsController {
                       <priority>0.8</priority>
                       <news:news>
                         <news:publication>
-                          <news:name>News Portal</news:name>
+                          <news:name>Short News</news:name>
                           <news:language>ru</news:language>
                         </news:publication>
                         <news:publication_date>${new Date(item.publishedAt).toISOString()}</news:publication_date>

@@ -72,7 +72,7 @@ export default function HomePage() {
           sx={{ fontWeight: 700, fontSize: { xs: '1.8rem', sm: '2.5rem', md: '3rem' } }}
           gutterBottom
         >
-          📰 News Portal
+          📰 Short News
         </Typography>
         <Typography
           variant="h4"

@@ -121,7 +121,7 @@ const MainLayout: React.FC = () => {
           }}
           onClick={() => navigate('/')}
         >
-          {collapsed ? '📰' : '📰 News Portal'}
+          {collapsed ? '📰' : '📰 Short News'}
         </div>
         <Menu
           theme="dark"
@@ -230,7 +230,7 @@ const MainLayout: React.FC = () => {
           <Outlet />
         </Content>
 
-        <Footer style={{ textAlign: 'center' }}>News Portal ©{new Date().getFullYear()} - Создано с ❤️ и AI</Footer>
+        <Footer style={{ textAlign: 'center' }}>Short News ©{new Date().getFullYear()} - Создано с ❤️ и AI</Footer>
       </Layout>
 
       <style>{`

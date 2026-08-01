@@ -31,7 +31,7 @@ const Home: React.FC = () => {
   return (
     <div>
       <Helmet>
-        <title>News Portal — Короткие новости без манипуляций</title>
+        <title>Short News — Короткие новости без манипуляций</title>
         <meta name="description" content="Быстрые и короткие новости с AI-рерайтом. Минимум слов, максимум фактов." />
         <link rel="canonical" href={window.location.origin} />
       </Helmet>
@@ -47,7 +47,7 @@ const Home: React.FC = () => {
         }}
       >
         <Title level={1} style={{ color: 'white', fontSize: '3em', marginBottom: 16 }}>
-          📰 News Portal
+          📰 Short News
         </Title>
         <Paragraph style={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.2em', marginBottom: 32, maxWidth: 600, margin: '0 auto 32px' }}>
           Актуальные новости с AI-рерайтом из проверенных источников.
