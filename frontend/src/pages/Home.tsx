@@ -1,4 +1,4 @@
-import React, { lazy, useEffect, useState } from 'react';
+import React, { lazy, useEffect, useState, startTransition } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Row, Typography, Button, Space, Empty, Modal } from 'antd';
 import { ReadOutlined, RocketOutlined, ArrowRightOutlined } from '@ant-design/icons';
@@ -22,12 +22,11 @@ const Home: React.FC = () => {
   const { selectedNewsId, modalVisible, openNews, closeNews } = useNewsModal();
 
   useEffect(() => {
-    const id = requestIdleCallback(() => {
-      fetchNews({ limit: 6, sortBy: 'publishedAt', sortOrder: 'DESC' });
+    startTransition(() => {
+      void fetchNews({ limit: 6, sortBy: 'publishedAt', sortOrder: 'DESC' });
       setInit(true);
     });
-    return () => cancelIdleCallback(id);
-  }, []);
+  }, [fetchNews]);
 
   return (
     <div>
