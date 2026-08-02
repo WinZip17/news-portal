@@ -4,28 +4,31 @@ import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useUIStore } from '@/stores/ui';
 import FrameworkSwitcher from '@/components/common/FrameworkSwitcher.vue';
+import { useDisplay } from 'vuetify';
+import { storeToRefs } from 'pinia';
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 const uiStore = useUIStore();
+const { isDark } = storeToRefs(uiStore);
+const { toggleTheme } = uiStore;
+const { smAndDown } = useDisplay();
 
 const drawer = ref(false);
+const rail = ref(false);
 
 const navItems = computed(() => {
   const items = [
     { title: 'Главная', icon: 'mdi-home', to: '/' },
     { title: 'Новости', icon: 'mdi-newspaper', to: '/news' }
   ];
-
   if (authStore.isAuthenticated) {
     items.push({ title: 'Профиль', icon: 'mdi-account', to: '/profile' });
   }
-
   if (authStore.isAdmin || authStore.isModerator) {
     items.push({ title: 'Админ-панель', icon: 'mdi-shield-account', to: '/admin' });
   }
-
   return items;
 });
 
@@ -48,22 +51,31 @@ function handleLogout() {
 
 function goTo(path: string) {
   router.push(path);
-  drawer.value = false;
+  if (smAndDown) drawer.value = false;
 }
 </script>
 
 <template>
   <v-layout>
-    <v-navigation-drawer v-model="drawer" temporary>
+    <!-- Десктопный сайдбар -->
+    <v-navigation-drawer v-if="!smAndDown" permanent :rail="rail" @update:rail="rail = $event">
       <v-list-item title="📰 News Portal" @click="goTo('/')" class="cursor-pointer" />
 
+      <v-list nav density="compact">
+        <v-list-item v-for="item in navItems" :key="item.to" :title="item.title" :prepend-icon="item.icon" :active="route.path === item.to" @click="goTo(item.to)" />
+      </v-list>
+    </v-navigation-drawer>
+
+    <!-- Мобильное меню -->
+    <v-navigation-drawer v-if="smAndDown" v-model="drawer" temporary>
+      <v-list-item title="📰 News Portal" @click="goTo('/')" class="cursor-pointer" />
       <v-list nav>
         <v-list-item v-for="item in navItems" :key="item.to" :title="item.title" :prepend-icon="item.icon" :active="route.path === item.to" @click="goTo(item.to)" />
       </v-list>
     </v-navigation-drawer>
 
     <v-app-bar elevation="1">
-      <v-app-bar-nav-icon @click="drawer = !drawer" />
+      <v-app-bar-nav-icon v-if="smAndDown" @click="drawer = !drawer" />
 
       <v-app-bar-title>{{ title }}</v-app-bar-title>
 
@@ -73,7 +85,7 @@ function goTo(path: string) {
 
       <v-spacer />
 
-      <v-btn :icon="uiStore.isDark ? 'mdi-weather-sunny' : 'mdi-weather-night'" @click="uiStore.toggleTheme()" />
+      <v-btn :icon="isDark ? 'mdi-weather-sunny' : 'mdi-weather-night'" @click="toggleTheme" />
 
       <v-menu>
         <template #activator="{ props }">
@@ -92,7 +104,6 @@ function goTo(path: string) {
     <v-main>
       <v-container fluid>
         <slot />
-        <router-view />
       </v-container>
     </v-main>
 

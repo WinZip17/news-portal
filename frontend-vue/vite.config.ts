@@ -1,10 +1,10 @@
 // import { fileURLToPath, URL } from 'node:url'
 // '@': fileURLToPath(new URL('./src', import.meta.url)),
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
-import path from 'node:path'
-import vuetify from 'vite-plugin-vuetify'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import vueDevTools from 'vite-plugin-vue-devtools';
+import path from 'node:path';
+import vuetify from 'vite-plugin-vuetify';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -12,8 +12,8 @@ export default defineConfig({
     vue(),
     vueDevTools(),
     vuetify({
-      autoImport: true,
-    }),
+      autoImport: true
+    })
   ],
   resolve: {
     alias: {
@@ -24,7 +24,17 @@ export default defineConfig({
       '@services': path.resolve(__dirname, './src/services'),
       '@store': path.resolve(__dirname, './src/store'),
       '@utils': path.resolve(__dirname, './src/utils'),
-      '@types': path.resolve(__dirname, './src/types'),
-    },
+      '@types': path.resolve(__dirname, './src/types')
+    }
   },
-})
+  server: {
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        // target: 'https://short-news.ru/',
+        changeOrigin: true
+      }
+    }
+  }
+});

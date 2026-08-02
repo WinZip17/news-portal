@@ -40,5 +40,10 @@ export const newsService = {
   async getFavorites(page = 1, limit = 20): Promise<NewsResponse> {
     const response = await apiClient.get<NewsResponse>('/news/favorites', { params: { page, limit } });
     return response.data;
+  },
+
+  async updateNews(id: string, data: Partial<News>): Promise<News> {
+    const response = await apiClient.put<News>(`/news/${id}`, data);
+    return response.data;
   }
 };

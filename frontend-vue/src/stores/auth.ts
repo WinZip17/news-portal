@@ -65,6 +65,19 @@ export const useAuthStore = defineStore('auth', () => {
   function clearError() {
     error.value = null;
   }
+  async function updateProfile(data: Partial<Pick<User, 'firstName' | 'lastName' | 'avatar'>>) {
+    const updated = await authService.updateProfile(data);
+    user.value = updated;
+  }
+
+  async function updatePreferences(preferences: Partial<User['preferences']>) {
+    const updated = await authService.updatePreferences(preferences);
+    user.value = updated;
+  }
+
+  async function changePassword(data: { currentPassword: string; newPassword: string }) {
+    await authService.changePassword(data);
+  }
 
   return {
     user,
@@ -79,6 +92,9 @@ export const useAuthStore = defineStore('auth', () => {
     register,
     fetchCurrentUser,
     logout,
-    clearError
+    clearError,
+    updateProfile,
+    updatePreferences,
+    changePassword
   };
 });
