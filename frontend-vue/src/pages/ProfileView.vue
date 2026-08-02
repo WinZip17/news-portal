@@ -2,10 +2,11 @@
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
-import { type Theme, useUIStore } from '@/stores/ui';
+import { useUIStore } from '@/stores/ui';
 import { newsService } from '@/services/news.service';
 import type { News } from '@/types/news';
 import { storeToRefs } from 'pinia';
+import { useHead } from '@unhead/vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -113,6 +114,7 @@ async function removeFavorite(id: string) {
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString('ru-RU');
 }
+useHead({ title: 'Профиль' });
 </script>
 
 <template>

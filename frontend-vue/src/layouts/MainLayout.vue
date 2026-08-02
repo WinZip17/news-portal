@@ -6,6 +6,7 @@ import { useUIStore } from '@/stores/ui';
 import FrameworkSwitcher from '@/components/common/FrameworkSwitcher.vue';
 import { useDisplay } from 'vuetify';
 import { storeToRefs } from 'pinia';
+import { useHead } from '@unhead/vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -53,6 +54,14 @@ function goTo(path: string) {
   router.push(path);
   if (smAndDown) drawer.value = false;
 }
+
+useHead({
+  titleTemplate: '%s | Short News',
+  meta: [
+    { name: 'description', content: 'Быстрые и короткие новости с AI-рерайтом.' },
+    { property: 'og:site_name', content: 'Short News' }
+  ]
+});
 </script>
 
 <template>

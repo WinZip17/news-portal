@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
+    "@unhead/vue": "^3.2.3",
     "axios": "^1.19.0",
     "pinia": "^4.0.2",
     "pinia-plugin-persistedstate": "^4.7.1",

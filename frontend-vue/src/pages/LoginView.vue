@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import { useHead } from '@unhead/vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -33,6 +34,7 @@ async function handleSubmit() {
     loading.value = false;
   }
 }
+useHead({ title: 'Вход' });
 </script>
 
 <template>

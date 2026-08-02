@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { useNewsStore } from '@/stores/news';
-import { useAuthStore } from '@/stores/auth';
 import NewsCard from '@/components/news/NewsCard.vue';
 import NewsDetailModal from '@/components/news/NewsDetailModal.vue';
 import type { News } from '@/types/news';
 import { storeToRefs } from 'pinia';
+import { useHead } from '@unhead/vue';
 
 const newsStore = useNewsStore();
-const authStore = useAuthStore();
-const { news, isLoading, total, page, totalPages, initialLoading } = storeToRefs(newsStore);
+const { news, page, totalPages, initialLoading } = storeToRefs(newsStore);
 
 const search = ref('');
 const category = ref('all');
@@ -100,6 +99,11 @@ const categories = [
   { value: 'health', label: '🏥 Здоровье' },
   { value: 'world', label: '🌍 Мир' }
 ];
+
+useHead({
+  title: 'Лента новостей',
+  meta: [{ name: 'description', content: 'Актуальные новости с фильтрацией по категориям.' }]
+});
 </script>
 
 <template>

@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import { useHead } from '@unhead/vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -39,6 +40,7 @@ async function handleSubmit() {
     loading.value = false;
   }
 }
+useHead({ title: 'Регистрация' });
 </script>
 
 <template>
