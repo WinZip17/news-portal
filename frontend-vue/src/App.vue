@@ -1,18 +1,20 @@
 <template>
   <v-app>
-    <MainLayout>
+    <MainLayout v-if="authStore.isInitialized">
       <RouterView />
     </MainLayout>
+    <v-progress-circular v-else indeterminate />
   </v-app>
 </template>
 
 <script setup lang="ts">
-import MainLayout from '@/layouts/MainLayout.vue';
-
-import { watch } from 'vue';
+import { onMounted, watch } from 'vue';
 import { useTheme } from 'vuetify';
 import { useUIStore } from '@/stores/ui';
+import MainLayout from '@/layouts/MainLayout.vue';
+import { useAuthStore } from '@/stores/auth';
 
+const authStore = useAuthStore();
 const vuetifyTheme = useTheme();
 const uiStore = useUIStore();
 
@@ -24,4 +26,8 @@ watch(
     vuetifyTheme.global.name.value = newTheme;
   }
 );
+
+onMounted(() => {
+  authStore.initialize();
+});
 </script>

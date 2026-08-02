@@ -11,8 +11,3 @@ export const colors = {
   background: '#F5F5F5',
   surface: '#FFFFFF'
 };
-
-export enum ThemeName {
-  Light = 'light',
-  Dark = 'dark'
-}

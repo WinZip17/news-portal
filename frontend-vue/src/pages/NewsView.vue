@@ -103,7 +103,7 @@ const categories = [
 </script>
 
 <template>
-  <div>
+  <div class="mx-auto" style="max-width: 960px">
     <h2 class="text-h4 mb-4">📰 Лента новостей</h2>
 
     <div class="d-flex flex-wrap gap-2 mb-4">
@@ -121,7 +121,7 @@ const categories = [
         "
         clearable
       />
-      <v-select v-model="category" :items="categories" density="compact" hide-details style="max-width: 180px" />
+      <v-select v-model="category" :items="categories" itemValue="value" itemTitle="label" density="compact" hide-details style="max-width: 180px" />
       <v-select
         v-model="sortBy"
         :items="[

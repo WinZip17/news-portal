@@ -2,12 +2,15 @@
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import { type Theme, useUIStore } from '@/stores/ui';
 import { newsService } from '@/services/news.service';
 import type { News } from '@/types/news';
 import { storeToRefs } from 'pinia';
 
 const router = useRouter();
 const authStore = useAuthStore();
+const uiStore = useUIStore();
+
 const { user, isAuthenticated } = storeToRefs(authStore);
 
 const tab = ref(0);
@@ -95,6 +98,7 @@ async function handleSavePreferences() {
       theme: theme.value,
       notificationsEnabled: notificationsEnabled.value
     });
+    uiStore.setTheme(theme.value);
     prefsSuccess.value = 'Настройки сохранены';
   } catch (err: unknown) {
     prefsError.value = err instanceof Error ? err.message : 'Ошибка';

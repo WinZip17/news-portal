@@ -34,7 +34,18 @@ onMounted(async () => {
     router.push('/');
     return;
   }
-  await loadData();
+  // Загружаем всё сразу
+  await Promise.all([
+    (async () => {
+      const n = await newsService.getNews({ limit: 50, sortBy: 'createdAt', sortOrder: 'DESC' });
+      news.value = n.data;
+    })(),
+    (async () => {
+      const u = await apiClient.get('/auth/users', { params: { limit: 50 } });
+      users.value = u.data.data;
+    })()
+  ]);
+  loading.value = false;
 });
 
 async function loadData() {
@@ -200,6 +211,7 @@ function getRoleLabel(role: string) {
               <th>Email</th>
               <th>Роль</th>
               <th>Активен</th>
+              <th>Действия</th>
             </tr>
           </thead>
           <tbody>
@@ -210,6 +222,12 @@ function getRoleLabel(role: string) {
                 <v-chip size="small" :color="user.role === 'admin' ? 'error' : 'primary'">{{ getRoleLabel(user.role) }}</v-chip>
               </td>
               <td>{{ user.isActive ? '✅' : '❌' }}</td>
+              <td>
+                <template v-if="user.role !== 'super_admin'">
+                  <v-btn class="mr-2" size="x-small" icon="mdi-pencil" @click="openEdit(user, 'user')" />
+                  <v-btn size="x-small" icon="mdi-delete" color="error" @click="confirmDelete(user.id, 'user')" />
+                </template>
+              </td>
             </tr>
           </tbody>
         </v-table>
