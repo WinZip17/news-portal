@@ -88,6 +88,15 @@ services:
       - news-portal-network
     restart: unless-stopped
 
+  frontend-vue:
+    build:
+      context: ./frontend-vue
+      dockerfile: Dockerfile
+    container_name: news-portal-vue
+    networks:
+      - news-portal-network
+    restart: unless-stopped
+
   prometheus:
     build:
       context: ./prometheus

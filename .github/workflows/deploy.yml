@@ -79,6 +79,7 @@ jobs:
               echo "❌ React frontend failed!"; docker compose logs frontend --tail=20; exit 1
             fi
             echo "✅ React frontend running"
+
             echo "🔵 Building Next.js frontend..."
             docker compose up -d --build frontend-next
             sleep 5
@@ -86,13 +87,23 @@ jobs:
               echo "❌ Next.js failed!"; docker compose logs frontend-next --tail=20; exit 1
             fi
             echo "✅ Next.js running"
+
             echo "🟣 Building Nuxt frontend..."
             docker compose up -d --build frontend-nuxt
             sleep 5
             if ! docker compose ps frontend-nuxt | grep -q "Up"; then
-            echo "❌ Nuxt failed!"; docker compose logs frontend-nuxt --tail=20; exit 1
+              echo "❌ Nuxt failed!"; docker compose logs frontend-nuxt --tail=20; exit 1
             fi
             echo "✅ Nuxt running"
+
+            echo "💚 Building Vue frontend..."
+            docker compose up -d --build frontend-vue
+            sleep 5
+            if ! docker compose ps frontend-vue | grep -q "Up"; then
+              echo "❌ Vue failed!"; docker compose logs frontend-vue --tail=20; exit 1
+            fi
+            echo "✅ Vue running"
+
             docker image prune -f || true
             echo "✅ Deployment completed!"
             docker compose ps
