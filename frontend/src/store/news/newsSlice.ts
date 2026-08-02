@@ -137,7 +137,7 @@ const newsSlice = createSlice({
   initialState,
   reducers: {
     setFilter: (state, action: PayloadAction<Partial<NewsFilter>>) => {
-      state.filters = { ...state.filters, ...action.payload, page: undefined };
+      state.filters = { ...state.filters, ...action.payload };
     },
     setPage: (state, action: PayloadAction<number>) => {
       state.filters.page = action.payload;

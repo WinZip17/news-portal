@@ -68,7 +68,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     <Box sx={{ width: 240 }}>
       <Box sx={{ p: 2, textAlign: 'center', cursor: 'pointer' }} onClick={() => router.push('/')}>
         <Typography variant="h6" sx={{ fontWeight: 700 }}>
-          📰 News Portal
+          📰 Short News
         </Typography>
       </Box>
       <List>
@@ -213,7 +213,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             fontSize: { xs: '0.75rem', sm: '0.875rem' },
           }}
         >
-          News Portal ©{new Date().getFullYear()} - Создано с ❤️ и AI
+          Short News ©{new Date().getFullYear()} - Создано с ❤️ и AI
         </Box>
       </Box>
     </Box>

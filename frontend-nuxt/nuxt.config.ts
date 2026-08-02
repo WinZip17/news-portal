@@ -17,9 +17,9 @@ export default defineNuxtConfig({
         {
           name: 'description',
           content:
-            'News Portal — быстрые и короткие новости с AI-рерайтом. Минимум слов, максимум фактов. Читайте суть за 30 секунд без кликбейта и манипуляций.',
+            'Short News — быстрые и короткие новости с AI-рерайтом. Минимум слов, максимум фактов. Читайте суть за 30 секунд без кликбейта и манипуляций.',
         },
-        { name: 'author', content: 'News Portal' },
+        { name: 'author', content: 'Short News' },
         { name: 'robots', content: 'index, follow, max-snippet:-1, max-image-preview:large' },
         { name: 'theme-color', content: '#020420' },
         { name: 'msapplication-TileColor', content: '#020420' },

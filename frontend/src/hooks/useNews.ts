@@ -47,11 +47,14 @@ export const useNews = () => {
 
   const handleFetchNews = useCallback(
     (filterParams?: NewsFilter) => {
-      const params = { ...filters, ...filterParams };
-      dispatch(setFilter(params));
+      if (filterParams?.page) {
+        dispatch(setPage(filterParams.page));
+      } else {
+        dispatch(setFilter(filterParams || {}));
+      }
       return dispatch(fetchNews()).unwrap();
     },
-    [dispatch, filters],
+    [dispatch],
   );
 
   const handleFetchNewsById = useCallback(

@@ -28,7 +28,7 @@ const AuthLayout: React.FC = () => {
             >
               <div style={{ textAlign: 'center', marginBottom: 32 }}>
                 <Title level={2} style={{ marginBottom: 8 }}>
-                  📰 News Portal
+                  📰 Short News
                 </Title>
                 <Text type="secondary">Ваш источник актуальных новостей</Text>
               </div>

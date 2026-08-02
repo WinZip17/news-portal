@@ -11,8 +11,8 @@ export default defineConfig({
       injectRegister: null,
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'News Portal - Короткие новости без манипуляций',
-        short_name: 'News Portal',
+        name: 'Short News - Короткие новости без манипуляций',
+        short_name: 'Short News',
         description: 'Быстрые и короткие новости с AI-рерайтом. Минимум слов, максимум фактов.',
         theme_color: '#1a1a2e',
         background_color: '#1a1a2e',

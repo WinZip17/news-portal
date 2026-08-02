@@ -23,7 +23,7 @@ const NewsList: React.FC = () => {
   return (
     <div style={{ maxWidth: 960, margin: '0 auto' }}>
       <Helmet>
-        <title>News Portal — 📰 Лента новостей. Короткие новости без манипуляций</title>
+        <title>Short News — 📰 Лента новостей. Короткие новости без манипуляций</title>
         <meta name="description" content="Быстрые и короткие новости с AI-рерайтом. Минимум слов, максимум фактов." />
         <link rel="canonical" href={window.location.origin} />
       </Helmet>
