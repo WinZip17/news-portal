@@ -1,11 +1,12 @@
 import React from 'react';
 
 interface FrameworkSwitcherProps {
-  current: 'react' | 'nestjs' | 'nuxt';
+  current: 'react' | 'nestjs' | 'nuxt' | 'vue';
 }
 
 const frameworks = {
   react: { label: '⚛️ React SPA', url: 'https://short-news.ru' },
+  vue: { label: '🟢 Vue SPA', url: 'https://vue.short-news.ru' },
   next: { label: '🔵 Next.js', url: 'https://next.short-news.ru' },
   nuxt: { label: '🟣 Nuxt', url: 'https://nuxt.short-news.ru' },
   // nestjs: { label: '🟢 NestJS SSR + React', url: 'https://nest.short-news.ru' },

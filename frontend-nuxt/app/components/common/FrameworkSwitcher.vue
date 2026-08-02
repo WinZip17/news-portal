@@ -17,13 +17,13 @@ interface Framework {
   url: string;
 }
 
-type FrameworkKey = 'react' | 'next' | 'nuxt';
+type FrameworkKey = 'react' | 'next' | 'nuxt' | 'vue';
 
 const frameworks: Record<FrameworkKey, Framework> = {
   react: { label: '⚛️ React SPA', url: 'https://short-news.ru' },
+  vue: { label: '🟢 Vue SPA', url: 'https://vue.short-news.ru' },
   next: { label: '🔵 Next.js', url: 'https://next.short-news.ru' },
   nuxt: { label: '🟣 Nuxt', url: 'https://nuxt.short-news.ru' },
-  // nestjs: { label: '🟢 NestJS SSR + React', url: 'https://nest.short-news.ru' },
 };
 const currentValue = ref('nuxt');
 function handleChange(e: Event) {
