@@ -5,7 +5,7 @@ import AuthLayout from '@/components/layout/AuthLayout';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import PublicRoute from '@/components/auth/PublicRoute';
 import { PageLoader } from '@/components/PageLoader.tsx';
-import { AdminDashboard, Login, NewsList, NotFound, Profile, Register } from '@/config/routes.lazy.ts';
+import { AdminDashboard, Login, NewsList, Profile, Register } from '@/config/routes.lazy.ts';
 
 export const routes = [
   {
@@ -78,12 +78,12 @@ export const routes = [
       },
     ],
   },
-  {
-    path: '*',
-    element: (
-      <Suspense fallback={<PageLoader />}>
-        <NotFound />
-      </Suspense>
-    ),
-  },
+  // {
+  //   path: '*',
+  //   element: (
+  //     <Suspense fallback={<PageLoader />}>
+  //       <NotFound />
+  //     </Suspense>
+  //   ),
+  // },
 ];
