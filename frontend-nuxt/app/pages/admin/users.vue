@@ -164,6 +164,7 @@
 <script setup lang="ts">
 import type { UserResponse, UpdateUserDto, UserRole } from '~/types';
 import { useAuthService } from '~/services/auth.service.ts';
+import { getErrorMessage } from '~/utils/getErrorMessage.ts';
 
 definePageMeta({
   layout: 'admin',
@@ -214,11 +215,11 @@ async function loadUsers() {
     isLoading.value = true;
     const usersData = await authService.getUsers();
     users.value = usersData.data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     toast.add({
       severity: 'error',
       summary: 'Ошибка',
-      detail: error.message || 'Не удалось загрузить пользователей',
+      detail: getErrorMessage(error, 'Не удалось загрузить пользователей'),
       life: 3000,
     });
   } finally {
@@ -309,8 +310,8 @@ async function saveUser() {
 
     editDialog.value = false;
     loadUsers();
-  } catch (error: any) {
-    editError.value = error.message || 'Ошибка при сохранении';
+  } catch (error: unknown) {
+    editError.value = getErrorMessage(error, 'Ошибка при сохранении');
   } finally {
     isSaving.value = false;
   }
@@ -334,11 +335,11 @@ function confirmDelete(user: UserResponse) {
           life: 3000,
         });
         loadUsers();
-      } catch (error: any) {
+      } catch (error: unknown) {
         toast.add({
           severity: 'error',
           summary: 'Ошибка',
-          detail: error.message || 'Не удалось удалить пользователя',
+          detail: getErrorMessage(error, 'Не удалось удалить пользователя'),
           life: 3000,
         });
       }

@@ -105,6 +105,8 @@
 </template>
 
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/getErrorMessage.ts';
+
 definePageMeta({
   middleware: 'guest',
 });
@@ -163,8 +165,8 @@ async function handleRegister() {
     });
 
     router.push('/');
-  } catch (error: any) {
-    authError.value = error.message || 'Ошибка при регистрации';
+  } catch (error: unknown) {
+    authError.value = getErrorMessage(error, 'Ошибка при регистрации');
   }
 }
 </script>

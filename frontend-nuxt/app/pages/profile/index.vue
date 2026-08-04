@@ -181,6 +181,7 @@
 import type { NewsItem, UserPreferences } from '~/types';
 import { useAuthService } from '~/services/auth.service.ts';
 import { useNewsService } from '~/services/news.service.ts';
+import { getErrorMessage } from '~/utils/getErrorMessage.ts';
 
 definePageMeta({
   middleware: 'auth',
@@ -266,8 +267,8 @@ async function updateProfile() {
 
     profileSuccess.value = 'Профиль успешно обновлен';
     await authStore.checkAuth();
-  } catch (error: any) {
-    profileError.value = error.message || 'Ошибка при обновлении профиля';
+  } catch (error: unknown) {
+    profileError.value = getErrorMessage(error, 'Ошибка при обновлении профиля');
   } finally {
     isUpdating.value = false;
   }
@@ -300,8 +301,8 @@ async function changePassword() {
       newPassword: '',
       confirmPassword: '',
     };
-  } catch (error: any) {
-    passwordError.value = error.message || 'Ошибка при смене пароля';
+  } catch (error: unknown) {
+    passwordError.value = getErrorMessage(error, 'Ошибка при смене пароля');
   } finally {
     isChangingPassword.value = false;
   }

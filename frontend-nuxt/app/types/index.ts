@@ -181,3 +181,20 @@ export interface NewsResponse {
   limit: number;
   totalPages: number;
 }
+export interface AiGenerateResponse {
+  news: NewsItem[];
+  count: number;
+  category: NewsCategory;
+}
+
+export interface AiAutoGenerateResponse {
+  news: NewsItem[];
+  totalCount: number;
+  categories: NewsCategory[];
+}
+
+export interface AiStatusResponse {
+  available: boolean;
+  model: string;
+  quota: number;
+}

@@ -87,7 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import type { NewsItem, NewsCategory } from '~/types';
+import type { NewsItem, NewsCategory, NewsFilter } from '~/types';
 import { useDebounceFn } from '@vueuse/core';
 
 const newsStore = useNewsStore();
@@ -124,15 +124,15 @@ const debouncedSearch = useDebounceFn(() => {
   applyFilters();
 }, 500);
 
-function applyFilters() {
-  const filter: any = {
+function applyFilters(): void {
+  const filter: NewsFilter = {
     search: searchQuery.value || undefined,
     category: selectedCategory.value || undefined,
   };
 
   if (sortBy.value) {
     const [field, order] = sortBy.value.split('_');
-    filter.sortBy = field;
+    filter.sortBy = field as NewsFilter['sortBy'];
     filter.sortOrder = order === 'asc' ? 'ASC' : 'DESC';
   }
 
@@ -140,7 +140,7 @@ function applyFilters() {
   newsStore.fetchNews();
 }
 
-function resetFilters() {
+function resetFilters(): void {
   searchQuery.value = '';
   selectedCategory.value = null;
   sortBy.value = 'publishedAt';
@@ -148,7 +148,12 @@ function resetFilters() {
   newsStore.fetchNews();
 }
 
-function onPageChange(event: any) {
+interface PageEvent {
+  page: number;
+  rows: number;
+}
+
+function onPageChange(event: PageEvent): void {
   newsStore.setFilter({
     page: event.page + 1,
     limit: event.rows,
@@ -156,7 +161,7 @@ function onPageChange(event: any) {
   newsStore.fetchNews();
 }
 
-function openNewsDetail(id: string) {
+function openNewsDetail(id: string): void {
   selectedNews.value = newsStore.news.find((n: NewsItem) => n.id === id) || null;
   if (selectedNews.value) {
     detailModalVisible.value = true;

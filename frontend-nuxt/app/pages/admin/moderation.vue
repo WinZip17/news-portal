@@ -124,6 +124,7 @@
 
 <script setup lang="ts">
 import type { NewsItem, NewsStatus } from '~/types';
+import { getErrorMessage } from '~/utils/getErrorMessage.ts';
 
 definePageMeta({
   layout: 'admin',
@@ -217,11 +218,11 @@ async function moderateNews(id: string, status: string) {
       life: 3000,
     });
     loadNews();
-  } catch (error: any) {
+  } catch (error: unknown) {
     toast.add({
       severity: 'error',
       summary: 'Ошибка',
-      detail: error.message || 'Не удалось изменить статус',
+      detail: getErrorMessage(error, 'Не удалось изменить статус'),
       life: 3000,
     });
   } finally {

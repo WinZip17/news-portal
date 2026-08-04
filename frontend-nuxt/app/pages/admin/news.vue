@@ -116,6 +116,7 @@
 import type { NewsItem, CreateNewsDto, NewsCategory } from '~/types';
 import { NewsStatus } from '~/types';
 import { useUtils } from '~/composables/useUtils.ts';
+import { getErrorMessage } from '~/utils/getErrorMessage.ts';
 
 definePageMeta({
   layout: 'admin',
@@ -248,11 +249,11 @@ async function saveNews() {
 
     newsDialog.value = false;
     newsStore.fetchNews();
-  } catch (error: any) {
+  } catch (error: unknown) {
     toast.add({
       severity: 'error',
       summary: 'Ошибка',
-      detail: error.message || 'Не удалось сохранить новость',
+      detail: getErrorMessage(error, 'Не удалось сохранить новость'),
       life: 3000,
     });
   } finally {
@@ -277,11 +278,11 @@ function confirmDelete(news: NewsItem) {
           detail: 'Новость удалена',
           life: 3000,
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
         toast.add({
           severity: 'error',
           summary: 'Ошибка',
-          detail: error.message || 'Не удалось удалить новость',
+          detail: getErrorMessage(error, 'Не удалось удалить новость'),
           life: 3000,
         });
       }

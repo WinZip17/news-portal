@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import type { CreateNewsDto, ModerationBody, NewsFilter, NewsItem, StatsResponse } from '~/types';
 import { useNewsService } from '~/services/news.service.ts';
+import { getErrorMessage } from '~/utils/getErrorMessage.ts';
 
 export const useNewsStore = defineStore('news', () => {
   const news = ref<NewsItem[]>([]);
@@ -26,8 +27,8 @@ export const useNewsStore = defineStore('news', () => {
       const data = await newsService.getNews(filter.value);
       news.value = data.data;
       isLoaded.value = true;
-    } catch (err: any) {
-      error.value = err.message;
+    } catch (err: unknown) {
+      error.value = getErrorMessage(err);
     } finally {
       isLoading.value = false;
     }
@@ -37,8 +38,8 @@ export const useNewsStore = defineStore('news', () => {
     try {
       isLoading.value = true;
       currentNews.value = await newsService.getNewsById(id);
-    } catch (err: any) {
-      error.value = err.message;
+    } catch (err: unknown) {
+      error.value = getErrorMessage(err);
     } finally {
       isLoading.value = false;
     }
@@ -89,7 +90,6 @@ export const useNewsStore = defineStore('news', () => {
     }
 
     await newsService.toggleFavorite(id);
-    // Обновляем статус избранного
     const newsItem = news.value.find((n) => n.id === id);
     if (newsItem) newsItem.isFavorite = !newsItem.isFavorite;
     if (currentNews.value?.id === id) {
@@ -102,8 +102,8 @@ export const useNewsStore = defineStore('news', () => {
       isLoading.value = true;
       const favoritesData = await newsService.getFavorites();
       favorites.value = favoritesData.data;
-    } catch (err: any) {
-      error.value = err.message;
+    } catch (err: unknown) {
+      error.value = getErrorMessage(err);
     } finally {
       isLoading.value = false;
     }
@@ -114,8 +114,8 @@ export const useNewsStore = defineStore('news', () => {
     try {
       const newsService = useNewsService();
       stats.value = await newsService.getStats();
-    } catch (err: any) {
-      error.value = err.message;
+    } catch (err: unknown) {
+      error.value = getErrorMessage(err);
     }
   }
 

@@ -118,6 +118,7 @@
 <script setup lang="ts">
 import type { NewsCategory } from '~/types';
 import { useAiService } from '~/services/ai.service.ts';
+import { getErrorMessage } from '~/utils/getErrorMessage.ts';
 
 definePageMeta({
   layout: 'admin',
@@ -189,8 +190,8 @@ async function generateNews() {
 
     success.value = `Сгенерировано новостей: ${generateForm.value.count}`;
     generateForm.value.topic = '';
-  } catch (err: any) {
-    error.value = err.message || 'Ошибка при генерации';
+  } catch (err: unknown) {
+    error.value = getErrorMessage(err, 'Ошибка при генерации');
   } finally {
     isGenerating.value = false;
   }
@@ -207,8 +208,8 @@ async function autoGenerate() {
     });
 
     success.value = 'Авто-генерация успешно запущена';
-  } catch (err: any) {
-    error.value = err.message || 'Ошибка при авто-генерации';
+  } catch (err: unknown) {
+    error.value = getErrorMessage(err, 'Ошибка при авто-генерации');
   } finally {
     isAutoGenerating.value = false;
   }

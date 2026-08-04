@@ -70,6 +70,8 @@
 </template>
 
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/getErrorMessage.ts';
+
 definePageMeta({
   middleware: 'guest',
 });
@@ -114,8 +116,8 @@ async function handleLogin() {
 
     // Перенаправляем на главную после входа
     router.push('/');
-  } catch (error: any) {
-    authError.value = error.message || 'Ошибка при входе';
+  } catch (error: unknown) {
+    authError.value = getErrorMessage(error, 'Ошибка при входе');
   }
 }
 </script>

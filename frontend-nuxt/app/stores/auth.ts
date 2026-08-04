@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import type { LoginDto, RegisterDto, UserResponse } from '~/types';
 import { useAuthService } from '~/services/auth.service.ts';
+import { getErrorMessage } from '~/utils/getErrorMessage.ts';
 
 export const useAuthStore = defineStore('auth', () => {
   const uiStore = useUIStore();
@@ -42,8 +43,8 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await authService.login(data);
       user.value = response.user;
       isAuthenticated.value = true;
-    } catch (err: any) {
-      error.value = err.message;
+    } catch (err: unknown) {
+      error.value = getErrorMessage(err);
       throw err;
     } finally {
       isLoading.value = false;
@@ -57,8 +58,8 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await authService.register(data);
       user.value = response.user;
       isAuthenticated.value = true;
-    } catch (err: any) {
-      error.value = err.message;
+    } catch (err: unknown) {
+      error.value = getErrorMessage(err);
       throw err;
     } finally {
       isLoading.value = false;
