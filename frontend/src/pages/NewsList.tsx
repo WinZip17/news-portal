@@ -19,6 +19,12 @@ const NewsList: React.FC = () => {
     setPage(1);
     setFilters({ limit: 20 });
     fetchNews();
+  }, []);
+
+  useEffect(() => {
+    if (!initialLoading) {
+      fetchNews();
+    }
   }, [JSON.stringify(filters)]);
 
   useEffect(() => {
@@ -26,7 +32,6 @@ const NewsList: React.FC = () => {
       (entries) => {
         if (entries[0].isIntersecting && !isLoading && pagination.page < pagination.totalPages) {
           setPage(pagination.page + 1);
-          fetchNews();
         }
       },
       { threshold: 0.1 },
@@ -65,7 +70,7 @@ const NewsList: React.FC = () => {
         </Empty>
       ) : initialLoading ? (
         <Row gutter={[16, 16]}>
-          {Array.from({ length: 6 }).map((_, i) => (
+          {Array.from({ length: 20 }).map((_, i) => (
             <Col style={{ width: '100%' }} key={i}>
               <Card style={{ borderRadius: 8, marginBottom: 12 }}>
                 <Skeleton active paragraph={{ rows: 3 }} />
