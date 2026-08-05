@@ -177,7 +177,11 @@ const newsSlice = createSlice({
       })
       .addCase(fetchNews.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.news = action.payload.data;
+        if (state.page > 1) {
+          state.news = [...state.news, ...action.payload.data];
+        } else {
+          state.news = action.payload.data;
+        }
         state.total = action.payload.total;
         state.page = action.payload.page;
         state.limit = action.payload.limit;
