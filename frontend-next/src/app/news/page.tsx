@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   Container,
   Typography,
@@ -11,7 +11,6 @@ import {
   Box,
   TextField,
   MenuItem,
-  Pagination,
   Skeleton,
   Dialog,
   DialogContent,
@@ -26,40 +25,83 @@ import { News } from '@/types';
 import NewsDetail from '@/components/NewsDetail';
 import { getCategoryLabel } from '@/utils/getCategoryLabel';
 
+const PAGE_SIZE = 20;
+
 export default function NewsPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [sortBy, setSortBy] = useState('publishedAt');
   const [aiFilter, setAiFilter] = useState('all');
   const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const [selectedNews, setSelectedNews] = useState<News | null>(null);
+  const loaderRef = useRef<HTMLDivElement>(null);
+  const isFirstRender = useRef(true);
+
+  const loadNews = useCallback(
+    async (pageNum: number, append: boolean) => {
+      if (append) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+      }
+      try {
+        const params: Record<string, string | number> = { page: pageNum, limit: PAGE_SIZE, sortBy };
+        if (category !== 'all') params.category = category;
+        if (search) params.search = search;
+        if (aiFilter !== 'all') params.isAiGenerated = aiFilter;
+        const data = await newsService.getNews(params);
+        if (append) {
+          setNews((prev) => [...prev, ...data.data]);
+        } else {
+          setNews(data.data);
+        }
+        setHasMore(pageNum * PAGE_SIZE < data.total);
+      } catch {}
+      setLoading(false);
+      setLoadingMore(false);
+    },
+    [category, sortBy, aiFilter, search],
+  );
 
   useEffect(() => {
-    loadNews();
-  }, [category, sortBy, aiFilter, page]);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+    }
+    setPage(1);
+    setHasMore(true);
+    loadNews(1, false);
+  }, [category, sortBy, aiFilter]);
 
-  const loadNews = async () => {
-    setLoading(true);
-    try {
-      const params: Record<string, string | number> = { page, sortBy };
-      if (category !== 'all') params.category = category;
-      if (search) params.search = search;
-      if (aiFilter !== 'all') params.isAiGenerated = aiFilter;
-      const data = await newsService.getNews(params);
-      setNews(data.data);
-      setTotal(data.total);
-    } catch {}
-    setLoading(false);
-  };
+  // Бесконечный скролл
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading && !loadingMore) {
+          const nextPage = page + 1;
+          setPage(nextPage);
+          loadNews(nextPage, true);
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [hasMore, loading, loadingMore, page]);
 
   const handleSearch = () => {
     setPage(1);
-    loadNews();
+    setHasMore(true);
+    loadNews(1, false);
   };
 
   const categories = [
@@ -76,14 +118,12 @@ export default function NewsPage() {
 
   return (
     <Container
-      maxWidth={false}
       sx={{ py: { xs: 2, md: 4 }, px: { xs: 1, sm: 2 }, maxWidth: '100%', overflowX: 'hidden' }}
     >
       <Typography variant="h4" gutterBottom sx={{ fontSize: { xs: '1.3rem', sm: '2rem' } }}>
         📰 Лента новостей
       </Typography>
 
-      {/* Фильтры */}
       <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 3 }}>
         <TextField
           size="small"
@@ -102,7 +142,6 @@ export default function NewsPage() {
           value={category}
           onChange={(e) => {
             setCategory(e.target.value);
-            setPage(1);
           }}
           sx={{ minWidth: isMobile ? '100%' : 160, flex: isMobile ? 1 : undefined }}
         >
@@ -118,7 +157,6 @@ export default function NewsPage() {
           value={sortBy}
           onChange={(e) => {
             setSortBy(e.target.value);
-            setPage(1);
           }}
           sx={{ minWidth: isMobile ? '100%' : 140, flex: isMobile ? 1 : undefined }}
         >
@@ -132,7 +170,6 @@ export default function NewsPage() {
           value={aiFilter}
           onChange={(e) => {
             setAiFilter(e.target.value);
-            setPage(1);
           }}
           sx={{ minWidth: isMobile ? '100%' : 150, flex: isMobile ? 1 : undefined }}
         >
@@ -147,7 +184,6 @@ export default function NewsPage() {
               setCategory('all');
               setAiFilter('all');
               setSearch('');
-              setPage(1);
             }}
           >
             Сбросить
@@ -155,7 +191,6 @@ export default function NewsPage() {
         )}
       </Box>
 
-      {/* Список новостей */}
       <Grid container spacing={1.5}>
         {loading
           ? Array.from({ length: 6 }).map((_, i) => (
@@ -225,17 +260,15 @@ export default function NewsPage() {
             ))}
       </Grid>
 
-      {total > 12 && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-          <Pagination
-            count={Math.ceil(total / 12)}
-            page={page}
-            onChange={(_, p) => setPage(p)}
-            size={isMobile ? 'small' : 'medium'}
-            siblingCount={isMobile ? 0 : 1}
-          />
-        </Box>
-      )}
+      {/* Индикатор загрузки */}
+      <div ref={loaderRef} style={{ textAlign: 'center', padding: '24px 0' }}>
+        {loadingMore && <Skeleton variant="text" width={200} sx={{ mx: 'auto' }} />}
+        {!hasMore && news.length > 0 && (
+          <Typography variant="body2" color="text.secondary">
+            Все новости загружены
+          </Typography>
+        )}
+      </div>
 
       <Dialog
         open={!!selectedNews}
