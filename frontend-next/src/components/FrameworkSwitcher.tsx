@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { useTheme } from '@mui/material';
 interface Props {
   current: 'react' | 'nestjs' | 'next' | 'vue';
 }
@@ -12,6 +12,8 @@ const frameworks = {
 };
 
 export default function FrameworkSwitcher({ current }: Props) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   return (
     <select
       value={current}
@@ -24,15 +26,23 @@ export default function FrameworkSwitcher({ current }: Props) {
         padding: '6px 12px',
         borderRadius: 6,
         border: '1px solid #6c5ce7',
-        background: '#1a1a2e',
-        color: '#fff',
+        background: 'inherit',
+        color: 'inherit',
         fontSize: 13,
         cursor: 'pointer',
         outline: 'none',
+        fontFamily: 'inherit',
       }}
     >
       {Object.entries(frameworks).map(([key, { label }]) => (
-        <option key={key} value={key}>
+        <option
+          key={key}
+          value={key}
+          style={{
+            background: isDark ? '#1e1e1e' : '#fff',
+            color: isDark ? '#fff' : '#1e1e1e',
+          }}
+        >
           {label}
         </option>
       ))}
