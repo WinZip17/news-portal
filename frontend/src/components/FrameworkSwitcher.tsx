@@ -1,4 +1,5 @@
 import React from 'react';
+import { theme as antTheme } from 'antd';
 
 interface FrameworkSwitcherProps {
   current: 'react' | 'nestjs' | 'nuxt' | 'vue';
@@ -9,10 +10,11 @@ const frameworks = {
   vue: { label: '🟢 Vue SPA', url: 'https://vue.short-news.ru' },
   next: { label: '🔵 Next.js', url: 'https://next.short-news.ru' },
   nuxt: { label: '🟣 Nuxt', url: 'https://nuxt.short-news.ru' },
-  // nestjs: { label: '🟢 NestJS SSR + React', url: 'https://nest.short-news.ru' },
 };
 
 const FrameworkSwitcher: React.FC<FrameworkSwitcherProps> = ({ current }) => {
+  const { token } = antTheme.useToken();
+
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value as keyof typeof frameworks;
     if (value !== current && frameworks[value].url !== '#') {
@@ -27,18 +29,27 @@ const FrameworkSwitcher: React.FC<FrameworkSwitcherProps> = ({ current }) => {
       aria-label="Выбор фреймворка"
       style={{
         padding: '6px 12px',
-        borderRadius: 6,
-        border: '1px solid #6c5ce7',
-        background: '#1a1a2e',
-        color: '#fff',
+        borderRadius: token.borderRadius,
+        border: `1px solid ${token.colorPrimary}`,
+        background: token.colorBgContainer,
+        color: token.colorText,
         fontSize: 13,
         cursor: 'pointer',
         outline: 'none',
-        fontFamily: 'inherit',
+        fontFamily: token.fontFamily,
+        transition: 'all 0.2s ease',
+        appearance: 'auto',
       }}
     >
       {Object.entries(frameworks).map(([key, { label }]) => (
-        <option key={key} value={key}>
+        <option
+          key={key}
+          value={key}
+          style={{
+            background: token.colorBgContainer,
+            color: token.colorText,
+          }}
+        >
           {label}
         </option>
       ))}
