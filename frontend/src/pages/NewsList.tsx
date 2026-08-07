@@ -1,7 +1,8 @@
 import React, { lazy, useEffect, useRef } from 'react';
 import { Empty, Spin, Typography, Divider, Button, Modal, Row, Col, Card, Skeleton } from 'antd';
-import { useNews } from '@/hooks/useNews';
+import { useNewsInfiniteQuery } from '@/hooks/useNewsQuery';
 import { useNewsModal } from '@/hooks/useNewsModal.ts';
+import { useNews } from '@/hooks/useNews';
 import { Helmet } from 'react-helmet-async';
 
 const { Title, Text } = Typography;
@@ -11,27 +12,20 @@ const NewsListCard = lazy(() => import('@/components/news/NewsListCard'));
 const NewsListFilters = lazy(() => import('@/components/news/NewsListFilters'));
 
 const NewsList: React.FC = () => {
-  const { news, isLoading, pagination, fetchNews, setFilters, error, filters, initialLoading, clearAllFilters, setPage } = useNews();
+  const { filters, clearAllFilters } = useNews();
   const { selectedNewsId, modalVisible, openNews, closeNews } = useNewsModal();
   const loaderRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    setPage(1);
-    setFilters({ limit: 20 });
-    fetchNews();
-  }, []);
+  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, error } = useNewsInfiniteQuery(filters);
 
-  useEffect(() => {
-    if (!initialLoading) {
-      fetchNews();
-    }
-  }, [JSON.stringify(filters)]);
+  const news = data?.pages.flatMap((page) => page.data) ?? [];
 
+  // Бесконечный скролл
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !isLoading && pagination.page < pagination.totalPages) {
-          setPage(pagination.page + 1);
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
         }
       },
       { threshold: 0.1 },
@@ -40,7 +34,7 @@ const NewsList: React.FC = () => {
       observer.observe(loaderRef.current);
     }
     return () => observer.disconnect();
-  }, [isLoading, pagination.page, pagination.totalPages]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const hasActiveFilters = Object.keys(filters).length > 0;
 
@@ -65,10 +59,10 @@ const NewsList: React.FC = () => {
       <Divider style={{ margin: '12px 0' }} />
 
       {error ? (
-        <Empty description={<Text type="danger">Ошибка: {error}</Text>}>
-          <Button onClick={() => fetchNews()}>Повторить</Button>
+        <Empty description={<Text type="danger">Ошибка: {(error as Error).message}</Text>}>
+          <Button onClick={() => fetchNextPage()}>Повторить</Button>
         </Empty>
-      ) : initialLoading ? (
+      ) : isLoading ? (
         <Row gutter={[16, 16]}>
           {Array.from({ length: 20 }).map((_, i) => (
             <Col style={{ width: '100%' }} key={i}>
@@ -86,13 +80,13 @@ const NewsList: React.FC = () => {
             ))}
           </Row>
           <div ref={loaderRef} style={{ textAlign: 'center', padding: '24px 0' }}>
-            {isLoading && <Spin />}
-            {pagination.page >= pagination.totalPages && news.length > 0 && <Text type="secondary">Все новости загружены</Text>}
+            {isFetchingNextPage && <Spin />}
+            {!hasNextPage && news.length > 0 && <Text type="secondary">Все новости загружены</Text>}
           </div>
         </>
       ) : (
         <Empty description={hasActiveFilters ? 'Ничего не найдено' : 'Новостей пока нет'} style={{ padding: '40px 0' }}>
-          {hasActiveFilters ? <Button onClick={clearAllFilters}>Сбросить</Button> : <Button onClick={() => fetchNews()}>Обновить</Button>}
+          {hasActiveFilters ? <Button onClick={clearAllFilters}>Сбросить</Button> : <Button onClick={() => fetchNextPage()}>Обновить</Button>}
         </Empty>
       )}
 

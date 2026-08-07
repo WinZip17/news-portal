@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Layout, Typography, Tag, Space, Button, Spin, Empty, Divider, Card, Statistic, Breadcrumb, Image, Alert, Row, Col, Tooltip } from 'antd';
 import {
@@ -13,7 +13,9 @@ import {
   TagOutlined,
   WarningOutlined,
 } from '@ant-design/icons';
-import { useNews } from '@/hooks/useNews';
+import { useQuery } from '@tanstack/react-query';
+import { newsService } from '@/services/newsService';
+import { NEWS_KEYS } from '@/hooks/useNewsQuery';
 import { getCategoryLabel } from '@/utils/getCategoryLabel.ts';
 import { getCategoryColor } from '@/utils/getCategoryColor.ts';
 import { formatFullDate } from '@/utils/formatDate.ts';
@@ -24,19 +26,21 @@ const { Content } = Layout;
 const NewsDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { currentNews, isLoading, error, fetchNewsById, likeNews, clearError } = useNews();
 
-  useEffect(() => {
-    if (id) {
-      fetchNewsById(id);
-      // Скролл вверх при открытии
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, [id]);
+  const {
+    data: currentNews,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: NEWS_KEYS.detail(id!),
+    queryFn: () => newsService.getNewsById(id!),
+    enabled: !!id,
+    staleTime: 10 * 60 * 1000,
+  });
 
-  const handleLike = () => {
+  const handleLike = async () => {
     if (currentNews) {
-      likeNews(currentNews.id);
+      await newsService.likeNews(currentNews.id);
     }
   };
 
@@ -48,8 +52,7 @@ const NewsDetail: React.FC = () => {
           text: currentNews.summary,
           url: window.location.href,
         });
-      } catch (err) {
-        // Fallback: копирование ссылки
+      } catch {
         navigator.clipboard.writeText(window.location.href);
       }
     }
@@ -80,19 +83,15 @@ const NewsDetail: React.FC = () => {
   if (isLoading) {
     return (
       <div style={{ textAlign: 'center', padding: '100px 0' }}>
-        <Spin size="large" description="Загрузка новости..." />
+        <Spin size="large" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <Empty description={<Text type="danger">Ошибка загрузки: {error}</Text>} style={{ padding: '40px 0' }}>
+      <Empty description={<Text type="danger">Ошибка загрузки: {(error as Error).message}</Text>} style={{ padding: '40px 0' }}>
         <Space>
-          <Button onClick={() => id && fetchNewsById(id)}>Повторить</Button>
-          <Button type="link" onClick={clearError}>
-            Закрыть
-          </Button>
           <Button onClick={() => navigate('/news')}>К списку новостей</Button>
         </Space>
       </Empty>
@@ -111,7 +110,6 @@ const NewsDetail: React.FC = () => {
 
   return (
     <Content style={{ maxWidth: 900, margin: '0 auto', padding: '0 16px' }}>
-      {/* Хлебные крошки */}
       <Breadcrumb style={{ marginBottom: 16 }}>
         <Breadcrumb.Item>
           <a onClick={() => navigate('/')}>Главная</a>
@@ -122,7 +120,6 @@ const NewsDetail: React.FC = () => {
         <Breadcrumb.Item>{currentNews.title}</Breadcrumb.Item>
       </Breadcrumb>
 
-      {/* Шапка новости */}
       <div style={{ marginBottom: 24 }}>
         <Space style={{ marginBottom: 16 }}>
           <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/news')}>
@@ -130,7 +127,6 @@ const NewsDetail: React.FC = () => {
           </Button>
         </Space>
 
-        {/* Статус и AI метка */}
         <Space wrap style={{ marginBottom: 12 }}>
           {currentNews.isAiGenerated && (
             <Tag icon={<RobotOutlined />} color="blue">
@@ -141,7 +137,6 @@ const NewsDetail: React.FC = () => {
           <Tag color={getCategoryColor(currentNews.category)}>{getCategoryLabel(currentNews.category)}</Tag>
         </Space>
 
-        {/* Заголовок */}
         <Title level={1} style={{ marginBottom: 16, fontSize: '2.5em' }}>
           {currentNews.title}
         </Title>
@@ -168,13 +163,11 @@ const NewsDetail: React.FC = () => {
                 </>
               )}
             </Space>
-
             <Text type="secondary">
               {currentNews.isAiGenerated
-                ? 'Эта новость создана с помощью искусственного интеллекта на основе реальных данных из новостных источников. Факты сохранены, формулировки изменены.'
+                ? 'Эта новость создана с помощью искусственного интеллекта на основе реальных данных. Факты сохранены, формулировки изменены.'
                 : 'Оригинальная новость из новостного источника.'}
             </Text>
-
             {currentNews.source && (
               <Text type="secondary">
                 Источник: {currentNews.source}
@@ -192,7 +185,6 @@ const NewsDetail: React.FC = () => {
           </Space>
         </Card>
 
-        {/* Мета-информация */}
         <Space wrap size="middle" style={{ color: '#666', marginBottom: 20 }}>
           <Text type="secondary">
             <CalendarOutlined /> {formatFullDate(currentNews.publishedAt)}
@@ -212,7 +204,6 @@ const NewsDetail: React.FC = () => {
           </Text>
         </Space>
 
-        {/* Действия */}
         <Space>
           <Tooltip title="Нравится">
             <Button icon={<HeartOutlined />} onClick={handleLike}>
@@ -229,55 +220,32 @@ const NewsDetail: React.FC = () => {
 
       <Divider />
 
-      {/* Основное изображение */}
       {currentNews.imageUrl && (
         <div style={{ marginBottom: 24 }}>
           <Image
             src={currentNews.imageUrl}
             alt={currentNews.title}
-            style={{
-              width: '100%',
-              maxHeight: 500,
-              objectFit: 'cover',
-              borderRadius: 8,
-            }}
+            style={{ width: '100%', maxHeight: 500, objectFit: 'cover', borderRadius: 8 }}
             fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
           />
         </div>
       )}
 
-      {/* Краткое описание */}
       {currentNews.summary && (
-        <Card
-          style={{
-            marginBottom: 24,
-            backgroundColor: '#f0f5ff',
-            border: '1px solid #d6e4ff',
-          }}
-        >
+        <Card style={{ marginBottom: 24, backgroundColor: '#f0f5ff', border: '1px solid #d6e4ff' }}>
           <Text strong style={{ fontSize: '16px', lineHeight: '1.8' }}>
             {currentNews.summary}
           </Text>
         </Card>
       )}
 
-      {/* Основной контент */}
       <div style={{ marginBottom: 32 }}>
-        <Typography>
-          <div
-            style={{
-              fontSize: '16px',
-              lineHeight: '1.8',
-              textAlign: 'justify',
-            }}
-            dangerouslySetInnerHTML={{
-              __html: currentNews.content || '<p>Контент отсутствует</p>',
-            }}
-          />
-        </Typography>
+        <div
+          style={{ fontSize: '16px', lineHeight: '1.8', textAlign: 'justify' }}
+          dangerouslySetInnerHTML={{ __html: currentNews.content || '<p>Контент отсутствует</p>' }}
+        />
       </div>
 
-      {/* Теги */}
       {currentNews.tags && currentNews.tags.length > 0 && (
         <div style={{ marginBottom: 24 }}>
           <Text strong style={{ marginRight: 8 }}>
@@ -285,9 +253,7 @@ const NewsDetail: React.FC = () => {
           </Text>
           <Space wrap>
             {currentNews.tags.map((tag) => (
-              <Tag key={tag} style={{ cursor: 'pointer' }}>
-                {tag}
-              </Tag>
+              <Tag key={tag}>{tag}</Tag>
             ))}
           </Space>
         </div>
@@ -295,7 +261,6 @@ const NewsDetail: React.FC = () => {
 
       <Divider />
 
-      {/* Ссылка на источник */}
       {currentNews.source && (
         <Alert
           title="Источник"
@@ -310,7 +275,7 @@ const NewsDetail: React.FC = () => {
               {currentNews.isAiGenerated && (
                 <div style={{ marginTop: 8 }}>
                   <Text type="secondary">
-                    <WarningOutlined /> Контент создан с помощью искусственного интеллекта и может требовать проверки фактов.
+                    <WarningOutlined /> Контент создан с помощью ИИ и может требовать проверки фактов.
                   </Text>
                 </div>
               )}
@@ -322,7 +287,6 @@ const NewsDetail: React.FC = () => {
         />
       )}
 
-      {/* Статистика */}
       <Row gutter={[16, 16]} style={{ marginBottom: 32 }}>
         <Col xs={12} sm={6}>
           <Card>
@@ -346,7 +310,6 @@ const NewsDetail: React.FC = () => {
         </Col>
       </Row>
 
-      {/* Кнопки навигации */}
       <div style={{ textAlign: 'center', marginBottom: 32 }}>
         <Space>
           <Button type="primary" size="large" onClick={() => navigate('/news')}>

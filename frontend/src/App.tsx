@@ -3,12 +3,22 @@ import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter as Router, useRoutes } from 'react-router-dom';
 import { ConfigProvider, App as AntApp, theme as antTheme } from 'antd';
 import { Provider } from 'react-redux';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import ruRU from 'antd/locale/ru_RU';
 import { store, useAppSelector, setTheme, selectTheme } from '@/store';
 import { useAuth } from '@/hooks/useAuth';
 import AppErrorBoundary from '@/components/common/ErrorBoundary';
 import { routes } from '@/config/routes';
-import ruRU from 'antd/locale/ru_RU';
 import YandexMetrika from '@/components/YandexMetrika.tsx';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000,
+      retry: 1,
+    },
+  },
+});
 
 const AppRoutes: React.FC = () => {
   const element = useRoutes(routes);
@@ -41,19 +51,19 @@ const AppContent: React.FC = () => {
       locale={ruRU}
       theme={{
         algorithm: theme === 'dark' ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
-        token: {
-          colorPrimary: '#1677ff',
-        },
+        token: { colorPrimary: '#1677ff' },
       }}
     >
       <AntApp>
         <AppErrorBoundary>
-          <HelmetProvider>
-            <YandexMetrika counterId={110884229} />
-            <Router>
-              <AppRoutes />
-            </Router>
-          </HelmetProvider>
+          <QueryClientProvider client={queryClient}>
+            <HelmetProvider>
+              <YandexMetrika counterId={110884229} />
+              <Router>
+                <AppRoutes />
+              </Router>
+            </HelmetProvider>
+          </QueryClientProvider>
         </AppErrorBoundary>
       </AntApp>
     </ConfigProvider>

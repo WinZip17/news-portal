@@ -1,10 +1,10 @@
-import React, { lazy, useEffect, useState, startTransition } from 'react';
+import React, { lazy } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Row, Typography, Button, Space, Empty, Modal } from 'antd';
 import { ReadOutlined, RocketOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useNews } from '@/hooks/useNews';
+import { useNewsQuery } from '@/hooks/useNewsQuery';
 import { useNewsModal } from '@/hooks/useNewsModal.ts';
 
 const { Title, Paragraph } = Typography;
@@ -17,16 +17,15 @@ const NewsDetailModal = lazy(() => import('@/components/NewsDetailModal'));
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const { news, fetchNews, isLoading } = useNews();
-  const [init, setInit] = useState(false);
   const { selectedNewsId, modalVisible, openNews, closeNews } = useNewsModal();
 
-  useEffect(() => {
-    startTransition(() => {
-      void fetchNews({ limit: 6, sortBy: 'publishedAt', sortOrder: 'DESC' });
-      setInit(true);
-    });
-  }, [fetchNews]);
+  const { data, isLoading, refetch } = useNewsQuery({
+    limit: 6,
+    sortBy: 'publishedAt',
+    sortOrder: 'DESC',
+  });
+
+  const news = data?.data ?? [];
 
   return (
     <div>
@@ -94,7 +93,7 @@ const Home: React.FC = () => {
           </Button>
         </Space>
 
-        {isLoading || !init ? (
+        {isLoading ? (
           <NewsSkeleton />
         ) : news.length > 0 ? (
           <Row gutter={[24, 24]}>
@@ -104,7 +103,7 @@ const Home: React.FC = () => {
           </Row>
         ) : (
           <Empty description="Новости пока не загружены" style={{ padding: '40px 0' }}>
-            <Button type="primary" onClick={() => fetchNews({ limit: 6 })}>
+            <Button type="primary" onClick={() => refetch()}>
               Загрузить новости
             </Button>
           </Empty>
