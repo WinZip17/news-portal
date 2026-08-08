@@ -18,21 +18,22 @@
 
 ## 🛠 Технологии
 
-| Слой | Стек |
-|------|------|
-| Бэкенд | NestJS, TypeORM, PostgreSQL, JWT, Swagger |
-| AI | DeepSeek API, RSS Parser |
-| Фронтенды | React SPA, Next.js (MUI), Nuxt (PrimeVue) |
-| DevOps | Docker, GitHub Actions, Nginx, Let's Encrypt |
-| Мониторинг | Prometheus, Grafana |
+| Слой | Стек                                                     |
+|------|----------------------------------------------------------|
+| Бэкенд | NestJS, TypeORM, PostgreSQL, JWT, Swagger                |
+| AI | DeepSeek API, RSS Parser                                 |
+| Фронтенды | React SPA, Next.js (MUI), Nuxt (PrimeVue), Vue (vuetify) |
+| DevOps | Docker, GitHub Actions, Nginx, Let's Encrypt             |
+| Мониторинг | Prometheus, Grafana                                      |
 
 ## 🌐 Демо
 
-| Фреймворк | URL |
-|-----------|-----|
-| React SPA | https://short-news.ru |
-| Next.js | https://next.short-news.ru |
-| Nuxt | https://nuxt.short-news.ru |
+| Фреймворк | URL                        |
+|----------|----------------------------|
+| React SPA | https://short-news.ru      |
+| Next.js  | https://next.short-news.ru |
+| Nuxt     | https://nuxt.short-news.ru |
+| Vue      | https://vue.short-news.ru  |
 
 ## 🚀 Запуск
 ```text

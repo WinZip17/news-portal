@@ -1,54 +1,107 @@
-# frontend-vue
+# 💚 News Portal - Vue SPA Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+Фронтенд на Vue 3 для новостного портала. Четвёртый по счёту фронтенд в монорепозитории.
 
-## Recommended IDE Setup
+## 🛠 Технологии
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- **Vue 3** — Composition API + `<script setup>`
+- **TypeScript** — типизация
+- **Vite** — сборка
+- **Pinia** — управление состоянием
+- **Vue Router 5** — маршрутизация
+- **Vuetify 4** — UI компоненты (Material Design)
+- **Axios** — HTTP клиент
+- **@unhead/vue** — SEO мета-теги
 
-## Recommended Browser Setup
+## 🚀 Быстрый старт
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+```text
+npm install — установка зависимостей
+npm run dev — запуск в режиме разработки (порт 5173)
+npm run build — сборка для продакшена
+npm run preview — предпросмотр сборки
 
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
+Приложение будет доступно на http://localhost:5173
 ```
 
-### Compile and Hot-Reload for Development
+## 📁 Структура проекта
 
-```sh
-npm run dev
+```text
+frontend-vue/
+├── public/                  # Статические файлы
+├── src/
+│   ├── api/                 # HTTP клиент и интерсепторы
+│   │   ├── client.ts        # Axios инстанс
+│   │   └── interceptors.ts  # Перехватчики запросов
+│   ├── assets/              # Стили
+│   │   ├── main.css         # Глобальные стили
+│   │   └── utilities.css    # Утилитарные классы
+│   ├── components/          # Vue компоненты
+│   │   ├── common/          # Общие (FrameworkSwitcher)
+│   │   └── news/            # Новости (NewsCard, NewsDetailModal)
+│   ├── constants/           # Константы
+│   │   └── theme.ts         # Цвета темы
+│   ├── layouts/             # Layout компоненты
+│   │   └── MainLayout.vue   # Главный layout
+│   ├── pages/               # Страницы
+│   │   ├── HomeView.vue     # Главная
+│   │   ├── NewsView.vue     # Лента новостей
+│   │   ├── LoginView.vue    # Вход
+│   │   ├── RegisterView.vue # Регистрация
+│   │   ├── ProfileView.vue  # Личный кабинет
+│   │   ├── AdminView.vue    # Админ-панель
+│   │   └── NotFoundView.vue # 404
+│   ├── plugins/             # Плагины
+│   │   ├── theme.ts         # Тема Vuetify
+│   │   └── vuetify.ts       # Конфигурация Vuetify
+│   ├── router/              # Vue Router
+│   │   └── index.ts         # Маршруты и guards
+│   ├── services/            # API сервисы
+│   │   ├── auth.service.ts  # Авторизация
+│   │   └── news.service.ts  # Новости
+│   ├── stores/              # Pinia stores
+│   │   ├── auth.ts          # Авторизация
+│   │   ├── news.ts          # Новости
+│   │   └── ui.ts            # UI (тема)
+│   ├── types/               # TypeScript типы
+│   │   ├── auth.ts          # Типы авторизации
+│   │   └── news.ts          # Типы новостей
+│   ├── App.vue              # Корневой компонент
+│   └── main.ts              # Точка входа
+├── Dockerfile               # Docker образ
+├── nginx.conf               # Nginx конфиг
+├── vite.config.ts           # Vite конфиг
+├── tsconfig.json            # TypeScript конфиг
+└── package.json             # Зависимости
 ```
 
-### Type-Check, Compile and Minify for Production
+## 📄 Страницы
 
-```sh
-npm run build
+| Путь | Страница | Доступ |
+|------|----------|--------|
+| / | Главная | Все |
+| /news | Лента новостей | Все |
+| /login | Вход | Гость |
+| /register | Регистрация | Гость |
+| /profile | Личный кабинет | 🔒 |
+| /admin | Админ-панель | 🔒 Модер/Админ |
+
+## 🔧 Особенности
+
+- Material Design (Vuetify 4)
+- Тёмная/светлая тема с синхронизацией через Pinia
+- Адаптивный сайдбар (постоянный на десктопе, временный на мобильных)
+- JWT авторизация с автообновлением токена
+- Инфинити-скролл в ленте новостей
+- SEO через @unhead/vue
+
+## 🐳 Docker
+
+```text
+docker build -t news-portal-vue . — сборка образа
+docker run -p 80:80 news-portal-vue — запуск контейнера
 ```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+## 📝 Лицензия
 
-```sh
-npm run test:unit
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+MIT
