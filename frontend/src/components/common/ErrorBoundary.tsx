@@ -1,13 +1,13 @@
 import React from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+import type { FallbackProps } from 'react-error-boundary';
 import { Button, Result } from 'antd';
 import { ReloadOutlined, HomeOutlined } from '@ant-design/icons';
 
-interface ErrorFallbackProps {
-  error: Error;
-  resetErrorBoundary: () => void;
-}
+const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
+  const message = error instanceof Error ? error.message : 'Неизвестная ошибка';
+  const stack = error instanceof Error ? error.stack : undefined;
 
-const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetErrorBoundary }) => {
   const handleReload = () => {
     window.location.reload();
   };
@@ -45,8 +45,8 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetErrorBoundary
         {import.meta.env.DEV && (
           <div style={{ maxWidth: 600, margin: '20px auto', textAlign: 'left' }}>
             <h4>Техническая информация (только для разработки):</h4>
-            <p style={{ color: 'red' }}>{error.message}</p>
-            {error.stack && (
+            <p style={{ color: 'red' }}>{message}</p>
+            {stack && (
               <pre
                 style={{
                   fontSize: '11px',
@@ -57,7 +57,7 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetErrorBoundary
                   borderRadius: '4px',
                 }}
               >
-                {error.stack}
+                {stack}
               </pre>
             )}
           </div>
@@ -67,38 +67,20 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetErrorBoundary
   );
 };
 
-interface AppErrorBoundaryProps {
-  children: React.ReactNode;
-}
-
-class AppErrorBoundary extends React.Component<AppErrorBoundaryProps, { hasError: boolean; error: Error | null }> {
-  constructor(props: AppErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-
-  static getDerivedStateFromError(error: Error): { hasError: boolean; error: Error | null } {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Здесь можно отправить ошибку в сервис мониторинга
-    console.error('Error caught by boundary:', error, errorInfo);
-  }
-
-  handleReset = () => {
-    this.setState({ hasError: false, error: null });
-    // Очищаем кэш при восстановлении
+const AppErrorBoundary: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const handleReset = () => {
     sessionStorage.clear();
   };
 
-  render() {
-    if (this.state.hasError && this.state.error) {
-      return <ErrorFallback error={this.state.error} resetErrorBoundary={this.handleReset} />;
-    }
+  const handleError = (error: Error, info: React.ErrorInfo) => {
+    console.error('Error caught by boundary:', error, info);
+  };
 
-    return this.props.children;
-  }
-}
+  return (
+    <ErrorBoundary FallbackComponent={ErrorFallback} onError={handleError} onReset={handleReset}>
+      {children}
+    </ErrorBoundary>
+  );
+};
 
 export default AppErrorBoundary;
