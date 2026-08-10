@@ -37,7 +37,7 @@ const router = createRouter({
       path: '/admin',
       name: 'admin',
       component: () => import('@/pages/AdminView.vue'),
-      meta: { requiresAuth: true, requiresAdmin: true }
+      meta: { requiresAuth: true, requiresAdminAccess: true }
     },
     {
       path: '/:pathMatch(.*)*',
@@ -54,7 +54,7 @@ router.beforeEach((to, from, next) => {
     next({ name: 'login', query: { redirect: to.fullPath } });
   } else if (to.meta.guest && authStore.isAuthenticated) {
     next({ name: 'home' });
-  } else if (to.meta.requiresAdmin && !authStore.isAdmin) {
+  } else if (to.meta.requiresAdminAccess && !authStore.canAccessAdmin) {
     next({ name: 'home' });
   } else {
     next();

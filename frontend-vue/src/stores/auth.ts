@@ -14,6 +14,8 @@ export const useAuthStore = defineStore('auth', () => {
   const isInitialized = ref(false);
   const isAdmin = computed(() => user.value?.role === 'admin' || user.value?.role === 'super_admin');
   const isModerator = computed(() => user.value?.role === 'moderator');
+  /** Доступ к /admin: как в эталонном frontend — admin, moderator, super_admin */
+  const canAccessAdmin = computed(() => isAdmin.value || isModerator.value);
 
   async function initialize() {
     const token = localStorage.getItem('accessToken');
@@ -103,6 +105,7 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     isAdmin,
     isModerator,
+    canAccessAdmin,
     login,
     register,
     fetchCurrentUser,
