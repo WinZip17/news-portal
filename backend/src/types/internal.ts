@@ -1,23 +1,5 @@
-import type { NewsCategory, NewsStatus } from './enums';
-
-export interface NewsFilter {
-  page?: number;
-  limit?: number;
-  category?: NewsCategory;
-  status?: NewsStatus;
-  search?: string;
-  tags?: string[];
-  fromDate?: string;
-  toDate?: string;
-  sortBy?: 'publishedAt' | 'views' | 'likes';
-  sortOrder?: 'ASC' | 'DESC';
-  isAiGenerated?: boolean;
-  authorId?: string;
-}
-
-export interface ModerationBody {
-  status: NewsStatus;
-  comment?: string;
+export interface RequestWithUser {
+  user: { id: string };
 }
 
 export interface AiRewriteResult {
@@ -28,7 +10,6 @@ export interface AiRewriteResult {
   tags: string[];
 }
 
-// RSS
 export interface RssFeedItem {
   title?: string;
   'content:encoded'?: string;

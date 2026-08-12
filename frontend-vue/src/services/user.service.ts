@@ -1,10 +1,5 @@
 import { apiClient } from '@/api/client';
-import type { User } from '@/types/auth';
-
-export interface UsersResponse {
-  data: User[];
-  total: number;
-}
+import type { User, UsersResponse } from '@news-portal/types/auth';
 
 export const userService = {
   async getUsers(page = 1, limit = 20): Promise<UsersResponse> {

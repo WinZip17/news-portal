@@ -13,6 +13,7 @@
 - **RSS Parser** — получение новостей из источников
 - **Swagger** — документация API
 - **Docker** — контейнеризация
+- **@news-portal/types** — общая типизация с фронтендами
 
 ## 📦 Установка
 
@@ -142,7 +143,7 @@ backend/
 │   │       ├── config/      # Конфигурация AI
 │   │       ├── dto/         # DTO
 │   │       └── services/    # Сервисы RSS, дедупликации
-│   ├── types/               # TypeScript типы
+│   ├── types/               # @news-portal/types + internal.ts (RSS, Express)
 │   ├── app.module.ts        # Главный модуль
 │   ├── app.controller.ts    # Главный контроллер
 │   ├── app.service.ts       # Главный сервис
@@ -153,6 +154,14 @@ backend/
 ├── tsconfig.json            # TypeScript конфиг
 └── package.json             # Зависимости
 ```
+
+## 📐 Типизация
+
+Backend использует workspace-пакет **`@news-portal/types`**. Файл `src/types/index.ts` реэкспортирует общие типы; server-only типы (`RssArticle`, `RequestWithUser`, …) — в `src/types/internal.ts`.
+
+Перед сборкой автоматически выполняется `npm -w @news-portal/types run build` (см. `prebuild` в `package.json`).
+
+Документация: [docs/types.md](../docs/types.md)
 
 ## 🐳 Docker
 

@@ -26,7 +26,7 @@ export const authService = {
     return response.data;
   },
 
-  async updatePreferences(preferences: UserPreferences): Promise<User> {
+  async updatePreferences(preferences: Partial<UserPreferences>): Promise<User> {
     const response = await apiService.put<User>('/auth/preferences', preferences);
     return response.data;
   },

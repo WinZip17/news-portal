@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, toRaw, watch } from 'vue';
 import { userService } from '@/services/user.service';
-import type { User } from '@/types/auth';
+import type { User } from '@/types';
 
 const PAGE_SIZE = 20;
 

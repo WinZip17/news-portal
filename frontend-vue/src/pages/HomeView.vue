@@ -6,7 +6,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useUIStore } from '@/stores/ui';
 import NewsCard from '@/components/news/NewsCard.vue';
 import NewsDetailModal from '@/components/news/NewsDetailModal.vue';
-import type { News } from '@/types/news';
+import type { News } from '@/types';
 import { storeToRefs } from 'pinia';
 
 const router = useRouter();
@@ -123,7 +123,7 @@ function formatDate(dateString: string) {
           :item="item"
           :category-color="getCategoryColor(item.category)"
           :category-label="getCategoryLabel(item.category)"
-          :formatted-date="formatDate(item.publishedAt)"
+          :formatted-date="formatDate(item.publishedAt ?? item.createdAt)"
           @click="openNews(item)"
         />
       </v-col>

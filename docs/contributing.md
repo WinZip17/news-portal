@@ -38,6 +38,17 @@ npm run dev
 - `frontend-next/` — Next.js
 - `frontend-nuxt/` — Nuxt
 - `frontend-vue/` — Vue SPA
+- `packages/types/` — `@news-portal/types` (общая типизация)
+
+## Типизация
+
+Все клиенты и backend используют пакет **`@news-portal/types`**. Не дублируйте интерфейсы в отдельных фронтендах — добавляйте и меняйте типы в `packages/types/src/`.
+
+```bash
+npm -w @news-portal/types run build   # перед сборкой backend
+```
+
+Документация: [docs/types.md](types.md).
 
 ## Правила кода
 
@@ -53,7 +64,7 @@ npm run dev
 - NestJS модульная архитектура
 - DTO для всех входных данных
 - Swagger декораторы на всех эндпоинтах
-- Типы в отдельных файлах
+- Общие типы — в `@news-portal/types`; server-only — в `backend/src/types/internal.ts`
 
 ### Frontend
 
@@ -61,6 +72,7 @@ npm run dev
 - Страницы в папке `pages/` (или `app/` для Next.js)
 - API-запросы через сервисы, не напрямую
 - Стили через UI-библиотеку (не CSS модули)
+- Импорт типов из `@/types` / `~/types` (реэкспорт `@news-portal/types`)
 
 ## Процесс разработки
 
@@ -96,6 +108,7 @@ npm run test:unit
 - API изменения отражать в `docs/api.md`
 - Новые фичи описывать в соответствующем разделе документации
 - Архитектурные изменения — в `docs/architecture.md`
+- Изменения типов API — в `docs/types.md` и `packages/types/`
 
 ## Лицензия
 

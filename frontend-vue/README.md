@@ -63,9 +63,9 @@ frontend-vue/
 │   │   ├── auth.ts          # Авторизация
 │   │   ├── news.ts          # Новости
 │   │   └── ui.ts            # UI (тема)
-│   ├── types/               # TypeScript типы
-│   │   ├── auth.ts          # Типы авторизации
-│   │   └── news.ts          # Типы новостей
+│   ├── types/               # Реэкспорт @news-portal/types
+│   │   ├── auth.ts
+│   │   └── news.ts
 │   ├── App.vue              # Корневой компонент
 │   └── main.ts              # Точка входа
 ├── Dockerfile               # Docker образ
@@ -85,6 +85,17 @@ frontend-vue/
 | /register | Регистрация | Гость |
 | /profile | Личный кабинет | 🔒 |
 | /admin | Админ-панель | 🔒 Модер/Админ |
+
+## 📐 Типизация
+
+Используется **`@news-portal/types`**. Локальные `@/types/auth` и `@/types/news` — реэкспорты.
+
+```typescript
+import type { User } from '@/types/auth';
+import { NewsStatus, type News } from '@/types/news';
+```
+
+Документация: [docs/types.md](../docs/types.md)
 
 ## 🔧 Особенности
 

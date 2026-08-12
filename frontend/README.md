@@ -43,7 +43,7 @@ frontend/
 │   │   ├── auth/            # Авторизация
 │   │   ├── news/            # Новости
 │   │   └── ui/              # UI состояние
-│   ├── types/               # TypeScript типы
+│   ├── types/               # Реэкспорт @news-portal/types
 │   ├── App.tsx              # Главный компонент
 │   ├── main.tsx             # Точка входа
 │   └── index.css            # Глобальные стили
@@ -66,6 +66,16 @@ frontend/
 | /register | Регистрация | Гость |
 | /profile | Личный кабинет | 🔒 |
 | /admin | Админ-панель | 🔒 Админ/Модер |
+
+## 📐 Типизация
+
+TypeScript-типы импортируются из **`@news-portal/types`** (монорепозиторий, `packages/types/`). Локальная папка `src/types/` — реэкспорт для алиаса `@/types`.
+
+```typescript
+import type { News, User } from '@/types';
+```
+
+Документация: [docs/types.md](../docs/types.md)
 
 ## 🔧 Разработка
 

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { newsService } from '@/services/news.service';
-import type { News, NewsFilter, NewsStats } from '@/types/news';
+import type { News, NewsFilter, NewsStats } from '@/types';
 
 export const useNewsStore = defineStore('news', () => {
   const news = ref<News[]>([]);

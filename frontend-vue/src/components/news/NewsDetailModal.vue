@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { newsService } from '@/services/news.service';
 import { useAuthStore } from '@/stores/auth';
-import type { News } from '@/types/news';
+import type { News } from '@/types';
 
 const props = defineProps<{ news: News }>();
 const emit = defineEmits<{ close: [] }>();

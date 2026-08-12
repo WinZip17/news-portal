@@ -1,2 +1,1 @@
-export * from './auth.ts';
-export * from './news.ts';
+export * from '@news-portal/types';

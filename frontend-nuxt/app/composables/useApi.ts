@@ -8,10 +8,12 @@ export function useApi() {
   const config = useRuntimeConfig();
 
   function getBaseApi() {
-    if (import.meta.dev) {
-      return import.meta.client ? '/api' : 'http://localhost:3001/api';
+    if (import.meta.server) {
+      const requestUrl = useRequestURL();
+      return `${requestUrl.origin}/api`;
     }
-    return import.meta.client ? (config.public.apiBase as string) : 'http://backend:3001/api';
+
+    return config.public.apiBase as string;
   }
 
   const API_BASE = getBaseApi();

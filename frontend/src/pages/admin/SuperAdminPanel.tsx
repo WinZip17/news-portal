@@ -3,11 +3,12 @@ import { Table, Button, Tag, Space, Select, message, Popconfirm, Modal, Input, S
 import { ReadOutlined, TeamOutlined, EditOutlined, DeleteOutlined, CrownOutlined, RocketOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { newsService } from '@/services/newsService';
 import { userService } from '@/services/userService';
-import { News, NewsStatus, NewsCategory } from '@/types/news';
-import { User } from '@/types/auth';
+import { News, NewsStatus, NewsCategory } from '@/types';
+import { User } from '@/types';
 import type { ColumnsType } from 'antd/es/table';
 import { aiService } from '@/services/aiService.ts';
 import { apiService } from '@/services/api.ts';
+import type { CronScheduleResponse } from '@news-portal/types/ai';
 import { formatLocaleDate } from '@/utils/formatDate.ts';
 
 const { TextArea } = Input;
@@ -34,7 +35,7 @@ const SuperAdminPanel: React.FC = () => {
 
   useEffect(() => {
     apiService
-      .get('/ai/cron')
+      .get<CronScheduleResponse>('/ai/cron')
       .then((r) => setCronSchedule(r.data.cron))
       .catch(() => {});
   }, []);

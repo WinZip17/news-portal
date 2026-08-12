@@ -1,42 +1,33 @@
+import type { User } from './auth';
+import type { NewsCategory, NewsStatus } from './enums';
+
+export { NewsCategory, NewsStatus } from './enums';
+
 export interface News {
   id: string;
   title: string;
   content: string;
-  summary: string;
+  summary?: string;
   imageUrl?: string;
   source?: string;
   sourceUrl?: string;
-  author?: string;
+  author?: User;
+  authorId?: string;
   category: NewsCategory;
   tags: string[];
   status: NewsStatus;
   isAiGenerated: boolean;
   views: number;
   likes: number;
-  publishedAt: string;
+  publishedAt?: string;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
+  isLiked?: boolean;
+  isFavorite?: boolean;
 }
 
-export enum NewsCategory {
-  POLITICS = 'politics',
-  ECONOMY = 'economy',
-  TECHNOLOGY = 'technology',
-  SCIENCE = 'science',
-  SPORTS = 'sports',
-  ENTERTAINMENT = 'entertainment',
-  HEALTH = 'health',
-  WORLD = 'world',
-  OTHER = 'other'
-}
-
-export enum NewsStatus {
-  DRAFT = 'draft',
-  PENDING = 'pending',
-  PUBLISHED = 'published',
-  REJECTED = 'rejected',
-  ARCHIVED = 'archived'
-}
+/** Alias for Nuxt naming */
+export type NewsItem = News;
 
 export interface NewsFilter {
   category?: NewsCategory;
@@ -46,10 +37,28 @@ export interface NewsFilter {
   fromDate?: string;
   toDate?: string;
   isAiGenerated?: boolean;
+  authorId?: string;
   page?: number;
   limit?: number;
   sortBy?: 'publishedAt' | 'views' | 'likes' | 'createdAt';
   sortOrder?: 'ASC' | 'DESC';
+}
+
+export interface ModerationBody {
+  status: NewsStatus;
+  comment?: string;
+}
+
+export interface CreateNewsDto {
+  title: string;
+  content: string;
+  summary?: string;
+  imageUrl?: string;
+  source?: string;
+  sourceUrl?: string;
+  category: NewsCategory;
+  tags?: string[];
+  isAiGenerated?: boolean;
 }
 
 export interface NewsResponse {
@@ -71,3 +80,6 @@ export interface NewsStats {
   totalViews: number;
   categoriesCount: number;
 }
+
+/** Alias for Nuxt naming */
+export type StatsResponse = NewsStats;

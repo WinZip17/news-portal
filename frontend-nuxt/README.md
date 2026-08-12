@@ -66,7 +66,9 @@ frontend-nuxt/
 │   │       ├── users.vue        # Пользователи
 │   │       ├── news.vue         # Все новости (CRUD)
 │   │       └── ai-generate.vue  # AI-генерация
-│   ├── plugins/primevue.ts
+│   ├── plugins/
+│   │   ├── primevue-services.client.ts
+│   │   └── primevue-tooltip.ts
 │   ├── services/
 │   │   ├── ai.service.ts
 │   │   ├── auth.service.ts
@@ -75,7 +77,7 @@ frontend-nuxt/
 │   │   ├── auth.ts
 │   │   ├── news.ts
 │   │   └── ui.ts
-│   └── types/index.ts
+│   └── types/index.ts       # Реэкспорт @news-portal/types
 ├── public/
 │   ├── favicon.ico
 │   └── robots.txt
@@ -125,6 +127,17 @@ nitro: { devProxy: { '/api': { target: 'http://localhost:3001', changeOrigin: tr
 /admin/ai-generate — AI-генерация новостей — Супер-админ
 /* — 404 — Все
 ```
+
+## 📐 Типизация
+
+Типы API — пакет **`@news-portal/types`**. Импорт через `~/types`:
+
+```typescript
+import type { NewsItem, UserResponse } from '~/types';
+import { NewsStatus } from '~/types';
+```
+
+Документация: [docs/types.md](../docs/types.md)
 
 ## 🟣 Framework Switcher
 

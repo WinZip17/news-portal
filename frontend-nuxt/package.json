@@ -18,6 +18,7 @@
     "prepare": "nuxt prepare"
   },
   "dependencies": {
+    "@news-portal/types": "1.0.0",
     "@pinia/nuxt": "^1.0.1",
     "@primeuix/themes": "^3.0.0",
     "@vueuse/core": "^14.3.0",

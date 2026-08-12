@@ -82,7 +82,11 @@
     </div>
 
     <!-- Модальное окно -->
-    <NewsDetailModal v-model:visible="detailModalVisible" :news="selectedNews" />
+    <NewsDetailModal
+      v-if="detailModalVisible"
+      v-model:visible="detailModalVisible"
+      :news="selectedNews"
+    />
   </div>
 </template>
 
@@ -118,7 +122,13 @@ const sortOptions = [
   { label: 'По лайкам', value: 'likes' },
 ];
 
-await newsStore.fetchNews();
+await useAsyncData('news-page-data', async () => {
+  await newsStore.fetchNews();
+  return {
+    newsCount: newsStore.news.length,
+    total: newsStore.news.length,
+  };
+});
 
 const debouncedSearch = useDebounceFn(() => {
   applyFilters();

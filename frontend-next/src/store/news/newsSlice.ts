@@ -30,6 +30,9 @@ const initialState: NewsState = {
     totalNews: 0,
     pendingNews: 0,
     totalViews: 0,
+    newsLastHour: 0,
+    activeSources: 0,
+    categoriesCount: 0,
   },
 };
 

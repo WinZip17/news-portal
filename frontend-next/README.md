@@ -49,7 +49,7 @@ frontend-next/
 │   │   ├── auth/authSlice.ts     # Авторизация
 │   │   ├── news/newsSlice.ts     # Новости
 │   │   └── ui/uiSlice.ts         # UI (тема)
-│   ├── types/               # TypeScript типы
+│   ├── types/               # Реэкспорт @news-portal/types
 │   ├── utils/               # Утилиты
 │   └── theme.ts             # MUI тема (light/dark)
 ├── Dockerfile               # Docker образ
@@ -70,6 +70,16 @@ frontend-next/
 | /register | Регистрация | Гость |
 | /profile | Личный кабинет | 🔒 |
 | /admin | Админ-панель | 🔒 Модер/Админ |
+
+## 📐 Типизация
+
+Общие типы — пакет **`@news-portal/types`**. Импорт через `@/types`:
+
+```typescript
+import type { News, NewsStatus, User } from '@/types';
+```
+
+Документация: [docs/types.md](../docs/types.md)
 
 ## 🎨 Особенности дизайна
 

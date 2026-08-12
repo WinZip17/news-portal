@@ -13,6 +13,8 @@ news-portal/
 ├── frontend-next/    # Next.js + MUI
 ├── frontend-nuxt/    # Nuxt + PrimeVue
 ├── frontend-vue/     # Vue + Vuetify
+├── packages/
+│   └── types/        # @news-portal/types — общая типизация
 ├── docs/             # Документация
 ├── prometheus/       # Мониторинг
 ├── grafana/          # Дашборды
@@ -68,3 +70,15 @@ news-portal/
 
 - **Prometheus** — сбор метрик с backend
 - **Grafana** — дашборды (HTTP запросы, CPU, память, алерты)
+
+## Общая типизация
+
+Контракт данных между API и клиентами описан в пакете **`@news-portal/types`** (`packages/types/`):
+
+- enum'ы: `NewsCategory`, `NewsStatus`, `UserRole`
+- сущности: `User`, `News`, фильтры, paginated-ответы
+- AI: `AutoGenerateResponse`, `CronScheduleResponse`
+
+Фронтенды импортируют типы через локальные `types/` (реэкспорт). Backend подключает пакет в runtime (CommonJS `dist/`) и хранит server-only типы в `backend/src/types/internal.ts`.
+
+См. [types.md](types.md).

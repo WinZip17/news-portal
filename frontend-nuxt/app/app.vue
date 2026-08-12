@@ -3,8 +3,10 @@
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
-    <Toast position="bottom-right" />
-    <ConfirmDialog />
+    <ClientOnly>
+      <Toast position="bottom-right" />
+      <ConfirmDialog />
+    </ClientOnly>
   </div>
 </template>
 

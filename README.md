@@ -25,6 +25,7 @@
 | Фронтенды | React SPA, Next.js (MUI), Nuxt (PrimeVue), Vue (vuetify) |
 | DevOps | Docker, GitHub Actions, Nginx, Let's Encrypt             |
 | Мониторинг | Prometheus, Grafana                                      |
+| Типизация | `@news-portal/types` (общий пакет для всех клиентов и API) |
 
 ## 🌐 Демо
 
@@ -41,6 +42,12 @@ npm install — установка зависимостей
 npm run dev — запуск всего в dev-режиме
 npm run start:prod — запуск в Docker (продакшен)
 ```
+
+## 📐 Общая типизация
+
+TypeScript-типы вынесены в workspace-пакет **`@news-portal/types`** (`packages/types/`). Все четыре фронтенда и backend импортируют типы оттуда; локальные папки `types/` — тонкие реэкспорты.
+
+Подробнее: [docs/types.md](docs/types.md)
 
 ## 📊 Мониторинг
 Grafana с дашбордом на http://short-news.ru/grafana

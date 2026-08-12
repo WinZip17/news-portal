@@ -29,7 +29,7 @@ import {
 import { SmartToy as AIIcon, Rocket as RocketIcon } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { newsService } from '@/services/newsService';
-import { News, User } from '@/types';
+import { News, NewsStatus, User, UserRole } from '@/types';
 import api from '@/services/api';
 import { getCategoryLabel } from '@/utils/getCategoryLabel';
 import { useAppSelector } from '@/store';
@@ -122,7 +122,7 @@ export default function AdminPage() {
     setDeleteConfirm({ open: false, id: '', type: 'news' });
   };
 
-  const getStatusLabel = (status: string) => {
+  const getStatusLabel = (status: NewsStatus) => {
     const labels: Record<string, string> = {
       draft: 'Черновик',
       pending: 'На модерации',
@@ -133,7 +133,7 @@ export default function AdminPage() {
     return labels[status] || status;
   };
 
-  const handleModerate = async (id: string, status: string) => {
+  const handleModerate = async (id: string, status: NewsStatus) => {
     try {
       await newsService.moderateNews(id, status);
       setNews((prev) => prev.map((n) => (n.id === id ? { ...n, status } : n)));
@@ -218,7 +218,7 @@ export default function AdminPage() {
                             size="small"
                             color="success"
                             variant="outlined"
-                            onClick={() => handleModerate(item.id, 'published')}
+                            onClick={() => handleModerate(item.id, NewsStatus.PUBLISHED)}
                           >
                             Опубликовать
                           </Button>
@@ -226,7 +226,7 @@ export default function AdminPage() {
                             size="small"
                             color="error"
                             variant="outlined"
-                            onClick={() => handleModerate(item.id, 'rejected')}
+                            onClick={() => handleModerate(item.id, NewsStatus.REJECTED)}
                           >
                             Отклонить
                           </Button>
@@ -236,7 +236,7 @@ export default function AdminPage() {
                         <Button
                           size="small"
                           variant="outlined"
-                          onClick={() => handleModerate(item.id, 'archived')}
+                          onClick={() => handleModerate(item.id, NewsStatus.ARCHIVED)}
                         >
                           В архив
                         </Button>
@@ -245,7 +245,7 @@ export default function AdminPage() {
                         <Button
                           size="small"
                           variant="outlined"
-                          onClick={() => handleModerate(item.id, 'published')}
+                          onClick={() => handleModerate(item.id, NewsStatus.PUBLISHED)}
                         >
                           Восстановить
                         </Button>
@@ -446,7 +446,9 @@ export default function AdminPage() {
                     value={(editItem as News).status}
                     fullWidth
                     sx={{ mt: 2 }}
-                    onChange={(e) => setEditItem({ ...editItem, status: e.target.value } as News)}
+                    onChange={(e) =>
+                      setEditItem({ ...editItem, status: e.target.value as NewsStatus } as News)
+                    }
                   >
                     <MenuItem value="draft">Черновик</MenuItem>
                     <MenuItem value="pending">На модерации</MenuItem>
@@ -491,7 +493,9 @@ export default function AdminPage() {
                     value={(editItem as User)?.role || 'user'}
                     fullWidth
                     sx={{ mt: 2 }}
-                    onChange={(e) => setEditItem({ ...editItem, role: e.target.value } as User)}
+                    onChange={(e) =>
+                      setEditItem({ ...editItem, role: e.target.value as UserRole } as User)
+                    }
                   >
                     <MenuItem value="user">Пользователь</MenuItem>
                     <MenuItem value="moderator">Модератор</MenuItem>
@@ -542,7 +546,9 @@ export default function AdminPage() {
               />
               <Select
                 value={(editItem as News).status}
-                onChange={(e) => setEditItem({ ...editItem, status: e.target.value } as News)}
+                onChange={(e) =>
+                  setEditItem({ ...editItem, status: e.target.value as NewsStatus } as News)
+                }
                 fullWidth
                 sx={{ mt: 2 }}
               >
@@ -587,7 +593,9 @@ export default function AdminPage() {
               />
               <Select
                 value={(editItem as User)?.role || 'user'}
-                onChange={(e) => setEditItem({ ...editItem, role: e.target.value } as User)}
+                onChange={(e) =>
+                  setEditItem({ ...editItem, role: e.target.value as UserRole } as User)
+                }
                 fullWidth
                 sx={{ mt: 2 }}
               >

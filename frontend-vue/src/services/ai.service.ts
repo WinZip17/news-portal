@@ -1,15 +1,9 @@
 import { apiClient } from '@/api/client';
+import type { AutoGenerateResponse, CronScheduleResponse } from '@news-portal/types/ai';
+
+export type { AutoGenerateResponse, CronScheduleResponse };
 
 const AI_REQUEST_TIMEOUT_MS = 600_000;
-
-export interface AutoGenerateResponse {
-  totalGenerated: number;
-  byCategory: Record<string, number>;
-}
-
-export interface CronScheduleResponse {
-  cron: string;
-}
 
 export const aiService = {
   async autoGenerate(countPerCategory = 1): Promise<AutoGenerateResponse> {

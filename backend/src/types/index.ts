@@ -1,3 +1,2 @@
-export * from './enums';
-export * from './auth';
-export * from './news';
+export * from '@news-portal/types';
+export * from './internal';

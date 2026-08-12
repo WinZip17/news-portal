@@ -250,7 +250,7 @@ export default function NewsPage() {
                           sx={{ ml: 'auto', whiteSpace: 'nowrap' }}
                         >
                           👁 {item.views} · ❤️ {item.likes} ·{' '}
-                          {new Date(item.publishedAt).toLocaleDateString('ru-RU')}
+                          {new Date(item.publishedAt ?? item.createdAt).toLocaleDateString('ru-RU')}
                         </Typography>
                       </Box>
                     </CardContent>

@@ -35,15 +35,15 @@
       </div>
 
       <!-- Автор -->
-      <div v-if="news.author" class="detail-author">
+      <div v-if="authorUser" class="detail-author">
         <Avatar
-          :label="getAuthorInitials(news.author)"
+          :label="getAuthorInitials(authorUser)"
           style="background-color: var(--p-primary-color); color: white"
           shape="circle"
         />
         <div>
-          <p class="author-name">{{ news.author.firstName }} {{ news.author.lastName }}</p>
-          <p class="author-username">@{{ news.author.username }}</p>
+          <p class="author-name">{{ authorUser.firstName }} {{ authorUser.lastName }}</p>
+          <p class="author-username">@{{ authorUser.username }}</p>
         </div>
       </div>
 
@@ -131,6 +131,8 @@ const categoryLabel = computed(() => {
   };
   return labels[props.news.category] || props.news.category;
 });
+
+const authorUser = computed((): UserResponse | null => props.news?.author ?? null);
 
 function getAuthorInitials(author: UserResponse): string {
   const first = author.firstName?.[0] || author.username[0];

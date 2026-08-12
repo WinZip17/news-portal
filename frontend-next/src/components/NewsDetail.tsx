@@ -12,7 +12,7 @@ import {
 import { newsService } from '@/services/newsService';
 import { News } from '@/types';
 import { useAppSelector } from '@/store';
-import { getCategoryLabel } from '@/utils/getCategoryLabel'
+import { getCategoryLabel } from '@/utils/getCategoryLabel';
 
 interface Props {
   news: News;
@@ -113,7 +113,7 @@ export default function NewsDetail({ news: initialNews }: Props) {
 
       <Box sx={{ display: 'flex', gap: 1, mb: 2, color: 'text.secondary', flexWrap: 'wrap' }}>
         <Typography variant="body2">
-          📅 {new Date(news.publishedAt).toLocaleDateString('ru-RU')}
+          📅 {new Date(news.publishedAt ?? news.createdAt).toLocaleDateString('ru-RU')}
         </Typography>
         <Typography variant="body2">👁 {news.views} просмотров</Typography>
         {news.author && <Typography variant="body2">✍️ {news.author}</Typography>}

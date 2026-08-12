@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useUIStore } from '@/stores/ui';
 import { newsService } from '@/services/news.service';
-import type { News } from '@/types/news';
+import type { News } from '@/types';
 import { storeToRefs } from 'pinia';
 import { useHead } from '@unhead/vue';
 
@@ -193,7 +193,7 @@ useHead({ title: 'Профиль' });
       <!-- Избранное -->
       <v-window-item value="3">
         <v-list v-if="favorites.length">
-          <v-list-item v-for="item in favorites" :key="item.id" :title="item.title" :subtitle="`${item.category} · ${formatDate(item.publishedAt)}`">
+          <v-list-item v-for="item in favorites" :key="item.id" :title="item.title" :subtitle="`${item.category} · ${formatDate(item.publishedAt ?? item.createdAt)}`">
             <template #append>
               <v-btn icon="mdi-delete" variant="text" color="error" @click="removeFavorite(item.id)" />
             </template>

@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue';
 import { apiClient } from '@/api/client';
 import { newsService } from '@/services/news.service';
-import { NewsStatus, type News } from '@/types/news';
+import { NewsStatus, type News } from '@/types';
 
 const news = ref<News[]>([]);
 const loading = ref(false);

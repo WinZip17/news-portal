@@ -12,29 +12,27 @@
           рекомендациями
         </p>
         <div class="hero-actions">
-          <NuxtLink to="/news">
-            <Button
-              label="Читать новости"
-              aria-label="Читать новости"
-              icon="pi pi-arrow-right"
-              severity="primary"
-              size="large"
-            />
-          </NuxtLink>
-          <NuxtLink v-if="!authStore.isAuthenticated" to="/register">
-            <Button
-              label="Присоединиться"
-              aria-label="Присоединиться"
-              icon="pi pi-user-plus"
-              severity="secondary"
-              size="large"
-            />
-          </NuxtLink>
+          <Button
+            label="Читать новости"
+            aria-label="Читать новости"
+            icon="pi pi-arrow-right"
+            severity="primary"
+            size="large"
+            @click="navigateTo('/news')"
+          />
+          <Button
+            v-if="!authStore.isAuthenticated"
+            label="Присоединиться"
+            aria-label="Присоединиться"
+            icon="pi pi-user-plus"
+            severity="secondary"
+            size="large"
+            @click="navigateTo('/register')"
+          />
         </div>
       </div>
     </section>
 
-    <!-- Статистика -->
     <!-- Статистика -->
     <section v-if="stats" class="stats-section">
       <div class="stats-grid">
@@ -94,7 +92,11 @@
     </section>
 
     <!-- Модальное окно новости -->
-    <NewsDetailModal v-model:visible="detailModalVisible" :news="selectedNews" />
+    <NewsDetailModal
+      v-if="detailModalVisible"
+      v-model:visible="detailModalVisible"
+      :news="selectedNews"
+    />
   </div>
 </template>
 
@@ -110,8 +112,13 @@ const selectedNews = ref<NewsItem | null>(null);
 const stats = computed(() => newsStore.stats);
 const latestNews = computed(() => newsStore.news.slice(0, 6));
 
-await newsStore.fetchStats();
-await newsStore.fetchNews();
+await useAsyncData('home-page-data', async () => {
+  await Promise.all([newsStore.fetchStats(), newsStore.fetchNews()]);
+  return {
+    stats: newsStore.stats,
+    newsCount: newsStore.news.length,
+  };
+});
 
 function openNewsDetail(id: string) {
   selectedNews.value = newsStore.news.find((n: NewsItem) => n.id === id) || null;

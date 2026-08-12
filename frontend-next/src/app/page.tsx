@@ -257,7 +257,7 @@ export default function HomePage() {
                           color="text.secondary"
                           sx={{ ml: 'auto', whiteSpace: 'nowrap' }}
                         >
-                          {new Date(item.publishedAt).toLocaleDateString('ru-RU')}
+                          {new Date(item.publishedAt ?? item.createdAt).toLocaleDateString('ru-RU')}
                         </Typography>
                       </Box>
                     </CardContent>

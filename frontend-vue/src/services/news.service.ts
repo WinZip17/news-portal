@@ -1,5 +1,5 @@
 import { apiClient } from '@/api/client';
-import type { News, NewsFilter, NewsResponse, NewsStats } from '@/types/news';
+import type { News, NewsFilter, NewsResponse, NewsStats } from '@/types';
 
 export const newsService = {
   async getNews(filters?: NewsFilter): Promise<NewsResponse> {

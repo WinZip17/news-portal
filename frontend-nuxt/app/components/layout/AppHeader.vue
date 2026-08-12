@@ -41,13 +41,14 @@
 
         <!-- User Menu -->
         <template v-if="authStore.isAuthenticated">
-          <NuxtLink to="/profile" class="nav-link">
-            <Avatar
-              :label="userInitials"
-              style="background-color: var(--p-primary-color); color: white"
-              shape="circle"
-            />
-          </NuxtLink>
+          <Button
+            icon="pi pi-user"
+            aria-label="Профиль"
+            severity="secondary"
+            text
+            rounded
+            @click="navigateTo('/profile')"
+          />
           <Button
             label="Выйти"
             aria-label="Выйти"
@@ -58,17 +59,21 @@
           />
         </template>
         <template v-else>
-          <NuxtLink to="/login">
-            <Button label="Войти" aria-label="Войти" icon="pi pi-sign-in" severity="primary" text />
-          </NuxtLink>
-          <NuxtLink to="/register">
-            <Button
-              label="Регистрация"
-              aria-label="Регистрация"
-              icon="pi pi-user-plus"
-              severity="secondary"
-            />
-          </NuxtLink>
+          <Button
+            label="Войти"
+            aria-label="Войти"
+            icon="pi pi-sign-in"
+            severity="primary"
+            text
+            @click="navigateTo('/login')"
+          />
+          <Button
+            label="Регистрация"
+            aria-label="Регистрация"
+            icon="pi pi-user-plus"
+            severity="secondary"
+            @click="navigateTo('/register')"
+          />
         </template>
 
         <!-- Mobile Menu Toggle -->
@@ -121,13 +126,6 @@ const uiStore = useUIStore();
 const router = useRouter();
 
 const mobileMenuOpen = ref(false);
-
-const userInitials = computed(() => {
-  if (!authStore.user) return '?';
-  const first = authStore.user.firstName?.[0] || authStore.user.username[0];
-  const last = authStore.user.lastName?.[0] || '';
-  return (first + last).toUpperCase();
-});
 
 async function handleLogout() {
   await authStore.logout();

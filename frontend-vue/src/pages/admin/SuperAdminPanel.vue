@@ -4,8 +4,8 @@ import { apiClient } from '@/api/client';
 import { aiService } from '@/services/ai.service';
 import { newsService } from '@/services/news.service';
 import { userService } from '@/services/user.service';
-import type { User } from '@/types/auth';
-import { NewsCategory, NewsStatus, type News } from '@/types/news';
+import type { User, News } from '@/types';
+import { NewsCategory, NewsStatus } from '@/types';
 
 type TableType = 'news' | 'users';
 type ModalType = 'user' | 'news';
@@ -247,8 +247,12 @@ watch(table, loadTableData);
       <tbody>
         <tr v-for="item in news" :key="item.id">
           <td class="text-truncate" style="max-width: 240px">{{ item.title }}</td>
-          <td><v-chip size="small">{{ item.category }}</v-chip></td>
-          <td><v-chip size="small">{{ item.status }}</v-chip></td>
+          <td>
+            <v-chip size="small">{{ item.category }}</v-chip>
+          </td>
+          <td>
+            <v-chip size="small">{{ item.status }}</v-chip>
+          </td>
           <td>{{ formatDate(item.createdAt) }}</td>
           <td>
             <v-btn class="mr-1" size="x-small" icon="mdi-pencil" @click="openEditNews(item)" />
@@ -327,9 +331,7 @@ watch(table, loadTableData);
         <v-card-title>Настройка расписания генерации</v-card-title>
         <v-card-text>
           <v-text-field v-model="cronSchedule" label="Cron-выражение" placeholder="0 5,18 * * *" density="compact" class="mb-2" />
-          <p class="text-caption text-medium-emphasis">
-            Формат: минута час день месяц день_недели. Пример: 0 5,18 * * * — каждый день в 5:00 и 18:00
-          </p>
+          <p class="text-caption text-medium-emphasis">Формат: минута час день месяц день_недели. Пример: 0 5,18 * * * — каждый день в 5:00 и 18:00</p>
         </v-card-text>
         <v-card-actions>
           <v-spacer />

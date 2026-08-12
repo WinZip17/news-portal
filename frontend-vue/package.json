@@ -16,6 +16,7 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "@news-portal/types": "1.0.0",
     "@mdi/font": "^7.4.47",
     "@unhead/vue": "^3.2.3",
     "axios": "^1.19.0",

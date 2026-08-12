@@ -1,6 +1,8 @@
 # 🎨 Фронтенды
 
-Проект включает 4 фронтенда на разных технологиях. Все используют один API.
+Проект включает 4 фронтенда на разных технологиях. Все используют один API и **общий пакет типов** `@news-portal/types`.
+
+> 📐 Подробнее о типизации: [types.md](types.md)
 
 ## Сравнение
 
@@ -14,6 +16,7 @@
 | **Сборка** | Vite | Next.js | Nuxt | Vite |
 | **SSR** | ❌ | ✅ | ✅ | ❌ |
 | **CSS решение** | Ant Design | MUI System | PrimeVue + CSS | Vuetify + CSS |
+| **Типы** | `@/types` → `@news-portal/types` | `@/types` | `~/types` | `@/types` |
 
 ## React SPA (основной)
 
@@ -36,7 +39,7 @@ frontend/src/
 ├── pages/         # Страницы
 ├── services/      # API сервисы
 ├── store/         # Redux store
-├── types/         # TypeScript типы
+├── types/         # Реэкспорт @news-portal/types
 └── utils/         # Утилиты
 ```
 
@@ -60,7 +63,7 @@ frontend-next/src/
 ├── components/    # React компоненты
 ├── services/      # API сервисы
 ├── store/         # Redux store
-├── types/         # TypeScript типы
+├── types/         # Реэкспорт @news-portal/types
 └── theme.ts       # MUI тема
 ```
 
@@ -85,7 +88,7 @@ frontend-nuxt/
 ├── services/      # API сервисы
 ├── stores/        # Pinia stores
 ├── server/        # Серверная часть
-└── types/         # TypeScript типы
+└── app/types/     # Реэкспорт @news-portal/types
 ```
 
 ## Vue SPA
@@ -110,7 +113,7 @@ frontend-vue/src/
 ├── router/        # Vue Router
 ├── services/      # API сервисы
 ├── stores/        # Pinia stores
-├── types/         # TypeScript типы
+├── types/         # Реэкспорт @news-portal/types
 └── utils/         # Утилиты
 ```
 

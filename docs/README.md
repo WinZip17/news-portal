@@ -9,6 +9,7 @@
 - [Деплой](deployment.md)
 - [AI генерация](ai-generation.md)
 - [Фронтенды](frontends.md)
+- [Общая типизация](types.md)
 - [Как помочь проекту](contributing.md)
 
 ## Быстрый старт

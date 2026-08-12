@@ -1,0 +1,48 @@
+{
+  "name": "@news-portal/types",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared TypeScript types for news-portal frontends and backend",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./src/index.ts",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./auth": {
+      "types": "./dist/auth.d.ts",
+      "import": "./src/auth.ts",
+      "require": "./dist/auth.js",
+      "default": "./dist/auth.js"
+    },
+    "./news": {
+      "types": "./dist/news.d.ts",
+      "import": "./src/news.ts",
+      "require": "./dist/news.js",
+      "default": "./dist/news.js"
+    },
+    "./api": {
+      "types": "./dist/api.d.ts",
+      "import": "./src/api.ts",
+      "require": "./dist/api.js",
+      "default": "./dist/api.js"
+    },
+    "./ai": {
+      "types": "./dist/ai.d.ts",
+      "import": "./src/ai.ts",
+      "require": "./dist/ai.js",
+      "default": "./dist/ai.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prebuild": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
+  },
+  "files": [
+    "dist",
+    "src"
+  ]
+}
