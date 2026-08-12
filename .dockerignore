@@ -1,0 +1,11 @@
+**/node_modules
+**/dist
+**/.output
+**/.next
+**/.nuxt
+**/.git
+**/.env
+**/.env.*
+**/*.md
+**/coverage
+**/.cursor

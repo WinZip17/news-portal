@@ -20,8 +20,8 @@ services:
 
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: news-portal-backend
     environment:
       DB_HOST: postgres
@@ -52,8 +52,8 @@ services:
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: frontend/Dockerfile
     container_name: news-portal-frontend
     ports:
       - "80:80"
@@ -72,8 +72,8 @@ services:
 
   frontend-next:
     build:
-      context: ./frontend-next
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: frontend-next/Dockerfile
     container_name: news-portal-next
     networks:
       - news-portal-network
@@ -81,8 +81,8 @@ services:
 
   frontend-nuxt:
     build:
-      context: ./frontend-nuxt
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: frontend-nuxt/Dockerfile
     container_name: news-portal-nuxt
     networks:
       - news-portal-network
@@ -90,8 +90,8 @@ services:
 
   frontend-vue:
     build:
-      context: ./frontend-vue
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: frontend-vue/Dockerfile
     container_name: news-portal-vue
     networks:
       - news-portal-network

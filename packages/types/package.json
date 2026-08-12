@@ -37,6 +37,9 @@
       "default": "./dist/ai.js"
     }
   },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "prebuild": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""

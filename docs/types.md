@@ -94,7 +94,7 @@ npm -w @news-portal/types run build
 npm -w backend run build
 ```
 
-При деплое в корне репозитория выполняется `npm install`, затем сборка пакетов — `@news-portal/types` должен быть собран до backend.
+При деплое `@news-portal/types` **не берётся из npm registry** — пакет копируется из `packages/types` (Docker-контекст — корень репозитория). Зависимость: `"file:../packages/types"`.
 
 ## Правила изменений
 
