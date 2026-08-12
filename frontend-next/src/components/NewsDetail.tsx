@@ -116,7 +116,6 @@ export default function NewsDetail({ news: initialNews }: Props) {
           📅 {new Date(news.publishedAt ?? news.createdAt).toLocaleDateString('ru-RU')}
         </Typography>
         <Typography variant="body2">👁 {news.views} просмотров</Typography>
-        {news.author && <Typography variant="body2">✍️ {news.author}</Typography>}
       </Box>
 
       <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
