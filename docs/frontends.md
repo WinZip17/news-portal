@@ -55,7 +55,7 @@ frontend/src/
 - Material Design (MUI)
 - Клиентский layout отделён от серверного
 - CSS-in-JS через MUI
-- **Docker:** отдельный build context (`frontend-next/`), перед сборкой — `npm run docker:prepare` ([deployment.md](deployment.md#docker-сборка-и-news-portaltypes))
+- **Docker:** общий контекст корня репозитория; копия типов только внутри образа из‑за Turbopack ([deployment.md](deployment.md#docker-сборка-и-news-portaltypes))
 
 ### Структура
 ```

@@ -33,63 +33,38 @@ GitHub Actions автоматически деплоит при пуше в ве
 
 1. Копирует файлы на VPS
 2. Останавливает старые контейнеры
-3. **Подготавливает Docker-контексты** (`node scripts/copy-types-for-docker.mjs`)
-4. Запускает инфраструктуру (PostgreSQL, Redis, Prometheus, Grafana)
-5. Собирает и запускает backend
-6. Собирает и запускает все фронтенды
-7. Очищает старые образы
+3. Запускает инфраструктуру (PostgreSQL, Redis, Prometheus, Grafana)
+4. Собирает и запускает backend
+5. Собирает и запускает все фронтенды
+6. Очищает старые образы
 
 ## Docker-сборка и `@news-portal/types`
 
-Пакет `@news-portal/types` **не публикуется в npm**. В `package.json` указано `"file:../packages/types"`. При изолированной сборке в Docker registry отдаёт 404 — типы нужно копировать из репозитория.
+Пакет `@news-portal/types` **не публикуется в npm**. В `package.json` указано `"file:../packages/types"`. При изолированной сборке в Docker registry отдаёт 404 — типы копируются из `packages/types` **внутри образа**, а не из дубликатов во фронтендах.
 
-### Контекст сборки по сервисам
+**Источник правды один:** `packages/types/` в корне монорепозитория. В каталогах фронтендов папок `packages/` быть не должно.
 
-| Сервис | Build context | Dockerfile |
-|--------|---------------|------------|
-| backend | корень репозитория (`.`) | `backend/Dockerfile` |
-| frontend | корень (`.`) | `frontend/Dockerfile` |
-| frontend-nuxt | корень (`.`) | `frontend-nuxt/Dockerfile` |
-| frontend-vue | корень (`.`) | `frontend-vue/Dockerfile` |
-| **frontend-next** | **`frontend-next/`** | `frontend-next/Dockerfile` |
+### Контекст сборки
 
-IDE (Cursor / Docker Desktop) по умолчанию берёт контекст **из папки Dockerfile**. Для `frontend-next/Dockerfile` это `frontend-next/`, а не корень — поэтому пути вида `COPY frontend-next .` и `COPY packages/types` из корневого Dockerfile не работают.
+Все сервисы (включая `frontend-next`) собираются с **контекстом корня репозитория** (`.`):
 
-### Подготовка перед сборкой
+| Сервис | Dockerfile |
+|--------|------------|
+| backend | `backend/Dockerfile` |
+| frontend | `frontend/Dockerfile` |
+| frontend-next | `frontend-next/Dockerfile` |
+| frontend-nuxt | `frontend-nuxt/Dockerfile` |
+| frontend-vue | `frontend-vue/Dockerfile` |
 
-Скрипт копирует `packages/types` во фронтенды (в т.ч. `frontend-next/packages/types`):
-
-```bash
-npm run docker:prepare
-```
-
-Папки `*/packages/types` в `.gitignore` — это временные копии только для Docker, в git не коммитятся.
-
-**Локально** перед сборкой образа Next.js (из IDE или вручную):
+При сборке из IDE (Cursor / Docker Desktop) контекст тоже должен быть **корень репозитория**, иначе `COPY packages/types` и `COPY frontend-next` не найдут файлы. Сборка из каталога `frontend-next/` не поддерживается.
 
 ```bash
-npm run docker:prepare
-docker build -f frontend-next/Dockerfile -t news-portal-next frontend-next
-```
-
-**Через Compose** из корня — тоже нужен `docker:prepare` (на VPS это делает deploy-скрипт автоматически):
-
-```bash
-npm run docker:prepare
+# из корня репозитория
+docker build -f frontend-next/Dockerfile -t news-portal-next .
 docker compose build frontend-next
-docker compose up -d frontend-next
 ```
 
-### Особенности `frontend-next`
-
-1. Контекст сборки — каталог `frontend-next/`.
-2. В Dockerfile перед `npm install` путь зависимости меняется на `file:./packages/types`, чтобы пакет лежал **внутри** корня Next.js.
-3. **Turbopack** (Next.js 16) не резолвит `@news-portal/types`, если он ссылается на `../packages/types` за пределами проекта — отсюда копия в `frontend-next/packages/types`.
-4. В `packages/types/tsconfig.build.json` не используется `ignoreDeprecations: "6.0"` — в Docker ставится TypeScript 5.x, эта опция поддерживается только в TS 6+.
-
-### Порядок в Dockerfile (backend и SPA-фронтенды)
-
-Контекст — корень репозитория:
+### Порядок в Dockerfile
 
 1. `COPY packages/types` → сборка типов (`npm install && npm run build`)
 2. `COPY <app>/package*.json` → `npm install` (подтягивается `file:../packages/types`)
@@ -97,15 +72,19 @@ docker compose up -d frontend-next
 
 Backend в Docker собирается через `npx nest build` (без workspace prebuild из корня).
 
+### Особенность `frontend-next` (Turbopack)
+
+**Turbopack** (Next.js 16) не резолвит `@news-portal/types`, если зависимость указывает **вне** корня Next.js (`file:../packages/types`). Поэтому в Dockerfile, уже **внутри контейнера**, типы копируются в `frontend-next/packages/types` и путь временно меняется на `file:./packages/types`. Это не попадает в git и не дублирует типы в репозитории.
+
+В `packages/types/tsconfig.build.json` не используется `ignoreDeprecations: "6.0"` — в Docker ставится TypeScript 5.x, эта опция поддерживается только в TS 6+.
+
 ## Docker команды
 
 ```bash
-# Запуск всех сервисов (сначала подготовка типов)
-npm run docker:prepare
+# Запуск всех сервисов
 docker compose up -d --build
 
 # Сборка только Next.js
-npm run docker:prepare
 docker compose build frontend-next
 
 # Остановка

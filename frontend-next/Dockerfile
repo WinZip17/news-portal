@@ -13,7 +13,7 @@ COPY frontend-next/package*.json ./
 
 # Turbopack resolves @news-portal/types only inside the Next.js project root.
 # Copy happens inside the image — not in the repo on disk.
-RUN cp -r /app/packages/types ./packages/types && \
+RUN mkdir -p ./packages && cp -r /app/packages/types ./packages/types && \
     npm pkg set dependencies.@news-portal/types="file:./packages/types" && \
     npm install
 
