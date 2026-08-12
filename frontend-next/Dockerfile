@@ -1,3 +1,5 @@
+# Build context: repository root (docker compose / CI).
+# IDE deploy: use workspace root as context (see .vscode/settings.json).
 FROM node:24-alpine AS builder
 
 WORKDIR /app
@@ -8,7 +10,12 @@ RUN cd packages/types && npm install && npm run build
 WORKDIR /app/frontend-next
 
 COPY frontend-next/package*.json ./
-RUN npm install
+
+# Turbopack resolves @news-portal/types only inside the Next.js project root.
+# Copy happens inside the image — not in the repo on disk.
+RUN cp -r /app/packages/types ./packages/types && \
+    npm pkg set dependencies.@news-portal/types="file:./packages/types" && \
+    npm install
 
 COPY frontend-next .
 RUN npm run build

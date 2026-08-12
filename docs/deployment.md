@@ -33,18 +33,80 @@ GitHub Actions автоматически деплоит при пуше в ве
 
 1. Копирует файлы на VPS
 2. Останавливает старые контейнеры
-3. Запускает инфраструктуру (PostgreSQL, Redis, Prometheus, Grafana)
-4. Собирает и запускает backend
-5. Собирает и запускает все фронтенды
-6. Очищает старые образы
+3. **Подготавливает Docker-контексты** (`node scripts/copy-types-for-docker.mjs`)
+4. Запускает инфраструктуру (PostgreSQL, Redis, Prometheus, Grafana)
+5. Собирает и запускает backend
+6. Собирает и запускает все фронтенды
+7. Очищает старые образы
 
-> **Типы:** Docker-сборка использует контекст **корня репозитория** (`.`) и локально копирует `packages/types`. Зависимость указана как `"file:../packages/types"`, а не версия из npm registry.
+## Docker-сборка и `@news-portal/types`
+
+Пакет `@news-portal/types` **не публикуется в npm**. В `package.json` указано `"file:../packages/types"`. При изолированной сборке в Docker registry отдаёт 404 — типы нужно копировать из репозитория.
+
+### Контекст сборки по сервисам
+
+| Сервис | Build context | Dockerfile |
+|--------|---------------|------------|
+| backend | корень репозитория (`.`) | `backend/Dockerfile` |
+| frontend | корень (`.`) | `frontend/Dockerfile` |
+| frontend-nuxt | корень (`.`) | `frontend-nuxt/Dockerfile` |
+| frontend-vue | корень (`.`) | `frontend-vue/Dockerfile` |
+| **frontend-next** | **`frontend-next/`** | `frontend-next/Dockerfile` |
+
+IDE (Cursor / Docker Desktop) по умолчанию берёт контекст **из папки Dockerfile**. Для `frontend-next/Dockerfile` это `frontend-next/`, а не корень — поэтому пути вида `COPY frontend-next .` и `COPY packages/types` из корневого Dockerfile не работают.
+
+### Подготовка перед сборкой
+
+Скрипт копирует `packages/types` во фронтенды (в т.ч. `frontend-next/packages/types`):
+
+```bash
+npm run docker:prepare
+```
+
+Папки `*/packages/types` в `.gitignore` — это временные копии только для Docker, в git не коммитятся.
+
+**Локально** перед сборкой образа Next.js (из IDE или вручную):
+
+```bash
+npm run docker:prepare
+docker build -f frontend-next/Dockerfile -t news-portal-next frontend-next
+```
+
+**Через Compose** из корня — тоже нужен `docker:prepare` (на VPS это делает deploy-скрипт автоматически):
+
+```bash
+npm run docker:prepare
+docker compose build frontend-next
+docker compose up -d frontend-next
+```
+
+### Особенности `frontend-next`
+
+1. Контекст сборки — каталог `frontend-next/`.
+2. В Dockerfile перед `npm install` путь зависимости меняется на `file:./packages/types`, чтобы пакет лежал **внутри** корня Next.js.
+3. **Turbopack** (Next.js 16) не резолвит `@news-portal/types`, если он ссылается на `../packages/types` за пределами проекта — отсюда копия в `frontend-next/packages/types`.
+4. В `packages/types/tsconfig.build.json` не используется `ignoreDeprecations: "6.0"` — в Docker ставится TypeScript 5.x, эта опция поддерживается только в TS 6+.
+
+### Порядок в Dockerfile (backend и SPA-фронтенды)
+
+Контекст — корень репозитория:
+
+1. `COPY packages/types` → сборка типов (`npm install && npm run build`)
+2. `COPY <app>/package*.json` → `npm install` (подтягивается `file:../packages/types`)
+3. `COPY <app>` → сборка приложения
+
+Backend в Docker собирается через `npx nest build` (без workspace prebuild из корня).
 
 ## Docker команды
 
 ```bash
-# Запуск всех сервисов
+# Запуск всех сервисов (сначала подготовка типов)
+npm run docker:prepare
 docker compose up -d --build
+
+# Сборка только Next.js
+npm run docker:prepare
+docker compose build frontend-next
 
 # Остановка
 docker compose down

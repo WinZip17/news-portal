@@ -46,9 +46,10 @@ npm run dev
 
 ```bash
 npm -w @news-portal/types run build   # перед сборкой backend
+npm run docker:prepare                # перед Docker-сборкой фронтендов (особенно frontend-next)
 ```
 
-Документация: [docs/types.md](types.md).
+Документация: [docs/types.md](types.md), Docker-нюансы: [docs/deployment.md](deployment.md#docker-сборка-и-news-portaltypes).
 
 ## Правила кода
 

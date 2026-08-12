@@ -17,7 +17,7 @@ packages/types/
     └── ai.ts         # AutoGenerateResponse, CronScheduleResponse, ...
 ```
 
-Пакет подключён как npm workspace: `"@news-portal/types": "1.0.0"`.
+Пакет подключён как npm workspace. В `package.json` приложений: `"@news-portal/types": "file:../packages/types"`.
 
 ## Кто использует
 
@@ -94,7 +94,37 @@ npm -w @news-portal/types run build
 npm -w backend run build
 ```
 
-При деплое `@news-portal/types` **не берётся из npm registry** — пакет копируется из `packages/types` (Docker-контекст — корень репозитория). Зависимость: `"file:../packages/types"`.
+## Docker и деплой
+
+`@news-portal/types` **не берётся из npm registry**. При `npm install` внутри контейнера без локальной копии пакета будет ошибка 404.
+
+### Локальная разработка vs Docker
+
+| Окружение | Путь к типам |
+|-----------|--------------|
+| Монорепозиторий (`npm install` в корне) | `file:../packages/types` через workspace |
+| Docker (backend, React, Nuxt, Vue) | `COPY packages/types` из корня репозитория |
+| Docker (**frontend-next**) | копия в `frontend-next/packages/types`, в образе — `file:./packages/types` |
+
+Перед Docker-сборкой выполните:
+
+```bash
+npm run docker:prepare
+```
+
+Скрипт `scripts/copy-types-for-docker.mjs` копирует `packages/types` в `frontend-next/packages/types` (и в другие фронтенды при необходимости). На VPS это делает GitHub Actions deploy перед `docker compose build`.
+
+### Почему у Next.js отдельная схема
+
+- Build context для `frontend-next` — каталог `frontend-next/` (совместимость с деплоем из IDE).
+- Turbopack не резолвит зависимость, если она указывает **вне** корня Next.js (`../packages/types`).
+- Поэтому в Dockerfile путь временно меняется на `file:./packages/types`.
+
+Подробнее: [deployment.md](deployment.md#docker-сборка-и-news-portaltypes).
+
+### TypeScript в Docker
+
+В `packages/types` используется TypeScript 5.x. Опция `"ignoreDeprecations": "6.0"` в `tsconfig.build.json` не применяется — она доступна только в TS 6+.
 
 ## Правила изменений
 
