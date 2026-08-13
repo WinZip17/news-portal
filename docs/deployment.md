@@ -72,6 +72,28 @@ docker compose build frontend-next
 
 Backend в Docker собирается через `npx nest build` (без workspace prebuild из корня).
 
+### WebSocket (`/api/datetime`)
+
+Socket.io слушает namespace `/api/datetime`, engine path **`/api/socket.io`** (не `/socket.io` в корне).
+
+Nginx проксирует `/api/` на backend с заголовками `Upgrade` / `Connection` для WebSocket. Клиент на `next.short-news.ru` подключается к тому же origin:
+
+```javascript
+io('https://next.short-news.ru/api/datetime', { path: '/api/socket.io' });
+```
+
+**Проверка на проде** (после деплоя backend + frontend + nginx):
+
+```bash
+# polling-handshake (должен вернуть JSON с sid)
+curl -s "https://next.short-news.ru/api/socket.io/?EIO=4&transport=polling"
+
+# логи backend
+docker compose logs backend --tail=30 | grep -i datetime
+```
+
+В DevTools → Network фильтр `socket.io` — статус **101 Switching Protocols** для WebSocket.
+
 ### Особенность `frontend-next` (Turbopack)
 
 **Turbopack** (Next.js 16) не резолвит `@news-portal/types`, если зависимость указывает **вне** корня Next.js (`file:../packages/types`). Поэтому в Dockerfile, уже **внутри контейнера**, типы копируются в `frontend-next/packages/types` и путь временно меняется на `file:./packages/types`. Это не попадает в git и не дублирует типы в репозитории.

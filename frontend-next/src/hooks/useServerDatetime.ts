@@ -9,6 +9,7 @@ export function useServerDatetime(): string | null {
 
   useEffect(() => {
     const socket: Socket = io(`${getBackendOrigin()}/api/datetime`, {
+      path: '/api/socket.io',
       transports: ['websocket', 'polling'],
       reconnection: true,
     });
