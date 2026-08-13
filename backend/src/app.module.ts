@@ -6,6 +6,7 @@ import { NewsModule } from './modules/news/news.module';
 import { AiModule } from './modules/ai/ai.module';
 import { AppController } from './app.controller';
 import { MetricsModule } from './modules/metrics/metrics.module';
+import { DatetimeModule } from './modules/datetime/datetime.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
 
@@ -47,6 +48,7 @@ import { redisStore } from 'cache-manager-redis-yet';
     NewsModule,
     AiModule,
     MetricsModule,
+    DatetimeModule,
   ],
   controllers: [AppController],
 })

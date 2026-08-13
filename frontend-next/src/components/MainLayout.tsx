@@ -30,6 +30,7 @@ import {
 import { useRouter, usePathname } from 'next/navigation';
 import FrameworkSwitcher from './FrameworkSwitcher';
 import { useAppDispatch, useAppSelector, toggleTheme } from '@/store';
+import { useServerDatetime } from '@/hooks/useServerDatetime';
 
 const navItems = [
   { path: '/', label: 'Главная', icon: <HomeIcon /> },
@@ -51,6 +52,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const serverDatetime = useServerDatetime();
 
   const filteredNav = navItems.filter((item) => {
     if (item.auth && !isAuthenticated) return false;
@@ -213,7 +215,15 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             fontSize: { xs: '0.75rem', sm: '0.875rem' },
           }}
         >
-          Short News ©{new Date().getFullYear()} - Создано с ❤️ и AI
+          Short News ©{new Date().getFullYear()} — Создано с ❤️ и AI
+          {serverDatetime && (
+            <>
+              {' · '}
+              <Box component="span" sx={{ fontVariantNumeric: 'tabular-nums' }} aria-live="polite">
+                {serverDatetime}
+              </Box>
+            </>
+          )}
         </Box>
       </Box>
     </Box>
