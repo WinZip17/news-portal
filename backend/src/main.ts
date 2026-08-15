@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ensureDatabaseSchema } from './database/ensure-schema';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -9,6 +10,9 @@ async function bootstrap() {
   logger.log('🚀 Starting application...');
 
   try {
+    await ensureDatabaseSchema();
+    logger.log('✅ Database schema prerequisites ready');
+
     const app = await NestFactory.create(AppModule, {
       logger: ['log', 'error', 'warn', 'debug'],
     });
@@ -80,6 +84,7 @@ async function bootstrap() {
   } catch (error) {
     logger.error('❌ Failed to start application:', error.message);
     console.error(error);
+    process.exit(1);
   }
 }
 

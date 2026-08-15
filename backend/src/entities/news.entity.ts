@@ -44,6 +44,17 @@ export class News {
   tags: string[];
 
   @Column({
+    name: 'search_vector',
+    type: 'tsvector',
+    generatedType: 'STORED',
+    asExpression: `to_tsvector('russian', coalesce(title, '') || ' ' || coalesce(summary, '') || ' ' || coalesce(replace(tags, ',', ' '), ''))`,
+    select: false,
+    insert: false,
+    update: false,
+  })
+  searchVector?: string;
+
+  @Column({
     type: 'enum',
     enum: NewsStatus,
     default: NewsStatus.DRAFT,
