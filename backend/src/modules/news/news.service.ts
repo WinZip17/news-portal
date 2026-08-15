@@ -1,12 +1,13 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, LessThan, ILike, Between, In, MoreThanOrEqual, FindOptionsWhere } from 'typeorm';
+import { Repository, LessThan, Between, In, MoreThanOrEqual } from 'typeorm';
 import { News, Favorite, Like } from '../../entities';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { NewsStatsDto } from './dto/stats.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { NewsCategory, NewsFilter, NewsStatus } from '../../types';
+import { normalizeTagsFilter, resolveSortColumn } from './news-search.utils';
 
 @Injectable()
 export class NewsService {
@@ -35,30 +36,54 @@ export class NewsService {
       sortOrder = 'DESC',
       isAiGenerated,
       authorId,
+      tags,
     } = filters;
 
-    const where: FindOptionsWhere<News> = {};
+    const normalizedTags = normalizeTagsFilter(tags);
+    const normalizedSearch = search?.trim();
+    const orderColumn = resolveSortColumn(sortBy);
 
-    if (status) where.status = status;
-    if (category) where.category = category;
-    if (isAiGenerated !== undefined) where.isAiGenerated = isAiGenerated;
-    if (authorId) where.authorId = authorId;
+    const queryBuilder = this.newsRepository
+      .createQueryBuilder('news')
+      .leftJoinAndSelect('news.author', 'author');
 
-    if (search) {
-      where.title = ILike(`%${search}%`);
+    if (status) {
+      queryBuilder.andWhere('news.status = :status', { status });
     }
-
+    if (category) {
+      queryBuilder.andWhere('news.category = :category', { category });
+    }
+    if (isAiGenerated !== undefined) {
+      queryBuilder.andWhere('news.isAiGenerated = :isAiGenerated', { isAiGenerated });
+    }
+    if (authorId) {
+      queryBuilder.andWhere('news.authorId = :authorId', { authorId });
+    }
     if (fromDate && toDate) {
-      where.publishedAt = Between(new Date(fromDate), new Date(toDate));
+      queryBuilder.andWhere('news.publishedAt BETWEEN :fromDate AND :toDate', {
+        fromDate: new Date(fromDate),
+        toDate: new Date(toDate),
+      });
+    }
+    if (normalizedSearch) {
+      queryBuilder.andWhere(`news.search_vector @@ plainto_tsquery('russian', :search)`, {
+        search: normalizedSearch,
+      });
+    }
+    if (normalizedTags) {
+      queryBuilder.andWhere(
+        `EXISTS (
+          SELECT 1 FROM unnest(string_to_array(news.tags, ',')) AS t(tag)
+          WHERE lower(trim(t.tag)) IN (:...tags)
+        )`,
+        { tags: normalizedTags },
+      );
     }
 
-    const [data, total] = await this.newsRepository.findAndCount({
-      where,
-      relations: { author: true },
-      order: { [sortBy]: sortOrder },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+    queryBuilder.orderBy(`news.${orderColumn}`, sortOrder);
+    queryBuilder.skip((page - 1) * limit).take(limit);
+
+    const [data, total] = await queryBuilder.getManyAndCount();
 
     const sanitizedData = data.map((news) => {
       if (news.author) {
@@ -172,13 +197,20 @@ export class NewsService {
   }
 
   async findByTags(tags: string[], limit: number = 10) {
+    const normalizedTags = normalizeTagsFilter(tags);
     const queryBuilder = this.newsRepository
       .createQueryBuilder('news')
       .leftJoinAndSelect('news.author', 'author')
       .where('news.status = :status', { status: NewsStatus.PUBLISHED });
 
-    if (tags && tags.length > 0) {
-      queryBuilder.andWhere('news.tags && :tags', { tags });
+    if (normalizedTags) {
+      queryBuilder.andWhere(
+        `EXISTS (
+          SELECT 1 FROM unnest(string_to_array(news.tags, ',')) AS t(tag)
+          WHERE lower(trim(t.tag)) IN (:...tags)
+        )`,
+        { tags: normalizedTags },
+      );
     }
 
     return queryBuilder.orderBy('news.publishedAt', 'DESC').take(limit).getMany();
@@ -250,11 +282,12 @@ export class NewsService {
 
   async findSimilar(title: string): Promise<News[]> {
     const words = title.split(' ').slice(0, 3).join(' ');
-    return this.newsRepository.find({
-      where: { title: ILike(`%${words}%`) },
-      take: 5,
-      order: { createdAt: 'DESC' },
-    });
+    return this.newsRepository
+      .createQueryBuilder('news')
+      .where(`news.search_vector @@ plainto_tsquery('russian', :search)`, { search: words })
+      .orderBy('news.createdAt', 'DESC')
+      .take(5)
+      .getMany();
   }
 
   async getStats(): Promise<NewsStatsDto> {

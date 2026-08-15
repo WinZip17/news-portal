@@ -30,12 +30,22 @@ describe('NewsService', () => {
   };
 
   beforeEach(async () => {
+    const queryBuilder = {
+      leftJoinAndSelect: jest.fn().mockReturnThis(),
+      andWhere: jest.fn().mockReturnThis(),
+      orderBy: jest.fn().mockReturnThis(),
+      skip: jest.fn().mockReturnThis(),
+      take: jest.fn().mockReturnThis(),
+      getManyAndCount: jest.fn().mockResolvedValue([[mockNews], 1]),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         NewsService,
         {
           provide: getRepositoryToken(News),
           useValue: {
+            createQueryBuilder: jest.fn().mockReturnValue(queryBuilder),
             findAndCount: jest.fn().mockResolvedValue([[mockNews], 1]),
             findOne: jest.fn().mockResolvedValue(mockNews),
             create: jest.fn().mockReturnValue(mockNews),
