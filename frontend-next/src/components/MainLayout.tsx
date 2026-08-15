@@ -24,6 +24,7 @@ import {
   Article as NewsIcon,
   Person as ProfileIcon,
   Dashboard as AdminIcon,
+  Psychology as SmartSearchIcon,
   DarkMode,
   LightMode,
 } from '@mui/icons-material';
@@ -35,6 +36,7 @@ import { useServerDatetime } from '@/hooks/useServerDatetime';
 const navItems = [
   { path: '/', label: 'Главная', icon: <HomeIcon /> },
   { path: '/news', label: 'Новости', icon: <NewsIcon /> },
+  { path: '/search', label: 'Умный поиск', icon: <SmartSearchIcon /> },
   { path: '/profile', label: 'Профиль', icon: <ProfileIcon />, auth: true },
   { path: '/admin', label: 'Админ-панель', icon: <AdminIcon />, admin: true },
 ];
@@ -139,6 +141,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
               >
                 {pathname === '/' && 'Главная'}
                 {pathname === '/news' && 'Новости'}
+                {pathname === '/search' && 'Умный поиск'}
                 {pathname === '/profile' && 'Профиль'}
                 {pathname === '/admin' && 'Админ-панель'}
               </Typography>

@@ -8,7 +8,9 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from '../auth/auth.service';
 import { News } from '../../entities';
 import { escapeXml } from '../../utils/escapeXml';
-import { ModerationBody, NewsFilter, NewsStatus, RequestWithUser } from '../../types';
+import { ModerationBody, NewsFilter, NewsStatus, RequestWithUser, SmartSearchResponse } from '../../types';
+import { SmartSearchDto } from './dto/smart-search.dto';
+import { NewsSearchAiService } from './news-search-ai.service';
 
 @ApiTags('News')
 @Controller('news')
@@ -16,12 +18,19 @@ export class NewsController {
   constructor(
     private newsService: NewsService,
     private authService: AuthService,
+    private newsSearchAiService: NewsSearchAiService,
   ) {}
 
   @Get()
   @ApiOperation({ summary: 'Получение списка новостей' })
   findAll(@Query() filters: NewsFilter) {
     return this.newsService.findAll(filters);
+  }
+
+  @Post('smart-search')
+  @ApiOperation({ summary: 'Умный поиск новостей (NL → NewsFilter → FTS)' })
+  smartSearch(@Body() body: SmartSearchDto): Promise<SmartSearchResponse> {
+    return this.newsSearchAiService.search(body.query, body.page, body.limit);
   }
 
   @Get('stats-news')

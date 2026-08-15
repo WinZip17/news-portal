@@ -17,6 +17,9 @@
 | **SSR** | ❌ | ✅ | ✅ | ❌ |
 | **CSS решение** | Ant Design | MUI System | PrimeVue + CSS | Vuetify + CSS |
 | **Типы** | `@/types` → `@news-portal/types` | `@/types` | `~/types` | `@/types` |
+| **Поиск** | FTS на `/news` | FTS `/news` + умный `/search` | лента без поиска | лента без поиска |
+
+> 🔍 Подробнее: [search.md](search.md)
 
 ## React SPA (основной)
 
@@ -26,6 +29,7 @@
 
 ### Особенности
 - Полноценный админ-интерфейс с модерацией
+- Поиск по ленте (`/news?search=`) — FTS через `GET /api/news`
 - Инфинити-скролл в ленте новостей
 - Ленивая загрузка страниц (React.lazy)
 - Service Worker для PWA
@@ -53,6 +57,9 @@ frontend/src/
 - Server-Side Rendering (SSR)
 - App Router
 - Material Design (MUI)
+- **`/search`** — умный поиск (NL → `POST /api/news/smart-search`)
+- **`/news`** — классический FTS и фильтры (`GET /api/news`)
+- Серверное время в футере (WebSocket `/api/datetime`, хук `useServerDatetime`)
 - Клиентский layout отделён от серверного
 - CSS-in-JS через MUI
 - **Docker:** общий контекст корня репозитория; копия типов только внутри образа из‑за Turbopack ([deployment.md](deployment.md#docker-сборка-и-news-portaltypes))
@@ -60,9 +67,10 @@ frontend/src/
 ### Структура
 ```
 frontend-next/src/
-├── app/           # App Router страницы
+├── app/           # App Router страницы (/, /news, /search, …)
 ├── components/    # React компоненты
-├── services/      # API сервисы
+├── hooks/         # useServerDatetime и др.
+├── services/      # API сервисы (newsService.smartSearch)
 ├── store/         # Redux store
 ├── types/         # Реэкспорт @news-portal/types
 └── theme.ts       # MUI тема

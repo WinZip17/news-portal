@@ -26,8 +26,8 @@ npm run build
 |------|------------|
 | `@news-portal/types` | все типы |
 | `@news-portal/types/auth` | пользователь, auth, DTO |
-| `@news-portal/types/news` | новости, фильтры, статистика |
+| `@news-portal/types/news` | новости, фильтры, умный поиск, статистика |
 | `@news-portal/types/api` | обёртки API |
 | `@news-portal/types/ai` | AI и cron |
 
-Подробная документация: [docs/types.md](../../docs/types.md).
+Подробная документация: [docs/types.md](../../docs/types.md) · [docs/search.md](../../docs/search.md).

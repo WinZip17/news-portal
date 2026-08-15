@@ -44,6 +44,7 @@ packages/types/
 - `News`, `NewsItem` (алиас)
 - `NewsCategory`, `NewsStatus` (enum)
 - `NewsFilter`, `NewsResponse`, `NewsStats` / `StatsResponse` (алиас)
+- `SmartSearchRequest`, `SmartSearchResponse` — умный поиск (`POST /api/news/smart-search`)
 - `ModerationBody`, `CreateNewsDto`
 
 ### API / AI
@@ -127,6 +128,7 @@ Turbopack не резолвит зависимость, если она указ
 ## Связанные документы
 
 - [Архитектура](architecture.md)
+- [Поиск новостей](search.md)
 - [Фронтенды](frontends.md)
 - [Как помочь проекту](contributing.md)
 - [Деплой](deployment.md)

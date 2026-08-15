@@ -80,7 +80,7 @@ frontend-vue/
 | Путь | Страница | Доступ |
 |------|----------|--------|
 | / | Главная | Все |
-| /news | Лента новостей | Все |
+| /news | Лента новостей (без поля поиска; API поддерживает FTS) | Все |
 | /login | Вход | Гость |
 | /register | Регистрация | Гость |
 | /profile | Личный кабинет | 🔒 |
@@ -95,7 +95,7 @@ import type { User } from '@/types/auth';
 import { NewsStatus, type News } from '@/types/news';
 ```
 
-Документация: [docs/types.md](../docs/types.md)
+Документация: [docs/types.md](../docs/types.md) · [docs/search.md](../docs/search.md)
 
 ## 🔧 Особенности
 

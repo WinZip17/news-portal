@@ -116,7 +116,7 @@ nitro: { devProxy: { '/api': { target: 'http://localhost:3001', changeOrigin: tr
 
 ```text
 / — Главная, статистика, последние новости — Все
-/news — Лента с фильтрацией, поиском, сортировкой — Все
+/news — Лента с фильтрацией, FTS-поиском (`GET /api/news?search=`), сортировкой — Все
 /login — Вход — Гости
 /register — Регистрация — Гости
 /profile — Профиль, смена пароля, избранное — Юзеры
@@ -137,7 +137,7 @@ import type { NewsItem, UserResponse } from '~/types';
 import { NewsStatus } from '~/types';
 ```
 
-Документация: [docs/types.md](../docs/types.md)
+Документация: [docs/types.md](../docs/types.md) · [docs/search.md](../docs/search.md)
 
 ## 🟣 Framework Switcher
 

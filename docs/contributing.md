@@ -50,7 +50,9 @@ npm -w @news-portal/types run build   # перед сборкой backend
 
 Docker-сборка: контекст — **корень репозитория**, типы не дублируются во фронтендах. См. [docs/deployment.md](deployment.md#docker-сборка-и-news-portaltypes).
 
-Документация: [docs/types.md](types.md).
+Документация: [docs/types.md](types.md) · [docs/search.md](search.md).
+
+При изменении поиска (`NewsFilter`, `SmartSearchRequest` / `SmartSearchResponse`) обновляйте типы, backend и затронутые фронтенды.
 
 ## Правила кода
 

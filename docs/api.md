@@ -22,7 +22,8 @@ TypeScript-контракты запросов и ответов описаны 
 
 | Метод | Путь | Описание | Доступ |
 |-------|------|----------|--------|
-| GET | /api/news | Список новостей | Все |
+| GET | /api/news | Список новостей (FTS, фильтры) | Все |
+| POST | /api/news/smart-search | Умный поиск (NL → NewsFilter → FTS) | Все |
 | GET | /api/news/stats | Статистика | Все |
 | GET | /api/news/favorites | Избранное | 🔒 |
 | GET | /api/news/:id | Новость по ID | Все |
@@ -35,6 +36,14 @@ TypeScript-контракты запросов и ответов описаны 
 | POST | /api/news/:id/favorite | В избранное | 🔒 |
 | GET | /api/news/:id/favorite/check | Проверка избранного | 🔒 |
 | POST | /api/news/personalized | Персональная лента | 🔒 |
+
+## WebSocket
+
+| Протокол | Путь / namespace | Описание | Доступ |
+|----------|------------------|----------|--------|
+| Socket.io | `/api/datetime` (engine: `/api/socket.io`) | Серверное время, событие `datetime` каждую 1 с, формат `DD.MM.YYYY HH:mm:ss` | Все |
+
+Подробнее: [deployment.md](deployment.md#websocket-apidatetime), [search.md](search.md).
 
 ## AI Генерация
 
@@ -64,12 +73,31 @@ TypeScript-контракты запросов и ответов описаны 
 | limit | number | Новостей на странице |
 | category | string | Категория (politics, economy, technology, science, sports, entertainment, health, world) |
 | status | string | Статус (draft, pending, published, rejected, archived) |
-| search | string | Поиск по заголовку |
-| sortBy | string | Сортировка (publishedAt, views, likes) |
+| search | string | FTS по **title, summary, tags** (`plainto_tsquery`, russian) |
+| tags | string / string[] | Фильтр по тегам (пересечение) |
+| sortBy | string | Сортировка (publishedAt, views, likes, createdAt) |
 | sortOrder | string | Порядок (ASC, DESC) |
 | isAiGenerated | boolean | Только AI-новости |
 | fromDate | string | С даты |
 | toDate | string | По дату |
+
+## Умный поиск
+
+**POST** `/api/news/smart-search`
+
+Тело запроса (`SmartSearchRequest`):
+
+```json
+{
+  "query": "AI новости про технологии за неделю",
+  "page": 1,
+  "limit": 20
+}
+```
+
+Ответ (`SmartSearchResponse`): стандартная пагинация + поля `appliedFilters` (распознанные фильтры) и `source` (`ai` | `fallback`).
+
+Подробнее: [search.md](search.md).
 
 ## Роли пользователей
 

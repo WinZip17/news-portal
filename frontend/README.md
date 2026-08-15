@@ -60,7 +60,7 @@ frontend/
 | Путь | Страница | Доступ |
 |------|----------|--------|
 | / | Главная | Все |
-| /news | Лента новостей | Все |
+| /news | Лента новостей (поиск `?search=`, FTS) | Все |
 | /news?news=id | Новость в модалке | Все |
 | /login | Вход | Гость |
 | /register | Регистрация | Гость |
@@ -75,7 +75,7 @@ TypeScript-типы импортируются из **`@news-portal/types`** (м
 import type { News, User } from '@/types';
 ```
 
-Документация: [docs/types.md](../docs/types.md)
+Документация: [docs/types.md](../docs/types.md) · [docs/search.md](../docs/search.md)
 
 ## 🔧 Разработка
 

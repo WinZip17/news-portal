@@ -15,6 +15,7 @@
 - 🛡 **Модерация** — все новости проходят проверку перед публикацией
 - 📱 **PWA** — можно установить как приложение на телефон
 - 🔍 **SEO** — мета-теги, Open Graph, sitemap для поисковиков
+- 🔎 **Поиск** — PostgreSQL FTS по заголовку, описанию и тегам; умный поиск (NL → AI → фильтры) на Next.js
 
 ## 🛠 Технологии
 
@@ -47,7 +48,7 @@ npm run start:prod — запуск в Docker (продакшен)
 
 TypeScript-типы вынесены в workspace-пакет **`@news-portal/types`** (`packages/types/`). Все четыре фронтенда и backend импортируют типы оттуда; локальные папки `types/` — тонкие реэкспорты.
 
-Подробнее: [docs/types.md](docs/types.md)
+Подробнее: [docs/types.md](docs/types.md) · [docs/search.md](docs/search.md)
 
 ## 📊 Мониторинг
 Grafana с дашбордом на http://short-news.ru/grafana

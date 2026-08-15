@@ -6,6 +6,7 @@
 
 - [Архитектура](architecture.md)
 - [API](api.md)
+- [Поиск новостей](search.md)
 - [Деплой](deployment.md)
 - [AI генерация](ai-generation.md)
 - [Фронтенды](frontends.md)

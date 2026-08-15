@@ -22,11 +22,13 @@
 
 ## AI модель
 
-- **Провайдер**: DeepSeek API
+- **Провайдер**: DeepSeek API (OpenAI SDK)
 - **Модель**: deepseek-chat (v4-flash для проверки статуса)
 - **Temperature**: 0.7
 - **Max tokens**: 1000
 - **Формат ответа**: JSON
+
+Тот же провайдер и ключ (`OPENAI_API_KEY`) используются для **умного поиска** (`POST /api/news/smart-search`): модель возвращает JSON с фильтрами `NewsFilter`, без SQL. См. [search.md](search.md).
 
 ## Промпт
 

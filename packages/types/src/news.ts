@@ -69,6 +69,17 @@ export interface NewsResponse {
   totalPages: number;
 }
 
+export interface SmartSearchRequest {
+  query: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface SmartSearchResponse extends NewsResponse {
+  appliedFilters: NewsFilter;
+  source: 'ai' | 'fallback';
+}
+
 export interface NewsStats {
   newsToday: number;
   totalUsers: number;

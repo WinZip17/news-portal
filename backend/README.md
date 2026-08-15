@@ -9,7 +9,8 @@
 - **TypeORM** — ORM для работы с базой данных
 - **PostgreSQL** — база данных
 - **JWT** — аутентификация
-- **OpenAI / DeepSeek** — AI генерация контента
+- **OpenAI / DeepSeek** — AI генерация контента и умный поиск
+- **Socket.io** — WebSocket серверное время
 - **RSS Parser** — получение новостей из источников
 - **Swagger** — документация API
 - **Docker** — контейнеризация
@@ -48,7 +49,8 @@ npm run start:prod — запуск продакшн версии
 
 | Метод | Путь | Описание | Доступ |
 |-------|------|----------|--------|
-| GET | /api/news | Список новостей | Все |
+| GET | /api/news | Список новостей (FTS, фильтры, теги) | Все |
+| POST | /api/news/smart-search | Умный поиск (NL → NewsFilter) | Все |
 | GET | /api/news/stats | Статистика | Все |
 | GET | /api/news/favorites | Избранное | 🔒 |
 | GET | /api/news/:id | Новость по ID | Все |
@@ -61,6 +63,12 @@ npm run start:prod — запуск продакшн версии
 | POST | /api/news/:id/favorite | В избранное | 🔒 |
 | GET | /api/news/:id/favorite/check | Проверка избранного | 🔒 |
 | POST | /api/news/personalized | Персональная лента | 🔒 |
+
+### WebSocket
+
+| Протокол | Путь | Описание |
+|----------|------|----------|
+| Socket.io | `/api/datetime` | Серверное время, событие `datetime`, engine `/api/socket.io` |
 
 ### AI Генерация
 
@@ -138,7 +146,11 @@ backend/
 │   │   └── like.entity.ts   # Лайки
 │   ├── modules/
 │   │   ├── auth/            # Аутентификация
-│   │   ├── news/            # Новости
+│   │   ├── news/            # Новости, FTS, smart-search
+│   │   │   ├── news-search-index.service.ts  # search_vector + GIN
+│   │   │   ├── news-search-ai.service.ts     # NL → NewsFilter
+│   │   │   └── parse-news-filter.ts          # whitelist фильтров
+│   │   ├── datetime/        # WebSocket /api/datetime
 │   │   └── ai/              # AI генерация
 │   │       ├── config/      # Конфигурация AI
 │   │       ├── dto/         # DTO
@@ -161,7 +173,7 @@ Backend использует workspace-пакет **`@news-portal/types`**. Фа
 
 Перед сборкой автоматически выполняется `npm -w @news-portal/types run build` (см. `prebuild` в `package.json`).
 
-Документация: [docs/types.md](../docs/types.md)
+Документация: [docs/types.md](../docs/types.md) · [docs/search.md](../docs/search.md)
 
 ## 🐳 Docker
 

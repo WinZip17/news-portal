@@ -31,15 +31,18 @@ frontend-next/
 │   ├── app/                 # App Router страницы
 │   │   ├── layout.tsx       # Корневой layout с темой и Redux
 │   │   ├── page.tsx         # Главная страница
-│   │   ├── news/page.tsx    # Лента новостей
+│   │   ├── news/page.tsx    # Лента новостей (FTS, фильтры)
+│   │   ├── search/page.tsx  # Умный поиск (NL)
 │   │   ├── login/page.tsx   # Вход
 │   │   ├── register/page.tsx # Регистрация
 │   │   ├── profile/page.tsx # Личный кабинет
 │   │   └── admin/page.tsx   # Админ-панель
 │   ├── components/          # React компоненты
-│   │   ├── MainLayout.tsx        # Главный layout с сайдбаром
+│   │   ├── MainLayout.tsx        # Layout + серверное время в футере
 │   │   ├── NewsDetail.tsx        # Детальный просмотр новости
 │   │   └── FrameworkSwitcher.tsx  # Переключатель фреймворков
+│   ├── hooks/               # React хуки
+│   │   └── useServerDatetime.ts  # WebSocket /api/datetime
 │   ├── services/            # API сервисы
 │   │   ├── api.ts                # HTTP клиент (Axios)
 │   │   ├── authService.ts        # Авторизация
@@ -65,7 +68,8 @@ frontend-next/
 | Путь | Страница | Доступ |
 |------|----------|--------|
 | / | Главная | Все |
-| /news | Лента новостей | Все |
+| /news | Лента новостей (FTS, фильтры) | Все |
+| /search | Умный поиск (NL → AI) | Все |
 | /login | Вход | Гость |
 | /register | Регистрация | Гость |
 | /profile | Личный кабинет | 🔒 |
@@ -79,7 +83,13 @@ frontend-next/
 import type { News, NewsStatus, User } from '@/types';
 ```
 
-Документация: [docs/types.md](../docs/types.md)
+Документация: [docs/types.md](../docs/types.md) · [docs/search.md](../docs/search.md)
+
+## 🔌 WebSocket и API
+
+- **Серверное время** — футер через `useServerDatetime`: Socket.io namespace `/api/datetime`, path `/api/socket.io`
+- **Умный поиск** — `newsService.smartSearch()` → `POST /api/news/smart-search`
+- **Обычный поиск** — `GET /api/news?search=&tags=&category=...` на странице `/news`
 
 ## 🎨 Особенности дизайна
 

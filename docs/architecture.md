@@ -1,5 +1,3 @@
-## `docs/architecture.md`:
-
 # 🏗 Архитектура проекта
 
 ## Монорепозиторий
@@ -59,6 +57,21 @@ news-portal/
 3. **Автоподтверждение** → PENDING > 1 час → PUBLISHED
 4. **Архивация** → PUBLISHED > 30 дней → ARCHIVED
 
+## Поиск новостей
+
+```
+GET /api/news?search=...     → PostgreSQL FTS (search_vector, GIN)
+POST /api/news/smart-search  → DeepSeek → NewsFilter JSON → sanitize → findAll()
+```
+
+- FTS индексирует **title + summary + tags** (конфиг `russian`).
+- Умный поиск **не генерирует SQL** — только whitelist полей `NewsFilter`.
+- Подробнее: [search.md](search.md).
+
+## WebSocket: серверное время
+
+Модуль `backend/src/modules/datetime/` — Socket.io namespace `/api/datetime`, engine path `/api/socket.io`. Клиенты (frontend-next) получают событие `datetime` каждую секунду.
+
 ## Аутентификация
 
 - JWT токены (access + refresh)
@@ -77,8 +90,9 @@ news-portal/
 
 - enum'ы: `NewsCategory`, `NewsStatus`, `UserRole`
 - сущности: `User`, `News`, фильтры, paginated-ответы
+- поиск: `SmartSearchRequest`, `SmartSearchResponse`
 - AI: `AutoGenerateResponse`, `CronScheduleResponse`
 
 Фронтенды импортируют типы через локальные `types/` (реэкспорт). Backend подключает пакет в runtime (CommonJS `dist/`) и хранит server-only типы в `backend/src/types/internal.ts`.
 
-См. [types.md](types.md).
+См. [types.md](types.md) · [search.md](search.md).
