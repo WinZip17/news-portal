@@ -38,6 +38,8 @@ GitHub Actions автоматически деплоит при пуше в ве
 5. Собирает и запускает все фронтенды
 6. Очищает старые образы
 
+SSH-шаг на VPS может занимать **30–60 минут** (пять Docker-сборок подряд). У `appleboy/ssh-action` по умолчанию `command_timeout: 10m` — при превышении появляется `Run Command Timeout`. В workflow задано `command_timeout: 60m`, у job — `timeout-minutes: 90`.
+
 ## Docker-сборка и `@news-portal/types`
 
 Пакет `@news-portal/types` **не публикуется в npm**. В `package.json` указано `"file:../packages/types"`. При изолированной сборке в Docker registry отдаёт 404 — типы копируются из `packages/types` **внутри образа**, а не из дубликатов во фронтендах.
