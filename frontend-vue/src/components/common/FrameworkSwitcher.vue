@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 const props = defineProps<{
   current: 'react' | 'vue' | 'next' | 'nuxt';
 }>();
