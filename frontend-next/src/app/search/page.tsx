@@ -18,12 +18,17 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { Close as CloseIcon, Psychology as SmartSearchIcon, SmartToy as AIIcon } from '@mui/icons-material';
+import {
+  Close as CloseIcon,
+  Psychology as SmartSearchIcon,
+  SmartToy as AIIcon,
+} from '@mui/icons-material';
 import { newsService } from '@/services/newsService';
 import { News } from '@/types';
 import NewsDetail from '@/components/NewsDetail';
 import { getCategoryLabel } from '@/utils/getCategoryLabel';
 import { formatAppliedFilters } from '@/utils/formatAppliedFilters';
+import { truncateText } from '@/utils/truncateText';
 
 const PAGE_SIZE = 20;
 
@@ -35,7 +40,7 @@ const EXAMPLE_QUERIES = [
 
 export default function SmartSearchPage() {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [query, setQuery] = useState('');
   const [activeQuery, setActiveQuery] = useState<string | null>(null);
   const [news, setNews] = useState<News[]>([]);
@@ -124,15 +129,13 @@ export default function SmartSearchPage() {
   }, [activeQuery, hasMore, loading, loadingMore, page, runSearch]);
 
   return (
-    <Container
-      sx={{ py: { xs: 2, md: 4 }, px: { xs: 1, sm: 2 }, maxWidth: '100%', overflowX: 'hidden' }}
-    >
+    <Container sx={{ py: { xs: 2, md: 4 }, px: { xs: 1, sm: 2 }, maxWidth: '100%', minWidth: 0 }}>
       <Typography variant="h4" gutterBottom sx={{ fontSize: { xs: '1.3rem', sm: '2rem' } }}>
         🧠 Умный поиск
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Опишите запрос своими словами — AI подберёт фильтры, а поиск выполнится по заголовку, описанию и
-        тегам.
+        Опишите запрос своими словами — AI подберёт фильтры, а поиск выполнится по заголовку,
+        описанию и тегам.
       </Typography>
 
       <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
@@ -226,7 +229,7 @@ export default function SmartSearchPage() {
                           wordBreak: 'break-word',
                         }}
                       >
-                        {item.summary?.substring(0, 150)}...
+                        {truncateText(item.summary, 150)}
                       </Typography>
                       <Box
                         sx={{ display: 'flex', gap: 0.5, alignItems: 'center', flexWrap: 'wrap' }}

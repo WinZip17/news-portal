@@ -7,43 +7,35 @@ const NewsStats: React.FC = () => {
   const { data: stats, isLoading } = useNewsStatsQuery();
 
   return (
-    <Row gutter={[24, 24]} style={{ marginBottom: 48 }}>
-      <Col xs={12} sm={8} md={4}>
-        <Card hoverable>
-          <Statistic title="Сегодня" value={stats?.newsToday || 0} prefix={<ReadOutlined />} loading={isLoading} />
-        </Card>
-      </Col>
-      <Col xs={12} sm={8} md={4}>
-        <Card hoverable>
-          <Statistic title="Пользователей" value={stats?.totalUsers || 0} prefix={<TeamOutlined />} loading={isLoading} />
-        </Card>
-      </Col>
-      <Col xs={12} sm={8} md={4}>
-        <Card hoverable>
-          <Statistic title="AI-рерайт" value={stats?.totalAiNews || 0} prefix={<RobotOutlined />} loading={isLoading} />
-        </Card>
-      </Col>
-      <Col xs={12} sm={8} md={4}>
-        <Card hoverable>
-          <Statistic title="Всего новостей" value={stats?.totalNews || 0} prefix={<ReadOutlined />} loading={isLoading} />
-        </Card>
-      </Col>
-      <Col xs={12} sm={8} md={4}>
-        <Card hoverable>
-          <Statistic title="Просмотров" value={stats?.totalViews || 0} prefix={<EyeOutlined />} loading={isLoading} />
-        </Card>
-      </Col>
-      <Col xs={12} sm={8} md={4}>
-        <Card hoverable>
-          <Statistic
-            title="На модерации"
-            value={stats?.pendingNews || 0}
-            prefix={<ClockCircleOutlined />}
-            styles={stats?.pendingNews ? { content: { color: '#faad14' } } : undefined}
-            loading={isLoading}
-          />
-        </Card>
-      </Col>
+    <Row gutter={[16, 16]} style={{ marginBottom: 48 }}>
+      {[
+        { title: 'Сегодня', value: stats?.newsToday || 0, prefix: <ReadOutlined /> },
+        { title: 'Пользователей', value: stats?.totalUsers || 0, prefix: <TeamOutlined /> },
+        { title: 'AI-рерайт', value: stats?.totalAiNews || 0, prefix: <RobotOutlined /> },
+        { title: 'Всего новостей', value: stats?.totalNews || 0, prefix: <ReadOutlined /> },
+        { title: 'Просмотров', value: stats?.totalViews || 0, prefix: <EyeOutlined /> },
+        {
+          title: 'На модерации',
+          value: stats?.pendingNews || 0,
+          prefix: <ClockCircleOutlined />,
+          valueStyle: stats?.pendingNews ? { color: '#faad14' } : undefined,
+        },
+      ].map((item) => (
+        <Col xs={12} sm={12} md={8} lg={8} xl={4} key={item.title}>
+          <Card hoverable style={{ height: '100%' }}>
+            <Statistic
+              title={item.title}
+              value={item.value}
+              prefix={item.prefix}
+              loading={isLoading}
+              styles={{
+                title: { whiteSpace: 'normal', lineHeight: 1.3, minHeight: '2.6em' },
+              }}
+              valueStyle={item.valueStyle}
+            />
+          </Card>
+        </Col>
+      ))}
     </Row>
   );
 };

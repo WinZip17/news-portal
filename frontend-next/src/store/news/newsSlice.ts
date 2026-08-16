@@ -10,6 +10,7 @@ interface NewsState {
   limit: number;
   totalPages: number;
   isLoading: boolean;
+  statsLoading: boolean;
   error: string | null;
   stats: NewsStats;
 }
@@ -22,6 +23,7 @@ const initialState: NewsState = {
   limit: 12,
   totalPages: 0,
   isLoading: false,
+  statsLoading: false,
   error: null,
   stats: {
     newsToday: 0,
@@ -103,8 +105,15 @@ const newsSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
+      .addCase(fetchStats.pending, (state) => {
+        state.statsLoading = true;
+      })
       .addCase(fetchStats.fulfilled, (state, action: PayloadAction<NewsStats>) => {
+        state.statsLoading = false;
         state.stats = action.payload;
+      })
+      .addCase(fetchStats.rejected, (state) => {
+        state.statsLoading = false;
       });
   },
 });

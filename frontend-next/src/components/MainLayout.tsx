@@ -53,7 +53,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const serverDatetime = useServerDatetime();
 
   const filteredNav = navItems.filter((item) => {
@@ -100,7 +100,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   return (
     <Box
       component="main"
-      sx={{ display: 'flex', minHeight: '100vh', maxWidth: '100vw', overflowX: 'hidden' }}
+      sx={{ display: 'flex', minHeight: '100vh', width: '100%', maxWidth: '100vw' }}
     >
       {!isMobile && (
         <Drawer
@@ -120,7 +120,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         {drawer}
       </Drawer>
 
-      <Box sx={{ flex: 1, maxWidth: '100%' }}>
+      <Box sx={{ flex: 1, minWidth: 0, maxWidth: '100%' }}>
         <AppBar position="sticky">
           <Toolbar sx={{ gap: 1, px: { xs: 1, sm: 2 }, minHeight: { xs: 48, sm: 64 } }}>
             {isMobile && (

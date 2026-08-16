@@ -33,6 +33,7 @@ import NewsDetail from '@/components/NewsDetail';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { fetchStats } from '@/store/news/newsSlice';
 import { getCategoryLabel } from '@/utils/getCategoryLabel';
+import { truncateText } from '@/utils/truncateText';
 
 export default function HomePage() {
   const router = useRouter();
@@ -44,6 +45,7 @@ export default function HomePage() {
   const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated);
   const dispatch = useAppDispatch();
   const stats = useAppSelector((s) => s.news.stats);
+  const statsLoading = useAppSelector((s) => s.news.statsLoading);
 
   useEffect(() => {
     newsService.getNews({ limit: 6 }).then((res) => {
@@ -54,7 +56,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <Box sx={{ maxWidth: '100%', overflowX: 'hidden', px: { xs: 1, sm: 2 } }}>
+    <Box sx={{ maxWidth: '100%', minWidth: 0, px: { xs: 1, sm: 2 } }}>
       {/* Hero */}
       <Box
         sx={{
@@ -132,8 +134,8 @@ export default function HomePage() {
           { icon: <VisibilityIcon />, label: 'Просмотров', value: stats.totalViews },
           { icon: <PendingIcon />, label: 'На модерации', value: stats.pendingNews },
         ].map((stat, i) => (
-          <Grid size={{ xs: 6, sm: 4, md: 2 }} key={i}>
-            <Card>
+          <Grid size={{ xs: 6, sm: 4, md: 4, lg: 2 }} key={i}>
+            <Card sx={{ height: '100%' }}>
               <CardContent
                 sx={{
                   textAlign: 'center',
@@ -145,16 +147,25 @@ export default function HomePage() {
                 <Box sx={{ color: 'primary.main', mb: 0.5, fontSize: { xs: 22, sm: 28 } }}>
                   {stat.icon}
                 </Box>
-                <Typography
-                  variant="h5"
-                  sx={{ fontWeight: 700, fontSize: { xs: '1rem', sm: '1.5rem' } }}
-                >
-                  {stat.value}
-                </Typography>
+                {statsLoading ? (
+                  <Skeleton variant="text" sx={{ fontSize: '1.5rem', mx: 'auto', width: '50%' }} />
+                ) : (
+                  <Typography
+                    variant="h5"
+                    sx={{ fontWeight: 700, fontSize: { xs: '1rem', sm: '1.5rem' } }}
+                  >
+                    {stat.value}
+                  </Typography>
+                )}
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' } }}
+                  sx={{
+                    fontSize: { xs: '0.7rem', sm: '0.875rem' },
+                    whiteSpace: 'normal',
+                    lineHeight: 1.3,
+                    minHeight: '2.6em',
+                  }}
                 >
                   {stat.label}
                 </Typography>
@@ -232,7 +243,7 @@ export default function HomePage() {
                           wordBreak: 'break-word',
                         }}
                       >
-                        {item.summary?.substring(0, 100)}...
+                        {truncateText(item.summary, 100)}
                       </Typography>
                       <Box
                         sx={{

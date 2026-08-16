@@ -24,12 +24,13 @@ import { newsService } from '@/services/newsService';
 import { News } from '@/types';
 import NewsDetail from '@/components/NewsDetail';
 import { getCategoryLabel } from '@/utils/getCategoryLabel';
+import { truncateText } from '@/utils/truncateText';
 
 const PAGE_SIZE = 20;
 
 export default function NewsPage() {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -116,9 +117,7 @@ export default function NewsPage() {
   ];
 
   return (
-    <Container
-      sx={{ py: { xs: 2, md: 4 }, px: { xs: 1, sm: 2 }, maxWidth: '100%', overflowX: 'hidden' }}
-    >
+    <Container sx={{ py: { xs: 2, md: 4 }, px: { xs: 1, sm: 2 }, maxWidth: '100%', minWidth: 0 }}>
       <Typography variant="h4" gutterBottom sx={{ fontSize: { xs: '1.3rem', sm: '2rem' } }}>
         📰 Лента новостей
       </Typography>
@@ -133,7 +132,7 @@ export default function NewsPage() {
           slotProps={{
             input: { startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} /> },
           }}
-          sx={{ minWidth: isMobile ? '100%' : 200, flex: isMobile ? 1 : undefined }}
+          sx={{ minWidth: isMobile ? '100%' : 200, flex: isMobile ? '1 1 100%' : '1 1 180px' }}
         />
         <TextField
           select
@@ -142,7 +141,7 @@ export default function NewsPage() {
           onChange={(e) => {
             setCategory(e.target.value);
           }}
-          sx={{ minWidth: isMobile ? '100%' : 160, flex: isMobile ? 1 : undefined }}
+          sx={{ minWidth: isMobile ? '100%' : 160, flex: isMobile ? '1 1 100%' : '1 1 140px' }}
         >
           {categories.map((c) => (
             <MenuItem key={c.value} value={c.value}>
@@ -157,7 +156,7 @@ export default function NewsPage() {
           onChange={(e) => {
             setSortBy(e.target.value);
           }}
-          sx={{ minWidth: isMobile ? '100%' : 140, flex: isMobile ? 1 : undefined }}
+          sx={{ minWidth: isMobile ? '100%' : 160, flex: isMobile ? '1 1 100%' : '1 1 150px' }}
         >
           <MenuItem value="publishedAt">🕒 По дате</MenuItem>
           <MenuItem value="views">👁 По просмотрам</MenuItem>
@@ -170,7 +169,7 @@ export default function NewsPage() {
           onChange={(e) => {
             setAiFilter(e.target.value);
           }}
-          sx={{ minWidth: isMobile ? '100%' : 150, flex: isMobile ? 1 : undefined }}
+          sx={{ minWidth: isMobile ? '100%' : 150, flex: isMobile ? '1 1 100%' : '1 1 140px' }}
         >
           <MenuItem value="all">📋 Все</MenuItem>
           <MenuItem value="true">🤖 AI-рерайт</MenuItem>
@@ -229,7 +228,7 @@ export default function NewsPage() {
                           wordBreak: 'break-word',
                         }}
                       >
-                        {item.summary?.substring(0, 150)}...
+                        {truncateText(item.summary, 150)}
                       </Typography>
                       <Box
                         sx={{ display: 'flex', gap: 0.5, alignItems: 'center', flexWrap: 'wrap' }}

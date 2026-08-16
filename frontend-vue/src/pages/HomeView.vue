@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useHead } from '@unhead/vue';
 import { useRouter } from 'vue-router';
 import { useNewsStore } from '@/stores/news';
 import { useAuthStore } from '@/stores/auth';
-import { useUIStore } from '@/stores/ui';
 import NewsCard from '@/components/news/NewsCard.vue';
 import NewsDetailModal from '@/components/news/NewsDetailModal.vue';
 import type { News } from '@/types';
@@ -12,11 +12,12 @@ import { storeToRefs } from 'pinia';
 const router = useRouter();
 const newsStore = useNewsStore();
 const authStore = useAuthStore();
-const uiStore = useUIStore();
 const { news, isLoading, stats, initialLoading } = storeToRefs(newsStore);
 
 const selectedNews = ref<News | null>(null);
 const modalVisible = ref(false);
+
+useHead({ title: 'Главная' });
 
 onMounted(async () => {
   await Promise.all([newsStore.fetchNews(), newsStore.fetchStats()]);
@@ -86,7 +87,9 @@ function formatDate(dateString: string) {
       <v-col
         cols="6"
         sm="4"
-        md="2"
+        md="4"
+        lg="4"
+        xl="2"
         v-for="stat in [
           { icon: 'mdi-newspaper', label: 'Сегодня', value: stats?.newsToday || 0 },
           { icon: 'mdi-account-group', label: 'Пользователей', value: stats?.totalUsers || 0 },
@@ -97,10 +100,10 @@ function formatDate(dateString: string) {
         ]"
         :key="stat.label"
       >
-        <v-card variant="flat" class="text-center pa-2">
+        <v-card variant="flat" class="text-center pa-2 h-100">
           <v-icon :icon="stat.icon" color="primary" class="mb-1" />
           <div class="text-h6 font-weight-bold">{{ stat.value }}</div>
-          <div class="text-caption text-medium-emphasis">{{ stat.label }}</div>
+          <div class="text-caption text-medium-emphasis text-wrap">{{ stat.label }}</div>
         </v-card>
       </v-col>
     </v-row>
