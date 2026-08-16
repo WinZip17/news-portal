@@ -39,6 +39,7 @@ export default function AdminPage() {
   const router = useRouter();
   const user = useAppSelector((s) => s.auth.user);
   const [tab, setTab] = useState(0);
+  const [newsStatusFilter, setNewsStatusFilter] = useState<NewsStatus>(NewsStatus.PENDING);
   const [news, setNews] = useState<News[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
@@ -66,17 +67,29 @@ export default function AdminPage() {
       return;
     }
     loadData();
-  }, [tab]);
+  }, [tab, newsStatusFilter]);
 
   const loadData = async () => {
     setLoading(true);
     try {
       if (tab === 0) {
-        const data = await newsService.getNews({ limit: 50 });
+        const data = await newsService.getNews({
+          status: newsStatusFilter,
+          limit: 50,
+          sortBy: 'createdAt',
+          sortOrder: 'DESC',
+        });
         setNews(data.data);
-      } else {
+      } else if (tab === 1) {
         const res = await api.get('/auth/users', { params: { limit: 50 } });
         setUsers(res.data.data);
+      } else if (tab === 2 && isSuperAdmin) {
+        const [newsRes, usersRes] = await Promise.all([
+          newsService.getNews({ limit: 100, sortBy: 'createdAt', sortOrder: 'DESC' }),
+          api.get('/auth/users', { params: { limit: 100 } }),
+        ]);
+        setNews(newsRes.data);
+        setUsers(usersRes.data.data);
       }
     } catch {}
     setLoading(false);
@@ -122,21 +135,10 @@ export default function AdminPage() {
     setDeleteConfirm({ open: false, id: '', type: 'news' });
   };
 
-  const getStatusLabel = (status: NewsStatus) => {
-    const labels: Record<string, string> = {
-      draft: 'Черновик',
-      pending: 'На модерации',
-      published: 'Опубликовано',
-      rejected: 'Отклонено',
-      archived: 'Архив',
-    };
-    return labels[status] || status;
-  };
-
   const handleModerate = async (id: string, status: NewsStatus) => {
     try {
       await newsService.moderateNews(id, status);
-      setNews((prev) => prev.map((n) => (n.id === id ? { ...n, status } : n)));
+      await loadData();
     } catch {}
   };
 
@@ -153,110 +155,128 @@ export default function AdminPage() {
       </Tabs>
 
       {tab === 0 && (
-        <TableContainer component={Paper}>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Заголовок</TableCell>
-                <TableCell>Категория</TableCell>
-                <TableCell>Тип</TableCell>
-                <TableCell>Статус</TableCell>
-                <TableCell>Дата</TableCell>
-                <TableCell>Действия</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {news.map((item) => (
-                <TableRow key={item.id} hover>
-                  <TableCell>
-                    <Tooltip title={item.title} arrow>
-                      <Typography
-                        sx={{
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          maxWidth: 300,
-                        }}
-                      >
-                        {item.title}
-                      </Typography>
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell>
-                    <Chip label={getCategoryLabel(item.category)} size="small" />
-                  </TableCell>
-                  <TableCell>
-                    {item.isAiGenerated ? (
-                      <Chip icon={<AIIcon />} label="AI" size="small" color="secondary" />
-                    ) : (
-                      <Chip label="Оригинал" size="small" />
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={getStatusLabel(item.status)}
-                      size="small"
-                      color={
-                        item.status === 'published'
-                          ? 'success'
-                          : item.status === 'pending'
-                            ? 'warning'
-                            : item.status === 'rejected'
-                              ? 'error'
-                              : 'default'
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>{new Date(item.createdAt).toLocaleDateString('ru-RU')}</TableCell>
-                  <TableCell>
-                    <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                      {item.status === 'pending' && (
-                        <>
-                          <Button
-                            size="small"
-                            color="success"
-                            variant="outlined"
-                            onClick={() => handleModerate(item.id, NewsStatus.PUBLISHED)}
-                          >
-                            Опубликовать
-                          </Button>
-                          <Button
-                            size="small"
-                            color="error"
-                            variant="outlined"
-                            onClick={() => handleModerate(item.id, NewsStatus.REJECTED)}
-                          >
-                            Отклонить
-                          </Button>
-                        </>
-                      )}
-                      {item.status === 'published' && (
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          onClick={() => handleModerate(item.id, NewsStatus.ARCHIVED)}
-                        >
-                          В архив
-                        </Button>
-                      )}
-                      {item.status === 'archived' && (
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          onClick={() => handleModerate(item.id, NewsStatus.PUBLISHED)}
-                        >
-                          Восстановить
-                        </Button>
-                      )}
-                    </Box>
-                  </TableCell>
+        <>
+          <Tabs
+            value={newsStatusFilter}
+            onChange={(_, value) => setNewsStatusFilter(value as NewsStatus)}
+            sx={{ mb: 2 }}
+          >
+            <Tab label="На модерации" value={NewsStatus.PENDING} />
+            <Tab label="Опубликованные" value={NewsStatus.PUBLISHED} />
+            <Tab label="Отклоненные" value={NewsStatus.REJECTED} />
+            <Tab label="Архив" value={NewsStatus.ARCHIVED} />
+          </Tabs>
+
+          <TableContainer component={Paper}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Заголовок</TableCell>
+                  <TableCell>Категория</TableCell>
+                  <TableCell>Тип</TableCell>
+                  <TableCell>Дата</TableCell>
+                  <TableCell>Просмотры</TableCell>
+                  <TableCell>Действия</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {news.map((item) => (
+                  <TableRow key={item.id} hover>
+                    <TableCell>
+                      <Tooltip title={item.title} arrow>
+                        <Typography
+                          sx={{
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            maxWidth: 300,
+                          }}
+                        >
+                          {item.title}
+                        </Typography>
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell>
+                      <Chip label={getCategoryLabel(item.category)} size="small" />
+                    </TableCell>
+                    <TableCell>
+                      {item.isAiGenerated ? (
+                        <Chip icon={<AIIcon />} label="AI" size="small" color="secondary" />
+                      ) : (
+                        <Chip label="Оригинал" size="small" />
+                      )}
+                    </TableCell>
+                    <TableCell>{new Date(item.createdAt).toLocaleDateString('ru-RU')}</TableCell>
+                    <TableCell>{item.views ?? 0}</TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                        {item.status === NewsStatus.PENDING && (
+                          <>
+                            <Button
+                              size="small"
+                              color="success"
+                              variant="outlined"
+                              onClick={() => handleModerate(item.id, NewsStatus.PUBLISHED)}
+                            >
+                              Опубликовать
+                            </Button>
+                            <Button
+                              size="small"
+                              color="error"
+                              variant="outlined"
+                              onClick={() => handleModerate(item.id, NewsStatus.REJECTED)}
+                            >
+                              Отклонить
+                            </Button>
+                          </>
+                        )}
+                        {item.status === NewsStatus.PUBLISHED && (
+                          <>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              onClick={() => handleModerate(item.id, NewsStatus.ARCHIVED)}
+                            >
+                              В архив
+                            </Button>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              onClick={() => handleModerate(item.id, NewsStatus.PENDING)}
+                            >
+                              На модерацию
+                            </Button>
+                          </>
+                        )}
+                        {item.status === NewsStatus.ARCHIVED && (
+                          <>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              onClick={() => handleModerate(item.id, NewsStatus.PUBLISHED)}
+                            >
+                              Восстановить
+                            </Button>
+                            <Button
+                              size="small"
+                              color="error"
+                              variant="outlined"
+                              onClick={() => handleDeleteClick(item.id, 'news')}
+                            >
+                              Удалить
+                            </Button>
+                          </>
+                        )}
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </>
       )}
 
       {tab === 1 && (

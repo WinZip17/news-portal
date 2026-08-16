@@ -53,12 +53,18 @@
           </template>
         </Column>
 
-        <Column header="Действия" style="width: 250px">
+        <Column field="views" header="Просмотры" :sortable="true" style="width: 100px">
+          <template #body="{ data }">
+            {{ data.views ?? 0 }}
+          </template>
+        </Column>
+
+        <Column header="Действия" style="width: 320px">
           <template #body="{ data }">
             <div class="actions-cell">
               <Button
                 v-if="data.status === 'pending'"
-                v-tooltip.top="'Одобрить'"
+                v-tooltip.top="'Опубликовать'"
                 icon="pi pi-check"
                 severity="success"
                 text
@@ -83,6 +89,34 @@
                 text
                 rounded
                 @click="confirmArchive(data.id)"
+              />
+              <Button
+                v-if="data.status === 'published'"
+                v-tooltip.top="'На модерацию'"
+                icon="pi pi-clock"
+                severity="secondary"
+                text
+                rounded
+                @click="confirmToModeration(data.id)"
+              />
+              <Button
+                v-if="data.status === 'archived'"
+                v-tooltip.top="'Восстановить'"
+                icon="pi pi-undo"
+                severity="success"
+                text
+                rounded
+                :loading="moderatingId === data.id"
+                @click="moderateNews(data.id, 'published')"
+              />
+              <Button
+                v-if="data.status === 'archived'"
+                v-tooltip.top="'Удалить'"
+                icon="pi pi-trash"
+                severity="danger"
+                text
+                rounded
+                @click="confirmDelete(data.id)"
               />
               <Button
                 v-tooltip.top="'Просмотр'"
@@ -142,7 +176,7 @@ const selectedNews = ref<NewsItem | null>(null);
 const moderatingId = ref<string | null>(null);
 
 const statusOptions = [
-  { label: 'На проверке', value: 'pending' },
+  { label: 'На модерации', value: 'pending' },
   { label: 'Опубликованные', value: 'published' },
   { label: 'Отклоненные', value: 'rejected' },
   { label: 'Архив', value: 'archived' },
@@ -179,10 +213,10 @@ function getCategoryLabel(category: string): string {
 function getStatusLabel(status: string): string {
   const labels: Record<string, string> = {
     draft: 'Черновик',
-    pending: 'На проверке',
+    pending: 'На модерации',
     published: 'Опубликовано',
     rejected: 'Отклонено',
-    archived: 'В архиве',
+    archived: 'Архив',
   };
   return labels[status] || status;
 }
@@ -206,15 +240,21 @@ function formatDate(date: string): string {
   });
 }
 
-// Одобрить — без подтверждения
+// Одобрить / восстановить — без подтверждения
 async function moderateNews(id: string, status: string) {
   try {
     moderatingId.value = id;
     await newsStore.moderateNews(id, { status: status as NewsStatus });
+    const detailByStatus: Record<string, string> = {
+      published: 'Опубликовано/Восстановлено',
+      rejected: 'Отклонено',
+      archived: 'Перемещено в архив',
+      pending: 'Отправлено на модерацию',
+    };
     toast.add({
       severity: 'success',
       summary: 'Успешно',
-      detail: `Новость ${getStatusLabel(status).toLowerCase()}`,
+      detail: detailByStatus[status] || getStatusLabel(status),
       life: 3000,
     });
     loadNews();
@@ -261,6 +301,68 @@ function confirmArchive(id: string) {
     acceptClass: 'p-button-warning',
     accept: () => {
       moderateNews(id, 'archived');
+    },
+    reject: () => {
+      confirm.close();
+    },
+    onHide: () => {
+      confirm.close();
+    },
+  });
+}
+
+function confirmToModeration(id: string) {
+  confirm.require({
+    message: 'Отправить новость на повторную модерацию?',
+    header: 'Подтверждение',
+    icon: 'pi pi-question-circle',
+    acceptLabel: 'На модерацию',
+    rejectLabel: 'Отмена',
+    accept: () => {
+      moderateNews(id, 'pending');
+    },
+    reject: () => {
+      confirm.close();
+    },
+    onHide: () => {
+      confirm.close();
+    },
+  });
+}
+
+async function deleteNews(id: string) {
+  try {
+    moderatingId.value = id;
+    await newsStore.deleteNews(id);
+    toast.add({
+      severity: 'success',
+      summary: 'Успешно',
+      detail: 'Новость удалена',
+      life: 3000,
+    });
+    loadNews();
+  } catch (error: unknown) {
+    toast.add({
+      severity: 'error',
+      summary: 'Ошибка',
+      detail: getErrorMessage(error, 'Не удалось удалить новость'),
+      life: 3000,
+    });
+  } finally {
+    moderatingId.value = null;
+  }
+}
+
+function confirmDelete(id: string) {
+  confirm.require({
+    message: 'Удалить новость навсегда?',
+    header: 'Подтверждение',
+    icon: 'pi pi-exclamation-triangle',
+    acceptLabel: 'Удалить',
+    rejectLabel: 'Отмена',
+    acceptClass: 'p-button-danger',
+    accept: () => {
+      deleteNews(id);
     },
     reject: () => {
       confirm.close();
