@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   current: 'react' | 'vue' | 'next' | 'nuxt';
 }>();
 
@@ -8,39 +8,31 @@ const frameworks = {
   vue: { label: '🟢 Vue SPA', url: 'https://vue.short-news.ru' },
   next: { label: '🔵 Next.js', url: 'https://next.short-news.ru' },
   nuxt: { label: '🟣 Nuxt', url: 'https://nuxt.short-news.ru' }
-};
+} as const;
 
-function onChange(event: Event) {
-  const value = (event.target as HTMLSelectElement).value as keyof typeof frameworks;
-  if (value && frameworks[value]) {
+type FrameworkKey = keyof typeof frameworks;
+
+const items = (Object.entries(frameworks) as [FrameworkKey, (typeof frameworks)[FrameworkKey]][]).map(([value, { label }]) => ({ value, title: label }));
+
+const selected = ref<FrameworkKey>(props.current);
+
+function onChange(value: FrameworkKey) {
+  if (value !== props.current) {
     window.location.href = frameworks[value].url;
   }
 }
 </script>
 
 <template>
-  <select :value="current" class="framework-select" aria-label="Выбор фреймворка" @change="onChange">
-    <option v-for="(fw, key) in frameworks" :key="key" :value="key">
-      {{ fw.label }}
-    </option>
-  </select>
+  <v-select
+    v-model="selected"
+    :items="items"
+    item-title="title"
+    item-value="value"
+    density="compact"
+    hide-details
+    aria-label="Выбор фреймворка"
+    style="max-width: 180px"
+    @update:model-value="onChange"
+  />
 </template>
-
-<style scoped>
-.framework-select {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid #6c5ce7;
-  background: transparent;
-  color: inherit;
-  font-size: 13px;
-  cursor: pointer;
-  outline: none;
-  font-family: inherit;
-}
-
-.framework-select option {
-  background: #1e1e1e;
-  color: #fff;
-}
-</style>
