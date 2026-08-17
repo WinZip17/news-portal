@@ -6,6 +6,9 @@ import { useNewsStore } from '@/stores/news';
 import { useAuthStore } from '@/stores/auth';
 import NewsCard from '@/components/news/NewsCard.vue';
 import NewsDetailModal from '@/components/news/NewsDetailModal.vue';
+import { getCategoryLabel } from '@/utils/getCategoryLabel';
+import { getCategoryColor } from '@/utils/getCategoryColor';
+import { formatDate } from '@/utils/formatDate';
 import type { News } from '@/types';
 import { storeToRefs } from 'pinia';
 
@@ -26,44 +29,6 @@ onMounted(async () => {
 function openNews(item: News) {
   selectedNews.value = item;
   modalVisible.value = true;
-}
-
-function getCategoryColor(cat: string) {
-  const colors: Record<string, string> = {
-    politics: 'blue',
-    economy: 'green',
-    technology: 'purple',
-    science: 'cyan',
-    sports: 'orange',
-    entertainment: 'pink',
-    health: 'red',
-    world: 'indigo'
-  };
-  return colors[cat] || 'grey';
-}
-
-function getCategoryLabel(cat: string) {
-  const labels: Record<string, string> = {
-    politics: 'Политика',
-    economy: 'Экономика',
-    technology: 'Технологии',
-    science: 'Наука',
-    sports: 'Спорт',
-    entertainment: 'Развлечения',
-    health: 'Здоровье',
-    world: 'Мир'
-  };
-  return labels[cat] || cat;
-}
-
-function formatDate(dateString: string) {
-  const d = new Date(dateString);
-  const now = new Date();
-  const diff = Math.floor((now.getTime() - d.getTime()) / 60000);
-  if (diff < 1) return 'только что';
-  if (diff < 60) return `${diff} мин. назад`;
-  if (diff < 1440) return `${Math.floor(diff / 60)} ч. назад`;
-  return d.toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 </script>
 
@@ -126,7 +91,7 @@ function formatDate(dateString: string) {
           :item="item"
           :category-color="getCategoryColor(item.category)"
           :category-label="getCategoryLabel(item.category)"
-          :formatted-date="formatDate(item.publishedAt ?? item.createdAt)"
+          :formatted-date="formatDate(item.publishedAt ?? item.createdAt, 'relative')"
           @click="openNews(item)"
         />
       </v-col>

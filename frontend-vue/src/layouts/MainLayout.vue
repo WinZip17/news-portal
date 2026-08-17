@@ -22,7 +22,8 @@ const rail = ref(false);
 const navItems = computed(() => {
   const items = [
     { title: 'Главная', icon: 'mdi-home', to: '/' },
-    { title: 'Новости', icon: 'mdi-newspaper', to: '/news' }
+    { title: 'Новости', icon: 'mdi-newspaper', to: '/news' },
+    { title: 'Умный поиск', icon: 'mdi-brain', to: '/search' }
   ];
   if (authStore.isAuthenticated) {
     items.push({ title: 'Профиль', icon: 'mdi-account', to: '/profile' });
@@ -37,6 +38,7 @@ const title = computed(() => {
   const titles: Record<string, string> = {
     '/': 'Главная',
     '/news': 'Новости',
+    '/search': 'Умный поиск',
     '/profile': 'Профиль',
     '/admin': 'Админ-панель',
     '/login': 'Вход',

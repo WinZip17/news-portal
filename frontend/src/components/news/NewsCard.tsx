@@ -6,6 +6,7 @@ import { TAG_STYLE } from '@/constants/styles.ts';
 import { getCategoryColor } from '@/utils/getCategoryColor.ts';
 import { getCategoryLabel } from '@/utils/getCategoryLabel.ts';
 import { getTimeAgoString } from '@/utils/formatDate.ts';
+import { truncateText } from '@/utils/truncateText.ts';
 
 const { Paragraph } = Typography;
 
@@ -46,7 +47,7 @@ const NewsCard: React.FC<NewsCardPropsType> = ({ item, openNews }) => {
             description={
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <Paragraph ellipsis={{ rows: 2 }} style={{ marginBottom: 12 }}>
-                  {item.summary?.substring(0, 120) || 'Описание отсутствует'}...
+                  {truncateText(item.summary, 120) || 'Описание отсутствует'}
                 </Paragraph>
                 <Space wrap size={[4, 4]} style={{ marginTop: 'auto' }}>
                   <Tag color={getCategoryColor(item.category)} style={TAG_STYLE}>

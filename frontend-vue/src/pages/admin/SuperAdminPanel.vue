@@ -4,6 +4,7 @@ import { apiClient } from '@/api/client';
 import { aiService } from '@/services/ai.service';
 import { newsService } from '@/services/news.service';
 import { userService } from '@/services/user.service';
+import { formatDate } from '@/utils/formatDate';
 import type { User, News } from '@/types';
 import { NewsCategory, NewsStatus } from '@/types';
 
@@ -46,10 +47,6 @@ function showMessage(message: string, color: 'success' | 'error' = 'success') {
   snackbarMessage.value = message;
   snackbarColor.value = color;
   snackbar.value = true;
-}
-
-function formatDate(date: string) {
-  return new Date(date).toLocaleDateString('ru-RU');
 }
 
 function getRoleLabel(role: string) {

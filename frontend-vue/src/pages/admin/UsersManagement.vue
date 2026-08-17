@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, toRaw, watch } from 'vue';
 import { userService } from '@/services/user.service';
+import { formatDate } from '@/utils/formatDate';
 import type { User } from '@/types';
 
 const PAGE_SIZE = 20;
@@ -34,11 +35,6 @@ function showMessage(message: string, color: 'success' | 'error' = 'success') {
   snackbarMessage.value = message;
   snackbarColor.value = color;
   snackbar.value = true;
-}
-
-function formatDate(date?: string) {
-  if (!date) return '—';
-  return new Date(date).toLocaleDateString('ru-RU');
 }
 
 function getRoleColor(role: string) {

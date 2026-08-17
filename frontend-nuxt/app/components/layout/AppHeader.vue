@@ -14,6 +14,11 @@
             <span>Новости</span>
           </NuxtLink>
 
+          <NuxtLink to="/search" class="nav-link" active-class="nav-link--active">
+            <i class="pi pi-sparkles"></i>
+            <span>Умный поиск</span>
+          </NuxtLink>
+
           <NuxtLink
             v-if="authStore.isModerator"
             to="/admin"
@@ -97,6 +102,9 @@
 
       <NuxtLink to="/news" class="mobile-link" @click="mobileMenuOpen = false">
         <i class="pi pi-list"></i> Новости
+      </NuxtLink>
+      <NuxtLink to="/search" class="mobile-link" @click="mobileMenuOpen = false">
+        <i class="pi pi-sparkles"></i> Умный поиск
       </NuxtLink>
       <NuxtLink
         v-if="authStore.isModerator"

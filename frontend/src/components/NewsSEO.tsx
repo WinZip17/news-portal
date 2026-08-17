@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { truncateText } from '@/utils/truncateText.ts';
 
 interface NewsSEOProps {
   title: string;
@@ -15,7 +16,7 @@ interface NewsSEOProps {
 const NewsSEO: React.FC<NewsSEOProps> = ({ title, summary, imageUrl, publishedAt, category, tags, author, url }) => {
   const siteName = 'Short News';
   const fullTitle = `${title} | ${siteName}`;
-  const description = summary?.substring(0, 160) || 'Читайте новость на Short News';
+  const description = truncateText(summary, 160) || 'Читайте новость на Short News';
   const image = imageUrl || 'https://short-news.ru/og-image.png';
   const publishedTime = publishedAt ? new Date(publishedAt).toISOString() : undefined;
   return (

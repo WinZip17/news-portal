@@ -10,6 +10,7 @@ import {
   MenuOutlined,
   BulbOutlined,
   BulbFilled,
+  ThunderboltOutlined,
   DashboardOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
@@ -43,6 +44,11 @@ const MainLayout: React.FC = () => {
       key: '/news',
       icon: <ReadOutlined />,
       label: 'Новости',
+    },
+    {
+      key: '/search',
+      icon: <ThunderboltOutlined />,
+      label: 'Умный поиск',
     },
     ...(isAuthenticated
       ? [
@@ -191,6 +197,7 @@ const MainLayout: React.FC = () => {
             >
               {location.pathname === '/' && 'Главная'}
               {location.pathname === '/news' && 'Новости'}
+              {location.pathname === '/search' && 'Умный поиск'}
               {location.pathname === '/profile' && 'Профиль'}
               {location.pathname.startsWith('/admin') && 'Админ панель'}
             </h2>

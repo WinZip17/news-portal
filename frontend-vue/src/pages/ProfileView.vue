@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useUIStore } from '@/stores/ui';
 import { newsService } from '@/services/news.service';
+import { formatDate } from '@/utils/formatDate';
 import type { News } from '@/types';
 import { storeToRefs } from 'pinia';
 import { useHead } from '@unhead/vue';
@@ -111,9 +112,6 @@ async function removeFavorite(id: string) {
   favorites.value = favorites.value.filter((f) => f.id !== id);
 }
 
-function formatDate(date: string) {
-  return new Date(date).toLocaleDateString('ru-RU');
-}
 useHead({ title: 'Профиль' });
 </script>
 

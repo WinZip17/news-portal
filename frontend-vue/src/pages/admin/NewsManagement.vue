@@ -2,6 +2,7 @@
 import { onMounted, ref, watch } from 'vue';
 import { apiClient } from '@/api/client';
 import { newsService } from '@/services/news.service';
+import { formatDate } from '@/utils/formatDate';
 import { NewsStatus, type News } from '@/types';
 
 const news = ref<News[]>([]);
@@ -17,10 +18,6 @@ function showMessage(message: string, color: 'success' | 'error' = 'success') {
   snackbarMessage.value = message;
   snackbarColor.value = color;
   snackbar.value = true;
-}
-
-function formatDate(date: string) {
-  return new Date(date).toLocaleDateString('ru-RU');
 }
 
 async function loadNews() {

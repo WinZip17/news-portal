@@ -4,6 +4,7 @@ import type {
   NewsFilter,
   NewsItem,
   NewsResponse,
+  SmartSearchResponse,
   StatsResponse,
 } from '~/types';
 
@@ -27,6 +28,13 @@ export function useNewsService() {
 
     const query = params.toString();
     return apiFetch<NewsResponse>(`/news${query ? `?${query}` : ''}`);
+  }
+
+  async function smartSearch(query: string, page = 1, limit = 20): Promise<SmartSearchResponse> {
+    return apiFetch<SmartSearchResponse>('/news/smart-search', {
+      method: 'POST',
+      body: JSON.stringify({ query, page, limit }),
+    });
   }
 
   async function getNewsById(id: string): Promise<NewsItem> {
@@ -92,6 +100,7 @@ export function useNewsService() {
 
   return {
     getNews,
+    smartSearch,
     getNewsById,
     createNews,
     updateNews,

@@ -1,9 +1,18 @@
 import { apiClient } from '@/api/client';
-import type { News, NewsFilter, NewsResponse, NewsStats } from '@/types';
+import type { News, NewsFilter, NewsResponse, NewsStats, SmartSearchResponse } from '@/types';
 
 export const newsService = {
   async getNews(filters?: NewsFilter): Promise<NewsResponse> {
     const response = await apiClient.get<NewsResponse>('/news', { params: filters });
+    return response.data;
+  },
+
+  async smartSearch(query: string, page = 1, limit = 20): Promise<SmartSearchResponse> {
+    const response = await apiClient.post<SmartSearchResponse>('/news/smart-search', {
+      query,
+      page,
+      limit,
+    });
     return response.data;
   },
 

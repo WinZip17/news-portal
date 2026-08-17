@@ -5,6 +5,7 @@ import { getCategoryLabel } from '@/utils/getCategoryLabel.ts';
 import { getCategoryColor } from '@/utils/getCategoryColor.ts';
 import { ClockCircleOutlined, EyeOutlined, HeartOutlined, LinkOutlined, RobotOutlined } from '@ant-design/icons';
 import { getTimeAgoString } from '@/utils/formatDate.ts';
+import { truncateText } from '@/utils/truncateText.ts';
 
 type NewsCardPropsType = { item: News; openNews: (id: string) => void };
 const { Text, Paragraph } = Typography;
@@ -25,7 +26,7 @@ const NewsListCard: React.FC<NewsCardPropsType> = ({ item, openNews }) => {
           ellipsis={{ rows: 2 }}
           style={{ flex: 1, margin: '8px 0', color: '#666', fontSize: '13px', lineHeight: '1.5', wordBreak: 'break-word' }}
         >
-          {item.summary || item.content?.substring(0, 150) || 'Описание отсутствует'}
+          {truncateText(item.summary || item.content, 150) || 'Описание отсутствует'}
         </Paragraph>
         <Space wrap size={[4, 4]} style={{ marginTop: 'auto' }}>
           <Tag color={getCategoryColor(item.category)}>{getCategoryLabel(item.category)}</Tag>
