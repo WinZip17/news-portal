@@ -6,7 +6,6 @@ import { getErrorMessage } from '~/utils/getErrorMessage.ts';
 export const useNewsStore = defineStore('news', () => {
   const news = ref<NewsItem[]>([]);
   const currentNews = ref<NewsItem | null>(null);
-  const favorites = ref<NewsItem[]>([]);
   const stats = ref<StatsResponse | null>(null);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
@@ -16,7 +15,6 @@ export const useNewsStore = defineStore('news', () => {
     sortBy: 'publishedAt',
     sortOrder: 'DESC',
   });
-  const isLoaded = ref(false);
 
   const newsService = useNewsService();
 
@@ -26,7 +24,6 @@ export const useNewsStore = defineStore('news', () => {
       error.value = null;
       const data = await newsService.getNews(filter.value);
       news.value = data.data;
-      isLoaded.value = true;
     } catch (err: unknown) {
       error.value = getErrorMessage(err);
     } finally {
@@ -97,18 +94,6 @@ export const useNewsStore = defineStore('news', () => {
     }
   }
 
-  async function fetchFavorites(): Promise<void> {
-    try {
-      isLoading.value = true;
-      const favoritesData = await newsService.getFavorites();
-      favorites.value = favoritesData.data;
-    } catch (err: unknown) {
-      error.value = getErrorMessage(err);
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
   async function fetchStats(force = false): Promise<StatsResponse | undefined> {
     if (stats.value && !force) return;
     try {
@@ -135,7 +120,6 @@ export const useNewsStore = defineStore('news', () => {
   return {
     news,
     currentNews,
-    favorites,
     stats,
     isLoading,
     error,
@@ -148,7 +132,6 @@ export const useNewsStore = defineStore('news', () => {
     moderateNews,
     likeNews,
     toggleFavorite,
-    fetchFavorites,
     fetchStats,
     setFilter,
     resetFilter,
