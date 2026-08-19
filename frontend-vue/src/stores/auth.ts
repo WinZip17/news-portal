@@ -9,7 +9,6 @@ export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref<string | null>(localStorage.getItem('accessToken'));
   const refreshToken = ref<string | null>(localStorage.getItem('refreshToken'));
   const isLoading = ref(false);
-  const error = ref<string | null>(null);
   const isAuthenticated = computed(() => !!accessToken.value);
   const isInitialized = ref(false);
   const isAdmin = computed(() => user.value?.role === 'admin' || user.value?.role === 'super_admin');
@@ -29,7 +28,6 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function login(credentials: LoginCredentials) {
     isLoading.value = true;
-    error.value = null;
     try {
       const response = await authService.login(credentials);
       accessToken.value = response.accessToken;
@@ -37,9 +35,6 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('accessToken', response.accessToken);
       localStorage.setItem('refreshToken', response.refreshToken);
       await fetchCurrentUser();
-    } catch (err: unknown) {
-      error.value = err instanceof Error ? err.message : 'Ошибка входа';
-      throw err;
     } finally {
       isLoading.value = false;
     }
@@ -47,12 +42,8 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function register(data: RegisterData) {
     isLoading.value = true;
-    error.value = null;
     try {
       await authService.register(data);
-    } catch (err: unknown) {
-      error.value = err instanceof Error ? err.message : 'Ошибка регистрации';
-      throw err;
     } finally {
       isLoading.value = false;
     }
@@ -79,9 +70,6 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('refreshToken');
   }
 
-  function clearError() {
-    error.value = null;
-  }
   async function updateProfile(data: Partial<Pick<User, 'firstName' | 'lastName' | 'avatar'>>) {
     const updated = await authService.updateProfile(data);
     user.value = updated;
@@ -101,7 +89,6 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken,
     refreshToken,
     isLoading,
-    error,
     isAuthenticated,
     isAdmin,
     isModerator,
@@ -110,7 +97,6 @@ export const useAuthStore = defineStore('auth', () => {
     register,
     fetchCurrentUser,
     logout,
-    clearError,
     updateProfile,
     updatePreferences,
     changePassword,

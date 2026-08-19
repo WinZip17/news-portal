@@ -15,7 +15,7 @@ import { storeToRefs } from 'pinia';
 const router = useRouter();
 const newsStore = useNewsStore();
 const authStore = useAuthStore();
-const { news, isLoading, stats, initialLoading } = storeToRefs(newsStore);
+const { news, stats, initialLoading } = storeToRefs(newsStore);
 
 const selectedNews = ref<News | null>(null);
 const modalVisible = ref(false);
