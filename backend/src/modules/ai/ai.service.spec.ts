@@ -5,9 +5,10 @@ import { AiService } from './ai.service';
 import { AiConfig } from './config/ai.config';
 import { RssFetcherService } from './rss-fetcher.service';
 import { DeduplicationService } from './deduplication.service';
-import { NewsService } from '../news/news.service';
+import { News, Settings } from '../../entities';
+import { NewsCategory } from '../../types';
 import { ConfigService } from '@nestjs/config';
-import { NewsCategory } from '@news-portal/types/news';
+import { SchedulerRegistry } from '@nestjs/schedule';
 
 describe('AiService', () => {
   let service: AiService;
@@ -51,14 +52,24 @@ describe('AiService', () => {
           },
         },
         {
-          provide: NewsService,
-          useValue: {},
-        },
-        {
           provide: getRepositoryToken(News),
           useValue: {
             create: jest.fn().mockReturnValue(mockNews),
             save: jest.fn().mockResolvedValue(mockNews as never),
+          },
+        },
+        {
+          provide: getRepositoryToken(Settings),
+          useValue: {
+            findOne: jest.fn().mockResolvedValue(null as never),
+          },
+        },
+        {
+          provide: SchedulerRegistry,
+          useValue: {
+            addCronJob: jest.fn(),
+            deleteCronJob: jest.fn(),
+            getCronJob: jest.fn(),
           },
         },
         {

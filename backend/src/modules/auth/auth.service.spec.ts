@@ -3,7 +3,8 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import { AuthService } from './auth.service';
-import { User, UserRole } from '../../entities';
+import { User } from '../../entities';
+import { UserRole } from '../../types';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { beforeEach, jest, expect, describe, it } from '@jest/globals';
 

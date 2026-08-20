@@ -4,6 +4,7 @@ import { NewsService } from './news.service';
 import { AuthService } from '../auth/auth.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { NewsSearchAiService } from './news-search-ai.service';
 import { beforeEach, jest, expect, describe, it } from '@jest/globals';
 
 describe('NewsController', () => {
@@ -27,6 +28,20 @@ describe('NewsController', () => {
           provide: AuthService,
           useValue: {
             getTotalUsers: jest.fn().mockResolvedValue(10 as never),
+          },
+        },
+        {
+          provide: NewsSearchAiService,
+          useValue: {
+            search: jest.fn().mockResolvedValue({
+              data: [],
+              total: 0,
+              page: 1,
+              limit: 20,
+              totalPages: 0,
+              appliedFilters: {},
+              source: 'fallback',
+            } as never),
           },
         },
       ],

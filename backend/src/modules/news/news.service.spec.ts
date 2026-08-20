@@ -2,16 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NewsService } from './news.service';
-import { News, NewsStatus, NewsCategory } from '../../entities';
-import { Favorite } from '../../entities';
-import { Like } from '../../entities';
+import { News, Favorite, Like } from '../../entities';
+import { NewsCategory, NewsStatus } from '../../types';
 import { NotFoundException } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 describe('NewsService', () => {
   let service: NewsService;
   let newsRepository: Repository<News>;
-  let favoriteRepository: Repository<Favorite>;
-  let likeRepository: Repository<Like>;
 
   const mockNews = {
     id: '123',
@@ -73,6 +71,14 @@ describe('NewsService', () => {
             save: jest.fn().mockResolvedValue({}),
             remove: jest.fn().mockResolvedValue({}),
             count: jest.fn().mockResolvedValue(0),
+          },
+        },
+        {
+          provide: CACHE_MANAGER,
+          useValue: {
+            get: jest.fn().mockResolvedValue(null),
+            set: jest.fn().mockResolvedValue(undefined),
+            del: jest.fn().mockResolvedValue(undefined),
           },
         },
       ],
