@@ -25,10 +25,7 @@ export function sanitizeNewsFilter(raw: unknown, fallbackSearch?: string): NewsF
   const input = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};
   const filter: NewsFilter = { status: NewsStatus.PUBLISHED };
 
-  const search =
-    typeof input.search === 'string' && input.search.trim()
-      ? input.search.trim().slice(0, 200)
-      : fallbackSearch?.trim().slice(0, 200);
+  const search = typeof input.search === 'string' && input.search.trim() ? input.search.trim().slice(0, 200) : fallbackSearch?.trim().slice(0, 200);
 
   if (search) {
     filter.search = search;

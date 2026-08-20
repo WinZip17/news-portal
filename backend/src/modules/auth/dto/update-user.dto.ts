@@ -1,6 +1,6 @@
 import { IsOptional, IsEnum, IsBoolean, IsString, IsEmail, IsObject } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { UserRole } from '../../../types'
+import { UserRole } from '../../../types';
 
 export class UpdateUserDto {
   @ApiPropertyOptional({ example: 'user@example.com' })

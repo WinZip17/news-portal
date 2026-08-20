@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import RssParser from 'rss-parser';
-import { RssArticle, RssFeedItem } from '../../types'
+import { RssArticle, RssFeedItem } from '../../types';
 
 @Injectable()
 export class RssFetcherService {
@@ -44,36 +44,6 @@ export class RssFetcherService {
     }
 
     return this.shuffleArray(articles).slice(0, limit);
-  }
-
-  async searchNews(query: string, limit: number = 5): Promise<RssArticle[]> {
-    const allSources = Object.values(this.rssSources).flat();
-    const articles: RssArticle[] = [];
-
-    for (const source of allSources.slice(0, 5)) {
-      try {
-        const feed = await this.parser.parseURL(source);
-        if (feed.items) {
-          const matchingArticles = feed.items
-            .filter(
-              (item) => item.title?.toLowerCase().includes(query.toLowerCase()) || item.contentSnippet?.toLowerCase().includes(query.toLowerCase()),
-            )
-            .slice(0, 2)
-            .map((item) => this.parseArticle(item as RssFeedItem, feed.title || source));
-          articles.push(...matchingArticles);
-        }
-      } catch {
-        continue;
-      }
-    }
-
-    return articles.slice(0, limit);
-  }
-
-  async fetchRandomNews(category?: string): Promise<RssArticle | null> {
-    const cat = category || this.getRandomCategory();
-    const articles = await this.fetchNewsByCategory(cat, 5);
-    return articles.length > 0 ? articles[Math.floor(Math.random() * articles.length)] : null;
   }
 
   private parseArticle(item: RssFeedItem, sourceName: string): RssArticle {
@@ -128,10 +98,5 @@ export class RssFetcherService {
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     return shuffled;
-  }
-
-  private getRandomCategory(): string {
-    const categories = Object.keys(this.rssSources);
-    return categories[Math.floor(Math.random() * categories.length)];
   }
 }

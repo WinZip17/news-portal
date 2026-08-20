@@ -210,22 +210,6 @@ export class AuthService {
     return { data, total };
   }
 
-  async updateUser(id: string, dto: UpdateUserDto): Promise<User> {
-    await this.userRepository.update(id, dto);
-    return this.userRepository.findOne({
-      where: { id },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        role: true,
-        isActive: true,
-        createdAt: true,
-        lastLoginAt: true,
-      },
-    });
-  }
-
   async deleteUser(id: string): Promise<void> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {

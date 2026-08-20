@@ -6,8 +6,8 @@ import { AiConfig } from './config/ai.config';
 import { RssFetcherService } from './rss-fetcher.service';
 import { DeduplicationService } from './deduplication.service';
 import { NewsService } from '../news/news.service';
-import { News, NewsCategory } from '../../entities';
 import { ConfigService } from '@nestjs/config';
+import { NewsCategory } from '@news-portal/types/news';
 
 describe('AiService', () => {
   let service: AiService;
@@ -35,19 +35,12 @@ describe('AiService', () => {
             temperature: 0.7,
             maxTokens: 1000,
             categories: ['technology', 'science'],
-            prompts: {
-              title: 'Generate title',
-              summary: 'Generate summary',
-              content: 'Generate content',
-              tags: 'Generate tags',
-            },
           },
         },
         {
           provide: RssFetcherService,
           useValue: {
             fetchNewsByCategory: jest.fn().mockResolvedValue([] as never),
-            fetchRandomNews: jest.fn().mockResolvedValue(null as never),
             getCategoryFromSource: jest.fn().mockReturnValue(NewsCategory.TECHNOLOGY),
           },
         },

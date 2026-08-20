@@ -1,7 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, MoreThanOrEqual } from 'typeorm';
-import { createHash } from 'crypto';
 import { News } from '../../entities';
 import { normalizeUrl } from '../../utils/normalizeUrl';
 
@@ -16,8 +15,6 @@ type CheckDuplicateInput = {
 
 @Injectable()
 export class DeduplicationService {
-  private readonly logger = new Logger(DeduplicationService.name);
-
   constructor(
     @InjectRepository(News)
     private readonly newsRepository: Repository<News>,
@@ -262,22 +259,5 @@ export class DeduplicationService {
     }
 
     return matrix[b.length][a.length];
-  }
-
-  /**
-   * Если захочешь потом сравнивать контент:
-   * можно использовать хэш нормализованного текста.
-   */
-  private generateFingerprint(text: string): string {
-    return createHash('sha256')
-      .update(
-        (text || '')
-          .toLowerCase()
-          .replace(/<[^>]*>/g, ' ')
-          .replace(/[^\p{L}\p{N}\s]+/gu, ' ')
-          .replace(/\s+/g, ' ')
-          .trim(),
-      )
-      .digest('hex');
   }
 }

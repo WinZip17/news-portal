@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, LessThan, Between, In, MoreThanOrEqual } from 'typeorm';
+import { Repository, LessThan, In, MoreThanOrEqual } from 'typeorm';
 import { News, Favorite, Like } from '../../entities';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { NewsStatsDto } from './dto/stats.dto';
@@ -43,9 +43,7 @@ export class NewsService {
     const normalizedSearch = search?.trim();
     const orderColumn = resolveSortColumn(sortBy);
 
-    const queryBuilder = this.newsRepository
-      .createQueryBuilder('news')
-      .leftJoinAndSelect('news.author', 'author');
+    const queryBuilder = this.newsRepository.createQueryBuilder('news').leftJoinAndSelect('news.author', 'author');
 
     if (status) {
       queryBuilder.andWhere('news.status = :status', { status });
@@ -183,63 +181,6 @@ export class NewsService {
     return this.findAll({ category: category as NewsCategory, limit: 20, sortBy: 'publishedAt', sortOrder: 'DESC' });
   }
 
-  async countByStatus(status: NewsStatus): Promise<number> {
-    return this.newsRepository.count({ where: { status } });
-  }
-
-  async getPopular(limit: number = 10) {
-    return this.newsRepository.find({
-      where: { status: NewsStatus.PUBLISHED },
-      order: { views: 'DESC' },
-      take: limit,
-      relations: { author: true },
-    });
-  }
-
-  async findByTags(tags: string[], limit: number = 10) {
-    const normalizedTags = normalizeTagsFilter(tags);
-    const queryBuilder = this.newsRepository
-      .createQueryBuilder('news')
-      .leftJoinAndSelect('news.author', 'author')
-      .where('news.status = :status', { status: NewsStatus.PUBLISHED });
-
-    if (normalizedTags) {
-      queryBuilder.andWhere(
-        `EXISTS (
-          SELECT 1 FROM unnest(string_to_array(news.tags, ',')) AS t(tag)
-          WHERE lower(trim(t.tag)) IN (:...tags)
-        )`,
-        { tags: normalizedTags },
-      );
-    }
-
-    return queryBuilder.orderBy('news.publishedAt', 'DESC').take(limit).getMany();
-  }
-
-  async findByDateRange(startDate: Date, endDate: Date) {
-    return this.newsRepository.find({
-      where: { publishedAt: Between(startDate, endDate), status: NewsStatus.PUBLISHED },
-      order: { publishedAt: 'DESC' },
-      relations: { author: true },
-    });
-  }
-
-  async archiveOldNews(days: number = 30) {
-    const date = new Date();
-    date.setDate(date.getDate() - days);
-
-    const oldNews = await this.newsRepository.find({
-      where: { publishedAt: Between(new Date(0), date), status: NewsStatus.PUBLISHED },
-    });
-
-    for (const news of oldNews) {
-      news.status = NewsStatus.ARCHIVED;
-      await this.newsRepository.save(news);
-    }
-
-    return { archived: oldNews.length };
-  }
-
   async autoApproveOldNews(): Promise<{ approved: number; news: { id: string; title: string }[] }> {
     const oneHourAgo = new Date();
     oneHourAgo.setHours(oneHourAgo.getHours() - 1);
@@ -265,29 +206,6 @@ export class NewsService {
     }
 
     return { approved: pendingNews.length, news: pendingNews.map((n) => ({ id: n.id, title: n.title })) };
-  }
-
-  async isDuplicate(title: string, source?: string): Promise<boolean> {
-    const query = this.newsRepository.createQueryBuilder('news').where('news.title ILIKE :title', { title: `%${title.substring(0, 50)}%` });
-
-    if (source) {
-      query.orWhere('news.source = :source AND news.title ILIKE :title', { source, title: `%${title.substring(0, 30)}%` });
-    }
-
-    query.andWhere('news.createdAt > :date', { date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) });
-
-    const count = await query.getCount();
-    return count > 0;
-  }
-
-  async findSimilar(title: string): Promise<News[]> {
-    const words = title.split(' ').slice(0, 3).join(' ');
-    return this.newsRepository
-      .createQueryBuilder('news')
-      .where(`news.search_vector @@ plainto_tsquery('russian', :search)`, { search: words })
-      .orderBy('news.createdAt', 'DESC')
-      .take(5)
-      .getMany();
   }
 
   async getStats(): Promise<NewsStatsDto> {

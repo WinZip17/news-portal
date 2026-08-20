@@ -3,9 +3,7 @@ const SORTABLE_COLUMNS = new Set(['publishedAt', 'views', 'likes', 'createdAt'])
 export function normalizeTagsFilter(tags?: string | string[]): string[] | undefined {
   if (!tags) return undefined;
 
-  const list = (Array.isArray(tags) ? tags : tags.split(','))
-    .map((tag) => tag.trim().toLowerCase())
-    .filter(Boolean);
+  const list = (Array.isArray(tags) ? tags : tags.split(',')).map((tag) => tag.trim().toLowerCase()).filter(Boolean);
 
   return list.length > 0 ? list : undefined;
 }

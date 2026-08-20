@@ -71,11 +71,6 @@ export class AiService {
     this.logger.log(`⏰ Cron scheduled: ${this.cronSchedule}`);
   }
 
-  async autoGenerateNews() {
-    this.logger.log('🚀 Starting automatic news generation...');
-    return this.autoGenerateManually(2); // По 2 новости на категорию
-  }
-
   /**
    * Ручной запуск генерации по всем категориям
    */
@@ -393,28 +388,6 @@ export class AiService {
     if (!cat) return null;
     const valid = Object.values(NewsCategory);
     return valid.includes(cat as NewsCategory) ? (cat as NewsCategory) : null;
-  }
-
-  private async generateTitle(category: string, topic?: string): Promise<string> {
-    const prompt = topic
-      ? `${this.aiConfig.prompts.title}\nCategory: ${category}\nTopic: ${topic}`
-      : `${this.aiConfig.prompts.title}\nCategory: ${category}`;
-
-    try {
-      const completion = await this.openai.chat.completions.create({
-        model: this.aiConfig.model,
-        messages: [
-          { role: 'system', content: 'You are a professional news editor for a Russian news portal.' },
-          { role: 'user', content: prompt },
-        ],
-        temperature: this.aiConfig.temperature,
-        max_tokens: 100,
-      });
-
-      return completion.choices[0]?.message?.content?.trim() || `Новости ${category}: ${new Date().toLocaleDateString('ru-RU')}`;
-    } catch {
-      return `Актуальные новости ${category}`;
-    }
   }
 
   private generateImageUrl(category: NewsCategory): string {
