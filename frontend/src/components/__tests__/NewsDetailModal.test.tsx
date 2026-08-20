@@ -26,6 +26,7 @@ vi.mock('../../hooks/useNews', () => ({
     fetchNewsById: vi.fn(),
     likeNews: vi.fn(),
     clearError: vi.fn(),
+    setCurrentNews: vi.fn(),
   }),
 }));
 

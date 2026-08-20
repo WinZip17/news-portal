@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom';
+import { afterAll, afterEach, beforeAll } from 'vitest';
+import { server } from '@/test-utils/msw/server';
 
-// Мок localStorage
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
   return {
@@ -23,3 +24,10 @@ const localStorageMock = (() => {
 
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 Object.defineProperty(window, 'sessionStorage', { value: localStorageMock });
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
+afterEach(() => {
+  server.resetHandlers();
+  localStorageMock.clear();
+});
+afterAll(() => server.close());
