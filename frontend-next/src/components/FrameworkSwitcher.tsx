@@ -1,4 +1,3 @@
-import React from 'react';
 import { FormControl, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 
 interface Props {

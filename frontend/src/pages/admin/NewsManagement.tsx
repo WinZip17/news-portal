@@ -33,7 +33,7 @@ const NewsManagement: React.FC = () => {
         sortOrder: 'DESC',
       });
       setNews(response.data);
-    } catch (error) {
+    } catch {
       message.error('Ошибка загрузки');
     }
     setLoading(false);
@@ -44,7 +44,7 @@ const NewsManagement: React.FC = () => {
       await newsService.moderateNews(id, status);
       message.success(status === NewsStatus.PUBLISHED ? 'Опубликовано/Восстановлено' : 'Отклонено');
       loadNews();
-    } catch (error) {
+    } catch {
       message.error('Ошибка');
     }
   };
@@ -54,7 +54,7 @@ const NewsManagement: React.FC = () => {
       await newsService.deleteNews(id);
       message.success('Новость удалена');
       loadNews();
-    } catch (error) {
+    } catch {
       message.error('Ошибка удаления');
     }
   };

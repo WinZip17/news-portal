@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import {
   Container,
   Typography,
@@ -8,8 +8,6 @@ import {
   Box,
   TextField,
   Button,
-  Switch,
-  FormControlLabel,
   Select,
   MenuItem,
   List,
@@ -24,7 +22,7 @@ import { Delete as DeleteIcon, SmartToy as AIIcon } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/services/authService';
 import { newsService } from '@/services/newsService';
-import { News, User } from '@/types';
+import { News } from '@/types';
 import { getCategoryLabel } from '@/utils/getCategoryLabel';
 import { setTheme, useAppDispatch, useAppSelector } from '@/store';
 
@@ -56,7 +54,7 @@ export default function ProfilePage() {
     setFavorites((prev) => prev.filter((f) => f.id !== id));
   };
 
-  const handleChangePassword = async (e: React.FormEvent) => {
+  const handleChangePassword = async (e: FormEvent) => {
     e.preventDefault();
     const form = new FormData(e.target as HTMLFormElement);
     const currentPassword = form.get('currentPassword') as string;
@@ -81,7 +79,7 @@ export default function ProfilePage() {
 
   if (!user) return <Skeleton variant="rectangular" height={400} />;
 
-  const handleSaveProfile = async (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: FormEvent) => {
     e.preventDefault();
     const form = new FormData(e.target as HTMLFormElement);
     const firstName = form.get('firstName') as string;
@@ -97,7 +95,7 @@ export default function ProfilePage() {
       setProfileError(err instanceof Error ? err.message : 'Ошибка обновления');
     }
   };
-  const handleSavePreferences = async (e: React.FormEvent) => {
+  const handleSavePreferences = async (e: FormEvent) => {
     e.preventDefault();
     const form = new FormData(e.target as HTMLFormElement);
     const theme = form.get('theme') as string;

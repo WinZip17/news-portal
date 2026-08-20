@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Typography, Box, Chip, Alert, Button, Skeleton, Divider, Snackbar } from '@mui/material';
 import {
   ThumbUp,

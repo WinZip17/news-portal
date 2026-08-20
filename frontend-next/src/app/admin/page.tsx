@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Container,
   Typography,
@@ -42,7 +42,6 @@ export default function AdminPage() {
   const [newsStatusFilter, setNewsStatusFilter] = useState<NewsStatus>(NewsStatus.PENDING);
   const [news, setNews] = useState<News[]>([]);
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(false);
   const [superTab, setSuperTab] = useState(0);
   const [editItem, setEditItem] = useState<News | User | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -57,7 +56,6 @@ export default function AdminPage() {
     type: 'news',
   });
 
-  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
   const isSuperAdmin = user?.role === 'super_admin';
 
   useEffect(() => {
@@ -70,7 +68,6 @@ export default function AdminPage() {
   }, [tab, newsStatusFilter]);
 
   const loadData = async () => {
-    setLoading(true);
     try {
       if (tab === 0) {
         const data = await newsService.getNews({
@@ -92,7 +89,6 @@ export default function AdminPage() {
         setUsers(usersRes.data.data);
       }
     } catch {}
-    setLoading(false);
   };
 
   const handleAutoGenerate = async () => {
