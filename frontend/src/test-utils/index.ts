@@ -6,5 +6,7 @@ export {
   mockNewsResponse,
   mockStats,
   mockSmartSearchResponse,
+  mockAuthResponse,
+  mockUser,
 } from './msw/handlers';
 export * from '@testing-library/react';

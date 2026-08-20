@@ -1,5 +1,8 @@
 import { http, HttpResponse } from 'msw';
 import { NewsCategory, NewsStatus, type News, type NewsResponse, type NewsStats, type SmartSearchResponse } from '@/types';
+import { mockAuthResponse, mockUser } from './authFixtures';
+
+export { mockAuthResponse, mockUser } from './authFixtures';
 
 export const mockNewsItem: News = {
   id: 'news-1',
@@ -62,27 +65,21 @@ export const handlers = [
     });
   }),
   http.get('/api/news/favorites', () => HttpResponse.json({ ...mockNewsResponse, data: [] })),
-  http.post('/api/auth/login', () =>
-    HttpResponse.json({
-      accessToken: 'test-access-token',
-      refreshToken: 'test-refresh-token',
-      user: {
-        id: 'user-1',
-        email: 'test@example.com',
-        username: 'testuser',
-        role: 'user',
-        isActive: true,
-      },
-    }),
-  ),
-  http.get('/api/auth/me', () =>
-    HttpResponse.json({
-      id: 'user-1',
-      email: 'test@example.com',
-      username: 'testuser',
-      role: 'user',
-      isActive: true,
-      preferences: { theme: 'light' },
-    }),
-  ),
+  http.post('/api/auth/login', () => HttpResponse.json(mockAuthResponse)),
+  http.post('/api/auth/register', () => HttpResponse.json(mockAuthResponse)),
+  http.post('/api/auth/logout', () => HttpResponse.json({ success: true })),
+  http.post('/api/auth/refresh', () => HttpResponse.json(mockAuthResponse)),
+  http.post('/api/auth/change-password', () => HttpResponse.json({ success: true })),
+  http.get('/api/auth/me', () => HttpResponse.json(mockUser)),
+  http.put('/api/auth/profile', async ({ request }) => {
+    const body = (await request.json()) as Partial<typeof mockUser>;
+    return HttpResponse.json({ ...mockUser, ...body });
+  }),
+  http.put('/api/auth/preferences', async ({ request }) => {
+    const body = (await request.json()) as Partial<typeof mockUser.preferences>;
+    return HttpResponse.json({
+      ...mockUser,
+      preferences: { ...mockUser.preferences, ...body },
+    });
+  }),
 ];
