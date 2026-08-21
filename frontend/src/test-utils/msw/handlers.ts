@@ -4,6 +4,11 @@ import { mockAuthResponse, mockUser } from './authFixtures';
 
 export { mockAuthResponse, mockUser } from './authFixtures';
 
+export const mockUsersResponse = {
+  data: [mockUser],
+  total: 1,
+};
+
 export const mockNewsItem: News = {
   id: 'news-1',
   title: 'Тестовая новость',
@@ -82,4 +87,10 @@ export const handlers = [
       preferences: { ...mockUser.preferences, ...body },
     });
   }),
+  http.get('/api/auth/users', () => HttpResponse.json(mockUsersResponse)),
+  http.put('/api/auth/users/:id', async ({ params, request }) => {
+    const body = (await request.json()) as Partial<typeof mockUser>;
+    return HttpResponse.json({ ...mockUser, id: String(params.id), ...body });
+  }),
+  http.delete('/api/auth/users/:id', () => HttpResponse.json({ success: true })),
 ];

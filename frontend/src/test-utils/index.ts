@@ -8,5 +8,6 @@ export {
   mockSmartSearchResponse,
   mockAuthResponse,
   mockUser,
+  mockUsersResponse,
 } from './msw/handlers';
 export * from '@testing-library/react';
