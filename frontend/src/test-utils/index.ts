@@ -1,4 +1,4 @@
-export { renderWithProviders, createTestStore } from './renderWithProviders';
+export { renderWithProviders, createTestStore, renderHookWithProviders } from './renderWithProviders';
 export { server } from './msw/server';
 export {
   handlers,

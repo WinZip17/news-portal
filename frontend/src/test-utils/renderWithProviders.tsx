@@ -1,4 +1,4 @@
-import { render, type RenderOptions } from '@testing-library/react';
+import { render, renderHook, type RenderHookOptions, type RenderOptions } from '@testing-library/react';
 import { configureStore, type PreloadedState } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -76,5 +76,59 @@ export function renderWithProviders(
     store,
     queryClient,
     ...render(ui, { wrapper: Wrapper, ...renderOptions }),
+  };
+}
+
+export interface RenderHookWithProvidersOptions<Props>
+  extends Omit<RenderWithProvidersOptions, 'preloadedState' | 'route' | 'routerProps' | 'queryClient'> {
+  preloadedState?: Partial<RootState>;
+  route?: string;
+  routerProps?: MemoryRouterProps;
+  queryClient?: QueryClient;
+  hookOptions?: Omit<RenderHookOptions<Props>, 'wrapper'>;
+}
+
+export function renderHookWithProviders<Result, Props>(
+  hook: (props: Props) => Result,
+  {
+    preloadedState,
+    route = '/',
+    routerProps,
+    queryClient: providedQueryClient,
+    hookOptions,
+  }: RenderHookWithProvidersOptions<Props> = {},
+) {
+  const store = createTestStore(preloadedState);
+  const queryClient =
+    providedQueryClient ??
+    new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
+    });
+
+  function Wrapper({ children }: { children: ReactNode }) {
+    return (
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <HelmetProvider>
+            <ConfigProvider locale={ruRU}>
+              <AntApp>
+                <MemoryRouter initialEntries={[route]} {...routerProps}>
+                  {children}
+                </MemoryRouter>
+              </AntApp>
+            </ConfigProvider>
+          </HelmetProvider>
+        </QueryClientProvider>
+      </Provider>
+    );
+  }
+
+  return {
+    store,
+    queryClient,
+    ...renderHook(hook, { wrapper: Wrapper, ...hookOptions }),
   };
 }

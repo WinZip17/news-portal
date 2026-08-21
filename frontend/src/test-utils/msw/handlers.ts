@@ -57,7 +57,20 @@ export const mockSmartSearchResponse: SmartSearchResponse = {
 };
 
 export const handlers = [
-  http.get('/api/news', () => HttpResponse.json(mockNewsResponse)),
+  http.get('/api/news', ({ request }) => {
+    const url = new URL(request.url);
+    const page = Number(url.searchParams.get('page') || '1');
+    if (page === 2) {
+      return HttpResponse.json({
+        data: [{ ...mockNewsItem, id: 'news-2', title: 'Страница 2' }],
+        total: 2,
+        page: 2,
+        limit: 20,
+        totalPages: 2,
+      });
+    }
+    return HttpResponse.json(mockNewsResponse);
+  }),
   http.get('/api/news/stats', () => HttpResponse.json(mockStats)),
   http.get('/api/news/:id', ({ params }) =>
     HttpResponse.json({ ...mockNewsItem, id: String(params.id) }),
