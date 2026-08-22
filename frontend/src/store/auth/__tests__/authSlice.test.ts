@@ -1,16 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { store } from '@/store';
-import {
-  clearAuthError,
-  fetchCurrentUser,
-  login,
-  logout,
-  register,
-  setTokens,
-  updatePreferences,
-  updateProfile,
-} from '@/store/auth/authSlice';
+import { clearAuthError, fetchCurrentUser, login, logout, register, setTokens, updatePreferences, updateProfile } from '@/store/auth/authSlice';
 import { mockAuthResponse, mockUser, server } from '@/test-utils';
 
 describe('authSlice (MSW)', () => {
@@ -31,11 +22,7 @@ describe('authSlice (MSW)', () => {
     });
 
     it('clearAuthError resets error', async () => {
-      server.use(
-        http.post('/api/auth/login', () =>
-          HttpResponse.json({ message: 'Invalid credentials' }, { status: 401 }),
-        ),
-      );
+      server.use(http.post('/api/auth/login', () => HttpResponse.json({ message: 'Invalid credentials' }, { status: 401 })));
 
       await store.dispatch(login({ email: 'bad@example.com', password: 'wrong' }));
       expect(store.getState().auth.error).toBe('Invalid credentials');
@@ -47,9 +34,7 @@ describe('authSlice (MSW)', () => {
 
   describe('login', () => {
     it('fulfills and stores user with tokens', async () => {
-      const result = await store.dispatch(
-        login({ email: 'test@example.com', password: 'password123', rememberMe: true }),
-      );
+      const result = await store.dispatch(login({ email: 'test@example.com', password: 'password123', rememberMe: true }));
 
       expect(result.type).toBe('auth/login/fulfilled');
       const auth = store.getState().auth;
@@ -61,11 +46,7 @@ describe('authSlice (MSW)', () => {
     });
 
     it('rejects with API error message', async () => {
-      server.use(
-        http.post('/api/auth/login', () =>
-          HttpResponse.json({ message: 'Invalid credentials' }, { status: 401 }),
-        ),
-      );
+      server.use(http.post('/api/auth/login', () => HttpResponse.json({ message: 'Invalid credentials' }, { status: 401 })));
 
       const result = await store.dispatch(login({ email: 'bad@example.com', password: 'wrong' }));
 

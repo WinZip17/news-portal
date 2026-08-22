@@ -65,9 +65,7 @@ describe('Profile page', () => {
     fireEvent.click(screen.getByRole('button', { name: /^Сохранить$/i }));
 
     await waitFor(() => {
-      expect(updateProfile).toHaveBeenCalledWith(
-        expect.objectContaining({ firstName: 'UpdatedName' }),
-      );
+      expect(updateProfile).toHaveBeenCalledWith(expect.objectContaining({ firstName: 'UpdatedName' }));
     });
   });
 

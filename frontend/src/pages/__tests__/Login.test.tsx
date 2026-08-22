@@ -68,11 +68,7 @@ describe('Login page', () => {
   });
 
   it('shows API error on failed login', async () => {
-    server.use(
-      http.post('/api/auth/login', () =>
-        HttpResponse.json({ message: 'Invalid credentials' }, { status: 401 }),
-      ),
-    );
+    server.use(http.post('/api/auth/login', () => HttpResponse.json({ message: 'Invalid credentials' }, { status: 401 })));
 
     renderLogin();
 

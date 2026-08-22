@@ -1,19 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { NewsCategory } from '@/types';
-import {
-  clearFilters,
-  fetchNews,
-  fetchNewsById,
-  fetchStats,
-  setCategory,
-  setPage,
-  setSearch,
-} from '@/store/news/newsSlice';
+import { clearFilters, fetchNews, fetchNewsById, fetchStats, setCategory, setPage, setSearch } from '@/store/news/newsSlice';
 import { createTestStore, mockNewsItem, mockStats, server } from '@/test-utils';
 
 const baseNewsState = {
-  news: [] as typeof mockNewsItem[],
+  news: [] as (typeof mockNewsItem)[],
   currentNews: null,
   total: 0,
   page: 1,

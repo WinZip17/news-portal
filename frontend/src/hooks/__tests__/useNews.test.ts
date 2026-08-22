@@ -5,7 +5,7 @@ import { useNews } from '@/hooks/useNews.ts';
 import { mockNewsItem, renderHookWithProviders } from '@/test-utils';
 
 const baseNewsState = {
-  news: [] as typeof mockNewsItem[],
+  news: [] as (typeof mockNewsItem)[],
   currentNews: null,
   total: 0,
   page: 1,

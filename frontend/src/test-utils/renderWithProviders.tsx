@@ -36,13 +36,7 @@ export interface RenderWithProvidersOptions extends Omit<RenderOptions, 'wrapper
 
 export function renderWithProviders(
   ui: ReactElement,
-  {
-    preloadedState,
-    route = '/',
-    routerProps,
-    queryClient: providedQueryClient,
-    ...renderOptions
-  }: RenderWithProvidersOptions = {},
+  { preloadedState, route = '/', routerProps, queryClient: providedQueryClient, ...renderOptions }: RenderWithProvidersOptions = {},
 ) {
   const store = createTestStore(preloadedState);
   const queryClient =
@@ -79,8 +73,10 @@ export function renderWithProviders(
   };
 }
 
-export interface RenderHookWithProvidersOptions<Props>
-  extends Omit<RenderWithProvidersOptions, 'preloadedState' | 'route' | 'routerProps' | 'queryClient'> {
+export interface RenderHookWithProvidersOptions<Props> extends Omit<
+  RenderWithProvidersOptions,
+  'preloadedState' | 'route' | 'routerProps' | 'queryClient'
+> {
   preloadedState?: Partial<RootState>;
   route?: string;
   routerProps?: MemoryRouterProps;
@@ -90,13 +86,7 @@ export interface RenderHookWithProvidersOptions<Props>
 
 export function renderHookWithProviders<Result, Props>(
   hook: (props: Props) => Result,
-  {
-    preloadedState,
-    route = '/',
-    routerProps,
-    queryClient: providedQueryClient,
-    hookOptions,
-  }: RenderHookWithProvidersOptions<Props> = {},
+  { preloadedState, route = '/', routerProps, queryClient: providedQueryClient, hookOptions }: RenderHookWithProvidersOptions<Props> = {},
 ) {
   const store = createTestStore(preloadedState);
   const queryClient =
