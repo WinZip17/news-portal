@@ -52,6 +52,7 @@ export const mockSmartSearchResponse: SmartSearchResponse = {
   total: 1,
   page: 1,
   limit: 20,
+  totalPages: 1,
   appliedFilters: { search: 'AI', category: NewsCategory.TECHNOLOGY },
   source: 'ai',
 };
@@ -72,9 +73,8 @@ export const handlers = [
     return HttpResponse.json(mockNewsResponse);
   }),
   http.get('/api/news/stats', () => HttpResponse.json(mockStats)),
-  http.get('/api/news/:id', ({ params }) =>
-    HttpResponse.json({ ...mockNewsItem, id: String(params.id) }),
-  ),
+  http.get('/api/news/favorites', () => HttpResponse.json({ ...mockNewsResponse, data: [] })),
+  http.get('/api/news/:id', ({ params }) => HttpResponse.json({ ...mockNewsItem, id: String(params.id) })),
   http.post('/api/news/smart-search', async ({ request }) => {
     const body = (await request.json()) as { query?: string };
     return HttpResponse.json({
@@ -82,7 +82,7 @@ export const handlers = [
       appliedFilters: { search: body.query ?? 'AI' },
     });
   }),
-  http.get('/api/news/favorites', () => HttpResponse.json({ ...mockNewsResponse, data: [] })),
+  http.post('/api/news/:id/favorite', () => HttpResponse.json({ favorited: true })),
   http.post('/api/auth/login', () => HttpResponse.json(mockAuthResponse)),
   http.post('/api/auth/register', () => HttpResponse.json(mockAuthResponse)),
   http.post('/api/auth/logout', () => HttpResponse.json({ success: true })),
