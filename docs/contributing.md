@@ -84,28 +84,42 @@ Docker-сборка: контекст — **корень репозитория*
 2. Создать ветку от `master`
 3. Внести изменения
 4. Проверить линтером: `npm run lint`
-5. Проверить форматирование: `npm run format`
-6. Создать Pull Request
+5. Проверить форматирование: `npm run format:check`
+6. Прогнать тесты (см. ниже)
+7. Создать Pull Request
 
 ## Тестирование
 
+Полное описание: [docs/testing.md](testing.md).
+
 ```bash
+# Всё сразу (backend Jest + frontend Vitest)
+npm test
+
 # Backend
-cd backend
-npm test
+npm run test:backend
+cd backend && npm run test:cov
 
-# Frontend (React)
+# React SPA — unit/integration (Vitest + MSW)
 cd frontend
-npm test
+npm run test:ci
+npm run test:cov
 
-# Frontend (Next.js)
-cd frontend-next
-npm test
+# React SPA — E2E (Playwright, backend не нужен)
+npm run test:e2e:install   # один раз: скачать Chromium
+npm run test:e2e
 
-# Frontend (Vue)
-cd frontend-vue
-npm run test:unit
+# Из корня репозитория
+npm run test:e2e:frontend
+
+# Next.js
+cd frontend-next && npm test
+
+# Vue
+cd frontend-vue && npm run test:unit
 ```
+
+При изменениях UI, роутов или форм — добавляйте или обновляйте E2E в `frontend/e2e/`.
 
 ## Документация
 

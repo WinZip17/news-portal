@@ -84,6 +84,17 @@ POST /api/news/smart-search  → DeepSeek → NewsFilter JSON → sanitize → f
 - **Prometheus** — сбор метрик с backend
 - **Grafana** — дашборды (HTTP запросы, CPU, память, алерты)
 
+## Тестирование
+
+| Пакет | Unit/integration | E2E |
+|-------|------------------|-----|
+| `backend` | Jest | Jest + supertest (`test:e2e`) |
+| `frontend` | Vitest + MSW + Testing Library | Playwright (`e2e/`, мок API в браузере) |
+| `frontend-next` | Vitest | — |
+| `frontend-vue` | Vitest | — |
+
+Подробнее: [testing.md](testing.md).
+
 ## Общая типизация
 
 Контракт данных между API и клиентами описан в пакете **`@news-portal/types`** (`packages/types/`):

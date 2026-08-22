@@ -4,55 +4,53 @@
 
 ## 🛠 Технологии
 
-- **React 18** + **TypeScript**
-- **Vite** — быстрая сборка
+- **React 19** + **TypeScript**
+- **Vite** — сборка и dev-сервер
 - **Redux Toolkit** — управление состоянием
-- **Ant Design 5** — UI компоненты
-- **Axios** — HTTP клиент
-- **React Router 6** — маршрутизация
+- **TanStack Query** — серверное состояние
+- **Ant Design 6** — UI-компоненты
+- **Axios** — HTTP-клиент
+- **React Router 7** — маршрутизация
+- **Vitest** + **Testing Library** + **MSW** — unit/integration-тесты
+- **Playwright** — E2E-тесты
 
 ## 🚀 Быстрый старт
 
-```text
-npm install — установка зависимостей
-npm run dev — запуск в режиме разработки
-npm run build — сборка для продакшена
-npm run preview — предпросмотр сборки
-
-Приложение будет доступно на http://localhost:5173
+```bash
+npm install          # установка зависимостей
+npm run dev          # режим разработки → http://localhost:5173
+npm run build        # сборка для продакшена
+npm run preview      # предпросмотр сборки
 ```
 
 ## 📁 Структура проекта
 
 ```text
 frontend/
+├── e2e/                     # Playwright E2E-тесты
+│   ├── mocks/               # page.route — мок API в браузере
+│   ├── login.spec.ts
+│   ├── home-modal.spec.ts
+│   └── smart-search.spec.ts
 ├── public/
-│   ├── favicon.svg          # Иконка сайта
-│   └── manifest.json        # PWA манифест
+│   ├── favicon.svg
+│   └── manifest.json        # PWA
 ├── src/
 │   ├── components/          # Переиспользуемые компоненты
-│   │   ├── auth/            # Компоненты авторизации
-│   │   ├── common/          # Общие компоненты (ErrorBoundary)
-│   │   └── layout/          # Layout компоненты
-│   ├── config/              # Конфигурация (роуты)
+│   ├── config/              # Роуты
 │   ├── hooks/               # Пользовательские хуки
-│   ├── pages/               # Страницы
-│   │   └── admin/           # Админ-панель
-│   ├── services/            # API сервисы
-│   ├── store/               # Redux хранилище
-│   │   ├── auth/            # Авторизация
-│   │   ├── news/            # Новости
-│   │   └── ui/              # UI состояние
+│   ├── pages/               # Страницы (+ __tests__/)
+│   ├── services/            # API-сервисы
+│   ├── store/               # Redux (auth, news, ui)
+│   ├── test-utils/          # renderWithProviders, MSW handlers
 │   ├── types/               # Реэкспорт @news-portal/types
-│   ├── App.tsx              # Главный компонент
-│   ├── main.tsx             # Точка входа
-│   └── index.css            # Глобальные стили
-├── .env                     # Переменные окружения
-├── Dockerfile               # Docker образ
-├── nginx.conf               # Nginx конфиг
-├── tsconfig.json            # TypeScript конфиг
-├── vite.config.ts           # Vite конфиг
-└── package.json             # Зависимости
+│   ├── test-setup.ts        # Vitest: MSW, DOM polyfills
+│   ├── App.tsx
+│   └── main.tsx
+├── playwright.config.ts     # Playwright (webServer + Chromium)
+├── tsconfig.node.json       # TS для vite.config, playwright, e2e
+├── vite.config.ts
+└── package.json
 ```
 
 ## 📄 Страницы
@@ -62,10 +60,37 @@ frontend/
 | / | Главная | Все |
 | /news | Лента новостей (поиск `?search=`, FTS) | Все |
 | /news?news=id | Новость в модалке | Все |
+| /search | Умный поиск (NL → `POST /api/news/smart-search`) | Все |
 | /login | Вход | Гость |
 | /register | Регистрация | Гость |
 | /profile | Личный кабинет | 🔒 |
 | /admin | Админ-панель | 🔒 Админ/Модер |
+
+## 🧪 Тестирование
+
+Подробнее: [docs/testing.md](../docs/testing.md)
+
+### Unit / integration (Vitest)
+
+```bash
+npm test              # интерактивный Vitest
+npm run test:watch    # watch-режим
+npm run test:ci       # один прогон (CI)
+npm run test:cov      # с покрытием
+```
+
+MSW перехватывает `/api/**` в тестах; компоненты рендерятся через `renderWithProviders`.
+
+### E2E (Playwright)
+
+```bash
+npm run test:e2e:install   # Chromium (после npm install)
+npm run test:e2e           # 8 сценариев, backend не нужен
+npm run test:e2e:ui        # UI Playwright
+npm run test:e2e:report    # HTML-отчёт
+```
+
+Vite стартует автоматически; API мокается в `e2e/mocks/api.ts`.
 
 ## 📐 Типизация
 
@@ -79,17 +104,18 @@ import type { News, User } from '@/types';
 
 ## 🔧 Разработка
 
-```text
-npm run dev — запуск в dev режиме
-npm run lint — линтинг
-npm run build — сборка
+```bash
+npm run dev           # dev-сервер
+npm run lint          # ESLint
+npm run format        # Prettier
+npm run build         # production-сборка
 ```
 
 ## 🐳 Docker
 
-```text
-docker build -t news-portal-frontend . — сборка образа
-docker run -p 80:80 news-portal-frontend — запуск контейнера
+```bash
+docker build -t news-portal-frontend .
+docker run -p 80:80 news-portal-frontend
 ```
 
 ## 📝 Лицензия

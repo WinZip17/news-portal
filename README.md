@@ -15,7 +15,7 @@
 - 🛡 **Модерация** — все новости проходят проверку перед публикацией
 - 📱 **PWA** — можно установить как приложение на телефон
 - 🔍 **SEO** — мета-теги, Open Graph, sitemap для поисковиков
-- 🔎 **Поиск** — PostgreSQL FTS по заголовку, описанию и тегам; умный поиск (NL → AI → фильтры) на Next.js
+- 🔎 **Поиск** — PostgreSQL FTS; умный поиск (NL → AI → фильтры) на React SPA и Next.js
 
 ## 🛠 Технологии
 
@@ -38,11 +38,22 @@
 | Vue      | https://vue.short-news.ru  |
 
 ## 🚀 Запуск
-```text
-npm install — установка зависимостей
-npm run dev — запуск всего в dev-режиме
-npm run start:prod — запуск в Docker (продакшен)
+
+```bash
+npm install          # установка зависимостей
+npm run dev          # PostgreSQL + backend + React SPA
+npm run start:prod   # Docker Compose (продакшен)
 ```
+
+## 🧪 Тестирование
+
+```bash
+npm test                    # backend (Jest) + frontend (Vitest)
+npm run test:e2e:frontend   # React E2E (Playwright)
+npm run test:e2e            # backend E2E
+```
+
+Подробнее: [docs/testing.md](docs/testing.md)
 
 ## 📐 Общая типизация
 

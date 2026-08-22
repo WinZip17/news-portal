@@ -28,6 +28,18 @@ npm run start:dev — запуск в режиме разработки
 npm run build — продакшн сборка
 npm run start:prod — запуск продакшн версии
 
+## 🧪 Тестирование
+
+```bash
+npm test              # unit-тесты (Jest)
+npm run test:watch    # watch-режим
+npm run test:cov      # с покрытием
+npm run test:e2e      # E2E (test/jest-e2e.json)
+```
+
+Из корня репозитория: `npm run test:backend`, `npm run test:e2e`.  
+Общая документация: [docs/testing.md](../docs/testing.md).
+
 ## 📡 API Endpoints
 
 ### Аутентификация

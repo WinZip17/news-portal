@@ -17,7 +17,8 @@
 | **SSR** | ❌ | ✅ | ✅ | ❌ |
 | **CSS решение** | Ant Design | MUI System | PrimeVue + CSS | Vuetify + CSS |
 | **Типы** | `@/types` → `@news-portal/types` | `@/types` | `~/types` | `@/types` |
-| **Поиск** | FTS на `/news` | FTS `/news` + умный `/search` | лента без поиска | лента без поиска |
+| **Поиск** | FTS `/news` + умный `/search` | FTS `/news` + умный `/search` | лента без поиска | лента без поиска |
+| **Тесты** | Vitest + Playwright E2E | Vitest | — | Vitest (unit) |
 
 > 🔍 Подробнее: [search.md](search.md)
 
@@ -30,21 +31,27 @@
 ### Особенности
 - Полноценный админ-интерфейс с модерацией
 - Поиск по ленте (`/news?search=`) — FTS через `GET /api/news`
+- Умный поиск на `/search` — `POST /api/news/smart-search`
 - Инфинити-скролл в ленте новостей
 - Ленивая загрузка страниц (React.lazy)
 - Service Worker для PWA
 - SEO через react-helmet-async
+- **Тесты:** Vitest + MSW (unit/integration), Playwright E2E — см. [testing.md](testing.md)
 
 ### Структура
 ```
-frontend/src/
-├── components/    # Переиспользуемые компоненты
-├── hooks/         # Пользовательские хуки
-├── pages/         # Страницы
-├── services/      # API сервисы
-├── store/         # Redux store
-├── types/         # Реэкспорт @news-portal/types
-└── utils/         # Утилиты
+frontend/
+├── e2e/              # Playwright E2E
+├── src/
+│   ├── components/
+│   ├── hooks/
+│   ├── pages/
+│   ├── services/
+│   ├── store/
+│   ├── test-utils/   # renderWithProviders, MSW
+│   ├── types/
+│   └── utils/
+└── playwright.config.ts
 ```
 
 ## Next.js
