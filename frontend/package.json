@@ -14,6 +14,10 @@
     "test:watch": "vitest --watch",
     "test:ci": "vitest run",
     "test:cov": "vitest run --coverage",
+    "test:e2e": "playwright install chromium && playwright test",
+    "test:e2e:install": "playwright install chromium",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\""
   },
@@ -33,6 +37,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.62.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^24.13.3",
