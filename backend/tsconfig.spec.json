@@ -2,7 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "types": ["node", "jest"],
-    "noEmit": true
+    "noEmit": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.spec.tsbuildinfo"
   },
   "include": ["src/**/*.spec.ts", "test/**/*.ts"],
   "exclude": ["node_modules", "dist"]
