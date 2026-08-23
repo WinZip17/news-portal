@@ -40,6 +40,11 @@ export function sanitizeNewsFilter(raw: unknown, fallbackSearch?: string): NewsF
     filter.tags = tags;
   }
 
+  const searchVariants = normalizeStringArray(input.searchVariants, 10);
+  if (searchVariants) {
+    filter.searchVariants = searchVariants;
+  }
+
   if (typeof input.fromDate === 'string' && isValidIsoDate(input.fromDate)) {
     filter.fromDate = new Date(input.fromDate).toISOString();
   }

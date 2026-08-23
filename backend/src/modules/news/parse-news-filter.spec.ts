@@ -45,4 +45,14 @@ describe('parse-news-filter', () => {
     expect(filter.fromDate).toBeUndefined();
     expect(filter.sortBy).toBeUndefined();
   });
+
+  it('keeps searchVariants for bilingual smart search', () => {
+    const filter = sanitizeNewsFilter({
+      search: 'озон',
+      searchVariants: ['Ozon', 'ozon', ''],
+    });
+
+    expect(filter.search).toBe('озон');
+    expect(filter.searchVariants).toEqual(['Ozon', 'ozon']);
+  });
 });

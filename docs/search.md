@@ -55,7 +55,8 @@
   "totalPages": 2,
   "appliedFilters": {
     "status": "published",
-    "search": "технологии",
+    "search": "озон",
+    "searchVariants": ["Ozon", "ozon", "Озон"],
     "category": "technology",
     "isAiGenerated": true,
     "fromDate": "2026-03-08T00:00:00.000Z",
@@ -73,7 +74,9 @@
 ### Безопасность
 
 - LLM **не** пишет SQL.
-- Разрешены только поля `NewsFilter`: `search`, `category`, `tags`, `fromDate`, `toDate`, `isAiGenerated`, `sortBy`, `sortOrder`.
+- Разрешены только поля `NewsFilter`: `search`, `searchVariants`, `category`, `tags`, `fromDate`, `toDate`, `isAiGenerated`, `sortBy`, `sortOrder`.
+- `searchVariants` — альтернативные написания брендов и имён (кириллица/латиница); в FTS ищутся через **OR** вместе с `search`.
+- Backend дополнительно расширяет запрос транслитерацией и известными алиасами (Озон ↔ Ozon, Сбер ↔ Sber и т.д.).
 - `status` всегда принудительно `published` для публичного поиска.
 
 ### Требования

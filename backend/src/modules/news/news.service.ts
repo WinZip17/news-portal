@@ -7,7 +7,7 @@ import { NewsStatsDto } from './dto/stats.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { NewsCategory, NewsFilter, NewsStatus } from '../../types';
-import { normalizeTagsFilter, resolveSortColumn } from './news-search.utils';
+import { normalizeTagsFilter, resolveSortColumn, buildFtsSearchCondition } from './news-search.utils';
 
 @Injectable()
 export class NewsService {
@@ -37,6 +37,7 @@ export class NewsService {
       isAiGenerated,
       authorId,
       tags,
+      searchVariants,
     } = filters;
 
     const normalizedTags = normalizeTagsFilter(tags);
@@ -64,9 +65,10 @@ export class NewsService {
       });
     }
     if (normalizedSearch) {
-      queryBuilder.andWhere(`news.search_vector @@ plainto_tsquery('russian', :search)`, {
-        search: normalizedSearch,
-      });
+      const ftsCondition = buildFtsSearchCondition(normalizedSearch, searchVariants);
+      if (ftsCondition) {
+        queryBuilder.andWhere(ftsCondition.sql, ftsCondition.params);
+      }
     }
     if (normalizedTags) {
       queryBuilder.andWhere(

@@ -44,6 +44,7 @@ packages/types/
 - `News`, `NewsItem` (алиас)
 - `NewsCategory`, `NewsStatus` (enum)
 - `NewsFilter`, `NewsResponse`, `NewsStats` / `StatsResponse` (алиас)
+  - `NewsFilter.searchVariants?` — альтернативные написания брендов (умный поиск)
 - `SmartSearchRequest`, `SmartSearchResponse` — умный поиск (`POST /api/news/smart-search`)
 - `ModerationBody`, `CreateNewsDto`
 

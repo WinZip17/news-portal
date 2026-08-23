@@ -1,4 +1,4 @@
-import { normalizeTagsFilter, resolveSortColumn } from './news-search.utils';
+import { buildFtsSearchCondition, buildSearchWordGroups, getWordSearchVariants, normalizeTagsFilter, resolveSortColumn } from './news-search.utils';
 
 describe('news-search.utils', () => {
   describe('normalizeTagsFilter', () => {
@@ -23,6 +23,50 @@ describe('news-search.utils', () => {
 
     it('keeps allowed sort columns', () => {
       expect(resolveSortColumn('views')).toBe('views');
+    });
+  });
+
+  describe('getWordSearchVariants', () => {
+    it('expands Ozon brand aliases from Cyrillic input', () => {
+      const variants = getWordSearchVariants('Озон');
+      expect(variants).toEqual(expect.arrayContaining(['Озон', 'ozon']));
+    });
+
+    it('expands Ozon brand aliases from Latin input', () => {
+      const variants = getWordSearchVariants('Ozon');
+      expect(variants).toEqual(expect.arrayContaining(['Ozon', 'озон']));
+    });
+
+    it('transliterates generic Cyrillic words', () => {
+      expect(getWordSearchVariants('тест')).toEqual(expect.arrayContaining(['тест', 'test']));
+    });
+  });
+
+  describe('buildSearchWordGroups', () => {
+    it('merges AI variants into a single-word query', () => {
+      expect(buildSearchWordGroups('озон', ['Ozon', 'ozon'])).toEqual([['озон', 'ozon']]);
+    });
+
+    it('keeps separate AND groups for multi-word queries', () => {
+      const groups = buildSearchWordGroups('маркетплейс озон', ['Ozon']);
+      expect(groups).toHaveLength(2);
+      expect(groups[1]).toEqual(expect.arrayContaining(['озон', 'ozon']));
+    });
+  });
+
+  describe('buildFtsSearchCondition', () => {
+    it('builds OR variants and AND word groups for SQL', () => {
+      const condition = buildFtsSearchCondition('озон', ['Ozon']);
+
+      expect(condition).not.toBeNull();
+      expect(condition?.sql).toContain("plainto_tsquery('russian'");
+      expect(condition?.sql).toContain("plainto_tsquery('simple'");
+      expect(condition?.sql).toContain(' OR ');
+      expect(Object.values(condition?.params ?? {})).toEqual(expect.arrayContaining(['озон', 'ozon']));
+    });
+
+    it('returns null for empty search', () => {
+      expect(buildFtsSearchCondition('   ')).toBeNull();
     });
   });
 });

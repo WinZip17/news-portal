@@ -10,6 +10,44 @@ interface ParsedQueryResult {
   source: 'ai' | 'fallback';
 }
 
+const SMART_SEARCH_SYSTEM_PROMPT = `Ты парсер поисковых запросов к русскоязычному новостному порталу.
+Преобразуй запрос пользователя в JSON-фильтры для полнотекстового поиска.
+Отвечай только валидным JSON без markdown.
+
+Важно про search и searchVariants:
+- search — ключевые слова для поиска (1–5 слов), без слов-паразитов («новости», «про», «о», «найди»).
+- searchVariants — ВСЕ альтернативные написания имён, брендов, компаний, аббревиатур из запроса:
+  • кириллица и латиница: Озон ↔ Ozon, Яндекс ↔ Yandex, Сбер ↔ Sber
+  • разный регистр и транслит: iPhone ↔ Айфон, WhatsApp ↔ Ватсап
+  • если пользователь пишет по-русски, всё равно добавь латинские варианты бренда в searchVariants
+- searchVariants не дублирует обычные русские слова — только имена собственные, бренды, аббревиатуры.
+- Если запрос только про бренд/компанию — search = основное слово, searchVariants = все написания.`;
+
+const SMART_SEARCH_USER_PROMPT = (today: string, query: string) => `Сегодня: ${today} (UTC).
+
+Запрос пользователя: "${query}"
+
+Верни JSON:
+{
+  "search": "ключевые слова для полнотекстового поиска или null",
+  "searchVariants": ["альтернативное написание 1", "альтернативное написание 2"],
+  "category": "politics|economy|technology|science|sports|entertainment|health|world|other|null",
+  "tags": ["тег1", "тег2"],
+  "fromDate": "ISO-8601 или null",
+  "toDate": "ISO-8601 или null",
+  "isAiGenerated": true|false|null,
+  "sortBy": "publishedAt|views|likes|createdAt|null",
+  "sortOrder": "ASC|DESC|null"
+}
+
+Правила:
+- category только на английском из списка
+- интерпретируй «за неделю», «за месяц», «вчера», «сегодня» в fromDate/toDate
+- «AI новости» → isAiGenerated: true
+- пример: запрос «Озон» → search: "озон", searchVariants: ["Ozon", "ozon", "Озон"]
+- пример: «новости про маркетплейс Ozon» → search: "маркетплейс ozon", searchVariants: ["Ozon", "озон", "Озон"]
+- не добавляй поля вне схемы`;
+
 @Injectable()
 export class NewsSearchAiService {
   private readonly logger = new Logger(NewsSearchAiService.name);
@@ -61,38 +99,16 @@ export class NewsSearchAiService {
       const completion = await this.openai.chat.completions.create({
         model: this.aiConfig.model,
         temperature: 0.1,
-        max_completion_tokens: 350,
+        max_completion_tokens: 450,
         response_format: { type: 'json_object' },
         messages: [
           {
             role: 'system',
-            content:
-              'Ты парсер поисковых запросов к новостному порталу. Преобразуй запрос пользователя в JSON-фильтры. Отвечай только валидным JSON без markdown.',
+            content: SMART_SEARCH_SYSTEM_PROMPT,
           },
           {
             role: 'user',
-            content: `Сегодня: ${today} (UTC).
-
-Запрос пользователя: "${query}"
-
-Верни JSON:
-{
-  "search": "ключевые слова для полнотекстового поиска или null",
-  "category": "politics|economy|technology|science|sports|entertainment|health|world|other|null",
-  "tags": ["тег1", "тег2"],
-  "fromDate": "ISO-8601 или null",
-  "toDate": "ISO-8601 или null",
-  "isAiGenerated": true|false|null,
-  "sortBy": "publishedAt|views|likes|createdAt|null",
-  "sortOrder": "ASC|DESC|null"
-}
-
-Правила:
-- category только на английском из списка
-- интерпретируй "за неделю", "за месяц", "вчера", "сегодня" в fromDate/toDate
-- "AI новости" → isAiGenerated: true
-- search — смысловые слова, не весь вопрос целиком
-- не добавляй поля вне схемы`,
+            content: SMART_SEARCH_USER_PROMPT(today, query),
           },
         ],
       });

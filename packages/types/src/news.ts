@@ -34,6 +34,8 @@ export interface NewsFilter {
   status?: NewsStatus;
   tags?: string[];
   search?: string;
+  /** Alternate spellings (Latin/Cyrillic) for smart search — OR within the matching term */
+  searchVariants?: string[];
   fromDate?: string;
   toDate?: string;
   isAiGenerated?: boolean;
