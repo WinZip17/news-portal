@@ -1,5 +1,5 @@
 import { render, renderHook, type RenderHookOptions, type RenderOptions } from '@testing-library/react';
-import { configureStore, type PreloadedState } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from '@mui/material/styles';
 import type { ReactElement, ReactNode } from 'react';
@@ -16,7 +16,7 @@ export function createTestStore(preloadedState?: Partial<RootState>) {
       news: newsReducer,
       ui: uiReducer,
     },
-    preloadedState: preloadedState as PreloadedState<RootState>,
+    preloadedState,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         serializableCheck: false,
