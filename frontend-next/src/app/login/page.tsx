@@ -9,19 +9,17 @@ import { fetchCurrentUser } from '@/store/auth/authSlice';
 export default function LoginPage() {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const form = new FormData(e.target as HTMLFormElement);
     setLoading(true);
     setError('');
     try {
-      const data = await authService.login(
-        form.get('email') as string,
-        form.get('password') as string,
-      );
+      const data = await authService.login(email, password);
       localStorage.setItem('accessToken', data.accessToken);
       localStorage.setItem('refreshToken', data.refreshToken);
       await dispatch(fetchCurrentUser());
@@ -43,11 +41,22 @@ export default function LoginPage() {
         </Alert>
       )}
       <Box component="form" onSubmit={handleSubmit}>
-        <TextField name="email" label="Email" type="email" fullWidth required margin="normal" />
+        <TextField
+          name="email"
+          label="Email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          fullWidth
+          required
+          margin="normal"
+        />
         <TextField
           name="password"
           label="Пароль"
           type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           fullWidth
           required
           margin="normal"

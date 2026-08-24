@@ -5,9 +5,10 @@
 ## Быстрые команды (корень репозитория)
 
 ```bash
-npm test                    # backend (Jest) + frontend (Vitest)
+npm test                    # backend (Jest) + frontend (Vitest) + frontend-next (Jest)
 npm run test:backend        # только backend
 npm run test:frontend       # только frontend (Vitest, watch по умолчанию)
+npm run test:frontend-next  # только frontend-next (Jest, CI-режим)
 npm run test:e2e            # backend E2E (Jest + supertest)
 npm run test:e2e:frontend   # React SPA E2E (Playwright)
 ```
@@ -72,11 +73,30 @@ npm run test:e2e:report    # HTML-отчёт
 
 > **Windows:** при ошибке `Executable doesn't exist` выполните `npm run test:e2e:install` в каталоге `frontend`.
 
-## Next.js, Nuxt, Vue
+## Next.js (Jest)
+
+Next.js фронтенд (`frontend-next/`) покрыт unit/integration-тестами на **Jest**.
+
+- **Jest** + **next/jest** + **jest-fixed-jsdom**
+- **Testing Library** + **user-event**
+- **axios-mock-adapter** — мок HTTP API (`src/test-utils/mockApi.ts`)
+- **renderWithProviders** — обёртка с Redux и MUI ThemeProvider (`src/test-utils/renderWithProviders.tsx`)
+- Настройка окружения: `jest.setup.ts` (jest-dom, ResizeObserver, matchMedia, localStorage)
+
+```bash
+cd frontend-next
+npm test              # Jest (интерактивный)
+npm run test:watch    # watch-режим
+npm run test:ci       # один прогон (CI)
+npm run test:cov      # с покрытием
+```
+
+Покрытие: utils, Redux slices, services, hooks, компоненты, страница login (`src/**/__tests__/`).
+
+## Nuxt, Vue
 
 | Пакет | Команда | Стек |
 |-------|---------|------|
-| `frontend-next` | `npm test` | Vitest |
 | `frontend-vue` | `npm run test:unit` | Vitest |
 | `frontend-nuxt` | — | тесты не настроены |
 
@@ -88,6 +108,7 @@ npm run test:e2e:report    # HTML-отчёт
 npm run lint
 npm run format:check
 npm run test:frontend -- --run   # или cd frontend && npm run test:ci
+npm run test:frontend-next       # при изменениях Next.js
 npm run test:e2e:frontend        # при изменениях UI/E2E
 ```
 

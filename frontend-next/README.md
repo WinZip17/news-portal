@@ -18,6 +18,9 @@ npm install — установка зависимостей
 npm run dev — запуск в режиме разработки (порт 3003)
 npm run build — сборка для продакшена
 npm start — запуск продакшен версии
+npm test — unit-тесты (Jest)
+npm run test:ci — один прогон для CI
+npm run test:cov — с покрытием
 ```
 
 Приложение будет доступно на http://localhost:3003
@@ -54,7 +57,11 @@ frontend-next/
 │   │   └── ui/uiSlice.ts         # UI (тема)
 │   ├── types/               # Реэкспорт @news-portal/types
 │   ├── utils/               # Утилиты
+│   ├── test-utils/          # Jest: mockApi, fixtures, renderWithProviders
 │   └── theme.ts             # MUI тема (light/dark)
+├── jest.config.ts           # Jest + next/jest
+├── jest.setup.ts            # jest-dom, jsdom polyfills
+├── tsconfig.spec.json       # типы Jest для IDE
 ├── Dockerfile               # Docker образ
 ├── next.config.ts           # Конфигурация Next.js
 ├── .prettierrc              # Настройки Prettier
@@ -107,6 +114,18 @@ import type { News, NewsStatus, User } from '@/types';
 /api/:path* → http://localhost:3001/api/:path*
 
 На проде запросы идут через nginx на основном домене.
+
+## 🧪 Тестирование
+
+Unit/integration-тесты на **Jest** + **Testing Library**. HTTP API мокается через `axios-mock-adapter`.
+
+```bash
+npm test           # интерактивный прогон
+npm run test:ci    # один прогон (CI)
+npm run test:cov   # с покрытием
+```
+
+Подробнее: [docs/testing.md](../docs/testing.md)
 
 ## 🐳 Docker
 
