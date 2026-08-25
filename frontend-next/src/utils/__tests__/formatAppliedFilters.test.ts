@@ -1,4 +1,5 @@
 import { formatAppliedFilters } from '@/utils/formatAppliedFilters';
+import { NewsCategory } from '@/types';
 
 describe('formatAppliedFilters', () => {
   it('returns empty string for empty filters', () => {
@@ -9,7 +10,7 @@ describe('formatAppliedFilters', () => {
     expect(
       formatAppliedFilters({
         search: 'AI новости',
-        category: 'technology',
+        category: NewsCategory.TECHNOLOGY,
       }),
     ).toBe('поиск: «AI новости» · Технологии');
   });

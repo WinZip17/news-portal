@@ -1,5 +1,10 @@
-import { render, renderHook, type RenderHookOptions, type RenderOptions } from '@testing-library/react';
-import { configureStore } from '@reduxjs/toolkit';
+import {
+  render,
+  renderHook,
+  type RenderHookOptions,
+  type RenderOptions,
+} from '@testing-library/react';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from '@mui/material/styles';
 import type { ReactElement, ReactNode } from 'react';
@@ -9,14 +14,16 @@ import uiReducer from '@/store/ui/uiSlice';
 import type { RootState } from '@/store';
 import { darkTheme } from '@/theme';
 
+const rootReducer = combineReducers({
+  auth: authReducer,
+  news: newsReducer,
+  ui: uiReducer,
+});
+
 export function createTestStore(preloadedState?: Partial<RootState>) {
   return configureStore({
-    reducer: {
-      auth: authReducer,
-      news: newsReducer,
-      ui: uiReducer,
-    },
-    preloadedState,
+    reducer: rootReducer,
+    ...(preloadedState !== undefined ? { preloadedState } : {}),
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         serializableCheck: false,
@@ -48,7 +55,10 @@ export function renderWithProviders(
   };
 }
 
-export interface RenderHookWithProvidersOptions<Props> extends Omit<RenderWithProvidersOptions, 'preloadedState'> {
+export interface RenderHookWithProvidersOptions<Props> extends Omit<
+  RenderWithProvidersOptions,
+  'preloadedState'
+> {
   preloadedState?: Partial<RootState>;
   hookOptions?: Omit<RenderHookOptions<Props>, 'wrapper'>;
 }

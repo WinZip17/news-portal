@@ -1,4 +1,12 @@
-import { UserRole, type AuthResponse, type News, type NewsResponse, type NewsStats, type SmartSearchResponse, type User } from '@/types';
+import {
+  UserRole,
+  type AuthResponse,
+  type News,
+  type NewsResponse,
+  type NewsStats,
+  type SmartSearchResponse,
+  type User,
+} from '@/types';
 import { NewsCategory, NewsStatus } from '@/types';
 
 export const mockUser: User = {
@@ -19,6 +27,14 @@ export const mockUser: User = {
   },
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
+};
+
+export const mockAdminUser: User = {
+  ...mockUser,
+  id: 'admin-1',
+  email: 'admin@example.com',
+  username: 'admin',
+  role: UserRole.ADMIN,
 };
 
 export const mockAuthResponse: AuthResponse = {
@@ -44,6 +60,13 @@ export const mockNewsItem: News = {
   publishedAt: '2026-08-20T08:00:00.000Z',
   createdAt: '2026-08-20T08:00:00.000Z',
   updatedAt: '2026-08-20T08:00:00.000Z',
+};
+
+export const mockPendingNewsItem: News = {
+  ...mockNewsItem,
+  id: 'news-pending-1',
+  title: 'Новость на модерации',
+  status: NewsStatus.PENDING,
 };
 
 export const mockNewsResponse: NewsResponse = {

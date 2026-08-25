@@ -91,7 +91,7 @@ npm run test:ci       # один прогон (CI)
 npm run test:cov      # с покрытием
 ```
 
-Покрытие: utils, Redux slices, services, hooks, компоненты, страница login (`src/**/__tests__/`).
+Покрытие: utils, Redux slices, services, hooks, компоненты, все страницы App Router (`src/app/**/__tests__/`).
 
 ## Nuxt, Vue
 

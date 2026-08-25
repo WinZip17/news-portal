@@ -6,20 +6,18 @@ import { authService } from '@/services/authService';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const form = new FormData(e.target as HTMLFormElement);
     setLoading(true);
     setError('');
     try {
-      await authService.register({
-        email: form.get('email') as string,
-        username: form.get('username') as string,
-        password: form.get('password') as string,
-      });
+      await authService.register({ email, username, password });
       router.push('/');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Ошибка регистрации');
@@ -38,12 +36,31 @@ export default function RegisterPage() {
         </Alert>
       )}
       <Box component="form" onSubmit={handleSubmit}>
-        <TextField name="email" label="Email" type="email" fullWidth required margin="normal" />
-        <TextField name="username" label="Имя пользователя" fullWidth required margin="normal" />
+        <TextField
+          name="email"
+          label="Email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          fullWidth
+          required
+          margin="normal"
+        />
+        <TextField
+          name="username"
+          label="Имя пользователя"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          fullWidth
+          required
+          margin="normal"
+        />
         <TextField
           name="password"
           label="Пароль"
           type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           fullWidth
           required
           margin="normal"

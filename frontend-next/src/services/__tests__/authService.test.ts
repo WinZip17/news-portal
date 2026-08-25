@@ -15,7 +15,9 @@ describe('authService (mock API)', () => {
   it('login throws API error message', async () => {
     setupMockApi().onPost('/auth/login').reply(401, { message: 'Invalid credentials' });
 
-    await expect(authService.login('bad@example.com', 'wrong')).rejects.toThrow('Invalid credentials');
+    await expect(authService.login('bad@example.com', 'wrong')).rejects.toThrow(
+      'Invalid credentials',
+    );
   });
 
   it('getMe returns current user', async () => {

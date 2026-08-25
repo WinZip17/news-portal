@@ -33,7 +33,9 @@ describe('authSlice (mock API)', () => {
 
   describe('login', () => {
     it('fulfills and stores tokens', async () => {
-      const result = await store.dispatch(login({ email: 'test@example.com', password: 'password123' }));
+      const result = await store.dispatch(
+        login({ email: 'test@example.com', password: 'password123' }),
+      );
 
       expect(result.type).toBe('auth/login/fulfilled');
       const auth = store.getState().auth;
@@ -55,7 +57,9 @@ describe('authSlice (mock API)', () => {
 
   describe('fetchCurrentUser', () => {
     it('fulfills when token is present', async () => {
-      store.dispatch(setTokens({ accessToken: 'test-access-token', refreshToken: 'test-refresh-token' }));
+      store.dispatch(
+        setTokens({ accessToken: 'test-access-token', refreshToken: 'test-refresh-token' }),
+      );
 
       const result = await store.dispatch(fetchCurrentUser());
 

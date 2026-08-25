@@ -1,5 +1,11 @@
 import { newsService } from '@/services/newsService';
-import { mockNewsItem, mockNewsResponse, mockSmartSearchResponse, mockStats, setupMockApi } from '@/test-utils';
+import {
+  mockNewsItem,
+  mockNewsResponse,
+  mockSmartSearchResponse,
+  mockStats,
+  setupMockApi,
+} from '@/test-utils';
 
 describe('newsService (mock API)', () => {
   beforeEach(() => {

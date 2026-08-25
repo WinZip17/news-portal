@@ -1,4 +1,10 @@
-import { createTestStore, mockNewsItem, mockNewsResponse, mockStats, setupMockApi } from '@/test-utils';
+import {
+  createTestStore,
+  mockNewsItem,
+  mockNewsResponse,
+  mockStats,
+  setupMockApi,
+} from '@/test-utils';
 import { fetchNews, fetchNewsById, fetchStats, setCurrentNews } from '@/store/news/newsSlice';
 
 describe('newsSlice (mock API)', () => {
