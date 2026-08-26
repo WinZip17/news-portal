@@ -46,6 +46,7 @@ jobs:
 
             echo "🚀 Starting deployment..."
             cd /opt/news-portal
+            chmod +x backup.sh
 
             if [ ! -f .env ]; then
               echo "📝 Creating .env..."
