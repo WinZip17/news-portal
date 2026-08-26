@@ -155,11 +155,27 @@ NUXT_PUBLIC_GTM_ID=G-XXXXXXXXXX
 
 Автоматический бэкап базы данных каждый день в 3:00. Хранится 30 дней.
 
+Скрипт `backup.sh` перед `docker compose` переходит в `/opt/news-portal` — без этого cron не находит контейнер postgres.
+
 ```bash
+# На VPS: права и проверка вручную
+chmod +x /opt/news-portal/backup.sh
+/opt/news-portal/backup.sh
+ls -lh /opt/backups/
+
+# Cron (обычно от root, если docker доступен только root)
+sudo crontab -e
+# строка:
+# 0 3 * * * /opt/news-portal/backup.sh >> /var/log/news-portal-backup.log 2>&1
+
+# Лог последнего запуска
+tail -50 /var/log/news-portal-backup.log
+
 # Ручной бэкап
 /opt/news-portal/backup.sh
 
 # Восстановление из бэкапа
+cd /opt/news-portal
 gunzip -c /opt/backups/news_portal_20250101_030000.sql.gz | docker compose exec -T postgres psql -U postgres news_portal
 ```
 
