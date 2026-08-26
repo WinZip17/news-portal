@@ -62,7 +62,14 @@ jobs:
             docker compose down --remove-orphans || true
 
             echo "📦 Starting infrastructure..."
-            docker compose up -d postgres redis prometheus grafana
+            if grep -qE 'monitoringEnabled:\s*true' config/infrastructure.js; then
+              docker compose --profile monitoring up -d postgres redis prometheus grafana
+              echo "✅ Monitoring enabled (Prometheus + Grafana)"
+            else
+              docker compose up -d postgres redis
+              docker compose stop prometheus grafana 2>/dev/null || true
+              echo "✅ Monitoring disabled"
+            fi
             until docker compose exec -T postgres pg_isready -U postgres 2>/dev/null; do sleep 3; done
             echo "✅ Database ready"
 

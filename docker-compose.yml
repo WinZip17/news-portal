@@ -63,7 +63,6 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - backend
-      - grafana
       - frontend-next
       - frontend-nuxt
     networks:
@@ -98,6 +97,7 @@ services:
     restart: unless-stopped
 
   prometheus:
+    profiles: [monitoring]
     build:
       context: ./prometheus
       dockerfile: Dockerfile
@@ -109,6 +109,7 @@ services:
     restart: unless-stopped
 
   grafana:
+    profiles: [monitoring]
     image: grafana/grafana:latest
     container_name: news-portal-grafana
     environment:
