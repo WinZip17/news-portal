@@ -22,11 +22,11 @@ function ThemeWrapper({ children }: { children: React.ReactNode }) {
 function AuthInit({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
   const user = useAppSelector((s) => s.auth.user);
+  const accessToken = useAppSelector((s) => s.auth.accessToken);
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (token) dispatch(fetchCurrentUser());
-  }, []);
+    if (accessToken) dispatch(fetchCurrentUser());
+  }, [accessToken, dispatch]);
 
   useEffect(() => {
     if (user?.preferences?.theme) {

@@ -26,13 +26,15 @@ describe('authService (mock API)', () => {
     expect(user.email).toBe(mockUser.email);
   });
 
-  it('register stores tokens in localStorage', async () => {
-    await authService.register({
+  it('register returns tokens', async () => {
+    const result = await authService.register({
       email: 'new@example.com',
       username: 'newuser',
       password: 'password123',
     });
 
-    expect(localStorage.getItem('accessToken')).toBe(mockAuthResponse.accessToken);
+    expect(result.accessToken).toBe(mockAuthResponse.accessToken);
+    expect(result.refreshToken).toBe(mockAuthResponse.refreshToken);
+    expect(localStorage.getItem('accessToken')).toBeNull();
   });
 });

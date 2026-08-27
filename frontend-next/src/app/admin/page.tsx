@@ -38,6 +38,7 @@ import { authService } from '@/services/authService';
 export default function AdminPage() {
   const router = useRouter();
   const user = useAppSelector((s) => s.auth.user);
+  const accessToken = useAppSelector((s) => s.auth.accessToken);
   const [tab, setTab] = useState(0);
   const [newsStatusFilter, setNewsStatusFilter] = useState<NewsStatus>(NewsStatus.PENDING);
   const [news, setNews] = useState<News[]>([]);
@@ -59,13 +60,12 @@ export default function AdminPage() {
   const isSuperAdmin = user?.role === 'super_admin';
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
+    if (!accessToken) {
       router.push('/login');
       return;
     }
     loadData();
-  }, [tab, newsStatusFilter]);
+  }, [accessToken, tab, newsStatusFilter, router]);
 
   const loadData = async () => {
     try {

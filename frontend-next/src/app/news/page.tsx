@@ -20,9 +20,10 @@ import {
   useTheme,
 } from '@mui/material';
 import { Search as SearchIcon, Close as CloseIcon, SmartToy as AIIcon } from '@mui/icons-material';
-import { newsService } from '@/services/newsService';
 import { News } from '@/types';
 import NewsDetail from '@/components/NewsDetail';
+import { useAppDispatch, useAppSelector } from '@/store';
+import { fetchNews, setCurrentNews } from '@/store/news/newsSlice';
 import { getCategoryLabel } from '@/utils/getCategoryLabel';
 import { truncateText } from '@/utils/truncateText';
 
@@ -31,43 +32,37 @@ const PAGE_SIZE = 20;
 export default function NewsPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const [news, setNews] = useState<News[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const dispatch = useAppDispatch();
+  const { news, isLoading, isLoadingMore, hasMore, currentNews } = useAppSelector((s) => s.news);
+
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [sortBy, setSortBy] = useState('publishedAt');
   const [aiFilter, setAiFilter] = useState('all');
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [selectedNews, setSelectedNews] = useState<News | null>(null);
   const loaderRef = useRef<HTMLDivElement>(null);
   const isFirstRender = useRef(true);
 
-  const loadNews = useCallback(
-    async (pageNum: number, append: boolean) => {
-      if (append) {
-        setLoadingMore(true);
-      } else {
-        setLoading(true);
-      }
-      try {
-        const params: Record<string, string | number> = { page: pageNum, limit: PAGE_SIZE, sortBy };
-        if (category !== 'all') params.category = category;
-        if (search) params.search = search;
-        if (aiFilter !== 'all') params.isAiGenerated = aiFilter;
-        const data = await newsService.getNews(params);
-        if (append) {
-          setNews((prev) => [...prev, ...data.data]);
-        } else {
-          setNews(data.data);
-        }
-        setHasMore(pageNum * PAGE_SIZE < data.total);
-      } catch {}
-      setLoading(false);
-      setLoadingMore(false);
+  const buildParams = useCallback(
+    (pageNum: number) => {
+      const params: Record<string, string | number> = {
+        page: pageNum,
+        limit: PAGE_SIZE,
+        sortBy,
+      };
+      if (category !== 'all') params.category = category;
+      if (search) params.search = search;
+      if (aiFilter !== 'all') params.isAiGenerated = aiFilter;
+      return params;
     },
     [category, sortBy, aiFilter, search],
+  );
+
+  const loadNews = useCallback(
+    (pageNum: number, append: boolean) => {
+      dispatch(fetchNews({ params: buildParams(pageNum), append }));
+    },
+    [buildParams, dispatch],
   );
 
   useEffect(() => {
@@ -75,14 +70,13 @@ export default function NewsPage() {
       isFirstRender.current = false;
     }
     setPage(1);
-    setHasMore(true);
     loadNews(1, false);
-  }, [category, sortBy, aiFilter]);
+  }, [category, sortBy, aiFilter, loadNews]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading && !loadingMore) {
+        if (entries[0].isIntersecting && hasMore && !isLoading && !isLoadingMore) {
           const nextPage = page + 1;
           setPage(nextPage);
           loadNews(nextPage, true);
@@ -96,12 +90,19 @@ export default function NewsPage() {
     }
 
     return () => observer.disconnect();
-  }, [hasMore, loading, loadingMore, page]);
+  }, [hasMore, isLoading, isLoadingMore, page, loadNews]);
 
   const handleSearch = () => {
     setPage(1);
-    setHasMore(true);
     loadNews(1, false);
+  };
+
+  const openNews = (item: News) => {
+    dispatch(setCurrentNews(item));
+  };
+
+  const closeNews = () => {
+    dispatch(setCurrentNews(null));
   };
 
   const categories = [
@@ -190,7 +191,7 @@ export default function NewsPage() {
       </Box>
 
       <Grid container spacing={1.5}>
-        {loading
+        {isLoading
           ? Array.from({ length: 6 }).map((_, i) => (
               <Grid size={{ xs: 12 }} key={i}>
                 <Card>
@@ -205,7 +206,7 @@ export default function NewsPage() {
           : news.map((item) => (
               <Grid size={{ xs: 12 }} key={item.id}>
                 <Card>
-                  <CardActionArea onClick={() => setSelectedNews(item)}>
+                  <CardActionArea onClick={() => openNews(item)}>
                     <CardContent
                       sx={{ py: { xs: 1.5, sm: 2 }, '&:last-child': { pb: { xs: 1.5, sm: 2 } } }}
                     >
@@ -259,7 +260,7 @@ export default function NewsPage() {
       </Grid>
 
       <div ref={loaderRef} style={{ textAlign: 'center', padding: '24px 0' }}>
-        {loadingMore && <Skeleton variant="text" width={200} sx={{ mx: 'auto' }} />}
+        {isLoadingMore && <Skeleton variant="text" width={200} sx={{ mx: 'auto' }} />}
         {!hasMore && news.length > 0 && (
           <Typography variant="body2" color="text.secondary">
             Все новости загружены
@@ -268,21 +269,16 @@ export default function NewsPage() {
       </div>
 
       <Dialog
-        open={!!selectedNews}
-        onClose={() => setSelectedNews(null)}
+        open={!!currentNews}
+        onClose={closeNews}
         maxWidth="md"
         fullWidth
         fullScreen={isMobile}
       >
-        <IconButton
-          onClick={() => setSelectedNews(null)}
-          sx={{ position: 'absolute', right: 8, top: 8, zIndex: 1 }}
-        >
+        <IconButton onClick={closeNews} sx={{ position: 'absolute', right: 8, top: 8, zIndex: 1 }}>
           <CloseIcon />
         </IconButton>
-        <DialogContent sx={{ p: { xs: 2, sm: 3 } }}>
-          {selectedNews && <NewsDetail news={selectedNews} />}
-        </DialogContent>
+        <DialogContent sx={{ p: { xs: 2, sm: 3 } }}>{currentNews && <NewsDetail />}</DialogContent>
       </Dialog>
     </Container>
   );

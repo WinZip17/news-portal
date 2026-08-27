@@ -1,4 +1,3 @@
-/*фикс Cumulative Layout Shift*/
 @media (max-width: 600px) {
   .fix-drawer {
     display: none !important;

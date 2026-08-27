@@ -30,13 +30,22 @@ function profileState(): Partial<RootState> {
 describe('ProfilePage', () => {
   beforeEach(() => {
     setupMockApi();
-    localStorage.setItem('accessToken', 'test-access-token');
     pushMock.mockClear();
   });
 
   it('redirects to login without token', async () => {
-    localStorage.removeItem('accessToken');
-    renderWithProviders(<ProfilePage />, { preloadedState: profileState() });
+    renderWithProviders(<ProfilePage />, {
+      preloadedState: {
+        auth: {
+          user: null,
+          accessToken: null,
+          refreshToken: null,
+          isAuthenticated: false,
+          isLoading: false,
+          error: null,
+        },
+      },
+    });
 
     await waitFor(() => {
       expect(pushMock).toHaveBeenCalledWith('/login');

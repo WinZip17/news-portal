@@ -31,6 +31,7 @@ import {
 import { useRouter, usePathname } from 'next/navigation';
 import FrameworkSwitcher from './FrameworkSwitcher';
 import { useAppDispatch, useAppSelector, toggleTheme } from '@/store';
+import { logout } from '@/store/auth/authSlice';
 import { useServerDatetime } from '@/hooks/useServerDatetime';
 
 const navItems = [
@@ -63,9 +64,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   });
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    window.location.href = '/login';
+    dispatch(logout());
   };
 
   const drawer = (

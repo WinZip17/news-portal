@@ -27,11 +27,10 @@ import {
   Pending as PendingIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
-import { newsService } from '@/services/newsService';
 import { News } from '@/types';
 import NewsDetail from '@/components/NewsDetail';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { fetchStats } from '@/store/news/newsSlice';
+import { fetchNews, fetchStats, setCurrentNews } from '@/store/news/newsSlice';
 import { getCategoryLabel } from '@/utils/getCategoryLabel';
 import { truncateText } from '@/utils/truncateText';
 
@@ -39,25 +38,25 @@ export default function HomePage() {
   const router = useRouter();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [news, setNews] = React.useState<News[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [selectedNews, setSelectedNews] = React.useState<News | null>(null);
-  const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated);
   const dispatch = useAppDispatch();
-  const stats = useAppSelector((s) => s.news.stats);
-  const statsLoading = useAppSelector((s) => s.news.statsLoading);
+  const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated);
+  const { news, isLoading, stats, statsLoading, currentNews } = useAppSelector((s) => s.news);
 
   useEffect(() => {
-    newsService.getNews({ limit: 6 }).then((res) => {
-      setNews(res.data);
-      setLoading(false);
-    });
+    dispatch(fetchNews({ params: { limit: 6 } }));
     dispatch(fetchStats());
-  }, []);
+  }, [dispatch]);
+
+  const openNews = (item: News) => {
+    dispatch(setCurrentNews(item));
+  };
+
+  const closeNews = () => {
+    dispatch(setCurrentNews(null));
+  };
 
   return (
     <Box sx={{ maxWidth: '100%', minWidth: 0, px: { xs: 1, sm: 2 } }}>
-      {/* Hero */}
       <Box
         sx={{
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -124,7 +123,6 @@ export default function HomePage() {
         )}
       </Box>
 
-      {/* Статистика */}
       <Grid container spacing={{ xs: 1, sm: 2, md: 3 }} sx={{ mb: { xs: 4, md: 6 } }}>
         {[
           { icon: <ArticleIcon />, label: 'Сегодня', value: stats.newsToday },
@@ -175,12 +173,11 @@ export default function HomePage() {
         ))}
       </Grid>
 
-      {/* Последние новости */}
       <Typography variant="h4" gutterBottom sx={{ fontSize: { xs: '1.3rem', sm: '2rem' } }}>
         Последние новости
       </Typography>
       <Grid container spacing={{ xs: 1.5, sm: 2, md: 3 }}>
-        {loading
+        {isLoading
           ? Array.from({ length: 6 }).map((_, i) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i}>
                 <Card>
@@ -196,7 +193,7 @@ export default function HomePage() {
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={item.id}>
                 <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <CardActionArea
-                    onClick={() => setSelectedNews(item)}
+                    onClick={() => openNews(item)}
                     sx={{
                       flex: 1,
                       display: 'flex',
@@ -278,23 +275,17 @@ export default function HomePage() {
             ))}
       </Grid>
 
-      {/* Модалка новости */}
       <Dialog
-        open={!!selectedNews}
-        onClose={() => setSelectedNews(null)}
+        open={!!currentNews}
+        onClose={closeNews}
         maxWidth="md"
         fullWidth
         fullScreen={isMobile}
       >
-        <IconButton
-          onClick={() => setSelectedNews(null)}
-          sx={{ position: 'absolute', right: 8, top: 8, zIndex: 1 }}
-        >
+        <IconButton onClick={closeNews} sx={{ position: 'absolute', right: 8, top: 8, zIndex: 1 }}>
           <CloseIcon />
         </IconButton>
-        <DialogContent sx={{ p: { xs: 2, sm: 3 } }}>
-          {selectedNews && <NewsDetail news={selectedNews} />}
-        </DialogContent>
+        <DialogContent sx={{ p: { xs: 2, sm: 3 } }}>{currentNews && <NewsDetail />}</DialogContent>
       </Dialog>
     </Box>
   );

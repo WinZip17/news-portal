@@ -21,11 +21,14 @@ export const authService = {
     }
   },
 
-  async register(data: { email: string; username: string; password: string }): Promise<void> {
+  async register(data: {
+    email: string;
+    username: string;
+    password: string;
+  }): Promise<AuthResponse> {
     try {
       const response = await api.post<AuthResponse>('/auth/register', data);
-      localStorage.setItem('accessToken', response.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
+      return response.data;
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
         const message = err.response?.data?.message || 'Ошибка регистрации';

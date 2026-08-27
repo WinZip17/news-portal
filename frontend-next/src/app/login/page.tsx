@@ -2,9 +2,8 @@
 import React, { useState } from 'react';
 import { Container, Typography, TextField, Button, Alert, Box, Link } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { authService } from '@/services/authService';
 import { useAppDispatch } from '@/store';
-import { fetchCurrentUser } from '@/store/auth/authSlice';
+import { fetchCurrentUser, login } from '@/store/auth/authSlice';
 
 export default function LoginPage() {
   const dispatch = useAppDispatch();
@@ -19,13 +18,11 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
     try {
-      const data = await authService.login(email, password);
-      localStorage.setItem('accessToken', data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
-      await dispatch(fetchCurrentUser());
+      await dispatch(login({ email, password })).unwrap();
+      await dispatch(fetchCurrentUser()).unwrap();
       router.push('/');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Ошибка входа');
+      setError(typeof err === 'string' ? err : err instanceof Error ? err.message : 'Ошибка входа');
     }
     setLoading(false);
   };

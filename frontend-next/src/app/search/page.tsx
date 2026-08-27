@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Box,
   Button,
@@ -23,11 +23,11 @@ import {
   Psychology as SmartSearchIcon,
   SmartToy as AIIcon,
 } from '@mui/icons-material';
-import { newsService } from '@/services/newsService';
 import { News } from '@/types';
 import NewsDetail from '@/components/NewsDetail';
+import { useAppDispatch, useAppSelector } from '@/store';
+import { clearSearchMeta, setCurrentNews, smartSearch } from '@/store/news/newsSlice';
 import { getCategoryLabel } from '@/utils/getCategoryLabel';
-import { formatAppliedFilters } from '@/utils/formatAppliedFilters';
 import { truncateText } from '@/utils/truncateText';
 
 const PAGE_SIZE = 20;
@@ -41,81 +41,37 @@ const EXAMPLE_QUERIES = [
 export default function SmartSearchPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const dispatch = useAppDispatch();
+  const { news, isLoading, isLoadingMore, hasMore, searchHint, searchSource, currentNews } =
+    useAppSelector((s) => s.news);
+
   const [query, setQuery] = useState('');
   const [activeQuery, setActiveQuery] = useState<string | null>(null);
-  const [news, setNews] = useState<News[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
-  const [searchHint, setSearchHint] = useState<string | null>(null);
-  const [searchSource, setSearchSource] = useState<'ai' | 'fallback' | null>(null);
-  const [selectedNews, setSelectedNews] = useState<News | null>(null);
   const loaderRef = useRef<HTMLDivElement>(null);
 
-  const applyResponse = useCallback(
-    (
-      data: Awaited<ReturnType<typeof newsService.smartSearch>>,
-      pageNum: number,
-      append: boolean,
-    ) => {
-      if (append) {
-        setNews((prev) => [...prev, ...data.data]);
-      } else {
-        setNews(data.data);
-      }
-      setHasMore(pageNum * PAGE_SIZE < data.total);
-      setSearchHint(formatAppliedFilters(data.appliedFilters));
-      setSearchSource(data.source);
-    },
-    [],
-  );
-
-  const runSearch = useCallback(
-    async (searchQuery: string, pageNum: number, append: boolean) => {
-      if (append) {
-        setLoadingMore(true);
-      } else {
-        setLoading(true);
-      }
-
-      try {
-        const data = await newsService.smartSearch(searchQuery, pageNum, PAGE_SIZE);
-        applyResponse(data, pageNum, append);
-      } catch {
-        if (!append) {
-          setNews([]);
-          setHasMore(false);
-          setSearchHint(null);
-          setSearchSource(null);
-        }
-      }
-
-      setLoading(false);
-      setLoadingMore(false);
-    },
-    [applyResponse],
-  );
-
-  const handleSearch = () => {
-    const trimmed = query.trim();
-    if (!trimmed) return;
-
-    setActiveQuery(trimmed);
-    setPage(1);
-    setHasMore(true);
-    runSearch(trimmed, 1, false);
-  };
+  useEffect(() => {
+    return () => {
+      dispatch(clearSearchMeta());
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     if (!activeQuery) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading && !loadingMore) {
+        if (entries[0].isIntersecting && hasMore && !isLoading && !isLoadingMore) {
           const nextPage = page + 1;
           setPage(nextPage);
-          runSearch(activeQuery, nextPage, true);
+          dispatch(
+            smartSearch({
+              query: activeQuery,
+              page: nextPage,
+              limit: PAGE_SIZE,
+              append: true,
+            }),
+          );
         }
       },
       { threshold: 0.1 },
@@ -126,7 +82,31 @@ export default function SmartSearchPage() {
     }
 
     return () => observer.disconnect();
-  }, [activeQuery, hasMore, loading, loadingMore, page, runSearch]);
+  }, [activeQuery, dispatch, hasMore, isLoading, isLoadingMore, page]);
+
+  const handleSearch = () => {
+    const trimmed = query.trim();
+    if (!trimmed) return;
+
+    setActiveQuery(trimmed);
+    setPage(1);
+    dispatch(
+      smartSearch({
+        query: trimmed,
+        page: 1,
+        limit: PAGE_SIZE,
+        append: false,
+      }),
+    );
+  };
+
+  const openNews = (item: News) => {
+    dispatch(setCurrentNews(item));
+  };
+
+  const closeNews = () => {
+    dispatch(setCurrentNews(null));
+  };
 
   return (
     <Container sx={{ py: { xs: 2, md: 4 }, px: { xs: 1, sm: 2 }, maxWidth: '100%', minWidth: 0 }}>
@@ -158,7 +138,7 @@ export default function SmartSearchPage() {
         <Button
           variant="contained"
           onClick={handleSearch}
-          disabled={!query.trim() || loading}
+          disabled={!query.trim() || isLoading}
           startIcon={<SmartSearchIcon />}
         >
           Найти
@@ -184,14 +164,14 @@ export default function SmartSearchPage() {
         </Typography>
       )}
 
-      {!activeQuery && !loading && (
+      {!activeQuery && !isLoading && (
         <Typography variant="body2" color="text.secondary">
           Введите запрос и нажмите «Найти».
         </Typography>
       )}
 
       <Grid container spacing={1.5} sx={{ mt: 1 }}>
-        {loading
+        {isLoading
           ? Array.from({ length: 4 }).map((_, i) => (
               <Grid size={{ xs: 12 }} key={i}>
                 <Card>
@@ -206,7 +186,7 @@ export default function SmartSearchPage() {
           : news.map((item) => (
               <Grid size={{ xs: 12 }} key={item.id}>
                 <Card>
-                  <CardActionArea onClick={() => setSelectedNews(item)}>
+                  <CardActionArea onClick={() => openNews(item)}>
                     <CardContent
                       sx={{ py: { xs: 1.5, sm: 2 }, '&:last-child': { pb: { xs: 1.5, sm: 2 } } }}
                     >
@@ -259,14 +239,14 @@ export default function SmartSearchPage() {
             ))}
       </Grid>
 
-      {activeQuery && !loading && news.length === 0 && (
+      {activeQuery && !isLoading && news.length === 0 && (
         <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
           По запросу «{activeQuery}» ничего не найдено.
         </Typography>
       )}
 
       <div ref={loaderRef} style={{ textAlign: 'center', padding: '24px 0' }}>
-        {loadingMore && <Skeleton variant="text" width={200} sx={{ mx: 'auto' }} />}
+        {isLoadingMore && <Skeleton variant="text" width={200} sx={{ mx: 'auto' }} />}
         {!hasMore && news.length > 0 && (
           <Typography variant="body2" color="text.secondary">
             Все результаты загружены
@@ -275,21 +255,16 @@ export default function SmartSearchPage() {
       </div>
 
       <Dialog
-        open={!!selectedNews}
-        onClose={() => setSelectedNews(null)}
+        open={!!currentNews}
+        onClose={closeNews}
         maxWidth="md"
         fullWidth
         fullScreen={isMobile}
       >
-        <IconButton
-          onClick={() => setSelectedNews(null)}
-          sx={{ position: 'absolute', right: 8, top: 8, zIndex: 1 }}
-        >
+        <IconButton onClick={closeNews} sx={{ position: 'absolute', right: 8, top: 8, zIndex: 1 }}>
           <CloseIcon />
         </IconButton>
-        <DialogContent sx={{ p: { xs: 2, sm: 3 } }}>
-          {selectedNews && <NewsDetail news={selectedNews} />}
-        </DialogContent>
+        <DialogContent sx={{ p: { xs: 2, sm: 3 } }}>{currentNews && <NewsDetail />}</DialogContent>
       </Dialog>
     </Container>
   );

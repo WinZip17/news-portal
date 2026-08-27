@@ -3,8 +3,11 @@ import React, { useState } from 'react';
 import { Container, Typography, TextField, Button, Alert, Box, Link } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/services/authService';
+import { useAppDispatch } from '@/store';
+import { fetchCurrentUser, setTokens } from '@/store/auth/authSlice';
 
 export default function RegisterPage() {
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -17,7 +20,9 @@ export default function RegisterPage() {
     setLoading(true);
     setError('');
     try {
-      await authService.register({ email, username, password });
+      const data = await authService.register({ email, username, password });
+      dispatch(setTokens({ accessToken: data.accessToken, refreshToken: data.refreshToken }));
+      await dispatch(fetchCurrentUser()).unwrap();
       router.push('/');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Ошибка регистрации');

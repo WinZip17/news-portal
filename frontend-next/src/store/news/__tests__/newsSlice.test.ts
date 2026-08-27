@@ -2,10 +2,17 @@ import {
   createTestStore,
   mockNewsItem,
   mockNewsResponse,
+  mockSmartSearchResponse,
   mockStats,
   setupMockApi,
 } from '@/test-utils';
-import { fetchNews, fetchNewsById, fetchStats, setCurrentNews } from '@/store/news/newsSlice';
+import {
+  fetchNews,
+  fetchNewsById,
+  fetchStats,
+  setCurrentNews,
+  smartSearch,
+} from '@/store/news/newsSlice';
 
 describe('newsSlice (mock API)', () => {
   let store: ReturnType<typeof createTestStore>;
@@ -22,17 +29,24 @@ describe('newsSlice (mock API)', () => {
 
   describe('fetchNews', () => {
     it('fulfills with paginated news', async () => {
-      const result = await store.dispatch(fetchNews({ page: 1 }));
+      const result = await store.dispatch(fetchNews({ params: { page: 1 } }));
 
       expect(result.type).toBe('news/fetchNews/fulfilled');
       expect(store.getState().news.news).toHaveLength(1);
       expect(store.getState().news.total).toBe(mockNewsResponse.total);
     });
 
+    it('appends news when append is true', async () => {
+      await store.dispatch(fetchNews({ params: { page: 1 } }));
+      await store.dispatch(fetchNews({ params: { page: 2 }, append: true }));
+
+      expect(store.getState().news.news).toHaveLength(2);
+    });
+
     it('rejects on API error', async () => {
       setupMockApi().onGet('/news').reply(500, { message: 'Error' });
 
-      const result = await store.dispatch(fetchNews(undefined));
+      const result = await store.dispatch(fetchNews({}));
 
       expect(result.type).toBe('news/fetchNews/rejected');
       expect(store.getState().news.error).toBeTruthy();
@@ -45,6 +59,16 @@ describe('newsSlice (mock API)', () => {
 
       expect(result.type).toBe('news/fetchNewsById/fulfilled');
       expect(store.getState().news.currentNews?.title).toBe(mockNewsItem.title);
+    });
+  });
+
+  describe('smartSearch', () => {
+    it('fulfills with search results and hint', async () => {
+      const result = await store.dispatch(smartSearch({ query: 'AI новости' }));
+
+      expect(result.type).toBe('news/smartSearch/fulfilled');
+      expect(store.getState().news.news).toHaveLength(mockSmartSearchResponse.data.length);
+      expect(store.getState().news.searchHint).toContain('AI новости');
     });
   });
 

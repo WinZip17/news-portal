@@ -39,15 +39,15 @@ export default function ProfilePage() {
   const [prefsSuccess, setPrefsSuccess] = useState('');
   const dispatch = useAppDispatch();
   const currentTheme = useAppSelector((s) => s.ui.theme);
+  const accessToken = useAppSelector((s) => s.auth.accessToken);
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
+    if (!accessToken) {
       router.push('/login');
       return;
     }
     newsService.getFavorites().then((res) => setFavorites(res.data));
-  }, []);
+  }, [accessToken, router]);
 
   const handleRemoveFavorite = async (id: string) => {
     await newsService.toggleFavorite(id);

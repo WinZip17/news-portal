@@ -31,7 +31,7 @@ describe('RegisterPage', () => {
 
   it('registers successfully and redirects to home', async () => {
     const user = userEvent.setup();
-    renderWithProviders(<RegisterPage />);
+    const { store } = renderWithProviders(<RegisterPage />);
 
     await user.type(screen.getByLabelText(/email/i), 'new@example.com');
     await user.type(screen.getByLabelText(/имя пользователя/i), 'newuser');
@@ -41,6 +41,7 @@ describe('RegisterPage', () => {
     await waitFor(() => {
       expect(pushMock).toHaveBeenCalledWith('/');
     });
+    expect(store.getState().auth.accessToken).toBe('test-access-token');
     expect(localStorage.getItem('accessToken')).toBe('test-access-token');
   });
 

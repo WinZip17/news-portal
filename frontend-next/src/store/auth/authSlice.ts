@@ -20,14 +20,31 @@ const initialState: AuthState = {
   error: null,
 };
 
+function persistTokens(state: AuthState, accessToken: string, refreshToken: string) {
+  state.accessToken = accessToken;
+  state.refreshToken = refreshToken;
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+  }
+}
+
+function clearAuth(state: AuthState) {
+  state.user = null;
+  state.accessToken = null;
+  state.refreshToken = null;
+  state.isAuthenticated = false;
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+  }
+}
+
 export const login = createAsyncThunk(
   'auth/login',
   async (credentials: { email: string; password: string }, { rejectWithValue }) => {
     try {
-      const response = await authService.login(credentials.email, credentials.password);
-      localStorage.setItem('accessToken', response.accessToken);
-      localStorage.setItem('refreshToken', response.refreshToken);
-      return response;
+      return await authService.login(credentials.email, credentials.password);
     } catch (err: unknown) {
       return rejectWithValue(err instanceof Error ? err.message : 'Login failed');
     }
@@ -50,30 +67,22 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
-      state.user = null;
-      state.accessToken = null;
-      state.refreshToken = null;
-      state.isAuthenticated = false;
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      clearAuth(state);
     },
     setTokens: (state, action: PayloadAction<{ accessToken: string; refreshToken: string }>) => {
-      state.accessToken = action.payload.accessToken;
-      state.refreshToken = action.payload.refreshToken;
-      localStorage.setItem('accessToken', action.payload.accessToken);
-      localStorage.setItem('refreshToken', action.payload.refreshToken);
+      persistTokens(state, action.payload.accessToken, action.payload.refreshToken);
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(login.pending, (state) => {
         state.isLoading = true;
+        state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isAuthenticated = true;
-        state.accessToken = action.payload.accessToken;
-        state.refreshToken = action.payload.refreshToken;
+        persistTokens(state, action.payload.accessToken, action.payload.refreshToken);
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
