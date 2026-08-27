@@ -1,5 +1,8 @@
 import Aura from '@primeuix/themes/aura';
 
+const apiBaseUrl = (process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3001').replace(/\/$/, '');
+const devProxyTarget = apiBaseUrl.endsWith('/api') ? apiBaseUrl : `${apiBaseUrl}/api`;
+
 export default defineNuxtConfig({
   app: {
     head: {
@@ -23,7 +26,6 @@ export default defineNuxtConfig({
         { name: 'robots', content: 'index, follow, max-snippet:-1, max-image-preview:large' },
         { name: 'theme-color', content: '#020420' },
         { name: 'msapplication-TileColor', content: '#020420' },
-        // Open Graph
         { property: 'og:type', content: 'website' },
         { property: 'og:url', content: 'https://short-news.ru/' },
         { property: 'og:image', content: 'https://short-news.ru/og-image.png' },
@@ -31,7 +33,6 @@ export default defineNuxtConfig({
         { property: 'og:image:height', content: '630' },
         { property: 'og:locale', content: 'ru_RU' },
         { property: 'og:site_name', content: 'Short News' },
-        // Twitter
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:image', content: 'https://short-news.ru/og-image.png' },
       ],
@@ -96,8 +97,7 @@ export default defineNuxtConfig({
   nitro: {
     devProxy: {
       '/api': {
-        // target: 'http://localhost:3001/api',
-        target: 'https://short-news.ru/api',
+        target: devProxyTarget,
         changeOrigin: true,
         prependPath: true,
       },
@@ -119,12 +119,10 @@ export default defineNuxtConfig({
     shim: false,
   },
 
-  // Настройки для Nuxt 4
   future: {
     compatibilityVersion: 4,
   },
 
-  // Оптимизация SSR
   routeRules: {
     '/': { ssr: true },
     '/news': { ssr: true },

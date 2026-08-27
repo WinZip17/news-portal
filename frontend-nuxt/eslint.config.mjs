@@ -1,5 +1,5 @@
 // eslint.config.mjs
-import {createConfigForNuxt} from '@nuxt/eslint-config';
+import { createConfigForNuxt } from '@nuxt/eslint-config';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import eslintPluginPrettier from 'eslint-plugin-prettier';
 
@@ -15,9 +15,7 @@ export default createConfigForNuxt({
       prettier: eslintPluginPrettier,
     },
     rules: {
-      // Отключаем правила ESLint, конфликтующие с Prettier
       ...eslintConfigPrettier.rules,
-      // Включаем Prettier как правило ESLint
       'prettier/prettier': [
         'error',
         {},
