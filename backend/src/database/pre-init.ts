@@ -7,7 +7,7 @@ async function ensureDatabaseExists() {
   const dbHost = process.env.DB_HOST || 'localhost';
   const dbPort = parseInt(process.env.DB_PORT || '5432');
 
-  console.log('🔧 Pre-initialization: Checking database...');
+  console.log('Pre-initialization: Checking database...');
   console.log(`   Target database: ${dbName}`);
   console.log(`   Host: ${dbHost}:${dbPort}`);
 
@@ -21,7 +21,7 @@ async function ensureDatabaseExists() {
 
   try {
     await client.connect();
-    console.log('✅ Connected to PostgreSQL server');
+    console.log('Connected to PostgreSQL server');
 
     // Проверяем существование базы данных
     const result = await client.query(
@@ -32,28 +32,28 @@ async function ensureDatabaseExists() {
     );
 
     if (result.rows.length === 0) {
-      console.log(`📦 Database "${dbName}" not found. Creating...`);
+      console.log(`Database "${dbName}" not found. Creating...`);
 
       // Создаем базу данных
       await client.query(`CREATE DATABASE "${dbName}" ENCODING 'UTF8'`);
 
-      console.log(`✅ Database "${dbName}" created successfully!`);
+      console.log(`Database "${dbName}" created successfully!`);
     } else {
-      console.log(`✅ Database "${dbName}" already exists`);
+      console.log(`Database "${dbName}" already exists`);
     }
 
     // Даем права
     await client.query(`GRANT ALL PRIVILEGES ON DATABASE "${dbName}" TO "${dbUser}"`);
   } catch (error) {
-    console.error('❌ Failed to ensure database exists:', error.message);
+    console.error('Failed to ensure database exists:', error.message);
 
     // Пробуем альтернативный метод
     try {
-      console.log('🔄 Trying alternative creation method...');
+      console.log('Trying alternative creation method...');
       await client.query(`CREATE DATABASE "${dbName}"`);
-      console.log(`✅ Database "${dbName}" created with alternative method`);
+      console.log(`Database "${dbName}" created with alternative method`);
     } catch (createError) {
-      console.error('❌ Alternative creation also failed:', createError.message);
+      console.error('Alternative creation also failed:', createError.message);
       // Не выбрасываем ошибку, возможно база уже существует
     }
   } finally {
@@ -64,10 +64,10 @@ async function ensureDatabaseExists() {
 // Запускаем перед основным приложением
 ensureDatabaseExists()
   .then(() => {
-    console.log('✅ Database check completed\n');
+    console.log('Database check completed\n');
     process.exit(0);
   })
   .catch((error) => {
-    console.error('❌ Database check failed:', error);
+    console.error('Database check failed:', error);
     process.exit(1);
   });

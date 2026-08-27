@@ -118,6 +118,8 @@ useHead({
       </v-container>
     </v-main>
 
-    <v-footer app class="text-center text-caption"> News Portal ©{{ new Date().getFullYear() }} - Создано с ❤️ и AI </v-footer>
+    <v-footer app class="text-center text-caption">
+      Short News ©{{ new Date().getFullYear() }} — новости из проверенных источников
+    </v-footer>
   </v-layout>
 </template>

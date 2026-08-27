@@ -7,17 +7,17 @@ import { ensureDatabaseSchema } from './database/ensure-schema';
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
-  logger.log('🚀 Starting application...');
+  logger.log('Starting application...');
 
   try {
     await ensureDatabaseSchema();
-    logger.log('✅ Database schema prerequisites ready');
+    logger.log('Database schema prerequisites ready');
 
     const app = await NestFactory.create(AppModule, {
       logger: ['log', 'error', 'warn', 'debug'],
     });
 
-    logger.log('✅ Application created');
+    logger.log('Application created');
 
     // Глобальные пайпы
     app.useGlobalPipes(
@@ -78,11 +78,11 @@ async function bootstrap() {
 
     await app.listen(port, '0.0.0.0');
 
-    logger.log(`🚀 Application is running on: http://localhost:${port}`);
-    logger.log(`📚 API: http://localhost:${port}/api`);
-    logger.log(`📖 Swagger docs: http://localhost:${port}/api/docs`);
+    logger.log(`Application is running on: http://localhost:${port}`);
+    logger.log(`API: http://localhost:${port}/api`);
+    logger.log(`Swagger docs: http://localhost:${port}/api/docs`);
   } catch (error) {
-    logger.error('❌ Failed to start application:', error.message);
+    logger.error('Failed to start application:', error.message);
     console.error(error);
     process.exit(1);
   }

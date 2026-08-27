@@ -57,9 +57,9 @@ export class DatabaseInitService implements OnModuleInit {
            TEMPLATE template0`,
         );
 
-        this.logger.log(`✅ Database "${dbConfig.database}" created successfully!`);
+        this.logger.log(`Database "${dbConfig.database}" created successfully!`);
       } else {
-        this.logger.log(`✅ Database "${dbConfig.database}" already exists`);
+        this.logger.log(`Database "${dbConfig.database}" already exists`);
       }
 
       // Даем права пользователю
@@ -74,7 +74,7 @@ export class DatabaseInitService implements OnModuleInit {
 
           await client.query(`CREATE DATABASE "${dbConfig.database}" ENCODING 'UTF8'`);
 
-          this.logger.log(`✅ Database "${dbConfig.database}" created with alternative method`);
+          this.logger.log(`Database "${dbConfig.database}" created with alternative method`);
         } catch (createError) {
           this.logger.error('Alternative creation also failed:', createError.message);
           throw createError;

@@ -58,7 +58,7 @@ export class AiService {
     const job = new CronJob(
       this.cronSchedule,
       async () => {
-        this.logger.log('🚀 Starting automatic news generation...');
+        this.logger.log('Starting automatic news generation...');
         await this.autoGenerateManually(2);
       },
       null,
@@ -75,14 +75,14 @@ export class AiService {
    * Ручной запуск генерации по всем категориям
    */
   async autoGenerateManually(countPerCategory: number = 1) {
-    this.logger.log(`🚀 Manual generation: ${countPerCategory} news per category`);
+    this.logger.log(`Manual generation: ${countPerCategory} news per category`);
     const categories = this.aiConfig.categories;
     const results: Record<string, number> = {};
     let totalGenerated = 0;
 
     for (const category of categories) {
       try {
-        this.logger.log(`📰 Generating ${countPerCategory} news for: ${category}`);
+        this.logger.log(`Generating ${countPerCategory} news for: ${category}`);
 
         const result = await this.generateNews({
           category: category as NewsCategory,
@@ -92,7 +92,7 @@ export class AiService {
         results[category] = result.news.length;
         totalGenerated += result.news.length;
 
-        this.logger.log(`✅ ${category}: ${result.news.length} news generated`);
+        this.logger.log(`${category}: ${result.news.length} news generated`);
         await this.delay(5000);
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : 'Unknown error';
@@ -116,7 +116,7 @@ export class AiService {
     const count = dto.count || 1;
     const selectedCategory = dto.category || this.getRandomCategory();
 
-    this.logger.log(`📰 Fetching RSS articles for category: ${selectedCategory}`);
+    this.logger.log(`Fetching RSS articles for category: ${selectedCategory}`);
 
     // Берём с запасом, потому что часть отсеется как дубли
     const articles = await this.rssFetcher.fetchNewsByCategory(selectedCategory, count * 2);
@@ -129,7 +129,7 @@ export class AiService {
       };
     }
 
-    this.logger.log(`📥 Got ${articles.length} articles from RSS`);
+    this.logger.log(`Got ${articles.length} articles from RSS`);
 
     // Локальная защита от дублей внутри одной пачки
     const uniqueArticles: RssArticle[] = [];
@@ -141,7 +141,7 @@ export class AiService {
       const normalizedTitle = this.normalizeText(article.title);
 
       if (seenUrls.has(normalizedUrl) || seenTitles.has(normalizedTitle)) {
-        this.logger.warn(`⏭️ Duplicate in RSS batch: "${article.title.substring(0, 80)}..."`);
+        this.logger.warn(`Duplicate in RSS batch: "${article.title.substring(0, 80)}..."`);
         continue;
       }
 
@@ -154,7 +154,7 @@ export class AiService {
       });
 
       if (duplicate.isDuplicate) {
-        this.logger.warn(`⏭️ Duplicate in DB (${duplicate.reason}): "${article.title.substring(0, 80)}..."`);
+        this.logger.warn(`Duplicate in DB (${duplicate.reason}): "${article.title.substring(0, 80)}..."`);
         continue;
       }
 
@@ -167,7 +167,7 @@ export class AiService {
       }
     }
 
-    this.logger.log(`🔍 ${uniqueArticles.length} unique articles after dedup`);
+    this.logger.log(`${uniqueArticles.length} unique articles after dedup`);
 
     const generatedNews = [];
 
@@ -189,7 +189,7 @@ export class AiService {
         });
 
         if (finalDuplicate.isDuplicate) {
-          this.logger.warn(`⏭️ Duplicate after rewrite (${finalDuplicate.reason}): "${draft.title.substring(0, 80)}..."`);
+          this.logger.warn(`Duplicate after rewrite (${finalDuplicate.reason}): "${draft.title.substring(0, 80)}..."`);
           continue;
         }
 
@@ -210,11 +210,11 @@ export class AiService {
         try {
           const saved = await this.newsRepository.save(news);
           generatedNews.push(saved);
-          this.logger.log(`✅ News generated: ${saved.title}`);
+          this.logger.log(`News generated: ${saved.title}`);
         } catch (error: any) {
           // Защита от race condition / unique index violation
           if (this.isUniqueViolation(error)) {
-            this.logger.warn(`⏭️ Unique constraint violation, skipping: "${draft.title.substring(0, 80)}..."`);
+            this.logger.warn(`Unique constraint violation, skipping: "${draft.title.substring(0, 80)}..."`);
             continue;
           }
 
@@ -328,19 +328,19 @@ export class AiService {
       // Валидация контента
       const contentText = finalContent.replace(/<[^>]*>/g, '').trim();
       if (contentText.length < 50) {
-        this.logger.warn(`⏭️ Content too short (${contentText.length} chars): "${contentText.substring(0, 50)}..."`);
+        this.logger.warn(`Content too short (${contentText.length} chars): "${contentText.substring(0, 50)}..."`);
         return null;
       }
 
       // Валидация заголовка
       if (!finalTitle || finalTitle.includes('Контент находится в процессе генерации') || finalTitle.includes('Актуальные новости')) {
-        this.logger.warn(`⏭️ Invalid title: "${finalTitle}"`);
+        this.logger.warn(`Invalid title: "${finalTitle}"`);
         return null;
       }
 
       // Валидация fallback-контента
       if (contentText.includes('Контент находится в процессе генерации') || contentText.includes('временно недоступен')) {
-        this.logger.warn('⏭️ Fallback content detected');
+        this.logger.warn('Fallback content detected');
         return null;
       }
 
@@ -367,7 +367,7 @@ export class AiService {
         .join('');
 
       if (cleanContent.length < 50) {
-        this.logger.warn(`⏭️ Original content too short (${cleanContent.length} chars), skipping`);
+        this.logger.warn(`Original content too short (${cleanContent.length} chars), skipping`);
         return null;
       }
 

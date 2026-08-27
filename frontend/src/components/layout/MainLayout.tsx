@@ -237,7 +237,9 @@ const MainLayout: React.FC = () => {
           <Outlet />
         </Content>
 
-        <Footer style={{ textAlign: 'center' }}>Short News ©{new Date().getFullYear()} - Создано с ❤️ и AI</Footer>
+        <Footer style={{ textAlign: 'center' }}>
+          Short News ©{new Date().getFullYear()} — новости из проверенных источников
+        </Footer>
       </Layout>
 
       <style>{`

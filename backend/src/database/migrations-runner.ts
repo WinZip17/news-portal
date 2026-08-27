@@ -23,11 +23,11 @@ async function runMigrations() {
     console.log('Database connected');
 
     await dataSource.runMigrations();
-    console.log('✅ Migrations completed');
+    console.log('Migrations completed');
 
     await dataSource.destroy();
   } catch (error) {
-    console.error('❌ Migration failed:', error.message);
+    console.error('Migration failed:', error.message);
     throw error;
   }
 }

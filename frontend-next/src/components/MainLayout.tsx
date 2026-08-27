@@ -217,7 +217,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             fontSize: { xs: '0.75rem', sm: '0.875rem' },
           }}
         >
-          Short News ©{new Date().getFullYear()} — Создано с ❤️ и AI
+          Short News ©{new Date().getFullYear()} — новости из проверенных источников
           {serverDatetime && (
             <>
               {' · '}

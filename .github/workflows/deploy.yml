@@ -44,12 +44,12 @@ jobs:
           script: |
             set -e
 
-            echo "🚀 Starting deployment..."
+            echo "Starting deployment..."
             cd /opt/news-portal
             chmod +x backup.sh
 
             if [ ! -f .env ]; then
-              echo "📝 Creating .env..."
+              echo "Creating .env..."
               cat > .env << ENVEOF
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
@@ -59,61 +59,61 @@ jobs:
             ENVEOF
             fi
 
-            echo "🛑 Stopping old containers..."
+            echo "Stopping old containers..."
             docker compose down --remove-orphans || true
 
-            echo "📦 Starting infrastructure..."
+            echo "Starting infrastructure..."
             if grep -qE 'monitoringEnabled:\s*true' config/infrastructure.js; then
               docker compose --profile monitoring up -d postgres redis prometheus grafana
-              echo "✅ Monitoring enabled (Prometheus + Grafana)"
+              echo "Monitoring enabled (Prometheus + Grafana)"
             else
               docker compose up -d postgres redis
               docker compose stop prometheus grafana 2>/dev/null || true
-              echo "✅ Monitoring disabled"
+              echo "Monitoring disabled"
             fi
             until docker compose exec -T postgres pg_isready -U postgres 2>/dev/null; do sleep 3; done
-            echo "✅ Database ready"
+            echo "Database ready"
 
-            echo "🔨 Building backend..."
+            echo "Building backend..."
             docker compose up -d --build backend
             sleep 5
             if ! docker compose ps backend | grep -q "Up"; then
-              echo "❌ Backend failed!"; docker compose logs backend --tail=20; exit 1
+              echo "Backend failed!"; docker compose logs backend --tail=20; exit 1
             fi
-            echo "✅ Backend running"
+            echo "Backend running"
 
-            echo "🎨 Building React frontend..."
+            echo "Building React frontend..."
             docker compose up -d --build frontend
             sleep 5
             if ! docker compose ps frontend | grep -q "Up"; then
-              echo "❌ React frontend failed!"; docker compose logs frontend --tail=20; exit 1
+              echo "React frontend failed!"; docker compose logs frontend --tail=20; exit 1
             fi
-            echo "✅ React frontend running"
+            echo "React frontend running"
 
-            echo "🔵 Building Next.js frontend..."
+            echo "Building Next.js frontend..."
             docker compose up -d --build frontend-next
             sleep 5
             if ! docker compose ps frontend-next | grep -q "Up"; then
-              echo "❌ Next.js failed!"; docker compose logs frontend-next --tail=20; exit 1
+              echo "Next.js failed!"; docker compose logs frontend-next --tail=20; exit 1
             fi
-            echo "✅ Next.js running"
+            echo "Next.js running"
 
-            echo "🟣 Building Nuxt frontend..."
+            echo "Building Nuxt frontend..."
             docker compose up -d --build frontend-nuxt
             sleep 5
             if ! docker compose ps frontend-nuxt | grep -q "Up"; then
-              echo "❌ Nuxt failed!"; docker compose logs frontend-nuxt --tail=20; exit 1
+              echo "Nuxt failed!"; docker compose logs frontend-nuxt --tail=20; exit 1
             fi
-            echo "✅ Nuxt running"
+            echo "Nuxt running"
 
-            echo "💚 Building Vue frontend..."
+            echo "Building Vue frontend..."
             docker compose up -d --build frontend-vue
             sleep 5
             if ! docker compose ps frontend-vue | grep -q "Up"; then
-              echo "❌ Vue failed!"; docker compose logs frontend-vue --tail=20; exit 1
+              echo "Vue failed!"; docker compose logs frontend-vue --tail=20; exit 1
             fi
-            echo "✅ Vue running"
+            echo "Vue running"
 
             docker image prune -f || true
-            echo "✅ Deployment completed!"
+            echo "Deployment completed!"
             docker compose ps

@@ -144,7 +144,6 @@ import { NewsStatus } from '~/types';
 ```text
 Селект в хедере для переключения между фронтендами:
 - ⚛️ React SPA (порт 80)
-- 🟢 NestJS SSR + React (порт 3002)
 - 🔵 Next.js (порт 3003)
 - 🟣 Nuxt (порт 3004) — текущий
 ```

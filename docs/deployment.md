@@ -58,7 +58,7 @@ SSH-шаг на VPS может занимать **30–60 минут** (пять
 | frontend-nuxt | `frontend-nuxt/Dockerfile` |
 | frontend-vue | `frontend-vue/Dockerfile` |
 
-При сборке из IDE (Cursor / Docker Desktop) контекст тоже должен быть **корень репозитория**, иначе `COPY packages/types` и `COPY frontend-next` не найдут файлы. Сборка из каталога `frontend-next/` не поддерживается.
+При сборке из IDE контекст тоже должен быть **корень репозитория**, иначе `COPY packages/types` и `COPY frontend-next` не найдут файлы. Сборка из каталога `frontend-next/` не поддерживается.
 
 ```bash
 # из корня репозитория

@@ -193,7 +193,7 @@ export class NewsService {
     });
 
     if (pendingNews.length > 0) {
-      this.logger.log(`📋 Auto-approving ${pendingNews.length} news:`);
+      this.logger.log(`Auto-approving ${pendingNews.length} news:`);
       pendingNews.forEach((news) => this.logger.log(`  - ${news.title}`));
 
       await this.newsRepository.update(

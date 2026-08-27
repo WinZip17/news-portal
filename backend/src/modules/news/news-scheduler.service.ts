@@ -13,13 +13,13 @@ export class NewsSchedulerService {
    */
   @Cron(CronExpression.EVERY_10_MINUTES)
   async autoApprovePendingNews() {
-    this.logger.log('🔍 Checking for old pending news...');
+    this.logger.log('Checking for old pending news...');
 
     try {
       const result = await this.newsService.autoApproveOldNews();
 
       if (result.approved > 0) {
-        this.logger.log(`✅ Auto-approved ${result.approved} news articles`);
+        this.logger.log(`Auto-approved ${result.approved} news articles`);
       }
     } catch (error) {
       this.logger.error('Failed to auto-approve news:', error.message);

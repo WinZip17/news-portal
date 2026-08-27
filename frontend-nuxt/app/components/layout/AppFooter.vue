@@ -3,7 +3,7 @@
     <div class="footer-container">
       <div class="footer-section">
         <h3 class="footer-title"><i class="pi pi-globe"></i> Short News</h3>
-        <p class="footer-text">Современный новостной портал с AI-генерацией контента</p>
+        <p class="footer-text">Новости из проверенных источников</p>
       </div>
 
       <div class="footer-section">
@@ -25,7 +25,7 @@
     </div>
 
     <div class="footer-bottom">
-      <p>&copy; {{ new Date().getFullYear() }} Short News. Все права защищены.</p>
+      <p>Short News ©{{ new Date().getFullYear() }} — новости из проверенных источников</p>
     </div>
   </footer>
 </template>

@@ -49,14 +49,14 @@ async function createDatabase() {
          LC_CTYPE = 'C' 
          TEMPLATE template0`,
       );
-      console.log(`✅ Database "${dbConfig.database}" created`);
+      console.log(`Database "${dbConfig.database}" created`);
     } else {
       console.log(`Database "${dbConfig.database}" already exists`);
     }
 
     // Права
     await client.query(`GRANT ALL PRIVILEGES ON DATABASE "${dbConfig.database}" TO "${dbConfig.user}"`);
-    console.log('✅ Privileges granted');
+    console.log('Privileges granted');
   } catch (error) {
     console.error('Error:', error.message);
     process.exit(1);
