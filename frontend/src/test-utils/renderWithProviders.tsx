@@ -1,5 +1,5 @@
 import { render, renderHook, type RenderHookOptions, type RenderOptions } from '@testing-library/react';
-import { configureStore, type PreloadedState } from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
@@ -12,14 +12,16 @@ import newsReducer from '@/store/news/newsSlice';
 import uiReducer from '@/store/ui/uiSlice';
 import type { RootState } from '@/store';
 
+const rootReducer = combineReducers({
+  auth: authReducer,
+  news: newsReducer,
+  ui: uiReducer,
+});
+
 export function createTestStore(preloadedState?: Partial<RootState>) {
   return configureStore({
-    reducer: {
-      auth: authReducer,
-      news: newsReducer,
-      ui: uiReducer,
-    },
-    preloadedState: preloadedState as PreloadedState<RootState>,
+    reducer: rootReducer,
+    ...(preloadedState !== undefined ? { preloadedState } : {}),
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         serializableCheck: false,

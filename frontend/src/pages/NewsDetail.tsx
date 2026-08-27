@@ -191,7 +191,9 @@ const NewsDetail: React.FC = () => {
           </Text>
           {currentNews.author && (
             <Text type="secondary">
-              <UserOutlined /> {currentNews.author}
+              <>
+                <UserOutlined /> {currentNews.author}
+              </>
             </Text>
           )}
           {currentNews.source && (

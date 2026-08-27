@@ -20,7 +20,6 @@ const NewsList: React.FC = () => {
 
   const news = data?.pages.flatMap((page) => page.data) ?? [];
 
-  // Бесконечный скролл
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {

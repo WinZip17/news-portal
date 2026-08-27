@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { formatAppliedFilters } from '@/utils/formatAppliedFilters.ts';
-
+import { NewsCategory } from '@/types';
 describe('formatAppliedFilters', () => {
   it('returns empty string for empty filters', () => {
     expect(formatAppliedFilters({})).toBe('');
@@ -10,7 +10,7 @@ describe('formatAppliedFilters', () => {
     expect(
       formatAppliedFilters({
         search: 'AI новости',
-        category: 'technology',
+        category: NewsCategory.TECHNOLOGY,
       }),
     ).toBe('поиск: «AI новости» · Технологии');
   });

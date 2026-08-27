@@ -20,8 +20,14 @@ import { TAG_STYLE } from '@/constants/styles.ts';
 import { getCategoryColor } from '@/utils/getCategoryColor.ts';
 import { formatFullDate } from '@/utils/formatDate.ts';
 import { getCategoryLabel } from '@/utils/getCategoryLabel.ts';
+import type { User } from '@/types';
 
 const { Title, Text, Paragraph } = Typography;
+
+function getAuthorLabel(author: User): string {
+  const fullName = [author.firstName, author.lastName].filter(Boolean).join(' ').trim();
+  return fullName || author.username;
+}
 
 interface Props {
   newsId: string;
@@ -41,7 +47,7 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
       publishedAt: currentNews?.publishedAt,
       category: currentNews?.category,
       tags: currentNews?.tags,
-      author: currentNews?.author,
+      author: currentNews?.author ? getAuthorLabel(currentNews.author) : undefined,
       url: `${window.location.origin}/?news=${currentNews?.id || ''}`,
     }),
     [currentNews?.id],
@@ -184,7 +190,9 @@ const NewsDetailModal: React.FC<Props> = ({ newsId }) => {
         </Text>
         {currentNews.author && (
           <Text type="secondary">
-            <UserOutlined /> {currentNews.author}
+            <>
+              <UserOutlined /> {getAuthorLabel(currentNews.author)}
+            </>
           </Text>
         )}
       </Space>

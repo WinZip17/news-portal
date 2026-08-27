@@ -14,8 +14,8 @@ export function useNewsQuery(filters?: NewsFilter) {
   return useQuery<NewsResponse>({
     queryKey: NEWS_KEYS.list(filters),
     queryFn: () => newsService.getNews(filters),
-    staleTime: 5 * 60 * 1000, // 5 минут
-    placeholderData: (previousData) => previousData, // Показываем старые данные при загрузке
+    staleTime: 5 * 60 * 1000,
+    placeholderData: (previousData) => previousData,
   });
 }
 
@@ -23,7 +23,7 @@ export function useNewsStatsQuery() {
   return useQuery({
     queryKey: NEWS_KEYS.stats(),
     queryFn: () => newsService.getStats(),
-    staleTime: 60 * 1000, // 1 минута
+    staleTime: 60 * 1000,
   });
 }
 

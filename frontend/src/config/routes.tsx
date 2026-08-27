@@ -73,7 +73,6 @@ export const routes = [
           </ProtectedRoute>
         ),
       },
-      // Админ-панель
       {
         path: '/admin',
         element: (

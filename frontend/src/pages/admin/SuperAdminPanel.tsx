@@ -24,7 +24,6 @@ const SuperAdminPanel: React.FC = () => {
   const [modalType, setModalType] = useState<'user' | 'news'>('user');
   const [generating, setGenerating] = useState(false);
 
-  // Cron state
   const [cronModal, setCronModal] = useState(false);
   const [cronSchedule, setCronSchedule] = useState('0 5,18 * * *');
   const [cronLoading, setCronLoading] = useState(false);

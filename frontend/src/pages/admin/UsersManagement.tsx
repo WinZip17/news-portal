@@ -158,7 +158,6 @@ const UsersManagement: React.FC = () => {
         }}
       />
 
-      {/* Модальное окно редактирования */}
       <Modal title="Редактирование пользователя" open={modalVisible} onOk={handleSave} onCancel={() => setModalVisible(false)} width={500}>
         {editUser && (
           <Space direction="vertical" style={{ width: '100%' }}>

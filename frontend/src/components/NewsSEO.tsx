@@ -21,14 +21,12 @@ const NewsSEO: React.FC<NewsSEOProps> = ({ title, summary, imageUrl, publishedAt
   const publishedTime = publishedAt ? new Date(publishedAt).toISOString() : undefined;
   return (
     <Helmet>
-      {/* Базовые мета-теги */}
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <meta name="keywords" content={tags?.join(', ') || category || 'новости'} />
       <meta name="author" content={author || siteName} />
       <link rel="canonical" href={url} />
 
-      {/* Open Graph (Facebook, VK, Telegram) */}
       <meta property="og:type" content="article" />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
@@ -39,13 +37,11 @@ const NewsSEO: React.FC<NewsSEOProps> = ({ title, summary, imageUrl, publishedAt
       <meta property="og:site_name" content={siteName} />
       <meta property="og:locale" content="ru_RU" />
 
-      {/* Twitter Card */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
 
-      {/* Article специфичные теги */}
       {publishedTime && <meta property="article:published_time" content={publishedTime} />}
       {category && <meta property="article:section" content={category} />}
       {tags?.map((tag) => (
