@@ -11,6 +11,7 @@ npm run test:frontend       # только frontend (Vitest, watch по умол
 npm run test:frontend-next  # только frontend-next (Jest, CI-режим)
 npm run test:e2e            # backend E2E (Jest + supertest)
 npm run test:e2e:frontend   # React SPA E2E (Playwright)
+npm run test:e2e:frontend-next   # Next.js E2E (Playwright)
 ```
 
 ## Backend (NestJS + Jest)
@@ -93,6 +94,24 @@ npm run test:cov      # с покрытием
 
 Покрытие: utils, Redux slices, services, hooks, компоненты, все страницы App Router (`src/app/**/__tests__/`).
 
+### E2E (Playwright)
+
+```bash
+cd frontend-next
+npm run test:e2e:install
+npm run test:e2e
+npm run test:e2e:ui        # UI-режим (trace: on, страница видна в превью)
+```
+
+Каталог `frontend-next/e2e/`, API мокается через `page.route` — backend не нужен.
+
+| Файл | Что проверяет |
+|------|----------------|
+| `e2e/login.spec.ts` | Валидация, вход, ошибка API |
+| `e2e/home-modal.spec.ts` | Модалка новости с главной |
+| `e2e/smart-search.spec.ts` | Умный поиск |
+| `e2e/news.spec.ts` | Лента новостей и фильтры |
+
 ## Nuxt, Vue
 
 | Пакет | Команда | Стек |
@@ -109,7 +128,8 @@ npm run lint
 npm run format:check
 npm run test:frontend -- --run   # или cd frontend && npm run test:ci
 npm run test:frontend-next       # при изменениях Next.js
-npm run test:e2e:frontend        # при изменениях UI/E2E
+npm run test:e2e:frontend        # при изменениях UI/E2E (React SPA)
+npm run test:e2e:frontend-next   # при изменениях UI/E2E (Next.js)
 ```
 
-Корневой `npm test` не запускает Playwright E2E — только `test:e2e:frontend`.
+Корневой `npm test` не запускает Playwright E2E — используйте `test:e2e:frontend` и `test:e2e:frontend-next`.

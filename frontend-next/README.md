@@ -117,12 +117,14 @@ import type { News, NewsStatus, User } from '@/types';
 
 ## 🧪 Тестирование
 
-Unit/integration-тесты на **Jest** + **Testing Library**. HTTP API мокается через `axios-mock-adapter`.
+Unit/integration-тесты на **Jest** + **Testing Library**. E2E — **Playwright**. HTTP API мокается в unit-тестах через `axios-mock-adapter`, в E2E — через `page.route`.
 
 ```bash
-npm test           # интерактивный прогон
-npm run test:ci    # один прогон (CI)
-npm run test:cov   # с покрытием
+npm test              # Jest (интерактивный)
+npm run test:ci       # Jest, один прогон (CI)
+npm run test:cov      # Jest с покрытием
+npm run test:e2e      # Playwright E2E
+npm run test:e2e:ui   # Playwright UI-режим
 ```
 
 Подробнее: [docs/testing.md](../docs/testing.md)
