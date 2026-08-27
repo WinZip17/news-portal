@@ -83,7 +83,7 @@ const exampleQueries = [
 ];
 
 const newsService = useNewsService();
-const toast = useToast();
+const { showError } = useAppToast();
 
 const query = ref('');
 const activeQuery = ref<string | null>(null);
@@ -125,12 +125,7 @@ async function runSearch(searchQuery: string, pageNum: number, append: boolean) 
       searchHint.value = null;
       searchSource.value = null;
     }
-    toast.add({
-      severity: 'error',
-      summary: 'Ошибка',
-      detail: getErrorMessage(error, 'Не удалось выполнить поиск'),
-      life: 3000,
-    });
+    showError(getErrorMessage(error, 'Не удалось выполнить поиск'));
   } finally {
     loading.value = false;
     loadingMore.value = false;

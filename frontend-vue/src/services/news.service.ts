@@ -11,7 +11,7 @@ export const newsService = {
     const response = await apiClient.post<SmartSearchResponse>('/news/smart-search', {
       query,
       page,
-      limit,
+      limit
     });
     return response.data;
   },

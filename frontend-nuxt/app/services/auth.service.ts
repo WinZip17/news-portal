@@ -5,7 +5,8 @@ import type {
   RegisterDto,
   UpdateUserDto,
   UserPreferences,
-  UserResponse, UsersResponse,
+  UserResponse,
+  UsersResponse,
 } from '~/types';
 
 export function useAuthService() {

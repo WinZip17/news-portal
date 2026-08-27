@@ -39,7 +39,6 @@
       </Column>
     </DataTable>
 
-    <!-- Диалог создания/редактирования -->
     <Dialog
       v-model:visible="newsDialog"
       :header="editingNews ? 'Редактирование' : 'Создание новости'"
@@ -126,7 +125,7 @@ definePageMeta({
 const newsStore = useNewsStore();
 const authStore = useAuthStore();
 const confirm = useConfirm();
-const toast = useToast();
+const { showSuccess, showError } = useAppToast();
 
 const newsDialog = ref(false);
 const editingNews = ref<NewsItem | null>(null);
@@ -164,7 +163,6 @@ const statuses = [
   { label: 'Архив', value: 'archived' },
 ];
 
-// Проверка прав
 if (!authStore.isSuperAdmin) {
   navigateTo('/admin');
 }
@@ -231,31 +229,16 @@ async function saveNews() {
 
     if (editingNews.value) {
       await newsStore.updateNews(editingNews.value.id, newsForm.value);
-      toast.add({
-        severity: 'success',
-        summary: 'Успешно',
-        detail: 'Новость обновлена',
-        life: 3000,
-      });
+      showSuccess('Новость обновлена');
     } else {
       await newsStore.createNews(newsForm.value as CreateNewsDto);
-      toast.add({
-        severity: 'success',
-        summary: 'Успешно',
-        detail: 'Новость создана',
-        life: 3000,
-      });
+      showSuccess('Новость создана');
     }
 
     newsDialog.value = false;
     newsStore.fetchNews();
   } catch (error: unknown) {
-    toast.add({
-      severity: 'error',
-      summary: 'Ошибка',
-      detail: getErrorMessage(error, 'Не удалось сохранить новость'),
-      life: 3000,
-    });
+    showError(getErrorMessage(error, 'Не удалось сохранить новость'));
   } finally {
     isSaving.value = false;
   }
@@ -272,19 +255,9 @@ function confirmDelete(news: NewsItem) {
     accept: async () => {
       try {
         await newsStore.deleteNews(news.id);
-        toast.add({
-          severity: 'success',
-          summary: 'Успешно',
-          detail: 'Новость удалена',
-          life: 3000,
-        });
+        showSuccess('Новость удалена');
       } catch (error: unknown) {
-        toast.add({
-          severity: 'error',
-          summary: 'Ошибка',
-          detail: getErrorMessage(error, 'Не удалось удалить новость'),
-          life: 3000,
-        });
+        showError(getErrorMessage(error, 'Не удалось удалить новость'));
       }
     },
     reject: () => {

@@ -6,7 +6,6 @@
         <span class="logo-text">Short News</span>
       </NuxtLink>
 
-      <!-- Desktop Navigation + Framework Switcher -->
       <div class="header-nav-wrapper">
         <nav class="nav-desktop">
           <NuxtLink to="/news" class="nav-link" active-class="nav-link--active">
@@ -34,7 +33,6 @@
       </div>
 
       <div class="header-actions">
-        <!-- Theme Toggle -->
         <Button
           :icon="uiStore.theme === 'dark' ? 'pi pi-sun' : 'pi pi-moon'"
           severity="secondary"
@@ -44,7 +42,6 @@
           @click="uiStore.toggleTheme()"
         />
 
-        <!-- User Menu -->
         <template v-if="authStore.isAuthenticated">
           <Button
             icon="pi pi-user"
@@ -81,7 +78,6 @@
           />
         </template>
 
-        <!-- Mobile Menu Toggle -->
         <Button
           icon="pi pi-bars"
           aria-label="Переключить меню"
@@ -94,7 +90,6 @@
       </div>
     </div>
 
-    <!-- Mobile Menu -->
     <div v-if="mobileMenuOpen" class="mobile-menu">
       <div class="mobile-switcher">
         <FrameworkSwitcher />
@@ -184,7 +179,6 @@ watch(
   background-clip: text;
 }
 
-/* Обёртка для навигации и свитчера */
 .header-nav-wrapper {
   flex: 1;
   display: flex;

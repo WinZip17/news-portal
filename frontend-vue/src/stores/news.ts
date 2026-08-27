@@ -42,7 +42,7 @@ export const useNewsStore = defineStore('news', () => {
     try {
       stats.value = await newsService.getStats();
     } catch {
-      //
+      console.error('error fetchStats');
     }
   }
 

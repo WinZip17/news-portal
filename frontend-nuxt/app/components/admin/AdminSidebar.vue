@@ -7,40 +7,40 @@
       </NuxtLink>
 
       <NuxtLink
-          v-if="authStore.isModerator"
-          to="/admin/moderation"
-          class="sidebar-link"
-          active-class="sidebar-link--active"
+        v-if="authStore.isModerator"
+        to="/admin/moderation"
+        class="sidebar-link"
+        active-class="sidebar-link--active"
       >
         <i class="pi pi-check-circle"></i>
         <span>Модерация</span>
       </NuxtLink>
 
       <NuxtLink
-          v-if="authStore.isAdmin"
-          to="/admin/users"
-          class="sidebar-link"
-          active-class="sidebar-link--active"
+        v-if="authStore.isAdmin"
+        to="/admin/users"
+        class="sidebar-link"
+        active-class="sidebar-link--active"
       >
         <i class="pi pi-users"></i>
         <span>Пользователи</span>
       </NuxtLink>
 
       <NuxtLink
-          v-if="authStore.isSuperAdmin"
-          to="/admin/news"
-          class="sidebar-link"
-          active-class="sidebar-link--active"
+        v-if="authStore.isSuperAdmin"
+        to="/admin/news"
+        class="sidebar-link"
+        active-class="sidebar-link--active"
       >
         <i class="pi pi-file"></i>
         <span>Все новости</span>
       </NuxtLink>
 
       <NuxtLink
-          v-if="authStore.isSuperAdmin"
-          to="/admin/ai-generate"
-          class="sidebar-link"
-          active-class="sidebar-link--active"
+        v-if="authStore.isSuperAdmin"
+        to="/admin/ai-generate"
+        class="sidebar-link"
+        active-class="sidebar-link--active"
       >
         <i class="pi pi-bolt"></i>
         <span>AI Генерация</span>

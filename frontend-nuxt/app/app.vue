@@ -16,7 +16,7 @@ const uiStore = useUIStore();
 
 onMounted(async () => {
   uiStore.initTheme();
-   await authStore.checkAuth();
+  await authStore.checkAuth();
 });
 
 useHead({

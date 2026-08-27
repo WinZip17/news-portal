@@ -49,7 +49,6 @@ function goBack() {
   router.go(-1);
 }
 
-// Устанавливаем статус 404
 setResponseStatus(404);
 </script>
 

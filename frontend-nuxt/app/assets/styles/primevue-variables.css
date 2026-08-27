@@ -1,45 +1,43 @@
-/* app/assets/styles/primevue-variables.css */
-
 :root {
-    /* Светлая тема */
-    --p-primary-color: #3B82F6;
-    --p-primary-hover-color: #2563EB;
-    --p-primary-active-color: #1D4ED8;
-    --p-primary-contrast-color: #FFFFFF;
-    --p-primary-50: #EFF6FF;
-    --p-primary-100: #DBEAFE;
-    --p-primary-200: #BFDBFE;
+  /* Светлая тема */
+  --p-primary-color: #3b82f6;
+  --p-primary-hover-color: #2563eb;
+  --p-primary-active-color: #1d4ed8;
+  --p-primary-contrast-color: #ffffff;
+  --p-primary-50: #eff6ff;
+  --p-primary-100: #dbeafe;
+  --p-primary-200: #bfdbfe;
 
-    --p-surface-ground: #F8F9FA;
-    --p-surface-section: #FFFFFF;
-    --p-surface-card: #FFFFFF;
-    --p-surface-overlay: #FFFFFF;
-    --p-surface-border: #DFE7EF;
-    --p-surface-hover: #F6F9FC;
+  --p-surface-ground: #f8f9fa;
+  --p-surface-section: #ffffff;
+  --p-surface-card: #ffffff;
+  --p-surface-overlay: #ffffff;
+  --p-surface-border: #dfe7ef;
+  --p-surface-hover: #f6f9fc;
 
-    --p-text-color: #495057;
-    --p-text-muted-color: #6C757D;
-    --p-text-disabled-color: #ADB5BD;
+  --p-text-color: #495057;
+  --p-text-muted-color: #6c757d;
+  --p-text-disabled-color: #adb5bd;
 }
 
 .p-dark {
-    /* Тёмная тема */
-    --p-primary-color: #60A5FA;
-    --p-primary-hover-color: #3B82F6;
-    --p-primary-active-color: #2563EB;
-    --p-primary-contrast-color: #FFFFFF;
-    --p-primary-50: #1E3A5F;
-    --p-primary-100: #1E3A5F;
-    --p-primary-200: #1E40AF;
+  /* Тёмная тема */
+  --p-primary-color: #60a5fa;
+  --p-primary-hover-color: #3b82f6;
+  --p-primary-active-color: #2563eb;
+  --p-primary-contrast-color: #ffffff;
+  --p-primary-50: #1e3a5f;
+  --p-primary-100: #1e3a5f;
+  --p-primary-200: #1e40af;
 
-    --p-surface-ground: #111827;
-    --p-surface-section: #1F2937;
-    --p-surface-card: #1F2937;
-    --p-surface-overlay: #1F2937;
-    --p-surface-border: #374151;
-    --p-surface-hover: #374151;
+  --p-surface-ground: #111827;
+  --p-surface-section: #1f2937;
+  --p-surface-card: #1f2937;
+  --p-surface-overlay: #1f2937;
+  --p-surface-border: #374151;
+  --p-surface-hover: #374151;
 
-    --p-text-color: #F9FAFB;
-    --p-text-muted-color: #D1D5DB;
-    --p-text-disabled-color: #6B7280;
+  --p-text-color: #f9fafb;
+  --p-text-muted-color: #d1d5db;
+  --p-text-disabled-color: #6b7280;
 }

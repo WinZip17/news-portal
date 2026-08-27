@@ -70,32 +70,16 @@ export function useNewsService() {
     return apiFetch<NewsItem>(`/news/${id}/like`, { method: 'POST' });
   }
 
-  async function checkLike(id: string): Promise<boolean> {
-    return apiFetch<boolean>(`/news/${id}/like/check`);
-  }
-
   async function toggleFavorite(id: string): Promise<void> {
     return apiFetch(`/news/${id}/favorite`, { method: 'POST' });
-  }
-
-  async function checkFavorite(id: string): Promise<boolean> {
-    return apiFetch<boolean>(`/news/${id}/favorite/check`);
   }
 
   async function getFavorites(): Promise<NewsResponse> {
     return apiFetch<NewsResponse>('/news/favorites');
   }
 
-  async function getPersonalized(): Promise<NewsItem[]> {
-    return apiFetch<NewsItem[]>('/news/personalized', { method: 'POST' });
-  }
-
   async function getStats(): Promise<StatsResponse> {
     return apiFetch<StatsResponse>('/news/stats');
-  }
-
-  async function getNewsStats(): Promise<StatsResponse> {
-    return apiFetch('/news/stats-news');
   }
 
   return {
@@ -107,12 +91,8 @@ export function useNewsService() {
     deleteNews,
     moderateNews,
     likeNews,
-    checkLike,
     toggleFavorite,
-    checkFavorite,
     getFavorites,
-    getPersonalized,
     getStats,
-    getNewsStats,
   };
 }

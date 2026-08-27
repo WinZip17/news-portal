@@ -174,7 +174,7 @@ definePageMeta({
 const authStore = useAuthStore();
 const authService = useAuthService();
 const confirm = useConfirm();
-const toast = useToast();
+const { showSuccess, showError } = useAppToast();
 
 const users = ref<UserResponse[]>([]);
 const isLoading = ref(false);
@@ -216,12 +216,7 @@ async function loadUsers() {
     const usersData = await authService.getUsers();
     users.value = usersData.data;
   } catch (error: unknown) {
-    toast.add({
-      severity: 'error',
-      summary: 'Ошибка',
-      detail: getErrorMessage(error, 'Не удалось загрузить пользователей'),
-      life: 3000,
-    });
+    showError(getErrorMessage(error, 'Не удалось загрузить пользователей'));
   } finally {
     isLoading.value = false;
   }
@@ -301,12 +296,7 @@ async function saveUser() {
 
     await authService.updateUser(editingUser.value.id, updateData);
 
-    toast.add({
-      severity: 'success',
-      summary: 'Успешно',
-      detail: 'Пользователь обновлен',
-      life: 3000,
-    });
+    showSuccess('Пользователь обновлен');
 
     editDialog.value = false;
     loadUsers();
@@ -328,20 +318,10 @@ function confirmDelete(user: UserResponse) {
     accept: async () => {
       try {
         await authService.deleteUser(user.id);
-        toast.add({
-          severity: 'success',
-          summary: 'Успешно',
-          detail: 'Пользователь удален',
-          life: 3000,
-        });
+        showSuccess('Пользователь удален');
         loadUsers();
       } catch (error: unknown) {
-        toast.add({
-          severity: 'error',
-          summary: 'Ошибка',
-          detail: getErrorMessage(error, 'Не удалось удалить пользователя'),
-          life: 3000,
-        });
+        showError(getErrorMessage(error, 'Не удалось удалить пользователя'));
       }
     },
     reject: () => {

@@ -2,7 +2,6 @@
   <div class="news-page">
     <h1 class="page-title">Новости</h1>
 
-    <!-- Фильтры в Toolbar -->
     <Toolbar class="filters-toolbar">
       <template #start>
         <div class="filters-row">
@@ -46,7 +45,6 @@
       </template>
     </Toolbar>
 
-    <!-- Сетка новостей -->
     <div v-if="newsStore.isLoading" class="loading-container">
       <ProgressSpinner />
     </div>
@@ -64,7 +62,6 @@
       />
     </div>
 
-    <!-- Пагинация -->
     <div v-if="newsStore.news.length > 0" class="pagination-section">
       <Paginator
         :rows="20"
@@ -74,14 +71,12 @@
       />
     </div>
 
-    <!-- Пустое состояние -->
     <div v-if="!newsStore.isLoading && newsStore.news.length === 0" class="empty-state">
       <i class="pi pi-inbox" style="font-size: 4rem; color: var(--p-text-muted-color)"></i>
       <h3>Новости не найдены</h3>
       <p>Попробуйте изменить параметры поиска</p>
     </div>
 
-    <!-- Модальное окно -->
     <NewsDetailModal
       v-if="detailModalVisible"
       v-model:visible="detailModalVisible"

@@ -25,7 +25,6 @@ export const useUIStore = defineStore('ui', () => {
   const isDark = computed(() => theme.value === 'dark');
 
   function toggleTheme() {
-    console.log('toggleTheme');
     theme.value = theme.value === 'light' ? 'dark' : 'light';
     localStorage.setItem('theme', theme.value);
   }
@@ -62,12 +61,10 @@ export const useUIStore = defineStore('ui', () => {
   return {
     theme,
     isDark,
-
     sidebarCollapsed,
     loading,
     modalVisible,
     notifications,
-
     toggleTheme,
     setTheme,
     toggleSidebar,

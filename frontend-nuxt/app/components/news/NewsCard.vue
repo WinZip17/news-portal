@@ -72,6 +72,7 @@ const emit = defineEmits<{
 
 const authStore = useAuthStore();
 const newsStore = useNewsStore();
+const { showWarning } = useAppToast();
 
 const categoryLabel = computed(() => {
   const labels: Record<string, string> = {
@@ -106,12 +107,7 @@ function openNewsDetail() {
 
 async function handleToggleFavorite() {
   if (!authStore.isAuthenticated) {
-    useToast().add({
-      severity: 'warn',
-      summary: 'Требуется авторизация',
-      detail: 'Войдите, чтобы добавлять в избранное',
-      life: 3000,
-    });
+    showWarning('Войдите, чтобы добавлять в избранное', 'Требуется авторизация');
     return;
   }
 

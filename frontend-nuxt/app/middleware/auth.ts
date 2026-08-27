@@ -1,14 +1,12 @@
-import { useApi } from '~/composables/useApi.ts'
+import { useApi } from '~/composables/useApi.ts';
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const authStore = useAuthStore();
 
-  // Проверяем авторизацию если еще не проверена
   if (!authStore.isAuthenticated && useApi().accessToken.value) {
     await authStore.checkAuth();
   }
 
-  // Если не авторизован - на страницу логина
   if (!authStore.isAuthenticated) {
     return navigateTo('/login');
   }
@@ -19,12 +17,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
       return navigateTo('/');
     }
 
-    // Для страницы пользователей нужен админ
     if (to.path.includes('/admin/users') && !authStore.isAdmin) {
       return navigateTo('/admin');
     }
 
-    // Для AI-генерации нужен супер-админ
     if (to.path.includes('/admin/ai-generate') && !authStore.isSuperAdmin) {
       return navigateTo('/admin');
     }

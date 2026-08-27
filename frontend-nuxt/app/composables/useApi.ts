@@ -1,4 +1,3 @@
-// app/composables/useApi.ts
 import { useStorage } from '@vueuse/core';
 
 export function useApi() {
@@ -32,7 +31,7 @@ export function useApi() {
       headers,
     });
 
-    // Если 401 и есть refreshToken, пробуем обновить
+    // refreshToken
     if (response.status === 401 && refreshTokenValue.value && !url.includes('/auth/refresh')) {
       const refreshed = await refreshAccessToken();
       if (refreshed) {

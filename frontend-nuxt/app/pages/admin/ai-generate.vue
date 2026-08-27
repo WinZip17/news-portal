@@ -9,7 +9,6 @@
     </div>
 
     <div v-else class="generate-content">
-      <!-- Статус AI -->
       <Card class="status-card">
         <template #content>
           <div class="status-header">
@@ -26,7 +25,6 @@
         </template>
       </Card>
 
-      <!-- Ручная генерация -->
       <Card class="generate-card">
         <template #header>
           <div class="card-header">
@@ -73,7 +71,6 @@
         </template>
       </Card>
 
-      <!-- Авто-генерация -->
       <Card class="generate-card">
         <template #header>
           <div class="card-header">
@@ -104,7 +101,6 @@
         </template>
       </Card>
 
-      <!-- Сообщения -->
       <Message v-if="error" severity="error" :closable="true" @close="error = ''">
         {{ error }}
       </Message>
@@ -152,11 +148,6 @@ const categories = [
   { label: 'Мир', value: 'world' },
   { label: 'Другое', value: 'other' },
 ];
-
-// Проверка прав
-if (!authStore.isSuperAdmin) {
-  // Не делаем редирект, показываем сообщение
-}
 
 onMounted(async () => {
   await checkAiStatus();

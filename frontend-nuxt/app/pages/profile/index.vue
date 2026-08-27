@@ -8,7 +8,6 @@
 
     <div v-else-if="authStore.user" class="profile-content">
       <TabView>
-        <!-- Профиль -->
         <TabPanel header="Профиль" value="profile">
           <div class="tab-content">
             <div class="profile-header">
@@ -62,7 +61,6 @@
           </div>
         </TabPanel>
 
-        <!-- Смена пароля -->
         <TabPanel header="Смена пароля" value="password">
           <div class="tab-content">
             <form class="password-form" @submit.prevent="changePassword">
@@ -96,7 +94,6 @@
           </div>
         </TabPanel>
 
-        <!-- Настройки -->
         <TabPanel header="Настройки" value="settings">
           <div class="tab-content">
             <div class="settings-section">
@@ -142,7 +139,6 @@
           </div>
         </TabPanel>
 
-        <!-- Избранное -->
         <TabPanel header="Избранное" value="favorites">
           <div class="tab-content">
             <div v-if="favoritesLoading" class="loading-container">
@@ -167,7 +163,6 @@
         </TabPanel>
       </TabView>
 
-      <!-- Модальное окно новости -->
       <NewsDetailModal
         v-model:visible="detailModalVisible"
         :news="selectedNews"
@@ -240,7 +235,6 @@ const roleLabel = computed(() => {
   return roles[authStore.user?.role || 'user'];
 });
 
-// Инициализация данных
 onMounted(() => {
   if (authStore.user) {
     profileForm.value = {

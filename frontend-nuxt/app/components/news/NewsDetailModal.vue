@@ -9,12 +9,10 @@
     :dismissable-mask="true"
   >
     <div v-if="news" class="news-detail">
-      <!-- Изображение -->
       <div v-if="news.imageUrl" class="detail-image">
         <img :src="news.imageUrl" :alt="news.title" loading="lazy" decoding="async" />
       </div>
 
-      <!-- Мета информация -->
       <div class="detail-meta">
         <span class="meta-badge">
           <i class="pi pi-tag"></i>
@@ -34,7 +32,6 @@
         </span>
       </div>
 
-      <!-- Автор -->
       <div v-if="authorUser" class="detail-author">
         <Avatar
           :label="getAuthorInitials(authorUser)"
@@ -47,15 +44,12 @@
         </div>
       </div>
 
-      <!-- Контент -->
       <div class="detail-content" v-html="news.content"></div>
 
-      <!-- Теги -->
       <div v-if="news.tags?.length" class="detail-tags">
         <span v-for="tag in news.tags" :key="tag" class="tag"> #{{ tag }} </span>
       </div>
 
-      <!-- Действия -->
       <div class="detail-actions">
         <Button
           :icon="news.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"
@@ -82,7 +76,6 @@
         />
       </div>
 
-      <!-- Источник -->
       <div v-if="news.sourceUrl" class="detail-source">
         <a :href="news.sourceUrl" target="_blank" rel="noopener noreferrer">
           <i class="pi pi-external-link"></i>
@@ -109,7 +102,7 @@ const emit = defineEmits<{
 
 const authStore = useAuthStore();
 const newsStore = useNewsStore();
-const toast = useToast();
+const { showSuccess, showWarning } = useAppToast();
 
 const visible = computed({
   get: () => props.visible,
@@ -144,12 +137,7 @@ async function handleLike() {
   if (!props.news) return;
 
   if (!authStore.isAuthenticated) {
-    toast.add({
-      severity: 'warn',
-      summary: 'Требуется авторизация',
-      detail: 'Войдите, чтобы ставить лайки',
-      life: 3000,
-    });
+    showWarning('Войдите, чтобы ставить лайки', 'Требуется авторизация');
     return;
   }
 
@@ -165,12 +153,7 @@ async function handleToggleFavorite() {
   if (!props.news) return;
 
   if (!authStore.isAuthenticated) {
-    toast.add({
-      severity: 'warn',
-      summary: 'Требуется авторизация',
-      detail: 'Войдите, чтобы добавлять в избранное',
-      life: 3000,
-    });
+    showWarning('Войдите, чтобы добавлять в избранное', 'Требуется авторизация');
     return;
   }
 
@@ -196,12 +179,7 @@ async function shareNews() {
       await navigator.share(shareData);
     } else {
       await navigator.clipboard.writeText(window.location.href);
-      toast.add({
-        severity: 'success',
-        summary: 'Ссылка скопирована',
-        detail: 'Ссылка на новость скопирована в буфер обмена',
-        life: 3000,
-      });
+      showSuccess('Ссылка на новость скопирована в буфер обмена', 'Ссылка скопирована');
     }
   } catch (error) {
     console.error('Error sharing:', error);

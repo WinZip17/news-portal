@@ -33,7 +33,6 @@ export const useUIStore = defineStore('ui', () => {
     theme.value = theme.value === 'light' ? 'dark' : 'light';
     setThemeCookie(theme.value);
     applyTheme();
-    // syncThemeWithServer();
   }
 
   function setTheme(newTheme: 'light' | 'dark'): void {

@@ -2,7 +2,6 @@
   <div class="moderation-page">
     <h1 class="page-title">Модерация новостей</h1>
 
-    <!-- Фильтр по статусу -->
     <div class="filter-bar">
       <SelectButton
         v-model="statusFilter"
@@ -132,10 +131,8 @@
       </DataTable>
     </div>
 
-    <!-- Диалог подтверждения -->
     <ConfirmDialog />
 
-    <!-- Просмотр новости -->
     <Dialog
       v-model:visible="viewDialog"
       :header="selectedNews?.title"
@@ -168,7 +165,7 @@ definePageMeta({
 const newsStore = useNewsStore();
 const authStore = useAuthStore();
 const confirm = useConfirm();
-const toast = useToast();
+const { showSuccess, showError } = useAppToast();
 
 const statusFilter = ref('pending');
 const viewDialog = ref(false);
@@ -240,7 +237,6 @@ function formatDate(date: string): string {
   });
 }
 
-// Одобрить / восстановить — без подтверждения
 async function moderateNews(id: string, status: string) {
   try {
     moderatingId.value = id;
@@ -251,26 +247,15 @@ async function moderateNews(id: string, status: string) {
       archived: 'Перемещено в архив',
       pending: 'Отправлено на модерацию',
     };
-    toast.add({
-      severity: 'success',
-      summary: 'Успешно',
-      detail: detailByStatus[status] || getStatusLabel(status),
-      life: 3000,
-    });
+    showSuccess(detailByStatus[status] || getStatusLabel(status));
     loadNews();
   } catch (error: unknown) {
-    toast.add({
-      severity: 'error',
-      summary: 'Ошибка',
-      detail: getErrorMessage(error, 'Не удалось изменить статус'),
-      life: 3000,
-    });
+    showError(getErrorMessage(error, 'Не удалось изменить статус'));
   } finally {
     moderatingId.value = null;
   }
 }
 
-// Отклонить — с подтверждением
 function confirmReject(id: string) {
   confirm.require({
     message: 'Вы уверены, что хотите отклонить новость?',
@@ -290,7 +275,7 @@ function confirmReject(id: string) {
     },
   });
 }
-// В архив — с подтверждением
+
 function confirmArchive(id: string) {
   confirm.require({
     message: 'Вы уверены, что хотите переместить новость в архив?',
@@ -334,20 +319,10 @@ async function deleteNews(id: string) {
   try {
     moderatingId.value = id;
     await newsStore.deleteNews(id);
-    toast.add({
-      severity: 'success',
-      summary: 'Успешно',
-      detail: 'Новость удалена',
-      life: 3000,
-    });
+    showSuccess('Новость удалена');
     loadNews();
   } catch (error: unknown) {
-    toast.add({
-      severity: 'error',
-      summary: 'Ошибка',
-      detail: getErrorMessage(error, 'Не удалось удалить новость'),
-      life: 3000,
-    });
+    showError(getErrorMessage(error, 'Не удалось удалить новость'));
   } finally {
     moderatingId.value = null;
   }
