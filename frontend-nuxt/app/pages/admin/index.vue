@@ -4,28 +4,28 @@
 
     <div v-if="authStore.isModerator" class="dashboard-grid">
       <NuxtLink to="/admin/moderation" class="dashboard-card">
-        <i class="pi pi-check-circle" style="font-size: 2.5rem; color: var(--p-primary-color)"></i>
+        <i class="pi pi-check-circle icon-card icon-card--primary"></i>
         <h3>Модерация</h3>
         <p>Управление новостями: подтверждение, отклонение, архивирование</p>
         <span class="card-link"> Перейти <i class="pi pi-arrow-right"></i> </span>
       </NuxtLink>
 
       <NuxtLink v-if="authStore.isAdmin" to="/admin/users" class="dashboard-card">
-        <i class="pi pi-users" style="font-size: 2.5rem; color: #f59e0b"></i>
+        <i class="pi pi-users icon-card icon-card--warning"></i>
         <h3>Пользователи</h3>
         <p>Управление пользователями: редактирование, удаление, смена ролей</p>
         <span class="card-link"> Перейти <i class="pi pi-arrow-right"></i> </span>
       </NuxtLink>
 
       <NuxtLink v-if="authStore.isSuperAdmin" to="/admin/ai-generate" class="dashboard-card">
-        <i class="pi pi-bolt" style="font-size: 2.5rem; color: #8b5cf6"></i>
+        <i class="pi pi-bolt icon-card icon-card--purple"></i>
         <h3>AI Генерация</h3>
         <p>Генерация новостей с помощью искусственного интеллекта</p>
         <span class="card-link"> Перейти <i class="pi pi-arrow-right"></i> </span>
       </NuxtLink>
 
       <NuxtLink v-if="authStore.isSuperAdmin" to="/admin/news" class="dashboard-card">
-        <i class="pi pi-file" style="font-size: 2.5rem; color: #22c55e"></i>
+        <i class="pi pi-file icon-card icon-card--success"></i>
         <h3>Все новости</h3>
         <p>Полное управление новостями: создание, редактирование, удаление</p>
         <span class="card-link"> Перейти <i class="pi pi-arrow-right"></i> </span>

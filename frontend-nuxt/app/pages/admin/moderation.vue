@@ -52,13 +52,19 @@
           </template>
         </Column>
 
-        <Column field="views" header="Просмотры" :sortable="true" style="width: 100px">
+        <Column
+          field="views"
+          header="Просмотры"
+          :sortable="true"
+          header-class="col-views"
+          body-class="col-views"
+        >
           <template #body="{ data }">
             {{ data.views ?? 0 }}
           </template>
         </Column>
 
-        <Column header="Действия" style="width: 320px">
+        <Column header="Действия" header-class="col-actions-wide" body-class="col-actions-wide">
           <template #body="{ data }">
             <div class="actions-cell">
               <Button
@@ -136,7 +142,7 @@
     <Dialog
       v-model:visible="viewDialog"
       :header="selectedNews?.title"
-      :style="{ width: '700px' }"
+      class="dialog-width-md"
       :modal="true"
     >
       <div v-if="selectedNews" class="news-preview">
@@ -429,6 +435,16 @@ function viewNews(news: NewsItem) {
 .preview-content {
   line-height: 1.8;
   color: var(--p-text-color);
+}
+
+:deep(.col-views) {
+  width: 100px;
+  min-width: 100px;
+}
+
+:deep(.col-actions-wide) {
+  width: 320px;
+  min-width: 320px;
 }
 
 @media (max-width: 768px) {

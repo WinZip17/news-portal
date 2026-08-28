@@ -2,7 +2,7 @@
   <header class="app-header">
     <div class="header-container">
       <NuxtLink to="/" class="logo">
-        <i class="pi pi-globe" style="font-size: 1.5rem"></i>
+        <i class="pi pi-globe icon-logo"></i>
         <span class="logo-text">Short News</span>
       </NuxtLink>
 

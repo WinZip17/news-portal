@@ -21,7 +21,7 @@
             <div class="user-cell">
               <Avatar
                 :label="getInitials(data)"
-                style="background-color: var(--p-primary-color); color: white"
+                class="avatar-primary"
                 shape="circle"
                 size="large"
               />
@@ -44,8 +44,11 @@
         <Column field="isActive" header="Активен">
           <template #body="{ data }">
             <i
-              :class="data.isActive ? 'pi pi-check-circle' : 'pi pi-times-circle'"
-              :style="{ color: data.isActive ? '#22C55E' : '#EF4444', fontSize: '1.25rem' }"
+              :class="[
+                data.isActive ? 'pi pi-check-circle' : 'pi pi-times-circle',
+                'status-icon',
+                data.isActive ? 'status-icon--active' : 'status-icon--inactive',
+              ]"
             ></i>
           </template>
         </Column>
@@ -56,7 +59,7 @@
           </template>
         </Column>
 
-        <Column header="Действия" style="width: 200px">
+        <Column header="Действия" header-class="col-actions" body-class="col-actions">
           <template #body="{ data }">
             <div class="actions-cell">
               <Button
@@ -87,7 +90,7 @@
     <Dialog
       v-model:visible="editDialog"
       header="Редактирование пользователя"
-      :style="{ width: '500px' }"
+      class="dialog-width-sm"
       :modal="true"
       :pt="{
         content: { class: 'p-0' },
@@ -410,6 +413,11 @@ function formatDate(date: string): string {
   justify-content: flex-end;
   gap: 0.75rem;
   padding-top: 0.5rem;
+}
+
+:deep(.col-actions) {
+  width: 200px;
+  min-width: 200px;
 }
 
 @media (max-width: 768px) {

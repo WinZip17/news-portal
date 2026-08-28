@@ -72,7 +72,7 @@
     </div>
 
     <div v-if="!newsStore.isLoading && newsStore.news.length === 0" class="empty-state">
-      <i class="pi pi-inbox" style="font-size: 4rem; color: var(--p-text-muted-color)"></i>
+      <i class="pi pi-inbox icon-empty-lg"></i>
       <h3>Новости не найдены</h3>
       <p>Попробуйте изменить параметры поиска</p>
     </div>

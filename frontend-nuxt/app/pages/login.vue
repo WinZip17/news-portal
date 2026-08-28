@@ -2,7 +2,7 @@
   <div class="auth-page">
     <div class="auth-card">
       <div class="auth-header">
-        <i class="pi pi-sign-in" style="font-size: 2.5rem; color: var(--p-primary-color)"></i>
+        <i class="pi pi-sign-in icon-auth"></i>
         <h1>Вход в аккаунт</h1>
         <p>Войдите, чтобы получить доступ ко всем возможностям</p>
       </div>

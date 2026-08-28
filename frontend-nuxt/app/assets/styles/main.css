@@ -47,3 +47,105 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--p-text-muted-color);
 }
+
+.icon-logo {
+  font-size: 1.5rem;
+}
+
+.icon-auth {
+  font-size: 2.5rem;
+  color: var(--p-primary-color);
+}
+
+.icon-stat {
+  font-size: 2rem;
+}
+
+.icon-stat--primary {
+  color: var(--p-primary-color);
+}
+
+.icon-stat--success {
+  color: #22c55e;
+}
+
+.icon-stat--warning {
+  color: #f59e0b;
+}
+
+.icon-stat--purple {
+  color: #8b5cf6;
+}
+
+.icon-card {
+  font-size: 2.5rem;
+}
+
+.icon-card--primary {
+  color: var(--p-primary-color);
+}
+
+.icon-card--warning {
+  color: #f59e0b;
+}
+
+.icon-card--purple {
+  color: #8b5cf6;
+}
+
+.icon-card--success {
+  color: #22c55e;
+}
+
+.icon-status {
+  font-size: 2rem;
+  color: var(--p-primary-color);
+}
+
+.icon-empty-lg {
+  font-size: 4rem;
+  color: var(--p-text-muted-color);
+}
+
+.icon-empty-md {
+  font-size: 3rem;
+  color: var(--p-text-muted-color);
+}
+
+.status-icon {
+  font-size: 1.25rem;
+}
+
+.status-icon--active {
+  color: #22c55e;
+}
+
+.status-icon--inactive {
+  color: #ef4444;
+}
+
+.p-avatar.avatar-primary {
+  background-color: var(--p-primary-color);
+  color: #fff;
+}
+
+.p-progressspinner.spinner-sm {
+  width: 32px;
+  height: 32px;
+}
+
+/* Dialog widths (teleported to body) */
+.p-dialog.dialog-width-sm {
+  width: 500px;
+  max-width: 95vw;
+}
+
+.p-dialog.dialog-width-md {
+  width: 700px;
+  max-width: 95vw;
+}
+
+.p-dialog.dialog-width-news-detail {
+  width: 90vw;
+  max-width: 800px;
+}

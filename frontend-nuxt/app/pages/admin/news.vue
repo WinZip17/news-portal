@@ -23,7 +23,7 @@
           <Tag :severity="getStatusSeverity(data.status)" :value="getStatusLabel(data.status)" />
         </template>
       </Column>
-      <Column header="Действия" style="width: 200px">
+      <Column header="Действия" header-class="col-actions" body-class="col-actions">
         <template #body="{ data }">
           <div class="actions-cell">
             <Button icon="pi pi-pencil" severity="info" text rounded @click="editNews(data)" />
@@ -42,7 +42,7 @@
     <Dialog
       v-model:visible="newsDialog"
       :header="editingNews ? 'Редактирование' : 'Создание новости'"
-      :style="{ width: '700px' }"
+      class="dialog-width-md"
       :modal="true"
     >
       <form class="news-form" @submit.prevent="saveNews">
@@ -322,6 +322,11 @@ function confirmDelete(news: NewsItem) {
 .actions-cell {
   display: flex;
   gap: 0.25rem;
+}
+
+:deep(.col-actions) {
+  width: 200px;
+  min-width: 200px;
 }
 
 @media (max-width: 768px) {

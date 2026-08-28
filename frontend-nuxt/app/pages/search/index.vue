@@ -51,12 +51,12 @@
     </div>
 
     <div v-else-if="activeQuery" class="empty-state">
-      <i class="pi pi-search" style="font-size: 3rem; color: var(--p-text-muted-color)"></i>
+      <i class="pi pi-search icon-empty-md"></i>
       <h3>По запросу «{{ activeQuery }}» ничего не найдено</h3>
     </div>
 
     <div ref="loaderRef" class="load-more">
-      <ProgressSpinner v-if="loadingMore" style="width: 32px; height: 32px" />
+      <ProgressSpinner v-if="loadingMore" class="spinner-sm" />
       <span v-else-if="!hasMore && news.length">Все результаты загружены</span>
     </div>
 

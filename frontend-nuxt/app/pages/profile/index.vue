@@ -14,7 +14,7 @@
               <Avatar
                 :label="userInitials"
                 size="xlarge"
-                style="background-color: var(--p-primary-color); color: white"
+                class="avatar-primary"
                 shape="circle"
               />
               <div>
@@ -146,7 +146,7 @@
             </div>
 
             <div v-else-if="favorites.length === 0" class="empty-state">
-              <i class="pi pi-star" style="font-size: 3rem; color: var(--p-text-muted-color)"></i>
+              <i class="pi pi-star icon-empty-md"></i>
               <p>У вас пока нет избранных новостей</p>
             </div>
 

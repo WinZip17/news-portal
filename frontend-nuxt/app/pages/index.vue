@@ -37,22 +37,22 @@
     <section v-if="stats" class="stats-section">
       <div class="stats-grid">
         <div class="stat-card">
-          <i class="pi pi-file" style="font-size: 2rem; color: var(--p-primary-color)"></i>
+          <i class="pi pi-file icon-stat icon-stat--primary"></i>
           <div class="stat-value">{{ stats.totalNews }}</div>
           <div class="stat-label">Всего новостей</div>
         </div>
         <div class="stat-card">
-          <i class="pi pi-clock" style="font-size: 2rem; color: #22c55e"></i>
+          <i class="pi pi-clock icon-stat icon-stat--success"></i>
           <div class="stat-value">{{ stats.newsToday }}</div>
           <div class="stat-label">Сегодня</div>
         </div>
         <div class="stat-card">
-          <i class="pi pi-users" style="font-size: 2rem; color: #f59e0b"></i>
+          <i class="pi pi-users icon-stat icon-stat--warning"></i>
           <div class="stat-value">{{ stats.totalUsers }}</div>
           <div class="stat-label">Пользователей</div>
         </div>
         <div class="stat-card">
-          <i class="pi pi-eye" style="font-size: 2rem; color: #8b5cf6"></i>
+          <i class="pi pi-eye icon-stat icon-stat--purple"></i>
           <div class="stat-value">{{ stats.totalViews }}</div>
           <div class="stat-label">Просмотров</div>
         </div>
@@ -86,7 +86,7 @@
       </div>
 
       <div v-if="!newsStore.isLoading && latestNews.length === 0" class="empty-state">
-        <i class="pi pi-inbox" style="font-size: 4rem; color: var(--p-text-muted-color)"></i>
+        <i class="pi pi-inbox icon-empty-lg"></i>
         <p>Новостей пока нет</p>
       </div>
     </section>

@@ -3,7 +3,7 @@
     v-model:visible="visible"
     :modal="true"
     :header="news?.title"
-    :style="{ width: '90vw', maxWidth: '800px' }"
+    class="dialog-width-news-detail"
     :breakpoints="{ '768px': '95vw' }"
     :closable="true"
     :dismissable-mask="true"
@@ -35,7 +35,7 @@
       <div v-if="authorUser" class="detail-author">
         <Avatar
           :label="getAuthorInitials(authorUser)"
-          style="background-color: var(--p-primary-color); color: white"
+          class="avatar-primary"
           shape="circle"
         />
         <div>

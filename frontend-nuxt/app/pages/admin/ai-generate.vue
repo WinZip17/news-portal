@@ -12,7 +12,7 @@
       <Card class="status-card">
         <template #content>
           <div class="status-header">
-            <i class="pi pi-cloud" style="font-size: 2rem; color: var(--p-primary-color)"></i>
+            <i class="pi pi-cloud icon-status"></i>
             <div>
               <h3>Статус AI сервиса</h3>
               <p v-if="aiStatus === null">Проверка...</p>
