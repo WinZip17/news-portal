@@ -2,10 +2,11 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { useAuthStore } from '~/stores/auth';
 import { useNewsStore } from '~/stores/news';
+import { NewsCategory } from '~/types';
 import { getTestMocks } from '../helpers/mocks';
+import { mockAuthResponse, mockNewsItem, mockNewsResponse, mockStats } from '../../fixtures/mocks';
 
 const mocks = getTestMocks();
-import { mockAuthResponse, mockNewsItem, mockNewsResponse, mockStats } from '../../fixtures/mocks';
 
 describe('news store', () => {
   beforeEach(() => {
@@ -58,7 +59,7 @@ describe('news store', () => {
     await store.createNews({
       title: 'Новая',
       content: '<p>x</p>',
-      category: 'technology',
+      category: NewsCategory.TECHNOLOGY,
     });
 
     expect(store.news[0]?.id).toBe('news-2');

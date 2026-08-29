@@ -1,7 +1,8 @@
 import type { AuthResponse, NewsItem, UserResponse } from '~/types';
+import { NewsCategory, NewsStatus, UserRole } from '~/types';
 
 const basePreferences = {
-  categories: ['technology'],
+  categories: [NewsCategory.TECHNOLOGY],
   tags: [] as string[],
   language: 'ru',
   notificationsEnabled: true,
@@ -15,7 +16,7 @@ export const mockUser: UserResponse = {
   username: 'testuser',
   firstName: 'Test',
   lastName: 'User',
-  role: 'user',
+  role: UserRole.USER,
   isActive: true,
   preferences: basePreferences,
   createdAt: '2026-01-01T00:00:00.000Z',
@@ -26,21 +27,21 @@ export const mockModerator: UserResponse = {
   ...mockUser,
   id: 'mod-1',
   username: 'moderator',
-  role: 'moderator',
+  role: UserRole.MODERATOR,
 };
 
 export const mockAdmin: UserResponse = {
   ...mockUser,
   id: 'admin-1',
   username: 'admin',
-  role: 'admin',
+  role: UserRole.ADMIN,
 };
 
 export const mockSuperAdmin: UserResponse = {
   ...mockUser,
   id: 'super-1',
   username: 'superadmin',
-  role: 'super_admin',
+  role: UserRole.SUPER_ADMIN,
 };
 
 export const mockAuthResponse: AuthResponse = {
@@ -55,9 +56,9 @@ export const mockNewsItem: NewsItem = {
   title: 'Тестовая новость',
   content: '<p>Контент</p>',
   summary: 'Краткое описание',
-  category: 'technology',
+  category: NewsCategory.TECHNOLOGY,
   tags: ['ai'],
-  status: 'published',
+  status: NewsStatus.PUBLISHED,
   isAiGenerated: true,
   views: 10,
   likes: 2,

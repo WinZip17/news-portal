@@ -43,7 +43,12 @@ export default defineNuxtConfig({
 
   ssr: true,
 
-  modules: ['@pinia/nuxt', '@vueuse/nuxt', '@primevue/nuxt-module', '@nuxt/test-utils/module'],
+  modules: [
+    '@pinia/nuxt',
+    '@vueuse/nuxt',
+    '@primevue/nuxt-module',
+    ...(process.env.VITEST ? (['@nuxt/test-utils/module'] as const) : []),
+  ],
 
   primevue: {
     autoImport: true,
@@ -117,6 +122,9 @@ export default defineNuxtConfig({
     strict: true,
     typeCheck: true,
     shim: false,
+    tsConfig: {
+      exclude: ['test/**/*', 'vitest.config.ts'],
+    },
   },
 
   future: {

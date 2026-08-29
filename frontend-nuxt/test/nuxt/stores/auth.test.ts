@@ -2,8 +2,6 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { useAuthStore } from '~/stores/auth';
 import { getTestMocks } from '../helpers/mocks';
-
-const mocks = getTestMocks();
 import {
   mockAdmin,
   mockAuthResponse,
@@ -11,6 +9,8 @@ import {
   mockSuperAdmin,
   mockUser,
 } from '../../fixtures/mocks';
+
+const mocks = getTestMocks();
 
 describe('auth store', () => {
   beforeEach(() => {

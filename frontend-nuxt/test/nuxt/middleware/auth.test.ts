@@ -3,9 +3,9 @@ import { createPinia, setActivePinia } from 'pinia';
 import authMiddleware from '~/middleware/auth';
 import { useAuthStore } from '~/stores/auth';
 import { getTestMocks } from '../helpers/mocks';
+import { mockAdmin, mockModerator, mockSuperAdmin, mockUser } from '../../fixtures/mocks';
 
 const mocks = getTestMocks();
-import { mockAdmin, mockModerator, mockSuperAdmin, mockUser } from '../../fixtures/mocks';
 
 const from = { path: '/' };
 
