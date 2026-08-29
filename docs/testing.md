@@ -117,7 +117,7 @@ npm run test:e2e:ui        # UI-режим (trace: on, страница видн
 | Пакет | Команда | Стек |
 |-------|---------|------|
 | `frontend-vue` | `npm run test:unit` | Vitest |
-| `frontend-nuxt` | — | тесты не настроены |
+| `frontend-nuxt` | `npm run test:ci` | Vitest + `@nuxt/test-utils` (unit + stores/middleware) |
 
 ## CI и pre-commit
 

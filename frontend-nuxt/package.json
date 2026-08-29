@@ -14,6 +14,11 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "type-check": "vue-tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ci": "vitest run",
+    "test:unit": "vitest run --project unit",
+    "test:nuxt": "vitest run --project nuxt",
     "check": "npm run lint && npm run format:check && npm run type-check",
     "prepare": "nuxt prepare"
   },
@@ -33,15 +38,21 @@
   "devDependencies": {
     "@nuxt/eslint": "^1.16.0",
     "@nuxt/eslint-config": "^1.16.0",
+    "@nuxt/test-utils": "^4.2.0",
+    "@pinia/testing": "^2.0.1",
     "@primevue/nuxt-module": "^4.5.5",
     "@types/node": "^26.1.1",
+    "@vue/test-utils": "^2.5.0",
     "eslint": "^10.7.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-nuxt": "^4.0.0",
     "eslint-plugin-prettier": "^5.5.6",
     "eslint-plugin-vue": "^10.10.0",
+    "happy-dom": "^20.11.15",
+    "playwright-core": "^1.62.1",
     "prettier": "^3.9.6",
     "typescript": "^6.0.3",
+    "vitest": "^4.1.10",
     "vue-tsc": "^3.3.8"
   }
 }

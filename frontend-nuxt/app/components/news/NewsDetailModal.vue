@@ -33,11 +33,7 @@
       </div>
 
       <div v-if="authorUser" class="detail-author">
-        <Avatar
-          :label="getAuthorInitials(authorUser)"
-          class="avatar-primary"
-          shape="circle"
-        />
+        <Avatar :label="getAuthorInitials(authorUser)" class="avatar-primary" shape="circle" />
         <div>
           <p class="author-name">{{ authorUser.firstName }} {{ authorUser.lastName }}</p>
           <p class="author-username">@{{ authorUser.username }}</p>

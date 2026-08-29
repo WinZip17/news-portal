@@ -43,7 +43,7 @@ export default defineNuxtConfig({
 
   ssr: true,
 
-  modules: ['@pinia/nuxt', '@vueuse/nuxt', '@primevue/nuxt-module'],
+  modules: ['@pinia/nuxt', '@vueuse/nuxt', '@primevue/nuxt-module', '@nuxt/test-utils/module'],
 
   primevue: {
     autoImport: true,

@@ -11,12 +11,7 @@
         <TabPanel header="Профиль" value="profile">
           <div class="tab-content">
             <div class="profile-header">
-              <Avatar
-                :label="userInitials"
-                size="xlarge"
-                class="avatar-primary"
-                shape="circle"
-              />
+              <Avatar :label="userInitials" size="xlarge" class="avatar-primary" shape="circle" />
               <div>
                 <h2>{{ authStore.user.firstName }} {{ authStore.user.lastName }}</h2>
                 <p>@{{ authStore.user.username }}</p>
