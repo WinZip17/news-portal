@@ -13,11 +13,16 @@ import { formatLocaleDate } from '@/utils/formatDate.ts';
 
 const { TextArea } = Input;
 
+const PAGE_SIZE = 20;
+
 const SuperAdminPanel: React.FC = () => {
   const [table, setTable] = useState<'news' | 'users'>('news');
   const [news, setNews] = useState<News[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [newsTotal, setNewsTotal] = useState(0);
+  const [usersTotal, setUsersTotal] = useState(0);
   const [editUser, setEditUser] = useState<User | null>(null);
   const [editNews, setEditNews] = useState<News | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -29,8 +34,17 @@ const SuperAdminPanel: React.FC = () => {
   const [cronLoading, setCronLoading] = useState(false);
 
   useEffect(() => {
-    table === 'news' ? loadNews() : loadUsers();
-  }, [table]);
+    if (table === 'news') {
+      loadNews();
+    } else {
+      loadUsers();
+    }
+  }, [table, page]);
+
+  const handleTableChange = (value: 'news' | 'users') => {
+    setTable(value);
+    setPage(1);
+  };
 
   useEffect(() => {
     apiService
@@ -42,8 +56,14 @@ const SuperAdminPanel: React.FC = () => {
   const loadNews = async () => {
     setLoading(true);
     try {
-      const response = await newsService.getNews({ limit: 100, sortBy: 'createdAt', sortOrder: 'DESC' });
+      const response = await newsService.getNews({
+        page,
+        limit: PAGE_SIZE,
+        sortBy: 'createdAt',
+        sortOrder: 'DESC',
+      });
       setNews(response.data);
+      setNewsTotal(response.total);
     } catch {
       message.error('Ошибка загрузки');
     }
@@ -53,8 +73,9 @@ const SuperAdminPanel: React.FC = () => {
   const loadUsers = async () => {
     setLoading(true);
     try {
-      const response = await userService.getUsers(1, 100);
+      const response = await userService.getUsers(page, PAGE_SIZE);
       setUsers(response.data);
+      setUsersTotal(response.total);
     } catch {
       message.error('Ошибка загрузки');
     }
@@ -204,7 +225,7 @@ const SuperAdminPanel: React.FC = () => {
       </h2>
 
       <Space style={{ marginBottom: 16, maxWidth: '100%', overflow: 'auto', paddingBottom: 8 }}>
-        <Select value={table} onChange={setTable} style={{ width: 200 }}>
+        <Select value={table} onChange={handleTableChange} style={{ width: 200 }}>
           <Select.Option value="news">
             <ReadOutlined /> Новости
           </Select.Option>
@@ -221,9 +242,35 @@ const SuperAdminPanel: React.FC = () => {
       </Space>
 
       {table === 'news' ? (
-        <Table columns={newsColumns} dataSource={news} rowKey="id" loading={loading} scroll={{ x: 700 }} />
+        <Table
+          columns={newsColumns}
+          dataSource={news}
+          rowKey="id"
+          loading={loading}
+          scroll={{ x: 700 }}
+          pagination={{
+            current: page,
+            total: newsTotal,
+            pageSize: PAGE_SIZE,
+            onChange: setPage,
+            showSizeChanger: false,
+          }}
+        />
       ) : (
-        <Table columns={userColumns} dataSource={users} rowKey="id" loading={loading} scroll={{ x: 700 }} />
+        <Table
+          columns={userColumns}
+          dataSource={users}
+          rowKey="id"
+          loading={loading}
+          scroll={{ x: 700 }}
+          pagination={{
+            current: page,
+            total: usersTotal,
+            pageSize: PAGE_SIZE,
+            onChange: setPage,
+            showSizeChanger: false,
+          }}
+        />
       )}
 
       <Modal

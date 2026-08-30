@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Tabs, Card, Form, Input, Button, Switch, Select, message, Tag, Space, Empty, Spin, Modal } from 'antd';
+import { Tabs, Card, Form, Input, Button, Switch, Select, message, Tag, Space, Empty, Spin, Modal, Pagination } from 'antd';
 import {
   UserOutlined,
   HeartOutlined,
@@ -41,10 +41,14 @@ interface PasswordFormValues {
   confirmPassword: string;
 }
 
+const FAVORITES_PAGE_SIZE = 20;
+
 const Profile: React.FC = () => {
   const { user, updateProfile, updatePreferences } = useAuth();
   const { selectedNewsId, modalVisible, openNews, closeNews } = useNewsModal();
   const [favorites, setFavorites] = useState<News[]>([]);
+  const [favoritesPage, setFavoritesPage] = useState(1);
+  const [favoritesTotal, setFavoritesTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [passwordForm] = Form.useForm();
@@ -52,15 +56,16 @@ const Profile: React.FC = () => {
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (token) {
-      loadFavorites();
+      loadFavorites(favoritesPage);
     }
-  }, []);
+  }, [favoritesPage]);
 
-  const loadFavorites = async () => {
+  const loadFavorites = async (page = favoritesPage) => {
     setLoading(true);
     try {
-      const response = await newsService.getFavorites();
+      const response = await newsService.getFavorites(page, FAVORITES_PAGE_SIZE);
       setFavorites(response.data);
+      setFavoritesTotal(response.total);
     } catch {
       message.error('Ошибка загрузки избранного');
     }
@@ -91,7 +96,12 @@ const Profile: React.FC = () => {
 
   const handleRemoveFavorite = async (newsId: string) => {
     await newsService.toggleFavorite(newsId);
-    loadFavorites();
+    const nextPage = favorites.length === 1 && favoritesPage > 1 ? favoritesPage - 1 : favoritesPage;
+    if (nextPage !== favoritesPage) {
+      setFavoritesPage(nextPage);
+      return;
+    }
+    loadFavorites(favoritesPage);
   };
 
   const tabItems = [
@@ -265,6 +275,16 @@ const Profile: React.FC = () => {
                 </Button>
               </div>
             ))
+          )}
+          {favoritesTotal > FAVORITES_PAGE_SIZE && (
+            <Pagination
+              current={favoritesPage}
+              total={favoritesTotal}
+              pageSize={FAVORITES_PAGE_SIZE}
+              onChange={setFavoritesPage}
+              style={{ marginTop: 16, textAlign: 'right' }}
+              showSizeChanger={false}
+            />
           )}
         </Spin>
       ),

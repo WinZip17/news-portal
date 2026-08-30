@@ -14,29 +14,40 @@ import type { ColumnsType } from 'antd/es/table';
 import { News, NewsStatus } from '@/types';
 import { formatLocaleDate } from '@/utils/formatDate.ts';
 
+const PAGE_SIZE = 20;
+
 const NewsManagement: React.FC = () => {
   const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(false);
   const [statusFilter, setStatusFilter] = useState<NewsStatus>(NewsStatus.PENDING);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     loadNews();
-  }, [statusFilter]);
+  }, [statusFilter, page]);
 
   const loadNews = async () => {
     setLoading(true);
     try {
       const response = await newsService.getNews({
         status: statusFilter,
-        limit: 50,
+        page,
+        limit: PAGE_SIZE,
         sortBy: 'createdAt',
         sortOrder: 'DESC',
       });
       setNews(response.data);
+      setTotal(response.total);
     } catch {
       message.error('Ошибка загрузки');
     }
     setLoading(false);
+  };
+
+  const handleStatusFilterChange = (key: string) => {
+    setStatusFilter(key as NewsStatus);
+    setPage(1);
   };
 
   const handleModerate = async (id: string, status: NewsStatus) => {
@@ -158,8 +169,21 @@ const NewsManagement: React.FC = () => {
 
   return (
     <div>
-      <Tabs activeKey={statusFilter} onChange={(key) => setStatusFilter(key as NewsStatus)} items={tabItems} />
-      <Table columns={columns} dataSource={news} rowKey="id" loading={loading} scroll={{ x: 800 }} />
+      <Tabs activeKey={statusFilter} onChange={handleStatusFilterChange} items={tabItems} />
+      <Table
+        columns={columns}
+        dataSource={news}
+        rowKey="id"
+        loading={loading}
+        scroll={{ x: 800 }}
+        pagination={{
+          current: page,
+          total,
+          pageSize: PAGE_SIZE,
+          onChange: setPage,
+          showSizeChanger: false,
+        }}
+      />
     </div>
   );
 };
