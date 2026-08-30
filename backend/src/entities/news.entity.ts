@@ -86,7 +86,7 @@ export class News {
   @Column({ nullable: true })
   moderationComment: string;
 
-  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   publishedAt: Date;
 
   @CreateDateColumn()
