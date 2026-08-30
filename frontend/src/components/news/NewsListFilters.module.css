@@ -1,0 +1,54 @@
+.root {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.search {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 992px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.field {
+  width: 100%;
+  min-width: 0;
+}
+
+.label {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.field :global(.ant-select),
+.field :global(.ant-picker) {
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  align-items: flex-end;
+}
+
+@media (max-width: 767px) {
+  .actions :global(.ant-btn) {
+    width: 100%;
+  }
+}

@@ -1,9 +1,10 @@
 import React from 'react';
 import dayjs, { type Dayjs } from 'dayjs';
-import { Input, Select, Space, Button, DatePicker } from 'antd';
+import { Input, Select, Button, DatePicker } from 'antd';
 import { SearchOutlined, ClearOutlined } from '@ant-design/icons';
 import { NewsCategory } from '@/types';
 import { useNews } from '@/hooks/useNews.ts';
+import styles from './NewsListFilters.module.css';
 
 const { RangePicker } = DatePicker;
 
@@ -57,39 +58,41 @@ const NewsListFilters: React.FC<NewsListFiltersTypes> = ({ hasActiveFilters }) =
   };
 
   return (
-    <>
+    <div className={styles.root}>
       <Input.Search
+        className={styles.search}
         placeholder="Поиск..."
         allowClear
         defaultValue={filters.search || ''}
         prefix={<SearchOutlined />}
         onSearch={setSearch}
-        style={{ width: '100%', marginBottom: 16 }}
         onChange={(e) => {
           if (!e.target.value) setSearch('');
         }}
       />
-      <Space wrap size="middle" align="end" style={{ width: '100%', marginBottom: 16 }}>
-        <div>
-          <strong style={{ display: 'block', marginBottom: 4 }}>Категория:</strong>
-          <Select value={filters.category || 'all'} style={{ minWidth: 160 }} onChange={setCategory} options={categoryOptions} />
+
+      <div className={styles.grid}>
+        <div className={styles.field}>
+          <strong className={styles.label}>Категория:</strong>
+          <Select value={filters.category || 'all'} onChange={setCategory} options={categoryOptions} />
         </div>
-        <div>
-          <strong style={{ display: 'block', marginBottom: 4 }}>Сортировка:</strong>
-          <Select value={filters.sortBy || 'publishedAt'} style={{ minWidth: 180 }} onChange={setSortBy} options={sortOptions} />
+
+        <div className={styles.field}>
+          <strong className={styles.label}>Сортировка:</strong>
+          <Select value={filters.sortBy || 'publishedAt'} onChange={setSortBy} options={sortOptions} />
         </div>
-        <div>
-          <strong style={{ display: 'block', marginBottom: 4 }}>Тип новости:</strong>
+
+        <div className={styles.field}>
+          <strong className={styles.label}>Тип новости:</strong>
           <Select
             value={filters.isAiGenerated === undefined ? 'all' : filters.isAiGenerated ? 'true' : 'false'}
-            style={{ minWidth: 150 }}
             onChange={setAiFilter}
             options={aiFilterOptions}
           />
         </div>
 
-        <div>
-          <strong style={{ display: 'block', marginBottom: 4 }}>Дата</strong>
+        <div className={styles.field}>
+          <strong className={styles.label}>Дата новостей</strong>
           <RangePicker
             format="DD.MM.YYYY"
             value={[filters?.fromDate ? dayjs(filters?.fromDate) : null, filters?.toDate ? dayjs(filters?.toDate) : null]}
@@ -97,13 +100,16 @@ const NewsListFilters: React.FC<NewsListFiltersTypes> = ({ hasActiveFilters }) =
             allowEmpty={[true, true]}
           />
         </div>
+
         {hasActiveFilters && (
-          <Button icon={<ClearOutlined />} onClick={clearAllFilters}>
-            Сбросить
-          </Button>
+          <div className={`${styles.field} ${styles.actions}`}>
+            <Button icon={<ClearOutlined />} onClick={clearAllFilters} block>
+              Сбросить
+            </Button>
+          </div>
         )}
-      </Space>
-    </>
+      </div>
+    </div>
   );
 };
 
