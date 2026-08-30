@@ -27,6 +27,12 @@
   }
 }
 
+@media (min-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
 .field {
   width: 100%;
   min-width: 0;
