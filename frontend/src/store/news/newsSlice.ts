@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@reduxjs/toolkit';
-import { News, NewsFilter, NewsResponse, NewsStats } from '@/types';
+import { DateFilterType, News, NewsFilter, NewsResponse, NewsStats } from '@/types';
 import { newsService } from '@/services/newsService';
 import type { RootState } from '@/store';
 import { AxiosError } from 'axios';
@@ -154,6 +154,11 @@ const newsSlice = createSlice({
       state.filters.sortBy = action.payload as NewsFilter['sortBy'];
       state.filters.page = undefined;
     },
+    setDate: (state, action: PayloadAction<DateFilterType>) => {
+      state.filters.fromDate = action.payload?.from || undefined;
+      state.filters.toDate = action.payload?.to || undefined;
+      state.filters.page = undefined;
+    },
     setAiFilter: (state, action: PayloadAction<boolean | undefined>) => {
       state.filters.isAiGenerated = action.payload;
       state.filters.page = undefined;
@@ -303,8 +308,19 @@ const newsSlice = createSlice({
   },
 });
 
-export const { setFilter, setPage, setSearch, setCategory, setSortBy, setAiFilter, clearFilters, setCurrentNews, clearNewsError, resetNews } =
-  newsSlice.actions;
+export const {
+  setFilter,
+  setPage,
+  setSearch,
+  setCategory,
+  setSortBy,
+  setAiFilter,
+  clearFilters,
+  setCurrentNews,
+  clearNewsError,
+  resetNews,
+  setDate,
+} = newsSlice.actions;
 
 export const selectNews = (state: RootState) => state.news.news;
 export const selectCurrentNews = (state: RootState) => state.news.currentNews;

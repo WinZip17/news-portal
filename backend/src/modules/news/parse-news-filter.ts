@@ -1,11 +1,21 @@
 import { NewsCategory, NewsFilter, NewsStatus } from '../../types';
+import { parseCalendarDate } from './news-search.utils';
 
 const VALID_CATEGORIES = new Set<string>(Object.values(NewsCategory));
 const VALID_SORT_COLUMNS = new Set<string>(['publishedAt', 'views', 'likes', 'createdAt']);
 
-function isValidIsoDate(value: string): boolean {
-  const date = new Date(value);
-  return !Number.isNaN(date.getTime());
+function normalizeToCalendarDate(value: string): string | undefined {
+  const trimmed = value.trim();
+  if (parseCalendarDate(trimmed, 'start')) {
+    return trimmed;
+  }
+
+  const isoPrefix = /^(\d{4}-\d{2}-\d{2})/.exec(trimmed);
+  if (isoPrefix && parseCalendarDate(isoPrefix[1], 'start')) {
+    return isoPrefix[1];
+  }
+
+  return undefined;
 }
 
 function normalizeStringArray(value: unknown, maxItems: number): string[] | undefined {
@@ -45,12 +55,18 @@ export function sanitizeNewsFilter(raw: unknown, fallbackSearch?: string): NewsF
     filter.searchVariants = searchVariants;
   }
 
-  if (typeof input.fromDate === 'string' && isValidIsoDate(input.fromDate)) {
-    filter.fromDate = new Date(input.fromDate).toISOString();
+  if (typeof input.fromDate === 'string') {
+    const fromDate = normalizeToCalendarDate(input.fromDate);
+    if (fromDate) {
+      filter.fromDate = fromDate;
+    }
   }
 
-  if (typeof input.toDate === 'string' && isValidIsoDate(input.toDate)) {
-    filter.toDate = new Date(input.toDate).toISOString();
+  if (typeof input.toDate === 'string') {
+    const toDate = normalizeToCalendarDate(input.toDate);
+    if (toDate) {
+      filter.toDate = toDate;
+    }
   }
 
   if (typeof input.isAiGenerated === 'boolean') {

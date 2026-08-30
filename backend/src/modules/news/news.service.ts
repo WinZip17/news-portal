@@ -7,7 +7,7 @@ import { NewsStatsDto } from './dto/stats.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { NewsCategory, NewsFilter, NewsStatus } from '../../types';
-import { normalizeTagsFilter, resolveSortColumn, buildFtsSearchCondition } from './news-search.utils';
+import { normalizeTagsFilter, resolveSortColumn, buildFtsSearchCondition, parseCalendarDate } from './news-search.utils';
 
 @Injectable()
 export class NewsService {
@@ -58,11 +58,15 @@ export class NewsService {
     if (authorId) {
       queryBuilder.andWhere('news.authorId = :authorId', { authorId });
     }
-    if (fromDate && toDate) {
-      queryBuilder.andWhere('news.publishedAt BETWEEN :fromDate AND :toDate', {
-        fromDate: new Date(fromDate),
-        toDate: new Date(toDate),
-      });
+
+    const parsedFromDate = fromDate ? parseCalendarDate(fromDate, 'start') : null;
+    const parsedToDate = toDate ? parseCalendarDate(toDate, 'end') : null;
+
+    if (parsedFromDate) {
+      queryBuilder.andWhere('news.publishedAt >= :fromDate', { fromDate: parsedFromDate });
+    }
+    if (parsedToDate) {
+      queryBuilder.andWhere('news.publishedAt <= :toDate', { toDate: parsedToDate });
     }
     if (normalizedSearch) {
       const ftsCondition = buildFtsSearchCondition(normalizedSearch, searchVariants);

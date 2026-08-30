@@ -33,8 +33,8 @@ const SMART_SEARCH_USER_PROMPT = (today: string, query: string) => `Сегодн
   "searchVariants": ["альтернативное написание 1", "альтернативное написание 2"],
   "category": "politics|economy|technology|science|sports|entertainment|health|world|other|null",
   "tags": ["тег1", "тег2"],
-  "fromDate": "ISO-8601 или null",
-  "toDate": "ISO-8601 или null",
+  "fromDate": "YYYY-MM-DD или null",
+  "toDate": "YYYY-MM-DD или null",
   "isAiGenerated": true|false|null,
   "sortBy": "publishedAt|views|likes|createdAt|null",
   "sortOrder": "ASC|DESC|null"

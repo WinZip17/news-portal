@@ -1,5 +1,6 @@
 import { Client } from 'pg';
 import * as dotenv from 'dotenv';
+import { getErrorMessage } from '../utils/get-error-message';
 
 dotenv.config();
 
@@ -57,12 +58,12 @@ async function createDatabase() {
     // Права
     await client.query(`GRANT ALL PRIVILEGES ON DATABASE "${dbConfig.database}" TO "${dbConfig.user}"`);
     console.log('Privileges granted');
-  } catch (error) {
-    console.error('Error:', error.message);
+  } catch (error: unknown) {
+    console.error('Error:', getErrorMessage(error));
     process.exit(1);
   } finally {
     await client.end();
   }
 }
 
-createDatabase();
+void createDatabase();

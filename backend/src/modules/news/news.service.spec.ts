@@ -10,6 +10,14 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 describe('NewsService', () => {
   let service: NewsService;
   let newsRepository: Repository<News>;
+  let queryBuilder: {
+    leftJoinAndSelect: jest.Mock;
+    andWhere: jest.Mock;
+    orderBy: jest.Mock;
+    skip: jest.Mock;
+    take: jest.Mock;
+    getManyAndCount: jest.Mock;
+  };
 
   const mockNews = {
     id: '123',
@@ -28,7 +36,7 @@ describe('NewsService', () => {
   };
 
   beforeEach(async () => {
-    const queryBuilder = {
+    queryBuilder = {
       leftJoinAndSelect: jest.fn().mockReturnThis(),
       andWhere: jest.fn().mockReturnThis(),
       orderBy: jest.fn().mockReturnThis(),
@@ -97,6 +105,39 @@ describe('NewsService', () => {
       const result = await service.findAll({});
       expect(result.data).toHaveLength(1);
       expect(result.total).toBe(1);
+    });
+
+    it('applies fromDate filter alone', async () => {
+      await service.findAll({ fromDate: '2026-03-01' });
+
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt >= :fromDate', {
+        fromDate: new Date('2026-03-01T00:00:00.000Z'),
+      });
+    });
+
+    it('applies toDate filter alone', async () => {
+      await service.findAll({ toDate: '2026-03-13' });
+
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt <= :toDate', {
+        toDate: new Date('2026-03-13T23:59:59.999Z'),
+      });
+    });
+
+    it('applies both date filters independently', async () => {
+      await service.findAll({ fromDate: '2026-03-01', toDate: '2026-03-13' });
+
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt >= :fromDate', {
+        fromDate: new Date('2026-03-01T00:00:00.000Z'),
+      });
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt <= :toDate', {
+        toDate: new Date('2026-03-13T23:59:59.999Z'),
+      });
+    });
+
+    it('ignores invalid date format', async () => {
+      await service.findAll({ fromDate: '01.03.2026', toDate: '2026-03-01T00:00:00.000Z' });
+
+      expect(queryBuilder.andWhere).not.toHaveBeenCalledWith(expect.stringContaining('publishedAt'), expect.anything());
     });
   });
 

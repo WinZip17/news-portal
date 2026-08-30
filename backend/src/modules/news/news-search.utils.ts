@@ -1,4 +1,25 @@
 const SORTABLE_COLUMNS = new Set(['publishedAt', 'views', 'likes', 'createdAt']);
+const CALENDAR_DATE_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+export function parseCalendarDate(value: string, bound: 'start' | 'end'): Date | null {
+  const match = CALENDAR_DATE_RE.exec(value.trim());
+  if (!match) return null;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(Date.UTC(year, month - 1, day));
+
+  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) {
+    return null;
+  }
+
+  if (bound === 'start') {
+    return date;
+  }
+
+  return new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999));
+}
 
 const CYRILLIC_TO_LATIN: Record<string, string> = {
   а: 'a',

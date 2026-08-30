@@ -1,4 +1,5 @@
 import { Client } from 'pg';
+import { getErrorMessage } from '../utils/get-error-message';
 
 async function ensureDatabaseExists() {
   const dbName = process.env.DB_DATABASE || 'news_portal';
@@ -44,16 +45,17 @@ async function ensureDatabaseExists() {
 
     // Даем права
     await client.query(`GRANT ALL PRIVILEGES ON DATABASE "${dbName}" TO "${dbUser}"`);
-  } catch (error) {
-    console.error('Failed to ensure database exists:', error.message);
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
+    console.error('Failed to ensure database exists:', message);
 
     // Пробуем альтернативный метод
     try {
       console.log('Trying alternative creation method...');
       await client.query(`CREATE DATABASE "${dbName}"`);
       console.log(`Database "${dbName}" created with alternative method`);
-    } catch (createError) {
-      console.error('Alternative creation also failed:', createError.message);
+    } catch (createError: unknown) {
+      console.error('Alternative creation also failed:', getErrorMessage(createError));
       // Не выбрасываем ошибку, возможно база уже существует
     }
   } finally {

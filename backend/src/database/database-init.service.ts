@@ -1,6 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Client } from 'pg';
+import { getErrorMessage } from '../utils/get-error-message';
 
 @Injectable()
 export class DatabaseInitService implements OnModuleInit {
@@ -64,19 +65,20 @@ export class DatabaseInitService implements OnModuleInit {
 
       // Даем права пользователю
       await client.query(`GRANT ALL PRIVILEGES ON DATABASE "${dbConfig.database}" TO "${dbConfig.username}"`);
-    } catch (error) {
-      this.logger.error('Failed to ensure database exists:', error.message);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      this.logger.error('Failed to ensure database exists:', message);
 
       // Пробуем создать базу данных альтернативным способом
-      if (error.message.includes('does not exist') || error.message.includes('не существует')) {
+      if (message.includes('does not exist') || message.includes('не существует')) {
         try {
           this.logger.log('Trying alternative method to create database...');
 
           await client.query(`CREATE DATABASE "${dbConfig.database}" ENCODING 'UTF8'`);
 
           this.logger.log(`Database "${dbConfig.database}" created with alternative method`);
-        } catch (createError) {
-          this.logger.error('Alternative creation also failed:', createError.message);
+        } catch (createError: unknown) {
+          this.logger.error('Alternative creation also failed:', getErrorMessage(createError));
           throw createError;
         }
       } else {

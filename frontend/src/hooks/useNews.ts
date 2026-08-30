@@ -30,8 +30,9 @@ import {
   useAppDispatch,
   useAppSelector,
   setCurrentNews,
+  setDate,
 } from '@/store';
-import type { News, NewsFilter } from '@/types';
+import type { News, NewsFilter, DateFilterType } from '@/types';
 
 export const useNews = () => {
   const dispatch = useAppDispatch();
@@ -158,6 +159,7 @@ export const useNews = () => {
     setSearch: (v: string) => dispatch(setSearch(v || undefined)),
     setCategory: (v: string) => dispatch(setCategory(v !== 'all' ? v : undefined)),
     setSortBy: (v: string) => dispatch(setSortBy(v !== 'publishedAt' ? v : undefined)),
+    setDateFilter: (v: DateFilterType) => dispatch(setDate(v)),
     setAiFilter: (v: string) => {
       if (v === 'all') dispatch(setAiFilter(undefined));
       else dispatch(setAiFilter(v === 'true'));

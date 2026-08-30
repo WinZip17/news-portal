@@ -1,4 +1,11 @@
-import { buildFtsSearchCondition, buildSearchWordGroups, getWordSearchVariants, normalizeTagsFilter, resolveSortColumn } from './news-search.utils';
+import {
+  buildFtsSearchCondition,
+  buildSearchWordGroups,
+  getWordSearchVariants,
+  normalizeTagsFilter,
+  parseCalendarDate,
+  resolveSortColumn,
+} from './news-search.utils';
 
 describe('news-search.utils', () => {
   describe('normalizeTagsFilter', () => {
@@ -23,6 +30,22 @@ describe('news-search.utils', () => {
 
     it('keeps allowed sort columns', () => {
       expect(resolveSortColumn('views')).toBe('views');
+    });
+  });
+
+  describe('parseCalendarDate', () => {
+    it('parses YYYY-MM-DD start of day in UTC', () => {
+      expect(parseCalendarDate('2026-03-01', 'start')?.toISOString()).toBe('2026-03-01T00:00:00.000Z');
+    });
+
+    it('parses YYYY-MM-DD end of day in UTC', () => {
+      expect(parseCalendarDate('2026-03-13', 'end')?.toISOString()).toBe('2026-03-13T23:59:59.999Z');
+    });
+
+    it('rejects invalid calendar dates', () => {
+      expect(parseCalendarDate('2026-02-30', 'start')).toBeNull();
+      expect(parseCalendarDate('2026/03/01', 'start')).toBeNull();
+      expect(parseCalendarDate('2026-03-01T00:00:00.000Z', 'start')).toBeNull();
     });
   });
 

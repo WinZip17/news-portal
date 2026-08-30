@@ -26,6 +26,8 @@ describe('parse-news-filter', () => {
     expect(filter.isAiGenerated).toBe(true);
     expect(filter.sortBy).toBe('views');
     expect(filter.sortOrder).toBe('DESC');
+    expect(filter.fromDate).toBe('2026-03-01');
+    expect(filter.toDate).toBe('2026-03-13');
     expect(filter).not.toHaveProperty('authorId');
   });
 
@@ -44,6 +46,16 @@ describe('parse-news-filter', () => {
     expect(filter.category).toBeUndefined();
     expect(filter.fromDate).toBeUndefined();
     expect(filter.sortBy).toBeUndefined();
+  });
+
+  it('accepts calendar dates in YYYY-MM-DD format', () => {
+    const filter = sanitizeNewsFilter({
+      fromDate: '2026-08-01',
+      toDate: '2026-08-20',
+    });
+
+    expect(filter.fromDate).toBe('2026-08-01');
+    expect(filter.toDate).toBe('2026-08-20');
   });
 
   it('keeps searchVariants for bilingual smart search', () => {
