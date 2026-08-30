@@ -6,6 +6,7 @@ import { News, Favorite, Like } from '../../entities';
 import { NewsCategory, NewsStatus } from '../../types';
 import { NotFoundException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { publishedAtCalendarDateSql } from './news-search.utils';
 
 describe('NewsService', () => {
   let service: NewsService;
@@ -101,6 +102,8 @@ describe('NewsService', () => {
   });
 
   describe('findAll', () => {
+    const publishedOn = publishedAtCalendarDateSql();
+
     it('should return paginated news', async () => {
       const result = await service.findAll({});
       expect(result.data).toHaveLength(1);
@@ -110,7 +113,7 @@ describe('NewsService', () => {
     it('applies fromDate filter alone', async () => {
       await service.findAll({ fromDate: '2026-03-01' });
 
-      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt >= CAST(:fromDate AS date)', {
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith(`${publishedOn} >= CAST(:fromDate AS date)`, {
         fromDate: '2026-03-01',
       });
     });
@@ -118,7 +121,7 @@ describe('NewsService', () => {
     it('applies toDate filter alone', async () => {
       await service.findAll({ toDate: '2026-03-13' });
 
-      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt < CAST(:toDateExclusive AS date)', {
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith(`${publishedOn} < CAST(:toDateExclusive AS date)`, {
         toDateExclusive: '2026-03-14',
       });
     });
@@ -126,21 +129,32 @@ describe('NewsService', () => {
     it('applies both date filters independently', async () => {
       await service.findAll({ fromDate: '2026-03-01', toDate: '2026-03-13' });
 
-      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt >= CAST(:fromDate AS date)', {
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith(`${publishedOn} >= CAST(:fromDate AS date)`, {
         fromDate: '2026-03-01',
       });
-      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt < CAST(:toDateExclusive AS date)', {
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith(`${publishedOn} < CAST(:toDateExclusive AS date)`, {
         toDateExclusive: '2026-03-14',
+      });
+    });
+
+    it('filters a single calendar day in Moscow timezone', async () => {
+      await service.findAll({ fromDate: '2026-08-19', toDate: '2026-08-19' });
+
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith(`${publishedOn} >= CAST(:fromDate AS date)`, {
+        fromDate: '2026-08-19',
+      });
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith(`${publishedOn} < CAST(:toDateExclusive AS date)`, {
+        toDateExclusive: '2026-08-20',
       });
     });
 
     it('includes news from 2026-08-30 in range 2026-08-02 to 2026-09-13', async () => {
       await service.findAll({ fromDate: '2026-08-02', toDate: '2026-09-13' });
 
-      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt >= CAST(:fromDate AS date)', {
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith(`${publishedOn} >= CAST(:fromDate AS date)`, {
         fromDate: '2026-08-02',
       });
-      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt < CAST(:toDateExclusive AS date)', {
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith(`${publishedOn} < CAST(:toDateExclusive AS date)`, {
         toDateExclusive: '2026-09-14',
       });
     });

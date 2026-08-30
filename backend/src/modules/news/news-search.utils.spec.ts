@@ -6,6 +6,7 @@ import {
   getWordSearchVariants,
   normalizeTagsFilter,
   parseCalendarDate,
+  publishedAtCalendarDateSql,
   resolveSortColumn,
 } from './news-search.utils';
 
@@ -52,16 +53,18 @@ describe('news-search.utils', () => {
   });
 
   describe('buildNewsDateRangeSql', () => {
-    it('builds inclusive calendar range for PostgreSQL', () => {
+    const publishedOn = publishedAtCalendarDateSql();
+
+    it('builds inclusive calendar range in Europe/Moscow', () => {
       const range = buildNewsDateRangeSql('2026-08-02', '2026-09-13');
 
       expect(range).toEqual([
         {
-          sql: 'news.publishedAt >= CAST(:fromDate AS date)',
+          sql: `${publishedOn} >= CAST(:fromDate AS date)`,
           params: { fromDate: '2026-08-02' },
         },
         {
-          sql: 'news.publishedAt < CAST(:toDateExclusive AS date)',
+          sql: `${publishedOn} < CAST(:toDateExclusive AS date)`,
           params: { toDateExclusive: '2026-09-14' },
         },
       ]);
@@ -70,11 +73,26 @@ describe('news-search.utils', () => {
     it('supports single-sided filters', () => {
       expect(buildNewsDateRangeSql('2026-08-02', undefined)).toEqual([
         {
-          sql: 'news.publishedAt >= CAST(:fromDate AS date)',
+          sql: `${publishedOn} >= CAST(:fromDate AS date)`,
           params: { fromDate: '2026-08-02' },
         },
       ]);
       expect(buildNewsDateRangeSql(undefined, '2026-09-13')[0]?.params.toDateExclusive).toBe('2026-09-14');
+    });
+
+    it('builds same-day filter for a single calendar date', () => {
+      const range = buildNewsDateRangeSql('2026-08-19', '2026-08-19');
+
+      expect(range).toEqual([
+        {
+          sql: `${publishedOn} >= CAST(:fromDate AS date)`,
+          params: { fromDate: '2026-08-19' },
+        },
+        {
+          sql: `${publishedOn} < CAST(:toDateExclusive AS date)`,
+          params: { toDateExclusive: '2026-08-20' },
+        },
+      ]);
     });
 
     it('includes news published on the last day of range', () => {

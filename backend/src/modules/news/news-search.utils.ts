@@ -1,5 +1,11 @@
 const SORTABLE_COLUMNS = new Set(['publishedAt', 'views', 'likes', 'createdAt']);
 const CALENDAR_DATE_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
+/** Matches user-facing dates in ru-RU UI (toLocaleDateString). DB timestamps are stored as UTC wall clock. */
+export const NEWS_CALENDAR_TIMEZONE = 'Europe/Moscow';
+
+export function publishedAtCalendarDateSql(column = 'news.publishedAt'): string {
+  return `DATE((${column} AT TIME ZONE 'UTC') AT TIME ZONE '${NEWS_CALENDAR_TIMEZONE}')`;
+}
 
 export function parseCalendarDate(value: string, bound: 'start' | 'end'): Date | null {
   const match = CALENDAR_DATE_RE.exec(value.trim());
@@ -42,9 +48,11 @@ export function buildNewsDateRangeSql(
   const validFrom = fromDate && parseCalendarDate(fromDate, 'start') ? fromDate.trim() : null;
   const validTo = toDate && parseCalendarDate(toDate, 'end') ? toDate.trim() : null;
 
+  const publishedOn = publishedAtCalendarDateSql();
+
   if (validFrom) {
     clauses.push({
-      sql: 'news.publishedAt >= CAST(:fromDate AS date)',
+      sql: `${publishedOn} >= CAST(:fromDate AS date)`,
       params: { fromDate: validFrom },
     });
   }
@@ -53,7 +61,7 @@ export function buildNewsDateRangeSql(
     const toExclusive = getExclusiveCalendarEndDate(validTo);
     if (toExclusive) {
       clauses.push({
-        sql: 'news.publishedAt < CAST(:toDateExclusive AS date)',
+        sql: `${publishedOn} < CAST(:toDateExclusive AS date)`,
         params: { toDateExclusive: toExclusive },
       });
     }
