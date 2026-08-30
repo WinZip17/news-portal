@@ -21,6 +21,47 @@ export function parseCalendarDate(value: string, bound: 'start' | 'end'): Date |
   return new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999));
 }
 
+export function getExclusiveCalendarEndDate(value: string): string | null {
+  const start = parseCalendarDate(value, 'start');
+  if (!start) return null;
+
+  start.setUTCDate(start.getUTCDate() + 1);
+  const year = start.getUTCFullYear();
+  const month = String(start.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(start.getUTCDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+export function buildNewsDateRangeSql(
+  fromDate?: string,
+  toDate?: string,
+): Array<{ sql: string; params: Record<string, string> }> {
+  const clauses: Array<{ sql: string; params: Record<string, string> }> = [];
+
+  const validFrom = fromDate && parseCalendarDate(fromDate, 'start') ? fromDate.trim() : null;
+  const validTo = toDate && parseCalendarDate(toDate, 'end') ? toDate.trim() : null;
+
+  if (validFrom) {
+    clauses.push({
+      sql: 'news.publishedAt >= CAST(:fromDate AS date)',
+      params: { fromDate: validFrom },
+    });
+  }
+
+  if (validTo) {
+    const toExclusive = getExclusiveCalendarEndDate(validTo);
+    if (toExclusive) {
+      clauses.push({
+        sql: 'news.publishedAt < CAST(:toDateExclusive AS date)',
+        params: { toDateExclusive: toExclusive },
+      });
+    }
+  }
+
+  return clauses;
+}
+
 const CYRILLIC_TO_LATIN: Record<string, string> = {
   а: 'a',
   б: 'b',

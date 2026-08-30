@@ -1,6 +1,8 @@
 import {
   buildFtsSearchCondition,
+  buildNewsDateRangeSql,
   buildSearchWordGroups,
+  getExclusiveCalendarEndDate,
   getWordSearchVariants,
   normalizeTagsFilter,
   parseCalendarDate,
@@ -46,6 +48,37 @@ describe('news-search.utils', () => {
       expect(parseCalendarDate('2026-02-30', 'start')).toBeNull();
       expect(parseCalendarDate('2026/03/01', 'start')).toBeNull();
       expect(parseCalendarDate('2026-03-01T00:00:00.000Z', 'start')).toBeNull();
+    });
+  });
+
+  describe('buildNewsDateRangeSql', () => {
+    it('builds inclusive calendar range for PostgreSQL', () => {
+      const range = buildNewsDateRangeSql('2026-08-02', '2026-09-13');
+
+      expect(range).toEqual([
+        {
+          sql: 'news.publishedAt >= CAST(:fromDate AS date)',
+          params: { fromDate: '2026-08-02' },
+        },
+        {
+          sql: 'news.publishedAt < CAST(:toDateExclusive AS date)',
+          params: { toDateExclusive: '2026-09-14' },
+        },
+      ]);
+    });
+
+    it('supports single-sided filters', () => {
+      expect(buildNewsDateRangeSql('2026-08-02', undefined)).toEqual([
+        {
+          sql: 'news.publishedAt >= CAST(:fromDate AS date)',
+          params: { fromDate: '2026-08-02' },
+        },
+      ]);
+      expect(buildNewsDateRangeSql(undefined, '2026-09-13')[0]?.params.toDateExclusive).toBe('2026-09-14');
+    });
+
+    it('includes news published on the last day of range', () => {
+      expect(getExclusiveCalendarEndDate('2026-09-13')).toBe('2026-09-14');
     });
   });
 

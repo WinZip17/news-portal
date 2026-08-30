@@ -110,27 +110,38 @@ describe('NewsService', () => {
     it('applies fromDate filter alone', async () => {
       await service.findAll({ fromDate: '2026-03-01' });
 
-      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt >= :fromDate', {
-        fromDate: new Date('2026-03-01T00:00:00.000Z'),
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt >= CAST(:fromDate AS date)', {
+        fromDate: '2026-03-01',
       });
     });
 
     it('applies toDate filter alone', async () => {
       await service.findAll({ toDate: '2026-03-13' });
 
-      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt <= :toDate', {
-        toDate: new Date('2026-03-13T23:59:59.999Z'),
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt < CAST(:toDateExclusive AS date)', {
+        toDateExclusive: '2026-03-14',
       });
     });
 
     it('applies both date filters independently', async () => {
       await service.findAll({ fromDate: '2026-03-01', toDate: '2026-03-13' });
 
-      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt >= :fromDate', {
-        fromDate: new Date('2026-03-01T00:00:00.000Z'),
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt >= CAST(:fromDate AS date)', {
+        fromDate: '2026-03-01',
       });
-      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt <= :toDate', {
-        toDate: new Date('2026-03-13T23:59:59.999Z'),
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt < CAST(:toDateExclusive AS date)', {
+        toDateExclusive: '2026-03-14',
+      });
+    });
+
+    it('includes news from 2026-08-30 in range 2026-08-02 to 2026-09-13', async () => {
+      await service.findAll({ fromDate: '2026-08-02', toDate: '2026-09-13' });
+
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt >= CAST(:fromDate AS date)', {
+        fromDate: '2026-08-02',
+      });
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith('news.publishedAt < CAST(:toDateExclusive AS date)', {
+        toDateExclusive: '2026-09-14',
       });
     });
 

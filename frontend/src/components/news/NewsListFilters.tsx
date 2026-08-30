@@ -92,7 +92,7 @@ const NewsListFilters: React.FC<NewsListFiltersTypes> = ({ hasActiveFilters }) =
           <strong style={{ display: 'block', marginBottom: 4 }}>Дата</strong>
           <RangePicker
             format="DD.MM.YYYY"
-            defaultValue={[filters?.fromDate ? dayjs(filters?.fromDate) : null, filters?.toDate ? dayjs(filters?.toDate) : null]}
+            value={[filters?.fromDate ? dayjs(filters?.fromDate) : null, filters?.toDate ? dayjs(filters?.toDate) : null]}
             onChange={setDate}
             allowEmpty={[true, true]}
           />
