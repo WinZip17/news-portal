@@ -4,20 +4,43 @@ import { Card, Row, Col, Statistic } from 'antd';
 import { useNewsStatsQuery } from '@/hooks/useNewsQuery';
 import { ClockCircleOutlined, EyeOutlined, ReadOutlined, RobotOutlined, TeamOutlined } from '@ant-design/icons';
 import { useNews } from '@/hooks/useNews.ts';
-import { NewsCategory } from '@/types';
+import dayjs from 'dayjs';
+import { useAuth } from '@/hooks/useAuth.ts';
 
 const NewsStats: React.FC = () => {
   const { data: stats, isLoading } = useNewsStatsQuery();
-  const { setFilters } = useNews();
+  const { setDateFilter, setAiFilter } = useNews();
+  const { user } = useAuth();
+  const isModerator = user?.role === 'admin' || user?.role === 'moderator' || user?.role === 'super_admin';
   const navigate = useNavigate();
   const setLink = (link: string) => {
-    console.log('setLink', link);
     switch (link) {
       case 'current':
-        setFilters({ category: NewsCategory.TECHNOLOGY });
+        setDateFilter({
+          to: dayjs(new Date()).format('YYYY-MM-DD'),
+          from: dayjs(new Date()).format('YYYY-MM-DD'),
+        });
         navigate({
           pathname: '/news',
         });
+        break;
+      case 'list':
+        navigate({
+          pathname: '/news',
+        });
+        break;
+      case 'ai':
+        setAiFilter('true');
+        navigate({
+          pathname: '/news',
+        });
+        break;
+      case 'moderation':
+        if (isModerator) {
+          navigate({
+            pathname: '/admin',
+          });
+        }
         break;
       default:
         break;
@@ -29,7 +52,7 @@ const NewsStats: React.FC = () => {
     { title: 'Пользователей', value: stats?.totalUsers || 0, prefix: <TeamOutlined />, link: '' },
     { title: 'AI-рерайт', value: stats?.totalAiNews || 0, prefix: <RobotOutlined />, link: 'ai' },
     { title: 'Всего новостей', value: stats?.totalNews || 0, prefix: <ReadOutlined />, link: 'list' },
-    { title: 'Просмотров', value: stats?.totalViews || 0, prefix: <EyeOutlined />, link: '' },
+    { title: 'Просмотров', value: stats?.totalViews || 0, prefix: <EyeOutlined />, link: 'list' },
     {
       title: 'На модерации',
       value: stats?.pendingNews || 0,
