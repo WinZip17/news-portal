@@ -17,7 +17,7 @@
 | **SSR** | ❌ | ✅ | ✅ | ❌ |
 | **CSS решение** | Ant Design | MUI System | PrimeVue + CSS | Vuetify + CSS |
 | **Типы** | `@/types` → `@news-portal/types` | `@/types` | `~/types` | `@/types` |
-| **Поиск** | FTS `/news` + умный `/search` | FTS `/news` + умный `/search` | лента без поиска | лента без поиска |
+| **Поиск** | FTS `/news` + умный `/search` + фильтр по дате | FTS `/news` + умный `/search` + фильтр по дате | FTS `/news` + фильтр по дате | FTS `/news` + фильтр по дате |
 | **Тесты** | Vitest + Playwright E2E | Vitest | — | Vitest (unit) |
 
 > 🔍 Подробнее: [search.md](search.md)
@@ -31,6 +31,7 @@
 ### Особенности
 - Полноценный админ-интерфейс с модерацией
 - Поиск по ленте (`/news?search=`) — FTS через `GET /api/news`
+- Фильтр по дате публикации на `/news` (`fromDate`, `toDate` в формате `YYYY-MM-DD`)
 - Умный поиск на `/search` — `POST /api/news/smart-search`
 - Инфинити-скролл в ленте новостей
 - Ленивая загрузка страниц (React.lazy)
@@ -65,7 +66,7 @@ frontend/
 - App Router
 - Material Design (MUI)
 - **`/search`** — умный поиск (NL → `POST /api/news/smart-search`)
-- **`/news`** — классический FTS и фильтры (`GET /api/news`)
+- **`/news`** — классический FTS, фильтры и диапазон дат (`GET /api/news`)
 - Серверное время в футере (WebSocket `/api/datetime`, хук `useServerDatetime`)
 - Клиентский layout отделён от серверного
 - CSS-in-JS через MUI
@@ -94,6 +95,7 @@ frontend-next/src/
 - Автоимпорты компонентов
 - Тема через CSS-переменные PrimeVue
 - Pinia Plugin Persistedstate
+- Лента `/news`: FTS, категории, сортировка, фильтр по дате (отдельно «Дата от» и «Дата до»)
 
 ### Структура
 ```
@@ -118,6 +120,7 @@ frontend-nuxt/
 - Pinia для управления состоянием
 - Адаптивный сайдбар
 - Поддержка тёмной темы
+- Лента `/news`: поиск, категории, сортировка, фильтр по дате
 
 ### Структура
 ```

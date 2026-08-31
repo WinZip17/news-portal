@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useNewsStore } from '@/stores/news';
 import NewsCard from '@/components/news/NewsCard.vue';
 import NewsDetailModal from '@/components/news/NewsDetailModal.vue';
+import NewsListFilters from '@/components/news/NewsListFilters.vue';
 import { getCategoryLabel } from '@/utils/getCategoryLabel';
 import { getCategoryColor } from '@/utils/getCategoryColor';
 import { formatDate } from '@/utils/formatDate';
-import type { News } from '@/types';
+import type { News, NewsFilter } from '@/types';
 import { storeToRefs } from 'pinia';
 import { useHead } from '@unhead/vue';
 
@@ -17,23 +18,49 @@ const search = ref('');
 const category = ref('all');
 const sortBy = ref('publishedAt');
 const aiFilter = ref('all');
+const fromDate = ref('');
+const toDate = ref('');
 const selectedNews = ref<News | null>(null);
 const modalVisible = ref(false);
+
+const hasActiveFilters = computed(
+  () =>
+    category.value !== 'all' ||
+    aiFilter.value !== 'all' ||
+    !!search.value ||
+    !!fromDate.value ||
+    !!toDate.value,
+);
+
+const categories = [
+  { value: 'all', label: '📂 Все' },
+  { value: 'politics', label: '🏛 Политика' },
+  { value: 'economy', label: '💹 Экономика' },
+  { value: 'technology', label: '💻 Технологии' },
+  { value: 'science', label: '🔬 Наука' },
+  { value: 'sports', label: '⚽ Спорт' },
+  { value: 'entertainment', label: '🎬 Развлечения' },
+  { value: 'health', label: '🏥 Здоровье' },
+  { value: 'world', label: '🌍 Мир' },
+];
 
 onMounted(() => {
   if (!news.value.length) newsStore.fetchNews();
 });
 
-watch([category, sortBy, aiFilter], () => {
+watch([category, sortBy, aiFilter, fromDate, toDate], () => {
   newsStore.setPage(1);
   applyFilters();
 });
 
 function applyFilters() {
-  const filters: Record<string, unknown> = {};
-  if (category.value !== 'all') filters.category = category.value;
-  if (search.value) filters.search = search.value;
-  if (aiFilter.value !== 'all') filters.isAiGenerated = aiFilter.value === 'true';
+  const filters: Partial<NewsFilter> = {
+    category: category.value !== 'all' ? (category.value as NewsFilter['category']) : undefined,
+    search: search.value || undefined,
+    isAiGenerated: aiFilter.value !== 'all' ? aiFilter.value === 'true' : undefined,
+    fromDate: fromDate.value || undefined,
+    toDate: toDate.value || undefined,
+  };
   newsStore.setFilter(filters);
   newsStore.fetchNews();
 }
@@ -41,6 +68,15 @@ function applyFilters() {
 function handleSearch() {
   newsStore.setPage(1);
   applyFilters();
+}
+
+function resetFilters() {
+  category.value = 'all';
+  aiFilter.value = 'all';
+  search.value = '';
+  fromDate.value = '';
+  toDate.value = '';
+  handleSearch();
 }
 
 function changePage(p: number) {
@@ -53,80 +89,28 @@ function openNews(item: News) {
   modalVisible.value = true;
 }
 
-const categories = [
-  { value: 'all', label: '📂 Все' },
-  { value: 'politics', label: '🏛 Политика' },
-  { value: 'economy', label: '💹 Экономика' },
-  { value: 'technology', label: '💻 Технологии' },
-  { value: 'science', label: '🔬 Наука' },
-  { value: 'sports', label: '⚽ Спорт' },
-  { value: 'entertainment', label: '🎬 Развлечения' },
-  { value: 'health', label: '🏥 Здоровье' },
-  { value: 'world', label: '🌍 Мир' }
-];
-
 useHead({
   title: 'Лента новостей',
-  meta: [{ name: 'description', content: 'Актуальные новости с фильтрацией по категориям.' }]
+  meta: [{ name: 'description', content: 'Актуальные новости с фильтрацией по категориям.' }],
 });
 </script>
 
 <template>
-  <div class="mx-auto" style="max-width: 960px">
+  <div class="mx-auto news-page">
     <h2 class="text-h4 mb-4">📰 Лента новостей</h2>
 
-    <div class="d-flex flex-wrap gap-2 mb-4">
-      <v-text-field
-        v-model="search"
-        label="Поиск..."
-        density="compact"
-        hide-details
-        prepend-inner-icon="mdi-magnify"
-        style="max-width: 200px"
-        @keydown.enter="handleSearch"
-        @click:clear="
-          search = '';
-          handleSearch();
-        "
-        clearable
-      />
-      <v-select v-model="category" :items="categories" itemValue="value" itemTitle="label" density="compact" hide-details style="max-width: 180px" />
-      <v-select
-        v-model="sortBy"
-        :items="[
-          { value: 'publishedAt', title: '🕒 По дате' },
-          { value: 'views', title: '👁 По просмотрам' },
-          { value: 'likes', title: '❤️ По лайкам' }
-        ]"
-        density="compact"
-        hide-details
-        style="max-width: 160px"
-      />
-      <v-select
-        v-model="aiFilter"
-        :items="[
-          { value: 'all', title: '📋 Все' },
-          { value: 'true', title: '🤖 AI-рерайт' },
-          { value: 'false', title: '📄 Оригиналы' }
-        ]"
-        density="compact"
-        hide-details
-        style="max-width: 160px"
-      />
-      <v-btn
-        v-if="category !== 'all' || aiFilter !== 'all' || search"
-        variant="text"
-        size="small"
-        @click="
-          category = 'all';
-          aiFilter = 'all';
-          search = '';
-          handleSearch();
-        "
-      >
-        Сбросить
-      </v-btn>
-    </div>
+    <NewsListFilters
+      v-model:search="search"
+      v-model:category="category"
+      v-model:sort-by="sortBy"
+      v-model:ai-filter="aiFilter"
+      v-model:from-date="fromDate"
+      v-model:to-date="toDate"
+      :has-active-filters="hasActiveFilters"
+      :categories="categories"
+      @search="handleSearch"
+      @reset="resetFilters"
+    />
 
     <v-row v-if="initialLoading">
       <v-col cols="12" v-for="i in 6" :key="i">
@@ -159,3 +143,16 @@ useHead({
     </v-dialog>
   </div>
 </template>
+
+<style scoped>
+.news-page {
+  max-width: 960px;
+  padding-inline: 8px;
+}
+
+@media (min-width: 600px) {
+  .news-page {
+    padding-inline: 0;
+  }
+}
+</style>

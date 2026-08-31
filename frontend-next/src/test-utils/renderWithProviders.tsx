@@ -13,6 +13,7 @@ import newsReducer from '@/store/news/newsSlice';
 import uiReducer from '@/store/ui/uiSlice';
 import type { RootState } from '@/store';
 import { darkTheme } from '@/theme';
+import DateLocalizationProvider from '@/components/DateLocalizationProvider';
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -44,7 +45,9 @@ export function renderWithProviders(
   function Wrapper({ children }: { children: ReactNode }) {
     return (
       <Provider store={store}>
-        <ThemeProvider theme={darkTheme}>{children}</ThemeProvider>
+        <ThemeProvider theme={darkTheme}>
+          <DateLocalizationProvider>{children}</DateLocalizationProvider>
+        </ThemeProvider>
       </Provider>
     );
   }
@@ -72,7 +75,9 @@ export function renderHookWithProviders<Result, Props>(
   function Wrapper({ children }: { children: ReactNode }) {
     return (
       <Provider store={store}>
-        <ThemeProvider theme={darkTheme}>{children}</ThemeProvider>
+        <ThemeProvider theme={darkTheme}>
+          <DateLocalizationProvider>{children}</DateLocalizationProvider>
+        </ThemeProvider>
       </Provider>
     );
   }

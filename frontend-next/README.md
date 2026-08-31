@@ -75,7 +75,7 @@ frontend-next/
 | Путь | Страница | Доступ |
 |------|----------|--------|
 | / | Главная | Все |
-| /news | Лента новостей (FTS, фильтры) | Все |
+| /news | Лента новостей (FTS, фильтры, DatePicker диапазона) | Все |
 | /search | Умный поиск (NL → AI) | Все |
 | /login | Вход | Гость |
 | /register | Регистрация | Гость |
@@ -96,7 +96,7 @@ import type { News, NewsStatus, User } from '@/types';
 
 - **Серверное время** — футер через `useServerDatetime`: Socket.io namespace `/api/datetime`, path `/api/socket.io`
 - **Умный поиск** — `newsService.smartSearch()` → `POST /api/news/smart-search`
-- **Обычный поиск** — `GET /api/news?search=&tags=&category=...` на странице `/news`
+- **Обычный поиск** — `GET /api/news?search=&tags=&category=&fromDate=&toDate=` на странице `/news` (`fromDate`/`toDate` — `YYYY-MM-DD`)
 
 ## 🎨 Особенности дизайна
 

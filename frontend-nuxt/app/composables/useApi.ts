@@ -1,21 +1,19 @@
 import { useStorage } from '@vueuse/core';
 
+function resolveApiBase(): string {
+  if (import.meta.server) {
+    return `${useRequestURL().origin}/api`;
+  }
+
+  return '/api';
+}
+
 export function useApi() {
   const accessToken = useStorage<string | null>('accessToken', null);
   const refreshTokenValue = useStorage<string | null>('refreshToken', null);
 
-  const config = useRuntimeConfig();
+  const API_BASE = resolveApiBase();
 
-  function getBaseApi() {
-    if (import.meta.server) {
-      const requestUrl = useRequestURL();
-      return `${requestUrl.origin}/api`;
-    }
-
-    return config.public.apiBase as string;
-  }
-
-  const API_BASE = getBaseApi();
   async function apiFetch<T>(url: string, options: RequestInit = {}): Promise<T> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',

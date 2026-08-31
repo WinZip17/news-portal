@@ -61,7 +61,7 @@ npm run test:e2e      # E2E (test/jest-e2e.json)
 
 | Метод | Путь | Описание | Доступ |
 |-------|------|----------|--------|
-| GET | /api/news | Список новостей (FTS, фильтры, теги) | Все |
+| GET | /api/news | Список новостей (FTS, фильтры, теги, `fromDate`/`toDate`) | Все |
 | POST | /api/news/smart-search | Умный поиск (NL → NewsFilter) | Все |
 | GET | /api/news/stats | Статистика | Все |
 | GET | /api/news/favorites | Избранное | 🔒 |
@@ -96,6 +96,10 @@ npm run test:e2e      # E2E (test/jest-e2e.json)
 |-------|------|----------|
 | GET | /api/health | Проверка работоспособности |
 | GET | /api/docs | Swagger документация |
+
+### Фильтрация новостей (`GET /api/news`)
+
+Помимо `search`, `category`, `tags`, `isAiGenerated`, `sortBy`, `page`, `limit` поддерживаются **`fromDate`** и **`toDate`** — календарные даты `YYYY-MM-DD` (Europe/Moscow), необязательны и независимы друг от друга. Подробнее: [docs/search.md](../docs/search.md#фильтрация-по-дате).
 
 ## 🔑 Роли пользователей
 
@@ -161,6 +165,7 @@ backend/
 │   │   ├── news/            # Новости, FTS, smart-search
 │   │   │   ├── news-search-index.service.ts  # search_vector + GIN
 │   │   │   ├── news-search-ai.service.ts     # NL → NewsFilter
+│   │   │   ├── news-search.utils.ts          # FTS, фильтр по дате (Europe/Moscow)
 │   │   │   └── parse-news-filter.ts          # whitelist фильтров
 │   │   ├── datetime/        # WebSocket /api/datetime
 │   │   └── ai/              # AI генерация

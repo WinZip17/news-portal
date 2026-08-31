@@ -78,8 +78,10 @@ TypeScript-контракты запросов и ответов описаны 
 | sortBy | string | Сортировка (publishedAt, views, likes, createdAt) |
 | sortOrder | string | Порядок (ASC, DESC) |
 | isAiGenerated | boolean | Только AI-новости |
-| fromDate | string | С даты |
-| toDate | string | По дату |
+| fromDate | string | Начало периода включительно (`YYYY-MM-DD`, календарная дата в Europe/Moscow) |
+| toDate | string | Конец периода включительно (`YYYY-MM-DD`, календарная дата в Europe/Moscow) |
+
+`fromDate` и `toDate` необязательны и могут использоваться по отдельности. Подробнее: [search.md](search.md#фильтрация-по-дате).
 
 ## Умный поиск
 

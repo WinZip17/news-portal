@@ -1,7 +1,11 @@
 import Aura from '@primeuix/themes/aura';
 
-const apiBaseUrl = (process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3001').replace(/\/$/, '');
-const devProxyTarget = apiBaseUrl.endsWith('/api') ? apiBaseUrl : `${apiBaseUrl}/api`;
+const apiProxyTarget = (
+  process.env.NUXT_API_PROXY_TARGET ||
+  process.env.NUXT_PUBLIC_API_BASE ||
+  'http://localhost:3001'
+).replace(/\/$/, '');
+const devProxyTarget = apiProxyTarget.endsWith('/api') ? apiProxyTarget : `${apiProxyTarget}/api`;
 
 export default defineNuxtConfig({
   app: {
@@ -89,6 +93,7 @@ export default defineNuxtConfig({
         'IconField',
         'InputIcon',
         'Textarea',
+        'DatePicker',
       ],
     },
   },
@@ -111,6 +116,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
+      // Client and SSR always request same-origin /api (devProxy or nginx in prod).
+      // Do not override via NUXT_PUBLIC_API_BASE — use NUXT_API_PROXY_TARGET for dev proxy target.
       apiBase: '/api',
       appName: 'ShortNews',
       appVersion: '1.0.0',

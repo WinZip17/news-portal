@@ -105,7 +105,13 @@ export const useNewsStore = defineStore('news', () => {
   }
 
   function setFilter(newFilter: Partial<NewsFilter>): void {
-    filter.value = { ...filter.value, ...newFilter };
+    const merged: NewsFilter = { ...filter.value, ...newFilter };
+    (Object.keys(newFilter) as (keyof NewsFilter)[]).forEach((key) => {
+      if (newFilter[key] === undefined) {
+        delete merged[key];
+      }
+    });
+    filter.value = merged;
   }
 
   function resetFilter(): void {

@@ -12,7 +12,7 @@
 | `tags` | Фильтр по тегам (один или несколько: `?tags=ai&tags=экономика` или `?tags=ai,экономика`) |
 | `category` | Категория (`politics`, `economy`, `technology`, …) |
 | `isAiGenerated` | `true` / `false` — только AI или только оригиналы |
-| `fromDate`, `toDate` | Период публикации (оба параметра обязательны) |
+| `fromDate`, `toDate` | Период публикации по календарной дате (`YYYY-MM-DD`). Параметры **необязательны** и работают **независимо** друг от друга: можно указать только начало, только конец или диапазон. `toDate` включает указанный день. Сравнение идёт по `publishedAt` в часовом поясе **Europe/Moscow** (как в UI `ru-RU`). |
 | `sortBy` | `publishedAt`, `views`, `likes`, `createdAt` |
 | `sortOrder` | `ASC` / `DESC` |
 | `page`, `limit` | Пагинация |
@@ -59,8 +59,8 @@
     "searchVariants": ["Ozon", "ozon", "Озон"],
     "category": "technology",
     "isAiGenerated": true,
-    "fromDate": "2026-03-08T00:00:00.000Z",
-    "toDate": "2026-03-15T23:59:59.999Z"
+    "fromDate": "2026-03-08",
+    "toDate": "2026-03-15"
   },
   "source": "ai"
 }
@@ -92,14 +92,36 @@
 | `backend/src/modules/news/parse-news-filter.ts` | Whitelist фильтров |
 | `packages/types/src/news.ts` | `SmartSearchRequest`, `SmartSearchResponse` |
 
+## Фильтрация по дате
+
+**Query-параметры:** `fromDate`, `toDate` — строки в формате **`YYYY-MM-DD`**.
+
+| Правило | Описание |
+|---------|----------|
+| Формат | Только календарная дата (`2026-08-19`). ISO-время (`2026-08-19T00:00:00.000Z`) на `GET /api/news` **отклоняется** валидацией DTO |
+| Независимость | Можно передать только `fromDate`, только `toDate` или оба |
+| `toDate` | Включительно: новости за указанный день попадают в выборку |
+| Часовой пояс | Календарная дата считается в **Europe/Moscow** (совпадает с отображением в UI) |
+| Поле БД | `publishedAt` |
+
+**Примеры:**
+
+```http
+GET /api/news?fromDate=2026-08-01&toDate=2026-08-31
+GET /api/news?fromDate=2026-08-19
+GET /api/news?toDate=2026-08-19
+```
+
+Реализация: `backend/src/modules/news/news-search.utils.ts` (`buildNewsDateRangeSql`, `parseCalendarDate`).
+
 ## Фронтенды
 
-| Фронтенд | Обычный поиск | Умный поиск |
-|----------|---------------|-------------|
-| React SPA | `/news` — поле «Поиск» → `GET /api/news?search=` | — |
-| **Next.js** | `/news` — фильтры и FTS | **`/search`** — страница умного поиска |
-| Nuxt | `/news` | — |
-| Vue SPA | лента без поля поиска | — |
+| Фронтенд | Обычный поиск | Фильтр по дате на `/news` | Умный поиск |
+|----------|---------------|---------------------------|-------------|
+| React SPA | поле «Поиск» → `GET /api/news?search=` | диапазон (Ant Design RangePicker) | `/search` |
+| **Next.js** | фильтры и FTS | MUI DatePicker (диапазон) | **`/search`** |
+| Nuxt | FTS на `/news` | два DatePicker: «Дата от» / «Дата до» | — |
+| Vue SPA | поле «Поиск» на `/news` | «Дата от» / «Дата до» | — |
 
 ## WebSocket: серверное время
 

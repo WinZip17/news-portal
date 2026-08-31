@@ -8,13 +8,16 @@ import { fetchCurrentUser } from '@/store/auth/authSlice';
 import { lightTheme, darkTheme } from '@/theme';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import MainLayout from '@/components/MainLayout';
+import DateLocalizationProvider from '@/components/DateLocalizationProvider';
 
 function ThemeWrapper({ children }: { children: React.ReactNode }) {
   const theme = useAppSelector((s) => s.ui.theme);
   return (
     <ThemeProvider theme={theme === 'dark' ? darkTheme : lightTheme}>
       <CssBaseline />
-      <MainLayout>{children}</MainLayout>
+      <DateLocalizationProvider>
+        <MainLayout>{children}</MainLayout>
+      </DateLocalizationProvider>
     </ThemeProvider>
   );
 }

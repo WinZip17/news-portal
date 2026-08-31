@@ -106,9 +106,15 @@ frontend-nuxt/
 ## 🧩 API
 
 ```text
-Проксирование через Nitro в nuxt.config.ts:
-nitro: { devProxy: { '/api': { target: 'http://localhost:3001', changeOrigin: true } } }
+Клиент и SSR всегда ходят на same-origin /api (http://localhost:3004/api в dev).
+
+Проксирование backend через Nitro devProxy (nuxt.config.ts):
+NUXT_API_PROXY_TARGET=http://localhost:3001  # только для devProxy, не в браузер
+
+nitro: { devProxy: { '/api': { target: '.../api', changeOrigin: true } } }
 ```
+
+Не используйте `NUXT_PUBLIC_API_BASE` — Nuxt подставит его в `public.apiBase`, и запросы пойдут напрямую на production (CORS).
 
 Все запросы через useApi() composable — apiFetch<T>().
 
@@ -116,7 +122,7 @@ nitro: { devProxy: { '/api': { target: 'http://localhost:3001', changeOrigin: tr
 
 ```text
 / — Главная, статистика, последние новости — Все
-/news — Лента с фильтрацией, FTS-поиском (`GET /api/news?search=`), сортировкой — Все
+/news — Лента с фильтрацией, FTS-поиском (`GET /api/news?search=`), сортировкой и фильтром по дате (`fromDate`, `toDate`) — Все
 /login — Вход — Гости
 /register — Регистрация — Гости
 /profile — Профиль, смена пароля, избранное — Юзеры

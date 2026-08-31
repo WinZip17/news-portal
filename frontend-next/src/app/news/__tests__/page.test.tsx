@@ -46,4 +46,12 @@ describe('NewsPage', () => {
 
     expect(searchInput).toHaveValue('');
   });
+
+  it('renders MUI date pickers for news filter', async () => {
+    renderWithProviders(<NewsPage />);
+
+    await screen.findByText(mockNewsItem.title);
+
+    expect(screen.getAllByRole('button', { name: 'Choose date' })).toHaveLength(2);
+  });
 });

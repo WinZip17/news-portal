@@ -31,10 +31,29 @@
             placeholder="Сортировка"
             @change="applyFilters"
           />
+
+          <DatePicker
+            v-model="fromDate"
+            date-format="dd.mm.yy"
+            placeholder="Дата от"
+            show-icon
+            show-clear
+            @update:model-value="applyFilters"
+          />
+
+          <DatePicker
+            v-model="toDate"
+            date-format="dd.mm.yy"
+            placeholder="Дата до"
+            show-icon
+            show-clear
+            :min-date="fromDate ?? undefined"
+            @update:model-value="applyFilters"
+          />
         </div>
       </template>
 
-      <template #end>
+      <template v-if="hasActiveFilters" #end>
         <Button
           label="Сбросить"
           aria-label="Сбросить"
@@ -88,12 +107,15 @@
 <script setup lang="ts">
 import type { NewsItem, NewsCategory, NewsFilter } from '~/types';
 import { useDebounceFn } from '@vueuse/core';
+import { formatCalendarDate } from '~/utils/formatCalendarDate';
 
 const newsStore = useNewsStore();
 
 const searchQuery = ref('');
 const selectedCategory = ref<NewsCategory | null>(null);
 const sortBy = ref('publishedAt');
+const fromDate = ref<Date | null>(null);
+const toDate = ref<Date | null>(null);
 const detailModalVisible = ref(false);
 const selectedNews = ref<NewsItem | null>(null);
 const totalRecords = ref(100);
@@ -129,10 +151,21 @@ const debouncedSearch = useDebounceFn(() => {
   applyFilters();
 }, 500);
 
+const hasActiveFilters = computed(
+  () =>
+    !!searchQuery.value ||
+    !!selectedCategory.value ||
+    !!fromDate.value ||
+    !!toDate.value ||
+    sortBy.value !== 'publishedAt',
+);
+
 function applyFilters(): void {
   const filter: NewsFilter = {
     search: searchQuery.value || undefined,
     category: selectedCategory.value || undefined,
+    fromDate: undefined,
+    toDate: undefined,
   };
 
   if (sortBy.value) {
@@ -141,7 +174,15 @@ function applyFilters(): void {
     filter.sortOrder = order === 'asc' ? 'ASC' : 'DESC';
   }
 
-  newsStore.setFilter(filter);
+  if (fromDate.value) {
+    filter.fromDate = formatCalendarDate(fromDate.value);
+  }
+
+  if (toDate.value) {
+    filter.toDate = formatCalendarDate(toDate.value);
+  }
+
+  newsStore.setFilter({ ...filter, page: 1 });
   newsStore.fetchNews();
 }
 
@@ -149,6 +190,8 @@ function resetFilters(): void {
   searchQuery.value = '';
   selectedCategory.value = null;
   sortBy.value = 'publishedAt';
+  fromDate.value = null;
+  toDate.value = null;
   newsStore.resetFilter();
   newsStore.fetchNews();
 }

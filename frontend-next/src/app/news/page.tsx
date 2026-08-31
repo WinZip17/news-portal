@@ -26,6 +26,7 @@ import { useAppDispatch, useAppSelector } from '@/store';
 import { fetchNews, setCurrentNews } from '@/store/news/newsSlice';
 import { getCategoryLabel } from '@/utils/getCategoryLabel';
 import { truncateText } from '@/utils/truncateText';
+import NewsDateRangePicker from '@/components/NewsDateRangePicker';
 
 const PAGE_SIZE = 20;
 
@@ -39,6 +40,8 @@ export default function NewsPage() {
   const [category, setCategory] = useState('all');
   const [sortBy, setSortBy] = useState('publishedAt');
   const [aiFilter, setAiFilter] = useState('all');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
   const [page, setPage] = useState(1);
   const loaderRef = useRef<HTMLDivElement>(null);
   const isFirstRender = useRef(true);
@@ -53,9 +56,11 @@ export default function NewsPage() {
       if (category !== 'all') params.category = category;
       if (search) params.search = search;
       if (aiFilter !== 'all') params.isAiGenerated = aiFilter;
+      if (fromDate) params.fromDate = fromDate;
+      if (toDate) params.toDate = toDate;
       return params;
     },
-    [category, sortBy, aiFilter, search],
+    [category, sortBy, aiFilter, search, fromDate, toDate],
   );
 
   const loadNews = useCallback(
@@ -71,7 +76,7 @@ export default function NewsPage() {
     }
     setPage(1);
     loadNews(1, false);
-  }, [category, sortBy, aiFilter, loadNews]);
+  }, [category, sortBy, aiFilter, fromDate, toDate, loadNews]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -176,13 +181,24 @@ export default function NewsPage() {
           <MenuItem value="true">🤖 AI-рерайт</MenuItem>
           <MenuItem value="false">📄 Оригиналы</MenuItem>
         </TextField>
-        {(category !== 'all' || aiFilter !== 'all' || search) && (
+        <NewsDateRangePicker
+          fromDate={fromDate}
+          toDate={toDate}
+          fullWidth={isMobile}
+          onChange={(from, to) => {
+            setFromDate(from);
+            setToDate(to);
+          }}
+        />
+        {(category !== 'all' || aiFilter !== 'all' || search || fromDate || toDate) && (
           <Button
             size="small"
             onClick={() => {
               setCategory('all');
               setAiFilter('all');
               setSearch('');
+              setFromDate('');
+              setToDate('');
             }}
           >
             Сбросить

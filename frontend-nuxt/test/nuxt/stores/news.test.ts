@@ -16,9 +16,14 @@ describe('news store', () => {
   it('setFilter merges filter and resetFilter restores defaults', () => {
     const store = useNewsStore();
 
-    store.setFilter({ search: 'AI', page: 2 });
+    store.setFilter({ search: 'AI', page: 2, fromDate: '2026-08-01', toDate: '2026-08-31' });
     expect(store.filter.search).toBe('AI');
     expect(store.filter.page).toBe(2);
+    expect(store.filter.fromDate).toBe('2026-08-01');
+
+    store.setFilter({ fromDate: undefined, toDate: undefined });
+    expect(store.filter.fromDate).toBeUndefined();
+    expect(store.filter.toDate).toBeUndefined();
 
     store.resetFilter();
     expect(store.filter).toEqual({
