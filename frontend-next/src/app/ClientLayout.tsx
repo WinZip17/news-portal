@@ -8,6 +8,7 @@ import { fetchCurrentUser } from '@/store/auth/authSlice';
 import { lightTheme, darkTheme } from '@/theme';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import MainLayout from '@/components/MainLayout';
+import NewsNotifications from '@/components/NewsNotifications';
 import DateLocalizationProvider from '@/components/DateLocalizationProvider';
 
 function ThemeWrapper({ children }: { children: React.ReactNode }) {
@@ -17,6 +18,7 @@ function ThemeWrapper({ children }: { children: React.ReactNode }) {
       <CssBaseline />
       <DateLocalizationProvider>
         <MainLayout>{children}</MainLayout>
+        <NewsNotifications />
       </DateLocalizationProvider>
     </ThemeProvider>
   );
