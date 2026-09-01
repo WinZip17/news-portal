@@ -8,10 +8,7 @@ RUN cd packages/types && npm install && npm run build
 WORKDIR /app/frontend-next
 
 COPY frontend-next/package*.json ./
-
-RUN mkdir -p ./packages && cp -r /app/packages/types ./packages/types && \
-    npm pkg set dependencies.@news-portal/types="file:./packages/types" && \
-    npm install
+RUN npm ci
 
 COPY frontend-next .
 RUN npm run build
