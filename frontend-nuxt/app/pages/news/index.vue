@@ -2,67 +2,18 @@
   <div class="news-page">
     <h1 class="page-title">Новости</h1>
 
-    <Toolbar class="filters-toolbar">
-      <template #start>
-        <div class="filters-row">
-          <IconField>
-            <InputIcon class="pi pi-search" />
-            <InputText
-              v-model="searchQuery"
-              placeholder="Поиск новостей..."
-              @input="debouncedSearch"
-            />
-          </IconField>
-
-          <Dropdown
-            v-model="selectedCategory"
-            :options="categories"
-            option-label="label"
-            option-value="value"
-            placeholder="Все категории"
-            @change="applyFilters"
-          />
-
-          <Dropdown
-            v-model="sortBy"
-            :options="sortOptions"
-            option-label="label"
-            option-value="value"
-            placeholder="Сортировка"
-            @change="applyFilters"
-          />
-
-          <DatePicker
-            v-model="fromDate"
-            date-format="dd.mm.yy"
-            placeholder="Дата от"
-            show-icon
-            show-clear
-            @update:model-value="applyFilters"
-          />
-
-          <DatePicker
-            v-model="toDate"
-            date-format="dd.mm.yy"
-            placeholder="Дата до"
-            show-icon
-            show-clear
-            :min-date="fromDate ?? undefined"
-            @update:model-value="applyFilters"
-          />
-        </div>
-      </template>
-
-      <template v-if="hasActiveFilters" #end>
-        <Button
-          label="Сбросить"
-          aria-label="Сбросить"
-          icon="pi pi-refresh"
-          severity="secondary"
-          @click="resetFilters"
-        />
-      </template>
-    </Toolbar>
+    <NewsListFilters
+      v-model:search-query="searchQuery"
+      v-model:selected-category="selectedCategory"
+      v-model:sort-by="sortBy"
+      v-model:ai-filter="aiFilter"
+      v-model:from-date="fromDate"
+      v-model:to-date="toDate"
+      :has-active-filters="hasActiveFilters"
+      @search="applyFilters"
+      @apply="applyFilters"
+      @reset="resetFilters"
+    />
 
     <div v-if="newsStore.isLoading" class="loading-container">
       <ProgressSpinner />
@@ -106,7 +57,6 @@
 
 <script setup lang="ts">
 import type { NewsItem, NewsCategory, NewsFilter } from '~/types';
-import { useDebounceFn } from '@vueuse/core';
 import { formatCalendarDate } from '~/utils/formatCalendarDate';
 
 const newsStore = useNewsStore();
@@ -114,30 +64,12 @@ const newsStore = useNewsStore();
 const searchQuery = ref('');
 const selectedCategory = ref<NewsCategory | null>(null);
 const sortBy = ref('publishedAt');
+const aiFilter = ref<'all' | 'true' | 'false'>('all');
 const fromDate = ref<Date | null>(null);
 const toDate = ref<Date | null>(null);
 const detailModalVisible = ref(false);
 const selectedNews = ref<NewsItem | null>(null);
 const totalRecords = ref(100);
-
-const categories = [
-  { label: 'Политика', value: 'politics' },
-  { label: 'Экономика', value: 'economy' },
-  { label: 'Технологии', value: 'technology' },
-  { label: 'Наука', value: 'science' },
-  { label: 'Спорт', value: 'sports' },
-  { label: 'Развлечения', value: 'entertainment' },
-  { label: 'Здоровье', value: 'health' },
-  { label: 'Мир', value: 'world' },
-  { label: 'Другое', value: 'other' },
-];
-
-const sortOptions = [
-  { label: 'Сначала новые', value: 'publishedAt' },
-  { label: 'Сначала старые', value: 'publishedAt_asc' },
-  { label: 'По просмотрам', value: 'views' },
-  { label: 'По лайкам', value: 'likes' },
-];
 
 await useAsyncData('news-page-data', async () => {
   await newsStore.fetchNews();
@@ -147,14 +79,11 @@ await useAsyncData('news-page-data', async () => {
   };
 });
 
-const debouncedSearch = useDebounceFn(() => {
-  applyFilters();
-}, 500);
-
 const hasActiveFilters = computed(
   () =>
     !!searchQuery.value ||
     !!selectedCategory.value ||
+    aiFilter.value !== 'all' ||
     !!fromDate.value ||
     !!toDate.value ||
     sortBy.value !== 'publishedAt',
@@ -166,12 +95,19 @@ function applyFilters(): void {
     category: selectedCategory.value || undefined,
     fromDate: undefined,
     toDate: undefined,
+    isAiGenerated: undefined,
   };
 
   if (sortBy.value) {
     const [field, order] = sortBy.value.split('_');
     filter.sortBy = field as NewsFilter['sortBy'];
     filter.sortOrder = order === 'asc' ? 'ASC' : 'DESC';
+  }
+
+  if (aiFilter.value === 'true') {
+    filter.isAiGenerated = true;
+  } else if (aiFilter.value === 'false') {
+    filter.isAiGenerated = false;
   }
 
   if (fromDate.value) {
@@ -190,6 +126,7 @@ function resetFilters(): void {
   searchQuery.value = '';
   selectedCategory.value = null;
   sortBy.value = 'publishedAt';
+  aiFilter.value = 'all';
   fromDate.value = null;
   toDate.value = null;
   newsStore.resetFilter();
@@ -230,23 +167,6 @@ function openNewsDetail(id: string): void {
   margin-bottom: 2rem;
 }
 
-.filters-toolbar {
-  margin-bottom: 2rem;
-  border-radius: 6px;
-}
-
-.filters-row {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  flex-wrap: wrap;
-  flex: 1;
-}
-
-.filters-row > * {
-  min-width: 200px;
-}
-
 .news-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -285,16 +205,6 @@ function openNewsDetail(id: string): void {
 @media (max-width: 768px) {
   .page-title {
     font-size: 1.75rem;
-  }
-
-  .filters-row {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .filters-row > * {
-    width: 100%;
-    min-width: unset;
   }
 
   .news-grid {

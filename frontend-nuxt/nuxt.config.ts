@@ -94,6 +94,7 @@ export default defineNuxtConfig({
         'InputIcon',
         'Textarea',
         'DatePicker',
+        'OverlayPanel',
       ],
     },
   },
