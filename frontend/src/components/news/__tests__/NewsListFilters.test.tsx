@@ -14,6 +14,7 @@ describe('NewsListFilters', () => {
   const setCategory = vi.fn();
   const setSortBy = vi.fn();
   const setAiFilter = vi.fn();
+  const setDateFilter = vi.fn();
   const clearAllFilters = vi.fn();
 
   beforeEach(() => {
@@ -24,6 +25,7 @@ describe('NewsListFilters', () => {
       setCategory,
       setSortBy,
       setAiFilter,
+      setDateFilter,
       clearAllFilters,
     });
   });
@@ -60,5 +62,21 @@ describe('NewsListFilters', () => {
     fireEvent.change(screen.getByPlaceholderText('Поиск...'), { target: { value: '' } });
 
     expect(setSearch).toHaveBeenCalledWith('');
+  });
+
+  it('shows sort control in the toolbar', () => {
+    renderWithProviders(<NewsListFilters hasActiveFilters={false} />);
+
+    expect(screen.getByText('Сортировка')).toBeInTheDocument();
+  });
+
+  it('opens filters popover with secondary controls', () => {
+    renderWithProviders(<NewsListFilters hasActiveFilters={true} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Фильтры/i }));
+
+    expect(screen.getByText('Категория')).toBeInTheDocument();
+    expect(screen.getByText('Тип новости')).toBeInTheDocument();
+    expect(screen.getByText('Дата новостей')).toBeInTheDocument();
   });
 });
