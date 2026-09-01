@@ -96,3 +96,23 @@ export interface NewsStats {
 
 /** Alias for Nuxt naming */
 export type StatsResponse = NewsStats;
+
+/** WebSocket event names for `/api/news` namespace */
+export const NEWS_WS_EVENTS = {
+  PUBLISHED: 'news:published',
+  PENDING: 'news:pending',
+} as const;
+
+export type NewsWsEvent = (typeof NEWS_WS_EVENTS)[keyof typeof NEWS_WS_EVENTS];
+
+/** Payload for `news:published` and `news:pending` Socket.io events */
+export interface NewsNotificationPayload {
+  id: string;
+  title: string;
+  summary?: string | null;
+  category: NewsCategory;
+  status: NewsStatus;
+  isAiGenerated: boolean;
+  publishedAt: string;
+  createdAt: string;
+}

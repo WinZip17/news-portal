@@ -11,6 +11,7 @@ import { RssFetcherService } from './rss-fetcher.service';
 import { DeduplicationService } from './deduplication.service';
 import { normalizeUrl } from '../../utils/normalizeUrl';
 import { AiRewriteResult, NewsCategory, NewsStatus, RssArticle } from '../../types';
+import { NewsGateway } from '../news/news.gateway';
 
 @Injectable()
 export class AiService {
@@ -27,6 +28,7 @@ export class AiService {
     private rssFetcher: RssFetcherService,
     private deduplicationService: DeduplicationService,
     private schedulerRegistry: SchedulerRegistry,
+    private newsGateway: NewsGateway,
   ) {
     if (this.aiConfig.apiKey) {
       this.openai = new OpenAI({
@@ -210,6 +212,7 @@ export class AiService {
         try {
           const saved = await this.newsRepository.save(news);
           generatedNews.push(saved);
+          this.newsGateway.emitNewsPending(saved);
           this.logger.log(`News generated: ${saved.title}`);
         } catch (error: any) {
           // Защита от race condition / unique index violation

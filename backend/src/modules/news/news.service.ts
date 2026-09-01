@@ -8,6 +8,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { NewsCategory, NewsFilter, NewsStatus } from '../../types';
 import { normalizeTagsFilter, resolveSortColumn, buildFtsSearchCondition, buildNewsDateRangeSql } from './news-search.utils';
+import { NewsGateway } from './news.gateway';
 
 @Injectable()
 export class NewsService {
@@ -21,6 +22,7 @@ export class NewsService {
     @InjectRepository(Like)
     private likeRepository: Repository<Like>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly newsGateway: NewsGateway,
   ) {}
 
   async findAll(filters: NewsFilter) {
@@ -129,7 +131,9 @@ export class NewsService {
       status: NewsStatus.PENDING,
       publishedAt: new Date(),
     });
-    return this.newsRepository.save(news);
+    const saved = await this.newsRepository.save(news);
+    this.newsGateway.emitNewsPending(saved);
+    return saved;
   }
 
   async update(id: string, updateData: Partial<Omit<News, 'id' | 'author'>>) {
@@ -153,7 +157,11 @@ export class NewsService {
     news.moderatedBy = moderatorId;
     news.moderatedAt = new Date();
     news.moderationComment = comment || '';
-    return this.newsRepository.save(news);
+    const saved = await this.newsRepository.save(news);
+    if (status === NewsStatus.PUBLISHED) {
+      this.newsGateway.emitNewsPublished(saved);
+    }
+    return saved;
   }
 
   async like(userId: string, newsId: string): Promise<{ liked: boolean; likes: number }> {
@@ -188,7 +196,6 @@ export class NewsService {
 
     const pendingNews = await this.newsRepository.find({
       where: { status: NewsStatus.PENDING, createdAt: LessThan(oneHourAgo) },
-      select: { id: true, title: true, createdAt: true, status: true },
     });
 
     if (pendingNews.length > 0) {
@@ -204,6 +211,16 @@ export class NewsService {
           moderationComment: 'Автоматическое подтверждение (ожидание более 1 часа)',
         },
       );
+
+      for (const news of pendingNews) {
+        this.newsGateway.emitNewsPublished({
+          ...news,
+          status: NewsStatus.PUBLISHED,
+          moderatedBy: 'system',
+          moderatedAt: new Date(),
+          moderationComment: 'Автоматическое подтверждение (ожидание более 1 часа)',
+        });
+      }
     }
 
     return { approved: pendingNews.length, news: pendingNews.map((n) => ({ id: n.id, title: n.title })) };

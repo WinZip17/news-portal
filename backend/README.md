@@ -78,9 +78,28 @@ npm run test:e2e      # E2E (test/jest-e2e.json)
 
 ### WebSocket
 
-| Протокол | Путь | Описание |
-|----------|------|----------|
+| Протокол | Namespace | Описание |
+|----------|-----------|----------|
 | Socket.io | `/api/datetime` | Серверное время, событие `datetime`, engine `/api/socket.io` |
+| Socket.io | `/api/news` | Уведомления о новостях, engine `/api/socket.io` |
+
+**Подключение к `/api/news`:**
+
+```javascript
+import { io } from 'socket.io-client';
+
+const socket = io('https://short-news.ru/api/news', {
+  path: '/api/socket.io',
+  auth: { token: accessToken }, // опционально; для модераторов — обязательно
+});
+```
+
+| Событие | Получатели | Когда |
+|---------|------------|-------|
+| `news:published` | все подключённые клиенты | новость опубликована (модерация / авто-approve) |
+| `news:pending` | moderator, admin, super_admin (комната `moderators`) | создана новость со статусом `pending` |
+
+Payload — тип `NewsNotificationPayload` из `@news-portal/types`: `id`, `title`, `summary`, `category`, `status`, `isAiGenerated`, `publishedAt`, `createdAt` (ISO-строки). Константы событий: `NEWS_WS_EVENTS`.
 
 ### AI Генерация
 

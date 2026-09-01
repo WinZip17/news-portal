@@ -7,10 +7,12 @@ import { NewsCategory, NewsStatus } from '../../types';
 import { NotFoundException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { publishedAtCalendarDateSql } from './news-search.utils';
+import { NewsGateway } from './news.gateway';
 
 describe('NewsService', () => {
   let service: NewsService;
   let newsRepository: Repository<News>;
+  let newsGateway: { emitNewsPending: jest.Mock; emitNewsPublished: jest.Mock };
   let queryBuilder: {
     leftJoinAndSelect: jest.Mock;
     andWhere: jest.Mock;
@@ -44,6 +46,11 @@ describe('NewsService', () => {
       skip: jest.fn().mockReturnThis(),
       take: jest.fn().mockReturnThis(),
       getManyAndCount: jest.fn().mockResolvedValue([[mockNews], 1]),
+    };
+
+    newsGateway = {
+      emitNewsPending: jest.fn(),
+      emitNewsPublished: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -89,6 +96,10 @@ describe('NewsService', () => {
             set: jest.fn().mockResolvedValue(undefined),
             del: jest.fn().mockResolvedValue(undefined),
           },
+        },
+        {
+          provide: NewsGateway,
+          useValue: newsGateway,
         },
       ],
     }).compile();
@@ -187,6 +198,7 @@ describe('NewsService', () => {
       };
       const result = await service.create(dto, 'user1');
       expect(result).toBeDefined();
+      expect(newsGateway.emitNewsPending).toHaveBeenCalledTimes(1);
     });
   });
 

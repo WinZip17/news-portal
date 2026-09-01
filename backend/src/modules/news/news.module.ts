@@ -6,6 +6,7 @@ import { NewsController } from './news.controller';
 import { NewsSchedulerService } from './news-scheduler.service';
 import { NewsSearchIndexService } from './news-search-index.service';
 import { NewsSearchAiService } from './news-search-ai.service';
+import { NewsGateway } from './news.gateway';
 import { AiConfig } from '../ai/config/ai.config';
 import { News } from '../../entities';
 import { AuthModule } from '../auth/auth.module';
@@ -15,7 +16,7 @@ import { Like } from '../../entities';
 @Module({
   imports: [TypeOrmModule.forFeature([News, Favorite, Like]), ScheduleModule.forRoot(), AuthModule],
   controllers: [NewsController],
-  providers: [NewsService, NewsSchedulerService, NewsSearchIndexService, NewsSearchAiService, AiConfig],
-  exports: [NewsService],
+  providers: [NewsService, NewsSchedulerService, NewsSearchIndexService, NewsSearchAiService, AiConfig, NewsGateway],
+  exports: [NewsService, NewsGateway],
 })
 export class NewsModule {}
