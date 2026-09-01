@@ -47,10 +47,13 @@ describe('NewsPage', () => {
     expect(searchInput).toHaveValue('');
   });
 
-  it('renders MUI date pickers for news filter', async () => {
+  it('renders MUI date pickers inside filters popover', async () => {
+    const user = userEvent.setup();
     renderWithProviders(<NewsPage />);
 
     await screen.findByText(mockNewsItem.title);
+
+    await user.click(screen.getByRole('button', { name: 'Фильтры' }));
 
     expect(screen.getAllByRole('button', { name: 'Choose date' })).toHaveLength(2);
   });

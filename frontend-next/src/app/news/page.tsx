@@ -9,24 +9,21 @@ import {
   CardActionArea,
   Chip,
   Box,
-  TextField,
-  MenuItem,
   Skeleton,
   Dialog,
   DialogContent,
   IconButton,
-  Button,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { Search as SearchIcon, Close as CloseIcon, SmartToy as AIIcon } from '@mui/icons-material';
+import { Close as CloseIcon, SmartToy as AIIcon } from '@mui/icons-material';
 import { News } from '@/types';
 import NewsDetail from '@/components/NewsDetail';
+import NewsListFilters from '@/components/NewsListFilters';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { fetchNews, setCurrentNews } from '@/store/news/newsSlice';
 import { getCategoryLabel } from '@/utils/getCategoryLabel';
 import { truncateText } from '@/utils/truncateText';
-import NewsDateRangePicker from '@/components/NewsDateRangePicker';
 
 const PAGE_SIZE = 20;
 
@@ -102,6 +99,19 @@ export default function NewsPage() {
     loadNews(1, false);
   };
 
+  const handleReset = () => {
+    setCategory('all');
+    setAiFilter('all');
+    setSearch('');
+    setFromDate('');
+    setToDate('');
+    setPage(1);
+    loadNews(1, false);
+  };
+
+  const hasActiveFilters =
+    category !== 'all' || aiFilter !== 'all' || !!search || !!fromDate || !!toDate;
+
   const openNews = (item: News) => {
     dispatch(setCurrentNews(item));
   };
@@ -110,101 +120,31 @@ export default function NewsPage() {
     dispatch(setCurrentNews(null));
   };
 
-  const categories = [
-    { value: 'all', label: '📂 Все' },
-    { value: 'politics', label: '🏛 Политика' },
-    { value: 'economy', label: '💹 Экономика' },
-    { value: 'technology', label: '💻 Технологии' },
-    { value: 'science', label: '🔬 Наука' },
-    { value: 'sports', label: '⚽ Спорт' },
-    { value: 'entertainment', label: '🎬 Развлечения' },
-    { value: 'health', label: '🏥 Здоровье' },
-    { value: 'world', label: '🌍 Мир' },
-  ];
-
   return (
     <Container sx={{ py: { xs: 2, md: 4 }, px: { xs: 1, sm: 2 }, maxWidth: '100%', minWidth: 0 }}>
       <Typography variant="h4" gutterBottom sx={{ fontSize: { xs: '1.3rem', sm: '2rem' } }}>
         📰 Лента новостей
       </Typography>
 
-      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 3 }}>
-        <TextField
-          size="small"
-          placeholder="Поиск..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-          slotProps={{
-            input: { startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} /> },
-          }}
-          sx={{ minWidth: isMobile ? '100%' : 200, flex: isMobile ? '1 1 100%' : '1 1 180px' }}
-        />
-        <TextField
-          select
-          size="small"
-          value={category}
-          onChange={(e) => {
-            setCategory(e.target.value);
-          }}
-          sx={{ minWidth: isMobile ? '100%' : 160, flex: isMobile ? '1 1 100%' : '1 1 140px' }}
-        >
-          {categories.map((c) => (
-            <MenuItem key={c.value} value={c.value}>
-              {c.label}
-            </MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          select
-          size="small"
-          value={sortBy}
-          onChange={(e) => {
-            setSortBy(e.target.value);
-          }}
-          sx={{ minWidth: isMobile ? '100%' : 160, flex: isMobile ? '1 1 100%' : '1 1 150px' }}
-        >
-          <MenuItem value="publishedAt">🕒 По дате</MenuItem>
-          <MenuItem value="views">👁 По просмотрам</MenuItem>
-          <MenuItem value="likes">❤️ По лайкам</MenuItem>
-        </TextField>
-        <TextField
-          select
-          size="small"
-          value={aiFilter}
-          onChange={(e) => {
-            setAiFilter(e.target.value);
-          }}
-          sx={{ minWidth: isMobile ? '100%' : 150, flex: isMobile ? '1 1 100%' : '1 1 140px' }}
-        >
-          <MenuItem value="all">📋 Все</MenuItem>
-          <MenuItem value="true">🤖 AI-рерайт</MenuItem>
-          <MenuItem value="false">📄 Оригиналы</MenuItem>
-        </TextField>
-        <NewsDateRangePicker
-          fromDate={fromDate}
-          toDate={toDate}
-          fullWidth={isMobile}
-          onChange={(from, to) => {
-            setFromDate(from);
-            setToDate(to);
-          }}
-        />
-        {(category !== 'all' || aiFilter !== 'all' || search || fromDate || toDate) && (
-          <Button
-            size="small"
-            onClick={() => {
-              setCategory('all');
-              setAiFilter('all');
-              setSearch('');
-              setFromDate('');
-              setToDate('');
-            }}
-          >
-            Сбросить
-          </Button>
-        )}
-      </Box>
+      <NewsListFilters
+        search={search}
+        category={category}
+        sortBy={sortBy}
+        aiFilter={aiFilter}
+        fromDate={fromDate}
+        toDate={toDate}
+        hasActiveFilters={hasActiveFilters}
+        onSearchChange={setSearch}
+        onSearch={handleSearch}
+        onCategoryChange={setCategory}
+        onSortByChange={setSortBy}
+        onAiFilterChange={setAiFilter}
+        onDateChange={(from, to) => {
+          setFromDate(from);
+          setToDate(to);
+        }}
+        onReset={handleReset}
+      />
 
       <Grid container spacing={1.5}>
         {isLoading

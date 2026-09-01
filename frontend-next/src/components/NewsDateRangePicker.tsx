@@ -9,6 +9,7 @@ type NewsDateRangePickerProps = {
   toDate: string;
   onChange: (from: string, to: string) => void;
   fullWidth?: boolean;
+  stacked?: boolean;
 };
 
 const fieldSx = (fullWidth: boolean) => ({
@@ -22,6 +23,7 @@ export default function NewsDateRangePicker({
   toDate,
   onChange,
   fullWidth = false,
+  stacked = false,
 }: NewsDateRangePickerProps) {
   const fromValue = fromDate ? dayjs(fromDate) : null;
   const toValue = toDate ? dayjs(toDate) : null;
@@ -38,9 +40,10 @@ export default function NewsDateRangePicker({
     <Box
       sx={{
         display: 'flex',
+        flexDirection: stacked ? 'column' : 'row',
         gap: 1,
-        flexWrap: fullWidth ? 'wrap' : 'nowrap',
-        ...fieldSx(fullWidth),
+        flexWrap: stacked || fullWidth ? 'wrap' : 'nowrap',
+        ...(stacked ? { width: '100%' } : fieldSx(fullWidth)),
       }}
     >
       <DatePicker
@@ -51,7 +54,7 @@ export default function NewsDateRangePicker({
         slotProps={{
           textField: {
             size: 'small',
-            sx: fieldSx(fullWidth),
+            sx: stacked || fullWidth ? { width: '100%' } : fieldSx(fullWidth),
           },
           field: { clearable: true },
         }}
@@ -65,7 +68,7 @@ export default function NewsDateRangePicker({
         slotProps={{
           textField: {
             size: 'small',
-            sx: fieldSx(fullWidth),
+            sx: stacked || fullWidth ? { width: '100%' } : fieldSx(fullWidth),
           },
           field: { clearable: true },
         }}
