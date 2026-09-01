@@ -8,7 +8,11 @@ RUN cd packages/types && npm install && npm run build
 WORKDIR /app/frontend-next
 
 COPY frontend-next/package*.json ./
-RUN npm ci
+# Turbopack does not resolve file:../packages/types outside the Next.js root.
+# Copy types into the app tree and point the dependency locally (in-container only).
+RUN mkdir -p ./packages && cp -r /app/packages/types ./packages/types && \
+    npm pkg set dependencies.@news-portal/types="file:./packages/types" && \
+    npm install
 
 COPY frontend-next .
 RUN npm run build
