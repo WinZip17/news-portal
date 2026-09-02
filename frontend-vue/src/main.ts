@@ -7,6 +7,7 @@ import { setupInterceptors } from '@/api/interceptors';
 import '@/assets/main.css';
 import '@/assets/utilities.css';
 import { pinia } from './stores';
+import { initYandexMetrika } from '@/plugins/yandexMetrika';
 
 const vuetify = createAppVuetify();
 const head = createHead();
@@ -16,5 +17,7 @@ app.use(head);
 app.use(pinia);
 app.use(router);
 app.use(vuetify);
+
+initYandexMetrika();
 
 app.mount('#app');

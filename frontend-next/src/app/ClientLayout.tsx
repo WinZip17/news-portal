@@ -10,6 +10,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import MainLayout from '@/components/MainLayout';
 import NewsNotifications from '@/components/NewsNotifications';
 import DateLocalizationProvider from '@/components/DateLocalizationProvider';
+import YandexMetrika from '@/components/YandexMetrika';
 
 function ThemeWrapper({ children }: { children: React.ReactNode }) {
   const theme = useAppSelector((s) => s.ui.theme);
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <AppRouterCacheProvider>
         <AuthInit>
           <ThemeWrapper>{children}</ThemeWrapper>
+          <YandexMetrika />
         </AuthInit>
       </AppRouterCacheProvider>
     </Provider>
