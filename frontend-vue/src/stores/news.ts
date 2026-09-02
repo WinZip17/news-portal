@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { newsService } from '@/services/news.service';
 import type { News, NewsFilter, NewsStats } from '@/types';
 
@@ -10,6 +10,7 @@ export const useNewsStore = defineStore('news', () => {
   const limit = ref(12);
   const totalPages = ref(0);
   const isLoading = ref(false);
+  const loadingMore = ref(false);
   const filters = ref<NewsFilter>({
     sortBy: 'publishedAt',
     sortOrder: 'DESC'
@@ -17,15 +18,25 @@ export const useNewsStore = defineStore('news', () => {
   const stats = ref<NewsStats | null>(null);
   const initialLoading = ref(true);
 
-  async function fetchNews() {
-    isLoading.value = true;
+  const hasMore = computed(() => page.value < totalPages.value);
+
+  async function fetchNews(append = false) {
+    if (append) {
+      if (loadingMore.value || !hasMore.value) return;
+      loadingMore.value = true;
+    } else {
+      isLoading.value = true;
+    }
+
     try {
+      const requestPage = append ? page.value + 1 : page.value;
       const response = await newsService.getNews({
         ...filters.value,
-        page: page.value,
+        page: requestPage,
         limit: limit.value
       });
-      news.value = response.data;
+
+      news.value = append ? [...news.value, ...response.data] : response.data;
       total.value = response.total;
       page.value = response.page;
       limit.value = response.limit;
@@ -35,7 +46,12 @@ export const useNewsStore = defineStore('news', () => {
       initialLoading.value = false;
     } finally {
       isLoading.value = false;
+      loadingMore.value = false;
     }
+  }
+
+  function loadMore() {
+    return fetchNews(true);
   }
 
   async function fetchStats() {
@@ -73,10 +89,13 @@ export const useNewsStore = defineStore('news', () => {
     limit,
     totalPages,
     isLoading,
+    loadingMore,
+    hasMore,
     filters,
     stats,
     initialLoading,
     fetchNews,
+    loadMore,
     fetchStats,
     setFilter,
     setPage,

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useNewsStore } from '@/stores/news';
 import NewsCard from '@/components/news/NewsCard.vue';
 import NewsDetailModal from '@/components/news/NewsDetailModal.vue';
@@ -12,7 +12,7 @@ import { storeToRefs } from 'pinia';
 import { useHead } from '@unhead/vue';
 
 const newsStore = useNewsStore();
-const { news, page, totalPages, initialLoading } = storeToRefs(newsStore);
+const { news, initialLoading, isLoading, loadingMore, hasMore } = storeToRefs(newsStore);
 
 const search = ref('');
 const category = ref('all');
@@ -22,6 +22,9 @@ const fromDate = ref('');
 const toDate = ref('');
 const selectedNews = ref<News | null>(null);
 const modalVisible = ref(false);
+const loaderRef = ref<HTMLElement | null>(null);
+
+let observer: IntersectionObserver | null = null;
 
 const hasActiveFilters = computed(
   () =>
@@ -46,11 +49,20 @@ const categories = [
 
 onMounted(() => {
   if (!news.value.length) newsStore.fetchNews();
+  setupObserver();
+});
+
+onUnmounted(() => {
+  observer?.disconnect();
 });
 
 watch([category, sortBy, aiFilter, fromDate, toDate], () => {
-  newsStore.setPage(1);
   applyFilters();
+});
+
+watch([news, hasMore, isLoading, loadingMore], async () => {
+  await nextTick();
+  setupObserver();
 });
 
 function applyFilters() {
@@ -60,13 +72,13 @@ function applyFilters() {
     isAiGenerated: aiFilter.value !== 'all' ? aiFilter.value === 'true' : undefined,
     fromDate: fromDate.value || undefined,
     toDate: toDate.value || undefined,
+    sortBy: sortBy.value as NewsFilter['sortBy'],
   };
   newsStore.setFilter(filters);
   newsStore.fetchNews();
 }
 
 function handleSearch() {
-  newsStore.setPage(1);
   applyFilters();
 }
 
@@ -79,9 +91,19 @@ function resetFilters() {
   handleSearch();
 }
 
-function changePage(p: number) {
-  newsStore.setPage(p);
-  newsStore.fetchNews();
+function setupObserver() {
+  observer?.disconnect();
+  if (!loaderRef.value) return;
+
+  observer = new IntersectionObserver(
+    (entries) => {
+      if (entries[0]?.isIntersecting && hasMore.value && !isLoading.value && !loadingMore.value) {
+        newsStore.loadMore();
+      }
+    },
+    { threshold: 0.1 },
+  );
+  observer.observe(loaderRef.value);
 }
 
 function openNews(item: News) {
@@ -112,7 +134,7 @@ useHead({
       @reset="resetFilters"
     />
 
-    <v-row v-if="initialLoading">
+    <v-row v-if="initialLoading || isLoading">
       <v-col cols="12" v-for="i in 6" :key="i">
         <v-skeleton-loader type="article" />
       </v-col>
@@ -134,8 +156,9 @@ useHead({
       <v-card-text>{{ category !== 'all' || search ? 'Ничего не найдено' : 'Новостей пока нет' }}</v-card-text>
     </v-card>
 
-    <div class="d-flex justify-center mt-4" v-if="totalPages > 1">
-      <v-pagination v-model="page" :length="totalPages" @update:model-value="changePage" />
+    <div ref="loaderRef" class="text-center py-6">
+      <v-progress-circular v-if="loadingMore" indeterminate color="primary" size="24" />
+      <span v-else-if="!hasMore && news.length" class="text-caption text-medium-emphasis">Все новости загружены</span>
     </div>
 
     <v-dialog v-model="modalVisible" max-width="900">
