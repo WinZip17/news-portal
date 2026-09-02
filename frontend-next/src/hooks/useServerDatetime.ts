@@ -1,26 +1,21 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { io, type Socket } from 'socket.io-client';
-import { getBackendOrigin } from '@/utils/getBackendOrigin';
+
+/** Формат: DD.MM.YYYY HH:mm:ss в локальном часовом поясе браузера */
+export function formatLocalDatetime(date = new Date()): string {
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
 
 export function useServerDatetime(): string | null {
   const [datetime, setDatetime] = useState<string | null>(null);
 
   useEffect(() => {
-    const socket: Socket = io(`${getBackendOrigin()}/api/datetime`, {
-      path: '/api/socket.io',
-      transports: ['websocket', 'polling'],
-      reconnection: true,
-    });
-
-    socket.on('datetime', (value: string) => {
-      setDatetime(value);
-    });
-
-    return () => {
-      socket.disconnect();
-    };
+    const tick = () => setDatetime(formatLocalDatetime());
+    tick();
+    const intervalId = setInterval(tick, 1000);
+    return () => clearInterval(intervalId);
   }, []);
 
   return datetime;

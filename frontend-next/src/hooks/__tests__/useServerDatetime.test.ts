@@ -1,51 +1,42 @@
-import { renderHook, waitFor } from '@testing-library/react';
-import { io } from 'socket.io-client';
-import { useServerDatetime } from '@/hooks/useServerDatetime';
+import { renderHook, act } from '@testing-library/react';
+import { formatLocalDatetime, useServerDatetime } from '@/hooks/useServerDatetime';
 
-jest.mock('socket.io-client', () => ({
-  io: jest.fn(),
-}));
-
-jest.mock('../../utils/getBackendOrigin', () => ({
-  getBackendOrigin: () => 'http://localhost:3001',
-}));
-
-const ioMock = io as jest.MockedFunction<typeof io>;
+describe('formatLocalDatetime', () => {
+  it('formats date using local timezone fields', () => {
+    const date = new Date(2026, 7, 23, 14, 42, 5);
+    expect(formatLocalDatetime(date)).toBe('23.08.2026 14:42:05');
+  });
+});
 
 describe('useServerDatetime', () => {
   beforeEach(() => {
-    ioMock.mockReturnValue({
-      on: jest.fn((event: string, callback: (value: string) => void) => {
-        if (event === 'datetime') {
-          callback('23.08.2026 14:42:00');
-        }
-      }),
-      disconnect: jest.fn(),
-    } as never);
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date(2026, 7, 23, 14, 42, 0));
   });
 
-  it('connects to datetime socket and returns server time', async () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('returns local time and updates every second', () => {
     const { result } = renderHook(() => useServerDatetime());
 
-    await waitFor(() => {
-      expect(result.current).toBe('23.08.2026 14:42:00');
+    expect(result.current).toBe('23.08.2026 14:42:00');
+
+    act(() => {
+      jest.advanceTimersByTime(1000);
     });
 
-    expect(ioMock).toHaveBeenCalledWith(
-      'http://localhost:3001/api/datetime',
-      expect.objectContaining({ path: '/api/socket.io' }),
-    );
+    expect(result.current).toBe('23.08.2026 14:42:01');
   });
 
-  it('disconnects socket on unmount', () => {
-    const disconnect = jest.fn();
-    ioMock.mockReturnValue({
-      on: jest.fn(),
-      disconnect,
-    } as never);
-
+  it('clears interval on unmount', () => {
+    const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
     const { unmount } = renderHook(() => useServerDatetime());
+
     unmount();
-    expect(disconnect).toHaveBeenCalled();
+
+    expect(clearIntervalSpy).toHaveBeenCalled();
+    clearIntervalSpy.mockRestore();
   });
 });

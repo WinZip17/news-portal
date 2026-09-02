@@ -97,7 +97,7 @@ import type { News, NewsStatus, User } from '@/types';
 
 ## 🔌 WebSocket и API
 
-- **Серверное время** — футер через `useServerDatetime`: Socket.io `/api/datetime`
+- **Время в футере** — локальное время пользователя (`useServerDatetime`, обновление каждую секунду)
 - **Toast новостей** — `useNewsNotifications`: `/api/news` (`news:published`, `news:pending`)
 - **Яндекс.Метрика** — `YandexMetrika.tsx`, prod-only, счётчик 110884229
 - **Умный поиск** — `newsService.smartSearch()` → `POST /api/news/smart-search`

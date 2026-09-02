@@ -55,7 +55,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const serverDatetime = useServerDatetime();
+  const localDatetime = useServerDatetime();
 
   const filteredNav = navItems.filter((item) => {
     if (item.auth && !isAuthenticated) return false;
@@ -218,11 +218,17 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           }}
         >
           Short News ©{new Date().getFullYear()} — новости из проверенных источников
-          {serverDatetime && (
+          {localDatetime && (
             <>
               {' · '}
-              <Box component="span" sx={{ fontVariantNumeric: 'tabular-nums' }} aria-live="polite">
-                {serverDatetime}
+              <Box
+                component="time"
+                dateTime={new Date().toISOString()}
+                sx={{ fontVariantNumeric: 'tabular-nums' }}
+                aria-live="polite"
+                title="Локальное время"
+              >
+                {localDatetime}
               </Box>
             </>
           )}
