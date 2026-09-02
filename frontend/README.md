@@ -36,7 +36,7 @@ frontend/
 │   ├── favicon.svg
 │   └── manifest.json        # PWA
 ├── src/
-│   ├── components/          # Переиспользуемые компоненты
+│   ├── components/          # Переиспользуемые компоненты (NewsListFilters, YandexMetrika, …)
 │   ├── config/              # Роуты
 │   ├── hooks/               # Пользовательские хуки
 │   ├── pages/               # Страницы (+ __tests__/)
@@ -58,7 +58,7 @@ frontend/
 | Путь | Страница | Доступ |
 |------|----------|--------|
 | / | Главная | Все |
-| /news | Лента новостей (поиск `?search=`, FTS, фильтр по дате) | Все |
+| /news | Лента: фильтры (popover), infinite scroll, FTS, даты | Все |
 | /news?news=id | Новость в модалке | Все |
 | /search | Умный поиск (NL → `POST /api/news/smart-search`) | Все |
 | /login | Вход | Гость |
@@ -80,6 +80,10 @@ npm run test:cov      # с покрытием
 ```
 
 MSW перехватывает `/api/**` в тестах; компоненты рендерятся через `renderWithProviders`.
+
+## 📊 Аналитика
+
+Яндекс.Метрика (`YandexMetrika.tsx`, счётчик **110884229**) — только в production-сборке.
 
 ### E2E (Playwright)
 

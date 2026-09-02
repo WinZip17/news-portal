@@ -41,7 +41,9 @@ frontend-nuxt/
 │   │   │   ├── AppHeader.vue
 │   │   │   └── AppFooter.vue
 │   │   └── news/
-│   │       ├── NewsCard.vue
+│   │       ├── NewsCard.vue          # превью-карточка (главная)
+│   │       ├── NewsListCard.vue      # компактная карточка (/news)
+│   │       ├── NewsListFilters.vue
 │   │       └── NewsDetailModal.vue
 │   ├── composables/
 │   │   ├── useApi.ts
@@ -68,7 +70,8 @@ frontend-nuxt/
 │   │       └── ai-generate.vue  # AI-генерация
 │   ├── plugins/
 │   │   ├── primevue-services.client.ts
-│   │   └── primevue-tooltip.ts
+│   │   ├── primevue-tooltip.ts
+│   │   └── yandex-metrika.client.ts  # prod-only
 │   ├── services/
 │   │   ├── ai.service.ts
 │   │   ├── auth.service.ts
@@ -122,7 +125,8 @@ nitro: { devProxy: { '/api': { target: '.../api', changeOrigin: true } } }
 
 ```text
 / — Главная, статистика, последние новости — Все
-/news — Лента с фильтрацией, FTS-поиском (`GET /api/news?search=`), сортировкой и фильтром по дате (`fromDate`, `toDate`) — Все
+/news — Лента: NewsListCard (полная ширина), NewsListFilters (popover), infinite scroll, FTS, фильтр по дате — Все
+/search — Умный поиск (NL), infinite scroll — Все
 /login — Вход — Гости
 /register — Регистрация — Гости
 /profile — Профиль, смена пароля, избранное — Юзеры

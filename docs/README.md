@@ -14,11 +14,24 @@
 - [Тестирование](testing.md)
 - [Как помочь проекту](contributing.md)
 
+Краткая карта для AI-агентов: [AGENTS.md](../AGENTS.md) (корень репозитория).
+
 ## Быстрый старт
 
 ```bash
 npm install
-npm run dev
+npm run dev          # PostgreSQL + backend + React SPA
 ```
 
-Приложение будет доступно на http://localhost:5173 (React), http://localhost:3000 (Next.js), http://localhost:3004 (Nuxt), http://localhost:3005 (Vue).
+| Фронтенд | Dev URL |
+|----------|---------|
+| React SPA | http://localhost:5173 |
+| Next.js | http://localhost:3003 |
+| Nuxt | http://localhost:3004 |
+| Vue SPA | http://localhost:5173 |
+| Backend API | http://localhost:3001 |
+| Swagger | http://localhost:3001/api/docs |
+
+> React и Vue по умолчанию используют порт **5173** — запускайте один SPA за раз или смените `port` в `vite.config.ts`.
+
+Отдельные фронты: `npm run dev:frontend:nuxt`, `npm run dev:frontend:vue`, `npm -w frontend-next run dev`.

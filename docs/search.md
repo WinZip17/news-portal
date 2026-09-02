@@ -116,18 +116,23 @@ GET /api/news?toDate=2026-08-19
 
 ## Фронтенды
 
-| Фронтенд | Обычный поиск | Фильтр по дате на `/news` | Умный поиск |
-|----------|---------------|---------------------------|-------------|
-| React SPA | поле «Поиск» → `GET /api/news?search=` | диапазон (Ant Design RangePicker) | `/search` |
-| **Next.js** | фильтры и FTS | MUI DatePicker (диапазон) | **`/search`** |
-| Nuxt | FTS на `/news` | два DatePicker: «Дата от» / «Дата до» | — |
-| Vue SPA | поле «Поиск» на `/news` | «Дата от» / «Дата до» | — |
+| Фронтенд | Обычный поиск | Фильтры `/news` | Infinite scroll | Умный поиск |
+|----------|---------------|-----------------|-----------------|-------------|
+| React SPA | `GET /api/news?search=` | popover: категория, AI, даты | ✅ | `/search` |
+| Next.js | FTS + фильтры | popover (MUI) | ✅ | `/search` |
+| Nuxt | FTS на `/news` | popover (OverlayPanel) | ✅ | `/search` |
+| Vue SPA | поле «Поиск» | popover (v-menu) | ✅ | — |
 
-## WebSocket: серверное время
+## WebSocket
 
-Отдельно от поиска: namespace **`/api/datetime`**, событие `datetime`, формат `DD.MM.YYYY HH:mm:ss`.
+| Namespace | События | Где используется |
+|-----------|---------|------------------|
+| `/api/datetime` | `datetime` | футер **frontend-next** (`useServerDatetime`) |
+| `/api/news` | `news:published`, `news:pending` | toast **frontend-next** (`useNewsNotifications`) |
 
-Используется в футере **frontend-next** (`useServerDatetime`). Подробнее: [deployment.md](deployment.md#websocket-apidatetime).
+Engine path: `/api/socket.io`. Типы: `NEWS_WS_EVENTS`, `NewsNotificationPayload` в `@news-portal/types`.
+
+Подробнее: [api.md](api.md#websocket), [deployment.md](deployment.md#websocket-apidatetime).
 
 ## Связанные документы
 

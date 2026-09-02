@@ -40,12 +40,15 @@ frontend-next/
 │   │   ├── register/page.tsx # Регистрация
 │   │   ├── profile/page.tsx # Личный кабинет
 │   │   └── admin/page.tsx   # Админ-панель
-│   ├── components/          # React компоненты
-│   │   ├── MainLayout.tsx        # Layout + серверное время в футере
-│   │   ├── NewsDetail.tsx        # Детальный просмотр новости
-│   │   └── FrameworkSwitcher.tsx  # Переключатель фреймворков
-│   ├── hooks/               # React хуки
-│   │   └── useServerDatetime.ts  # WebSocket /api/datetime
+│   ├── components/
+│   │   ├── MainLayout.tsx
+│   │   ├── NewsListFilters.tsx
+│   │   ├── NewsNotifications.tsx   # WS toast /api/news
+│   │   ├── YandexMetrika.tsx
+│   │   └── FrameworkSwitcher.tsx
+│   ├── hooks/
+│   │   ├── useServerDatetime.ts
+│   │   └── useNewsNotifications.ts
 │   ├── services/            # API сервисы
 │   │   ├── api.ts                # HTTP клиент (Axios)
 │   │   ├── authService.ts        # Авторизация
@@ -75,7 +78,7 @@ frontend-next/
 | Путь | Страница | Доступ |
 |------|----------|--------|
 | / | Главная | Все |
-| /news | Лента новостей (FTS, фильтры, DatePicker диапазона) | Все |
+| /news | Лента: фильтры (popover), infinite scroll, FTS, даты | Все |
 | /search | Умный поиск (NL → AI) | Все |
 | /login | Вход | Гость |
 | /register | Регистрация | Гость |
@@ -94,7 +97,9 @@ import type { News, NewsStatus, User } from '@/types';
 
 ## 🔌 WebSocket и API
 
-- **Серверное время** — футер через `useServerDatetime`: Socket.io namespace `/api/datetime`, path `/api/socket.io`
+- **Серверное время** — футер через `useServerDatetime`: Socket.io `/api/datetime`
+- **Toast новостей** — `useNewsNotifications`: `/api/news` (`news:published`, `news:pending`)
+- **Яндекс.Метрика** — `YandexMetrika.tsx`, prod-only, счётчик 110884229
 - **Умный поиск** — `newsService.smartSearch()` → `POST /api/news/smart-search`
 - **Обычный поиск** — `GET /api/news?search=&tags=&category=&fromDate=&toDate=` на странице `/news` (`fromDate`/`toDate` — `YYYY-MM-DD`)
 

@@ -15,7 +15,8 @@
 - 🛡 **Модерация** — все новости проходят проверку перед публикацией
 - 📱 **PWA** — можно установить как приложение на телефон
 - 🔍 **SEO** — мета-теги, Open Graph, sitemap для поисковиков
-- 🔎 **Поиск** — PostgreSQL FTS; фильтр по дате публикации; умный поиск (NL → AI → фильтры) на React SPA и Next.js
+- 🔎 **Поиск** — PostgreSQL FTS; фильтр по дате; умный поиск (NL → AI) на React, Next и Nuxt
+- 📊 **Аналитика** — Яндекс.Метрика на всех prod-фронтах
 
 ## 🛠 Технологии
 
@@ -59,7 +60,9 @@ npm run test:e2e            # backend E2E
 
 TypeScript-типы вынесены в workspace-пакет **`@news-portal/types`** (`packages/types/`). Все четыре фронтенда и backend импортируют типы оттуда; локальные папки `types/` — тонкие реэкспорты.
 
-Подробнее: [docs/types.md](docs/types.md) · [docs/search.md](docs/search.md)
+Подробнее: [docs/types.md](docs/types.md) · [docs/search.md](docs/search.md) · [docs/frontends.md](docs/frontends.md)
+
+Карта для AI-агентов: [AGENTS.md](AGENTS.md)
 
 ## 📊 Мониторинг
 Grafana с дашбордом на http://short-news.ru/grafana
@@ -68,8 +71,11 @@ Grafana с дашбордом на http://short-news.ru/grafana
 
 | Сервис | URL | Описание |
 |--------|-----|----------|
-| Frontend | http://localhost:5173 | Разработка |
-| Frontend | http://localhost:80 | Продакшен |
+| Frontend (React) | http://localhost:5173 | Разработка |
+| Frontend (Next) | http://localhost:3003 | Разработка |
+| Frontend (Nuxt) | http://localhost:3004 | Разработка |
+| Frontend (Vue) | http://localhost:5173 | Разработка (не одновременно с React) |
+| Frontend | http://localhost:80 | Продакшен (nginx) |
 | Backend API | http://localhost:3001 | API |
 | Swagger | http://localhost:3001/api/docs | Документация API |
 | Prometheus | http://localhost:9090 | Метрики |

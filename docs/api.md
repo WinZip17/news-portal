@@ -41,9 +41,12 @@ TypeScript-контракты запросов и ответов описаны 
 
 | Протокол | Путь / namespace | Описание | Доступ |
 |----------|------------------|----------|--------|
-| Socket.io | `/api/datetime` (engine: `/api/socket.io`) | Серверное время, событие `datetime` каждую 1 с, формат `DD.MM.YYYY HH:mm:ss` | Все |
+| Socket.io | `/api/datetime` (engine: `/api/socket.io`) | Серверное время, событие `datetime` каждую 1 с | Все |
+| Socket.io | `/api/news` (engine: `/api/socket.io`) | `news:published` — всем; `news:pending` — moderators+ | JWT |
 
-Подробнее: [deployment.md](deployment.md#websocket-apidatetime), [search.md](search.md).
+События и payload: `NEWS_WS_EVENTS`, `NewsNotificationPayload` в `packages/types/src/news.ts`.
+
+Подробнее: [deployment.md](deployment.md#websocket-apidatetime), [search.md](search.md#websocket).
 
 ## AI Генерация
 

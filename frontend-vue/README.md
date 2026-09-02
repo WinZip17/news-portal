@@ -38,7 +38,7 @@ frontend-vue/
 │   │   └── utilities.css    # Утилитарные классы
 │   ├── components/          # Vue компоненты
 │   │   ├── common/          # Общие (FrameworkSwitcher)
-│   │   └── news/            # Новости (NewsCard, NewsDetailModal)
+│   │   └── news/            # NewsCard, NewsListFilters, NewsDetailModal
 │   ├── constants/           # Константы
 │   │   └── theme.ts         # Цвета темы
 │   ├── layouts/             # Layout компоненты
@@ -53,7 +53,8 @@ frontend-vue/
 │   │   └── NotFoundView.vue # 404
 │   ├── plugins/             # Плагины
 │   │   ├── theme.ts         # Тема Vuetify
-│   │   └── vuetify.ts       # Конфигурация Vuetify
+│   │   ├── vuetify.ts       # Конфигурация Vuetify
+│   │   └── yandexMetrika.ts # Яндекс.Метрика (prod-only)
 │   ├── router/              # Vue Router
 │   │   └── index.ts         # Маршруты и guards
 │   ├── services/            # API сервисы
@@ -80,7 +81,7 @@ frontend-vue/
 | Путь | Страница | Доступ |
 |------|----------|--------|
 | / | Главная | Все |
-| /news | Лента новостей (поиск, фильтры, диапазон дат; API: FTS + `fromDate`/`toDate`) | Все |
+| /news | Лента: NewsListFilters (popover), infinite scroll, FTS, даты | Все |
 | /login | Вход | Гость |
 | /register | Регистрация | Гость |
 | /profile | Личный кабинет | 🔒 |
@@ -103,7 +104,9 @@ import { NewsStatus, type News } from '@/types/news';
 - Тёмная/светлая тема с синхронизацией через Pinia
 - Адаптивный сайдбар (постоянный на десктопе, временный на мобильных)
 - JWT авторизация с автообновлением токена
-- Инфинити-скролл в ленте новостей
+- Infinite scroll в ленте `/news` (IntersectionObserver + `loadMore` в store)
+- Фильтры: поиск + сортировка видимо; категория, AI, даты — в v-menu
+- Яндекс.Метрика (prod, счётчик 110884229)
 - SEO через @unhead/vue
 
 ## 🐳 Docker

@@ -17,8 +17,11 @@
 | **SSR** | ❌ | ✅ | ✅ | ❌ |
 | **CSS решение** | Ant Design | MUI System | PrimeVue + CSS | Vuetify + CSS |
 | **Типы** | `@/types` → `@news-portal/types` | `@/types` | `~/types` | `@/types` |
-| **Поиск** | FTS `/news` + умный `/search` + фильтр по дате | FTS `/news` + умный `/search` + фильтр по дате | FTS `/news` + фильтр по дате | FTS `/news` + фильтр по дате |
-| **Тесты** | Vitest + Playwright E2E | Vitest | — | Vitest (unit) |
+| **Поиск** | FTS `/news` + умный `/search` + фильтр по дате | FTS `/news` + умный `/search` + фильтр по дате | FTS `/news` + умный `/search` + фильтр по дате | FTS `/news` + фильтр по дате |
+| **Лента `/news`** | Infinite scroll, full-width cards | Infinite scroll, full-width cards | Infinite scroll, `NewsListCard` | Infinite scroll, full-width cards |
+| **WS toast** | — | `news:published` / `news:pending` | — | — |
+| **Яндекс.Метрика** | ✅ prod | ✅ prod | ✅ prod | ✅ prod |
+| **Тесты** | Vitest + Playwright E2E | Jest + Playwright E2E | Vitest | Vitest (unit) |
 
 > 🔍 Подробнее: [search.md](search.md)
 
@@ -34,9 +37,11 @@
 - Фильтр по дате публикации на `/news` (`fromDate`, `toDate` в формате `YYYY-MM-DD`)
 - Умный поиск на `/search` — `POST /api/news/smart-search`
 - Инфинити-скролл в ленте новостей
+- Фильтры: поиск + сортировка видимо; категория, AI, даты — в выпадающей панели (`NewsListFilters`)
 - Ленивая загрузка страниц (React.lazy)
 - Service Worker для PWA
 - SEO через react-helmet-async
+- **Яндекс.Метрика** (prod, `YandexMetrika.tsx`, счётчик 110884229)
 - **Тесты:** Vitest + MSW (unit/integration), Playwright E2E — см. [testing.md](testing.md)
 
 ### Структура
@@ -66,8 +71,10 @@ frontend/
 - App Router
 - Material Design (MUI)
 - **`/search`** — умный поиск (NL → `POST /api/news/smart-search`)
-- **`/news`** — классический FTS, фильтры и диапазон дат (`GET /api/news`)
+- **`/news`** — FTS, фильтры (popover), infinite scroll, full-width cards
+- Toast-уведомления о новых/опубликованных новостях (WS `/api/news`, `NewsNotifications`)
 - Серверное время в футере (WebSocket `/api/datetime`, хук `useServerDatetime`)
+- **Яндекс.Метрика** (prod, `YandexMetrika.tsx`)
 - Клиентский layout отделён от серверного
 - CSS-in-JS через MUI
 - **Docker:** общий контекст корня репозитория; копия типов только внутри образа из‑за Turbopack ([deployment.md](deployment.md#docker-сборка-и-news-portaltypes))
@@ -76,8 +83,8 @@ frontend/
 ```
 frontend-next/src/
 ├── app/           # App Router страницы (/, /news, /search, …)
-├── components/    # React компоненты
-├── hooks/         # useServerDatetime и др.
+├── components/    # NewsListFilters, NewsNotifications, YandexMetrika, …
+├── hooks/         # useServerDatetime, useNewsNotifications
 ├── services/      # API сервисы (newsService.smartSearch)
 ├── store/         # Redux store
 ├── types/         # Реэкспорт @news-portal/types
@@ -95,17 +102,26 @@ frontend-next/src/
 - Автоимпорты компонентов
 - Тема через CSS-переменные PrimeVue
 - Pinia Plugin Persistedstate
-- Лента `/news`: FTS, категории, сортировка, фильтр по дате (отдельно «Дата от» и «Дата до»)
+- Лента `/news`: FTS, `NewsListFilters` (popover), infinite scroll, **`NewsListCard`** (полная ширина)
+- Главная `/`: сетка **`NewsCard`** с превью изображений
+- Умный поиск `/search` (infinite scroll)
+- Теги новостей: нейтральная схема `.news-tag` / `--news-tag-*` (light + dark)
+- **Яндекс.Метрика** (prod, `app/plugins/yandex-metrika.client.ts`)
 
 ### Структура
 ```
 frontend-nuxt/
-├── app/           # Страницы
-├── components/    # Vue компоненты
-├── composables/   # Компосаблы
-├── services/      # API сервисы
-├── stores/        # Pinia stores
-├── server/        # Серверная часть
+├── app/
+│   ├── components/news/
+│   │   ├── NewsCard.vue         # карточка с превью (главная)
+│   │   ├── NewsListCard.vue     # компактная карточка (/news)
+│   │   ├── NewsListFilters.vue
+│   │   └── NewsDetailModal.vue
+│   ├── plugins/yandex-metrika.client.ts
+│   └── pages/news/index.vue
+├── composables/
+├── services/
+├── stores/
 └── app/types/     # Реэкспорт @news-portal/types
 ```
 
@@ -120,13 +136,14 @@ frontend-nuxt/
 - Pinia для управления состоянием
 - Адаптивный сайдбар
 - Поддержка тёмной темы
-- Лента `/news`: поиск, категории, сортировка, фильтр по дате
+- Лента `/news`: `NewsListFilters` (popover), infinite scroll, full-width cards
+- **Яндекс.Метрика** (prod, `src/plugins/yandexMetrika.ts`)
 
 ### Структура
 ```
 frontend-vue/src/
-├── api/           # HTTP клиент
-├── components/    # Vue компоненты
+├── components/news/   # NewsCard, NewsListFilters, NewsDetailModal
+├── plugins/yandexMetrika.ts
 ├── pages/         # Страницы
 ├── plugins/       # Плагины
 ├── router/        # Vue Router
