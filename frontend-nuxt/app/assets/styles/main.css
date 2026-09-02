@@ -134,6 +134,24 @@ body {
   height: 32px;
 }
 
+.news-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  font-weight: 500;
+  padding: 0.125rem 0.5rem;
+  border-radius: 12px;
+  background-color: var(--news-tag-bg);
+  color: var(--news-tag-color);
+  border: 1px solid var(--news-tag-border);
+}
+
+.news-tag--md {
+  font-size: 0.875rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+}
+
 /* Dialog widths (teleported to body) */
 .p-dialog.dialog-width-sm {
   width: 500px;

@@ -43,7 +43,7 @@
       <div class="detail-content" v-html="news.content"></div>
 
       <div v-if="news.tags?.length" class="detail-tags">
-        <span v-for="tag in news.tags" :key="tag" class="tag"> #{{ tag }} </span>
+        <span v-for="tag in news.tags" :key="tag" class="news-tag news-tag--md">#{{ tag }}</span>
       </div>
 
       <div class="detail-actions">
@@ -274,14 +274,6 @@ function formatDate(date: string): string {
   gap: 0.5rem;
   flex-wrap: wrap;
   margin-bottom: 1.5rem;
-}
-
-.tag {
-  background-color: var(--p-primary-50);
-  color: var(--p-primary-color);
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.875rem;
 }
 
 .detail-actions {

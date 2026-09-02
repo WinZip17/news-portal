@@ -28,7 +28,7 @@
         </div>
 
         <div v-if="news.tags?.length" class="news-tags">
-          <span v-for="tag in news.tags.slice(0, 3)" :key="tag" class="tag"> #{{ tag }} </span>
+          <span v-for="tag in news.tags.slice(0, 3)" :key="tag" class="news-tag">#{{ tag }}</span>
         </div>
       </div>
     </template>
@@ -93,6 +93,9 @@ const cardStyles = {
   root: {
     class: 'news-card-root',
   },
+  header: {
+    class: 'news-card-header',
+  },
   content: {
     class: 'p-0',
   },
@@ -133,11 +136,17 @@ function formatDate(date: string): string {
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   transition:
     transform 0.2s,
     box-shadow 0.2s;
   background-color: var(--p-surface-card);
   border: 1px solid var(--p-surface-border);
+}
+
+.news-card :deep(.news-card-header) {
+  padding: 0;
+  overflow: hidden;
 }
 
 .news-card:hover {
@@ -154,6 +163,7 @@ function formatDate(date: string): string {
 }
 
 .news-card-image img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -219,14 +229,6 @@ function formatDate(date: string): string {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
-}
-
-.tag {
-  color: var(--p-primary-color);
-  font-size: 0.75rem;
-  background-color: var(--p-primary-50);
-  padding: 0.125rem 0.5rem;
-  border-radius: 12px;
 }
 
 .news-card-footer {

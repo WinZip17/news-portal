@@ -8,6 +8,8 @@ export const useNewsStore = defineStore('news', () => {
   const currentNews = ref<NewsItem | null>(null);
   const stats = ref<StatsResponse | null>(null);
   const isLoading = ref(false);
+  const loadingMore = ref(false);
+  const totalPages = ref(0);
   const error = ref<string | null>(null);
   const filter = ref<NewsFilter>({
     page: 1,
@@ -18,17 +20,40 @@ export const useNewsStore = defineStore('news', () => {
 
   const newsService = useNewsService();
 
-  async function fetchNews(): Promise<void> {
-    try {
+  const hasMore = computed(() => (filter.value.page ?? 1) < totalPages.value);
+
+  async function fetchNews(append = false): Promise<void> {
+    if (append) {
+      if (loadingMore.value || !hasMore.value) return;
+      loadingMore.value = true;
+    } else {
       isLoading.value = true;
+    }
+
+    try {
       error.value = null;
-      const data = await newsService.getNews(filter.value);
-      news.value = data.data;
+      const requestPage = append ? (filter.value.page ?? 1) + 1 : (filter.value.page ?? 1);
+      const data = await newsService.getNews({
+        ...filter.value,
+        page: requestPage,
+      });
+
+      news.value = append ? [...news.value, ...data.data] : data.data;
+      filter.value = { ...filter.value, page: data.page, limit: data.limit };
+      totalPages.value = data.totalPages;
     } catch (err: unknown) {
       error.value = getErrorMessage(err);
+      if (!append) {
+        news.value = [];
+      }
     } finally {
       isLoading.value = false;
+      loadingMore.value = false;
     }
+  }
+
+  function loadMore(): Promise<void> {
+    return fetchNews(true);
   }
 
   async function fetchNewsById(id: string): Promise<void> {
@@ -121,6 +146,7 @@ export const useNewsStore = defineStore('news', () => {
       sortBy: 'publishedAt',
       sortOrder: 'DESC',
     };
+    totalPages.value = 0;
   }
 
   return {
@@ -128,9 +154,13 @@ export const useNewsStore = defineStore('news', () => {
     currentNews,
     stats,
     isLoading,
+    loadingMore,
+    hasMore,
+    totalPages,
     error,
     filter,
     fetchNews,
+    loadMore,
     fetchNewsById,
     createNews,
     updateNews,

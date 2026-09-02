@@ -15,36 +15,34 @@
       @reset="resetFilters"
     />
 
-    <div v-if="newsStore.isLoading" class="loading-container">
+    <div v-if="newsStore.isLoading && !newsStore.news.length" class="loading-container">
       <ProgressSpinner />
     </div>
 
-    <div v-else-if="newsStore.error" class="error-container">
+    <div v-else-if="newsStore.error && !newsStore.news.length" class="error-container">
       <Message severity="error">{{ newsStore.error }}</Message>
     </div>
 
-    <div v-else class="news-grid">
-      <NewsCard
+    <div v-if="newsStore.news.length" class="news-list">
+      <NewsListCard
         v-for="item in newsStore.news"
         :key="item.id"
         :news="item"
-        @click="openNewsDetail(item.id)"
+        @click="openNewsDetail"
       />
     </div>
 
-    <div v-if="newsStore.news.length > 0" class="pagination-section">
-      <Paginator
-        :rows="20"
-        :total-records="totalRecords"
-        :rows-per-page-options="[10, 20, 50]"
-        @page="onPageChange"
-      />
-    </div>
-
-    <div v-if="!newsStore.isLoading && newsStore.news.length === 0" class="empty-state">
+    <div v-else-if="!newsStore.isLoading && !newsStore.error" class="empty-state">
       <i class="pi pi-inbox icon-empty-lg"></i>
       <h3>Новости не найдены</h3>
       <p>Попробуйте изменить параметры поиска</p>
+    </div>
+
+    <div ref="loaderRef" class="load-more">
+      <ProgressSpinner v-if="newsStore.loadingMore" class="spinner-sm" />
+      <span v-else-if="!newsStore.hasMore && newsStore.news.length" class="load-more-text">
+        Все новости загружены
+      </span>
     </div>
 
     <NewsDetailModal
@@ -69,13 +67,14 @@ const fromDate = ref<Date | null>(null);
 const toDate = ref<Date | null>(null);
 const detailModalVisible = ref(false);
 const selectedNews = ref<NewsItem | null>(null);
-const totalRecords = ref(100);
+const loaderRef = ref<HTMLElement | null>(null);
+
+let observer: IntersectionObserver | null = null;
 
 await useAsyncData('news-page-data', async () => {
   await newsStore.fetchNews();
   return {
     newsCount: newsStore.news.length,
-    total: newsStore.news.length,
   };
 });
 
@@ -88,6 +87,42 @@ const hasActiveFilters = computed(
     !!toDate.value ||
     sortBy.value !== 'publishedAt',
 );
+
+onMounted(() => {
+  setupObserver();
+});
+
+onUnmounted(() => {
+  observer?.disconnect();
+});
+
+watch(
+  () => [newsStore.news.length, newsStore.hasMore, newsStore.isLoading, newsStore.loadingMore],
+  async () => {
+    await nextTick();
+    setupObserver();
+  },
+);
+
+function setupObserver(): void {
+  observer?.disconnect();
+  if (!loaderRef.value) return;
+
+  observer = new IntersectionObserver(
+    (entries) => {
+      if (
+        entries[0]?.isIntersecting &&
+        newsStore.hasMore &&
+        !newsStore.isLoading &&
+        !newsStore.loadingMore
+      ) {
+        newsStore.loadMore();
+      }
+    },
+    { threshold: 0.1 },
+  );
+  observer.observe(loaderRef.value);
+}
 
 function applyFilters(): void {
   const filter: NewsFilter = {
@@ -133,19 +168,6 @@ function resetFilters(): void {
   newsStore.fetchNews();
 }
 
-interface PageEvent {
-  page: number;
-  rows: number;
-}
-
-function onPageChange(event: PageEvent): void {
-  newsStore.setFilter({
-    page: event.page + 1,
-    limit: event.rows,
-  });
-  newsStore.fetchNews();
-}
-
 function openNewsDetail(id: string): void {
   selectedNews.value = newsStore.news.find((n: NewsItem) => n.id === id) || null;
   if (selectedNews.value) {
@@ -156,28 +178,37 @@ function openNewsDetail(id: string): void {
 
 <style scoped>
 .news-page {
-  max-width: 1400px;
+  max-width: 960px;
   margin: 0 auto;
+  padding-inline: 8px;
 }
 
 .page-title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--p-text-color);
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
-.news-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+.news-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  width: 100%;
 }
 
-.pagination-section {
+.load-more {
   display: flex;
   justify-content: center;
-  margin-top: 2rem;
+  align-items: center;
+  min-height: 3rem;
+  padding: 1rem 0 2rem;
+}
+
+.load-more-text {
+  color: var(--p-text-muted-color);
+  font-size: 0.875rem;
 }
 
 .loading-container {
@@ -207,8 +238,8 @@ function openNewsDetail(id: string): void {
     font-size: 1.75rem;
   }
 
-  .news-grid {
-    grid-template-columns: 1fr;
+  .news-page {
+    padding-inline: 0;
   }
 }
 </style>

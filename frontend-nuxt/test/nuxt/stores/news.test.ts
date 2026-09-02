@@ -44,6 +44,48 @@ describe('news store', () => {
     expect(store.news[0]?.title).toBe(mockNewsItem.title);
     expect(store.isLoading).toBe(false);
     expect(store.error).toBeNull();
+    expect(store.filter.page).toBe(1);
+    expect(store.hasMore).toBe(false);
+  });
+
+  it('loadMore appends next page when more pages exist', async () => {
+    mocks.newsServiceMock.getNews
+      .mockResolvedValueOnce({
+        ...mockNewsResponse,
+        total: 2,
+        totalPages: 2,
+      })
+      .mockResolvedValueOnce({
+        data: [{ ...mockNewsItem, id: 'news-2', title: 'Вторая' }],
+        total: 2,
+        page: 2,
+        limit: 20,
+        totalPages: 2,
+      });
+
+    const store = useNewsStore();
+    await store.fetchNews();
+    expect(store.hasMore).toBe(true);
+
+    await store.loadMore();
+
+    expect(store.news).toHaveLength(2);
+    expect(store.news[1]?.title).toBe('Вторая');
+    expect(store.filter.page).toBe(2);
+    expect(mocks.newsServiceMock.getNews).toHaveBeenLastCalledWith(
+      expect.objectContaining({ page: 2 }),
+    );
+  });
+
+  it('loadMore does nothing on last page', async () => {
+    mocks.newsServiceMock.getNews.mockResolvedValue(mockNewsResponse);
+
+    const store = useNewsStore();
+    await store.fetchNews();
+    await store.loadMore();
+
+    expect(store.news).toHaveLength(1);
+    expect(mocks.newsServiceMock.getNews).toHaveBeenCalledTimes(1);
   });
 
   it('fetchNews stores error message on failure', async () => {
