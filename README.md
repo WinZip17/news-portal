@@ -46,6 +46,50 @@ npm run dev          # PostgreSQL + backend + React SPA
 npm run start:prod   # Docker Compose (продакшен)
 ```
 
+## 🖥 Требования к VPS
+
+Проект в продакшене поднимается одним `docker compose up` (см. [docs/deployment.md](docs/deployment.md)). Ниже — оценка для **всех** сервисов из `docker-compose.yml`: PostgreSQL, Redis, backend, React (nginx), Next.js SSR, Nuxt SSR, Vue (nginx); опционально Prometheus + Grafana (`--profile monitoring`).
+
+### Состав и RAM (runtime)
+
+| Сервис | Назначение | RAM (ориентир) |
+|--------|------------|----------------|
+| PostgreSQL 15 | БД, FTS | 384–512 MB |
+| Redis 7 | кэш | 64–128 MB |
+| Backend (NestJS) | API, AI cron, WebSocket | 256–512 MB (+ до ~300 MB при генерации) |
+| frontend (nginx) | React SPA, TLS, reverse proxy | 32–64 MB |
+| frontend-next (Node) | Next.js SSR | 384–768 MB |
+| frontend-nuxt (Node) | Nuxt SSR | 256–512 MB |
+| frontend-vue (nginx) | Vue SPA | 32–64 MB |
+| Prometheus + Grafana | мониторинг (опционально) | 512–896 MB |
+| ОС + Docker | служебные процессы | 512–768 MB |
+
+**Итого в работе:** ~1.8–2.5 GB без мониторинга, ~2.5–3.5 GB с Grafana/Prometheus.
+
+### Рекомендуемые конфигурации
+
+| Профиль | vCPU | RAM | Диск | Для кого |
+|---------|------|-----|------|----------|
+| **Минимум** | 2 | 2 GB | 40 GB SSD | малый трафик, без `--profile monitoring`; **обязателен swap 2 GB** |
+| **Рекомендуется** | 4 | 4 GB | 80 GB SSD | prod как на short-news.ru: все 4 фронта + API + БД + мониторинг |
+| **С запасом** | 4–8 | 8 GB | 100+ GB SSD | рост базы, пики SSR, комфортный деплой без swap |
+
+### CPU и диск
+
+- **CPU:** 2 vCPU хватает для низкой нагрузки; **4 vCPU** — для одновременных SSR-запросов, cron AI-генерации и админки.
+- **Диск:** 20–30 GB — Docker-образы (Next/Nuxt/backend — самые тяжёлые); 10–20 GB — PostgreSQL и рост новостей; 10–20 GB — запас под логи, метрики и `docker build` на сервере. На минимальном тарифе следите за `docker system prune`.
+- **Сборка на VPS:** `docker compose build` для пяти приложений может кратковременно потреблять **6–8 GB RAM**; деплой через GitHub Actions идёт последовательно (30–60 мин). На VPS с 2 GB лучше собирать образы в CI и только `pull`/`up`, либо добавить swap.
+
+### Прочее
+
+| Параметр | Значение |
+|----------|----------|
+| ОС | Linux amd64 (Ubuntu 22.04/24.04 LTS) |
+| Сеть | исходящий HTTPS (DeepSeek API, RSS), входящий 80/443 |
+| Порты наружу | 80, 443 (nginx в контейнере `frontend`); остальное — внутренняя сеть Docker |
+
+Подробнее про контейнеры и CI/CD: [docs/deployment.md](docs/deployment.md).
+
 ## 🧪 Тестирование
 
 ```bash
