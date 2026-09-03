@@ -128,6 +128,7 @@ describe('HomeView (newspaper)', () => {
     expect(getStatsMock).toHaveBeenCalled();
     expect(wrapper.text()).toContain('Новость 1');
     expect(wrapper.text()).toContain('Коротко');
+    expect(wrapper.text()).toContain(String(mockStats.totalNews));
   });
 
   it('navigates to news feed from nav', async () => {

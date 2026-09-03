@@ -18,17 +18,19 @@ function go(path: string) {
 
 <template>
   <nav class="newspaper-nav" aria-label="Навигация выпуска">
-    <button type="button" class="newspaper-link" @click="go('/news')">Лента</button>
-    <span class="newspaper-nav__sep" aria-hidden="true">|</span>
-    <button type="button" class="newspaper-link" @click="go('/search')">Умный поиск</button>
-    <span class="newspaper-nav__sep" aria-hidden="true">|</span>
-    <button type="button" class="newspaper-link" @click="go(accountTarget)">{{ accountLabel }}</button>
-    <span v-if="authStore.canAccessAdmin" class="newspaper-nav__sep" aria-hidden="true">|</span>
-    <button v-if="authStore.canAccessAdmin" type="button" class="newspaper-link" @click="go('/admin')">Админ</button>
+    <div class="newspaper-nav__primary">
+      <button type="button" class="newspaper-link" @click="go('/news')">Лента</button>
+      <span class="newspaper-nav__sep" aria-hidden="true">|</span>
+      <button type="button" class="newspaper-link" @click="go('/search')">Умный поиск</button>
+      <span class="newspaper-nav__sep" aria-hidden="true">|</span>
+      <button type="button" class="newspaper-link" @click="go(accountTarget)">{{ accountLabel }}</button>
+      <span v-if="authStore.canAccessAdmin" class="newspaper-nav__sep" aria-hidden="true">|</span>
+      <button v-if="authStore.canAccessAdmin" type="button" class="newspaper-link" @click="go('/admin')">Админ</button>
+    </div>
 
     <div class="newspaper-nav__cta">
       <button type="button" class="newspaper-link" @click="uiStore.toggleTheme()">
-        {{ uiStore.isDark ? '☀ Светлая' : '☾ Тёмная' }}
+        {{ uiStore.isDark ? 'Светлая' : 'Тёмная' }}
       </button>
       <span class="newspaper-nav__sep" aria-hidden="true">|</span>
       <button v-if="!authStore.isAuthenticated" type="button" class="newspaper-link" @click="go('/register')">

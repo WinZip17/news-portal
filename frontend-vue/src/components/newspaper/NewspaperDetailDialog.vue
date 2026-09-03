@@ -57,8 +57,19 @@ function close() {
 </script>
 
 <template>
-  <v-dialog :model-value="modelValue" max-width="720" @update:model-value="emit('update:modelValue', $event)">
-    <article v-if="fullNews" class="newspaper-detail" :class="{ 'newspaper-detail--watch': uiStore.isDark }">
+  <v-dialog
+    :model-value="modelValue"
+    class="newspaper-detail-dialog"
+    max-width="720"
+    scrim
+    scrollable
+    @update:model-value="emit('update:modelValue', $event)"
+  >
+    <article
+      v-if="fullNews"
+      class="newspaper-detail"
+      :class="{ 'newspaper-detail--watch': uiStore.isDark }"
+    >
       <div class="newspaper-detail__category">{{ getCategoryLabel(fullNews.category) }}</div>
       <h2 class="newspaper-detail__title">{{ fullNews.title }}</h2>
       <div class="newspaper-detail__meta">

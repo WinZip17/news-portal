@@ -56,36 +56,35 @@ function articleDate(item: News) {
     </div>
 
     <template v-else>
-      <section v-if="teasers.length" class="newspaper-teasers" aria-label="На первой полосе">
-        <NewspaperTeaser
-          v-for="(item, idx) in teasers"
-          :key="item.id"
-          :item="item"
-          :index="idx + 2"
-          @click="openNews(item)"
-        />
-      </section>
-
-      <div class="newspaper-body">
-        <div class="newspaper-body__main">
-          <NewspaperLeadStory
-            :item="leadStory"
-            :category-label="getCategoryLabel(leadStory.category)"
-            :formatted-date="articleDate(leadStory)"
-            @click="openNews(leadStory)"
+      <div class="newspaper-issue">
+        <section v-if="teasers.length" class="newspaper-teasers" aria-label="На первой полосе">
+          <NewspaperTeaser
+            v-for="(item, idx) in teasers"
+            :key="item.id"
+            :item="item"
+            :index="idx + 2"
+            @click="openNews(item)"
           />
+        </section>
 
-          <section v-if="columnArticles.length" class="newspaper-columns" aria-label="Полоса">
-            <NewspaperArticle
-              v-for="item in columnArticles"
-              :key="item.id"
-              :item="item"
-              :category-label="getCategoryLabel(item.category)"
-              :formatted-date="articleDate(item)"
-              @click="openNews(item)"
-            />
-          </section>
-        </div>
+        <NewspaperLeadStory
+          class="newspaper-issue__lead"
+          :item="leadStory"
+          :category-label="getCategoryLabel(leadStory.category)"
+          :formatted-date="articleDate(leadStory)"
+          @click="openNews(leadStory)"
+        />
+
+        <section v-if="columnArticles.length" class="newspaper-columns" aria-label="Полоса">
+          <NewspaperArticle
+            v-for="item in columnArticles"
+            :key="item.id"
+            :item="item"
+            :category-label="getCategoryLabel(item.category)"
+            :formatted-date="articleDate(item)"
+            @click="openNews(item)"
+          />
+        </section>
 
         <NewspaperBriefList v-if="briefItems.length" :items="briefItems" @select="openNews" />
       </div>

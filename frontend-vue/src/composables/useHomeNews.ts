@@ -20,14 +20,19 @@ export function useHomeNews() {
   async function fetchHomeNews() {
     loading.value = true;
     error.value = '';
+    stats.value = null;
 
     try {
-      const [statsData, items] = await Promise.all([newsService.getStats(), loadNewsWithImages()]);
-      stats.value = statsData;
+      const statsPromise = newsService.getStats().then((data) => {
+        stats.value = data;
+      });
+      const items = await loadNewsWithImages();
+      await statsPromise;
       news.value = items;
     } catch {
       error.value = 'Не удалось загрузить выпуск';
       news.value = [];
+      stats.value = null;
     } finally {
       loading.value = false;
     }

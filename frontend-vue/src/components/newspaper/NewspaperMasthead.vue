@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { NewsStats } from '@/types';
+import NewspaperMastheadStats from '@/components/newspaper/NewspaperMastheadStats.vue';
 
 defineProps<{
   stats?: NewsStats | null;
+  loading?: boolean;
 }>();
 
 const today = new Date().toLocaleDateString('ru-RU', {
@@ -15,12 +17,9 @@ const today = new Date().toLocaleDateString('ru-RU', {
 
 <template>
   <header class="newspaper-masthead">
-    <div class="newspaper-masthead__meta">
-      <span>{{ today }}</span>
-      <span v-if="stats">Сегодня: {{ stats.newsToday }} материалов</span>
-      <span v-if="stats">Всего в ленте: {{ stats.totalNews }}</span>
-    </div>
+    <p class="newspaper-masthead__date">{{ today }}</p>
     <h1 class="newspaper-masthead__title">Short News</h1>
+    <NewspaperMastheadStats :stats="stats ?? null" :loading="loading" />
     <p class="newspaper-masthead__tagline">Короткие новости без манипуляций · AI-рерайт из проверенных источников</p>
   </header>
 </template>

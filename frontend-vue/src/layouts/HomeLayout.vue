@@ -13,6 +13,9 @@ const uiStore = useUIStore();
 const { isDark } = storeToRefs(uiStore);
 const homeNews = useHomeNews();
 
+const mastheadStats = computed(() => homeNews.stats.value);
+const mastheadLoading = computed(() => homeNews.loading.value && homeNews.stats.value === null);
+
 provide(HOME_NEWS_KEY, homeNews);
 
 useHead({
@@ -31,7 +34,7 @@ function goToFeed() {
 
 <template>
   <div class="newspaper-layout" :class="{ 'newspaper-layout--watch': isDark }">
-    <NewspaperMasthead :stats="homeNews.stats" />
+    <NewspaperMasthead :stats="mastheadStats" :loading="mastheadLoading" />
     <NewspaperNav />
     <main class="newspaper-main">
       <slot />
