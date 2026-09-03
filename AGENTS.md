@@ -49,7 +49,8 @@ backend/src/modules/
 
 ## Поиск и фильтры ленты
 
-- `GET /api/news?search=&fromDate=&toDate=&category=&isAiGenerated=&tags=`
+- `GET /api/news?search=&fromDate=&toDate=&category=&isAiGenerated=&hasImage=&tags=`
+- `hasImage=true|false` — фильтр по наличию непустого `imageUrl` (SQL: `TRIM(imageUrl) <> ''`)
 - FTS: PostgreSQL `search_vector` (title + summary + tags, `russian`)
 - `POST /api/news/smart-search` — NL → AI → `NewsFilter`
 
@@ -61,6 +62,11 @@ backend/src/modules/
 - React, Next, Nuxt, Vue — **infinite scroll** (IntersectionObserver + append страниц)
 - React, Next, Nuxt — компактные карточки на **всю ширину** (`NewsListCard` / аналог)
 - Nuxt: `NewsCard` (с превью) — главная; `NewsListCard` — `/news`
+
+**Vue SPA — газетная главная `/` (не путать с `/news`):**
+- `HomeLayout` + `src/components/newspaper/*`, стили `newspaper.css`
+- Загрузка: `hasImage=true`, 15 материалов; stats в masthead (`NewspaperMastheadStats`)
+- Тема «watch» (тёмная газета) **только на `/`**; Vuetify Material dark/light — на остальных страницах
 
 → [docs/search.md](docs/search.md) · [docs/frontends.md](docs/frontends.md)
 
@@ -99,6 +105,7 @@ backend/src/modules/
 ```bash
 npm test                      # backend + React + Next + Nuxt + Vue
 npm run test:e2e:frontend     # React Playwright
+npm run test:e2e:frontend-vue   # Vue Playwright
 npm run test:e2e              # backend E2E
 ```
 

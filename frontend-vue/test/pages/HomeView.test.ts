@@ -120,9 +120,10 @@ describe('HomeView (newspaper)', () => {
     expect(getNewsMock).toHaveBeenCalledWith(
       expect.objectContaining({
         page: 1,
-        limit: 30,
+        limit: 15,
         sortBy: 'publishedAt',
         sortOrder: 'DESC',
+        hasImage: true,
       }),
     );
     expect(getStatsMock).toHaveBeenCalled();
@@ -155,11 +156,11 @@ describe('HomeView (newspaper)', () => {
 
   it('shows empty state when no news with images', async () => {
     getNewsMock.mockResolvedValue({
-      data: [{ ...mockNewsItem, imageUrl: undefined }],
-      total: 1,
+      data: [],
+      total: 0,
       page: 1,
-      limit: 30,
-      totalPages: 1,
+      limit: 15,
+      totalPages: 0,
     });
 
     const { wrapper } = await mountHomePage();

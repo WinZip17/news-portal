@@ -117,7 +117,7 @@ npm run test:e2e:ui        # UI-режим (trace: on, страница видн
 
 | Пакет | Команда | Стек | Покрытие |
 |-------|---------|------|----------|
-| `frontend-vue` | `npm run test:ci` | Vitest + `@vue/test-utils` | utils, Pinia stores, services, router guards, components, layouts, все основные pages |
+| `frontend-vue` | `npm run test:ci` | Vitest + `@vue/test-utils` | ~122 теста: utils, stores, services, router, components, layouts, pages (в т.ч. газетная `HomeView`, `NewspaperMastheadStats`) |
 | `frontend-nuxt` | `npm run test:ci` | Vitest + `@nuxt/test-utils` | unit + stores/middleware |
 
 ### frontend-vue
@@ -133,16 +133,17 @@ npm run test:ci       # CI
 
 ```text
 frontend-vue/test/
-├── setup.ts                 # jsdom polyfills (IntersectionObserver, matchMedia)
-├── fixtures/mocks.ts        # mockUser, mockNewsItem, mockNewsResponse
+├── setup.ts
+├── fixtures/mocks.ts
 ├── utils/mountWithProviders.ts
-├── unit/                    # formatDate, getCategoryLabel, getCategoryColor, formatAppliedFilters, yandexMetrika
-├── stores/                  # auth, news (infinite scroll), ui
-├── services/                # auth.service, news.service (mock apiClient)
-├── router/                  # beforeEach guards (auth, guest, admin)
-├── components/              # NewsListFilters, NewsCard, NewsDetailModal
-├── layouts/                 # MainLayout (навигация, тема, logout)
-└── pages/                   # HomeView, LoginView, RegisterView, SearchView, NewsView, ProfileView, NotFoundView
+├── unit/                    # formatDate, theme (Material vs watch), yandexMetrika, …
+├── composables/             # hasNewsImage
+├── stores/                  # auth, news, ui
+├── services/                # auth.service, news.service
+├── router/                  # guards
+├── components/              # NewsListFilters, NewsCard, NewsDetailModal, NewspaperMastheadStats
+├── layouts/                 # MainLayout
+└── pages/                   # HomeView (газета), LoginView, NewsView, SearchView, …
 ```
 
 ### E2E (Playwright)
@@ -160,7 +161,7 @@ npm run test:e2e:report    # HTML-отчёт
 | Файл | Что проверяет |
 |------|----------------|
 | `e2e/login.spec.ts` | Валидация Vuetify, успешный вход, ошибка API |
-| `e2e/home-modal.spec.ts` | Модалка новости с главной |
+| `e2e/home-modal.spec.ts` | Газетная главная: lead story → `NewspaperDetailDialog` |
 | `e2e/smart-search.spec.ts` | Умный поиск, примеры запросов |
 | `e2e/news.spec.ts` | Лента новостей и фильтры |
 

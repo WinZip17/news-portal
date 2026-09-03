@@ -43,6 +43,16 @@ export class NewsFilterQueryDto {
   @IsBoolean()
   isAiGenerated?: boolean;
 
+  @ApiPropertyOptional({ description: 'Только новости с непустым imageUrl' })
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === 'true' || value === true) return true;
+    if (value === 'false' || value === false) return false;
+    return undefined;
+  })
+  @IsBoolean()
+  hasImage?: boolean;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsUUID()

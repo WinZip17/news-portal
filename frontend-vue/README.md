@@ -33,59 +33,72 @@ frontend-vue/
 │   ├── api/                 # HTTP клиент и интерсепторы
 │   │   ├── client.ts        # Axios инстанс
 │   │   └── interceptors.ts  # Перехватчики запросов
-│   ├── assets/              # Стили
+│   ├── assets/
 │   │   ├── main.css         # Глобальные стили
-│   │   └── utilities.css    # Утилитарные классы
-│   ├── components/          # Vue компоненты
+│   │   ├── utilities.css    # Утилитарные классы
+│   │   └── newspaper.css    # Газетная тема (только главная /)
+│   ├── components/
 │   │   ├── common/          # Общие (FrameworkSwitcher)
-│   │   └── news/            # NewsCard, NewsListFilters, NewsDetailModal
-│   ├── constants/           # Константы
-│   │   └── theme.ts         # Цвета темы
-│   ├── layouts/             # Layout компоненты
-│   │   └── MainLayout.vue   # Главный layout
-│   ├── pages/               # Страницы
-│   │   ├── HomeView.vue     # Главная
+│   │   ├── newspaper/       # Masthead, Nav, Teaser, Lead, Article, Brief, DetailDialog
+│   │   └── news/            # NewsCard, NewsListFilters, NewsDetailModal (/news)
+│   ├── composables/
+│   │   └── useHomeNews.ts   # hasImage=true, stats, provide/inject для HomeLayout
+│   ├── constants/
+│   │   ├── homeNews.ts      # HOME_NEWS_TARGET = 15
+│   │   └── theme.ts         # Material + watchDark (газета)
+│   ├── layouts/
+│   │   ├── HomeLayout.vue   # Газетная оболочка (/)
+│   │   └── MainLayout.vue   # Vuetify sidebar (остальные маршруты)
+│   ├── pages/
+│   │   ├── HomeView.vue     # Вёрстка газетного выпуска
 │   │   ├── NewsView.vue     # Лента новостей
+│   │   ├── SearchView.vue   # Умный поиск
 │   │   ├── LoginView.vue    # Вход
 │   │   ├── RegisterView.vue # Регистрация
 │   │   ├── ProfileView.vue  # Личный кабинет
 │   │   ├── AdminView.vue    # Админ-панель
 │   │   └── NotFoundView.vue # 404
-│   ├── plugins/             # Плагины
-│   │   ├── theme.ts         # Тема Vuetify
+│   ├── plugins/
+│   │   ├── theme.ts         # Vuetify Material light/dark
 │   │   ├── vuetify.ts       # Конфигурация Vuetify
 │   │   └── yandexMetrika.ts # Яндекс.Метрика (prod-only)
-│   ├── router/              # Vue Router
-│   │   └── index.ts         # Маршруты и guards
-│   ├── services/            # API сервисы
-│   │   ├── auth.service.ts  # Авторизация
-│   │   └── news.service.ts  # Новости
-│   ├── stores/              # Pinia stores
-│   │   ├── auth.ts          # Авторизация
-│   │   ├── news.ts          # Новости
-│   │   └── ui.ts            # UI (тема)
+│   ├── router/              # Маршруты и guards
+│   ├── services/            # auth.service, news.service
+│   ├── stores/              # auth, news, ui
 │   ├── types/               # Реэкспорт @news-portal/types
-│   │   ├── auth.ts
-│   │   └── news.ts
-│   ├── App.vue              # Корневой компонент
+│   ├── App.vue              # HomeLayout vs MainLayout + sync Vuetify theme
 │   └── main.ts              # Точка входа
-├── Dockerfile               # Docker образ
-├── nginx.conf               # Nginx конфиг
-├── vite.config.ts           # Vite конфиг
-├── tsconfig.json            # TypeScript конфиг
-└── package.json             # Зависимости
+├── e2e/                     # Playwright (порт 5174)
+├── test/                    # Vitest (~122 теста)
+├── Dockerfile
+├── nginx.conf
+├── vite.config.ts
+└── package.json
 ```
 
 ## 📄 Страницы
 
 | Путь | Страница | Доступ |
 |------|----------|--------|
-| / | Главная | Все |
+| / | **Газетная главная** — lead, тизеры, колонки, stats в masthead | Все |
 | /news | Лента: NewsListFilters (popover), infinite scroll, FTS, даты | Все |
+| /search | Умный поиск (NL → AI → фильтры) | Все |
 | /login | Вход | Гость |
 | /register | Регистрация | Гость |
 | /profile | Личный кабинет | 🔒 |
 | /admin | Админ-панель | 🔒 Модер/Админ |
+
+## 🗞 Газетная главная (`/`)
+
+Главная — отдельный UI, не Vuetify-карточки:
+
+- **`HomeLayout`** — masthead, nav, footer; stats через `NewspaperMastheadStats`
+- **`useHomeNews()`** — один запрос `GET /api/news?hasImage=true&limit=15&sortBy=publishedAt&sortOrder=DESC` + параллельно `/api/news/stats`
+- **Тема newsprint / watch** — только на `/` (класс `.newspaper-layout--watch`); на `/news` и др. — стандартный Vuetify Material light/dark
+- **`NewspaperDetailDialog`** — модалка материала (teleport; локальные CSS-переменные)
+- **Адаптив** — mobile-first: lead → тизеры → колонки → «Коротко»
+
+Подробнее: [docs/frontends.md](../docs/frontends.md)
 
 ## 📐 Типизация
 
@@ -100,9 +113,10 @@ import { NewsStatus, type News } from '@/types/news';
 
 ## 🔧 Особенности
 
-- Material Design (Vuetify 4)
-- Тёмная/светлая тема с синхронизацией через Pinia
-- Адаптивный сайдбар (постоянный на десктопе, временный на мобильных)
+- **Два layout:** `HomeLayout` (/) и `MainLayout` (остальное) — переключение в `App.vue`
+- Material Design (Vuetify 4) на `/news`, `/search`, профиле, админке
+- Тёмная «watch»-газета **только на главной**; Vuetify dark/light — на остальных страницах
+- Адаптивный сайдбар в `MainLayout` (постоянный на десктопе, временный на мобильных)
 - JWT авторизация с автообновлением токена
 - Infinite scroll в ленте `/news` (IntersectionObserver + `loadMore` в store)
 - Фильтры: поиск + сортировка видимо; категория, AI, даты — в v-menu
@@ -112,7 +126,7 @@ import { NewsStatus, type News } from '@/types/news';
 ## 🧪 Тестирование
 
 ```bash
-npm test              # Vitest, один прогон
+npm test              # Vitest, один прогон (~122 теста)
 npm run test:watch    # watch-режим
 npm run test:ci       # CI
 npm run test:e2e      # Playwright E2E (9 тестов, порт 5174)
@@ -121,17 +135,17 @@ npm run test:e2e:ui   # UI-режим Playwright
 
 Структура `test/`:
 
-- `unit/` — утилиты (`formatDate`, категории, `formatAppliedFilters`, Metrika)
-- `stores/` — Pinia (`auth`, `news` с infinite scroll, `ui`)
-- `services/` — `auth.service`, `news.service` (mock `apiClient`)
-- `router/` — guards: `requiresAuth`, `guest`, `requiresAdminAccess`
-- `components/` — `NewsListFilters`, `NewsCard`, `NewsDetailModal` (Vuetify stubs)
-- `layouts/` — `MainLayout` (навигация, тема, logout)
-- `pages/` — все основные страницы, включая `NotFoundView`
-- `fixtures/mocks.ts` — общие моки API-типов
-- `utils/mountWithProviders.ts` — mount с Pinia + Router
+- `unit/` — утилиты, theme (Material vs watch), Metrika
+- `composables/` — `hasNewsImage`
+- `stores/` — Pinia (`auth`, `news`, `ui`)
+- `services/` — `auth.service`, `news.service`
+- `router/` — guards
+- `components/` — `NewsListFilters`, `NewsCard`, `NewsDetailModal`, `NewspaperMastheadStats`
+- `layouts/` — `MainLayout`
+- `pages/` — `HomeView` (газета), `NewsView`, `SearchView`, …
+- `fixtures/mocks.ts`, `utils/mountWithProviders.ts`
 
-E2E (`e2e/`): login, home modal, smart search, news feed — API мокается в браузере, backend не нужен.
+E2E (`e2e/`): login, газетная главная + modal, smart search, news feed — API мокается в браузере, backend не нужен.
 
 Подробнее: [docs/testing.md](../docs/testing.md)
 

@@ -45,6 +45,7 @@ packages/types/
 - `NewsCategory`, `NewsStatus` (enum)
 - `NewsFilter`, `NewsResponse`, `NewsStats` / `StatsResponse` (алиас)
   - `NewsFilter.fromDate?`, `NewsFilter.toDate?` — календарные даты `YYYY-MM-DD` (Europe/Moscow)
+  - `NewsFilter.hasImage?` — только материалы с непустым `imageUrl`
   - `NewsFilter.searchVariants?` — альтернативные написания брендов (умный поиск)
 - `SmartSearchRequest`, `SmartSearchResponse` — умный поиск (`POST /api/news/smart-search`)
 - `ModerationBody`, `CreateNewsDto`

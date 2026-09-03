@@ -15,7 +15,7 @@
 - 🛡 **Модерация** — все новости проходят проверку перед публикацией
 - 📱 **PWA** — можно установить как приложение на телефон
 - 🔍 **SEO** — мета-теги, Open Graph, sitemap для поисковиков
-- 🔎 **Поиск** — PostgreSQL FTS; фильтр по дате; умный поиск (NL → AI) на React, Next и Nuxt
+- 🔎 **Поиск** — PostgreSQL FTS; фильтр по дате и `hasImage`; умный поиск (NL → AI) на React, Next, Nuxt и Vue
 - 📊 **Аналитика** — Яндекс.Метрика на всех prod-фронтах
 
 ## 🛠 Технологии
@@ -37,6 +37,8 @@
 | Next.js  | https://next.short-news.ru |
 | Nuxt     | https://nuxt.short-news.ru |
 | Vue      | https://vue.short-news.ru  |
+
+> **Vue SPA:** главная `/` — газетная вёрстка (newsprint / watch); лента и поиск — стандартный Vuetify UI.
 
 ## 🚀 Запуск
 
@@ -93,8 +95,9 @@ npm run start:prod   # Docker Compose (продакшен)
 ## 🧪 Тестирование
 
 ```bash
-npm test                    # backend (Jest) + frontend (Vitest)
+npm test                    # backend + все фронтенды (Vitest/Jest)
 npm run test:e2e:frontend   # React E2E (Playwright)
+npm run test:e2e:frontend-vue # Vue E2E (газетная главная, login, /news, /search)
 npm run test:e2e            # backend E2E
 ```
 

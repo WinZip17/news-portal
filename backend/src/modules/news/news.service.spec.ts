@@ -175,6 +175,20 @@ describe('NewsService', () => {
 
       expect(queryBuilder.andWhere).not.toHaveBeenCalledWith(expect.stringContaining('publishedAt'), expect.anything());
     });
+
+    it('filters news with hasImage=true', async () => {
+      await service.findAll({ hasImage: true });
+
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith(
+        "news.imageUrl IS NOT NULL AND TRIM(news.imageUrl) <> ''",
+      );
+    });
+
+    it('filters news with hasImage=false', async () => {
+      await service.findAll({ hasImage: false });
+
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith("(news.imageUrl IS NULL OR TRIM(news.imageUrl) = '')");
+    });
   });
 
   describe('findOne', () => {

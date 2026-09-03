@@ -12,6 +12,7 @@
 | `tags` | Фильтр по тегам (один или несколько: `?tags=ai&tags=экономика` или `?tags=ai,экономика`) |
 | `category` | Категория (`politics`, `economy`, `technology`, …) |
 | `isAiGenerated` | `true` / `false` — только AI или только оригиналы |
+| `hasImage` | `true` / `false` — только материалы с непустым `imageUrl` |
 | `fromDate`, `toDate` | Период публикации по календарной дате (`YYYY-MM-DD`). Параметры **необязательны** и работают **независимо** друг от друга: можно указать только начало, только конец или диапазон. `toDate` включает указанный день. Сравнение идёт по `publishedAt` в часовом поясе **Europe/Moscow** (как в UI `ru-RU`). |
 | `sortBy` | `publishedAt`, `views`, `likes`, `createdAt` |
 | `sortOrder` | `ASC` / `DESC` |
@@ -74,7 +75,7 @@
 ### Безопасность
 
 - LLM **не** пишет SQL.
-- Разрешены только поля `NewsFilter`: `search`, `searchVariants`, `category`, `tags`, `fromDate`, `toDate`, `isAiGenerated`, `sortBy`, `sortOrder`.
+- Разрешены только поля `NewsFilter`: `search`, `searchVariants`, `category`, `tags`, `fromDate`, `toDate`, `isAiGenerated`, `sortBy`, `sortOrder` (`hasImage` — только для прямого `GET /api/news`, не через умный поиск).
 - `searchVariants` — альтернативные написания брендов и имён (кириллица/латиница); в FTS ищутся через **OR** вместе с `search`.
 - Backend дополнительно расширяет запрос транслитерацией и известными алиасами (Озон ↔ Ozon, Сбер ↔ Sber и т.д.).
 - `status` всегда принудительно `published` для публичного поиска.
@@ -121,7 +122,7 @@ GET /api/news?toDate=2026-08-19
 | React SPA | `GET /api/news?search=` | popover: категория, AI, даты | ✅ | `/search` |
 | Next.js | FTS + фильтры | popover (MUI) | ✅ | `/search` |
 | Nuxt | FTS на `/news` | popover (OverlayPanel) | ✅ | `/search` |
-| Vue SPA | поле «Поиск» | popover (v-menu) | ✅ | — |
+| Vue SPA | поле «Поиск»; главная `/` — `hasImage=true` (без FTS) | popover (v-menu) | ✅ | `/search` |
 
 ## WebSocket
 

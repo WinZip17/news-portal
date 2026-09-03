@@ -81,6 +81,7 @@ TypeScript-контракты запросов и ответов описаны 
 | sortBy | string | Сортировка (publishedAt, views, likes, createdAt) |
 | sortOrder | string | Порядок (ASC, DESC) |
 | isAiGenerated | boolean | Только AI-новости |
+| hasImage | boolean | Только материалы с непустым `imageUrl` |
 | fromDate | string | Начало периода включительно (`YYYY-MM-DD`, календарная дата в Europe/Moscow) |
 | toDate | string | Конец периода включительно (`YYYY-MM-DD`, календарная дата в Europe/Moscow) |
 

@@ -37,6 +37,7 @@ export class NewsService {
       sortBy = 'publishedAt',
       sortOrder = 'DESC',
       isAiGenerated,
+      hasImage,
       authorId,
       tags,
       searchVariants,
@@ -56,6 +57,11 @@ export class NewsService {
     }
     if (isAiGenerated !== undefined) {
       queryBuilder.andWhere('news.isAiGenerated = :isAiGenerated', { isAiGenerated });
+    }
+    if (hasImage === true) {
+      queryBuilder.andWhere("news.imageUrl IS NOT NULL AND TRIM(news.imageUrl) <> ''");
+    } else if (hasImage === false) {
+      queryBuilder.andWhere("(news.imageUrl IS NULL OR TRIM(news.imageUrl) = '')");
     }
     if (authorId) {
       queryBuilder.andWhere('news.authorId = :authorId', { authorId });

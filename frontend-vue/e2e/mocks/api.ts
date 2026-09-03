@@ -62,11 +62,11 @@ export async function mockNewsPortalApi(page: Page) {
 
     if (method === 'GET' && (pathname.endsWith('/news') || pathname.endsWith('/news/'))) {
       const pageNum = Number(url.searchParams.get('page') || '1');
-      const limit = Number(url.searchParams.get('limit') || '20');
+      const hasImage = url.searchParams.get('hasImage') === 'true';
       if (pageNum > 1) {
         return fulfillJson(route, { ...mockNewsResponse, data: [], total: 15, page: pageNum });
       }
-      if (limit >= 30) {
+      if (hasImage) {
         return fulfillJson(route, mockHomeNewsResponse);
       }
       return fulfillJson(route, mockNewsResponse);

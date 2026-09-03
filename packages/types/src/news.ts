@@ -39,6 +39,8 @@ export interface NewsFilter {
   fromDate?: string;
   toDate?: string;
   isAiGenerated?: boolean;
+  /** Только материалы с непустым imageUrl (для газетной главной и т.п.) */
+  hasImage?: boolean;
   authorId?: string;
   page?: number;
   limit?: number;

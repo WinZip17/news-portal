@@ -10,7 +10,7 @@ news-portal/
 ├── frontend/         # React SPA (основной)
 ├── frontend-next/    # Next.js + MUI
 ├── frontend-nuxt/    # Nuxt + PrimeVue
-├── frontend-vue/     # Vue + Vuetify
+├── frontend-vue/     # Vue + Vuetify (газетная главная /, лента /news)
 ├── packages/
 │   └── types/        # @news-portal/types — общая типизация
 ├── docs/             # Документация
@@ -91,7 +91,7 @@ POST /api/news/smart-search  → DeepSeek → NewsFilter JSON → sanitize → f
 | `backend` | Jest | Jest + supertest (`test:e2e`) |
 | `frontend` | Vitest + MSW + Testing Library | Playwright (`e2e/`, мок API в браузере) |
 | `frontend-next` | Vitest | — |
-| `frontend-vue` | Vitest | — |
+| `frontend-vue` | Vitest (~122) | Playwright (`e2e/`, порт 5174, мок API) |
 
 Подробнее: [testing.md](testing.md).
 

@@ -28,7 +28,7 @@ npm run dev          # PostgreSQL + backend + React SPA
 | React SPA | http://localhost:5173 |
 | Next.js | http://localhost:3003 |
 | Nuxt | http://localhost:3004 |
-| Vue SPA | http://localhost:5173 |
+| Vue SPA | http://localhost:5173 | Газетная главная `/`; Vuetify на `/news`, `/search` |
 | Backend API | http://localhost:3001 |
 | Swagger | http://localhost:3001/api/docs |
 

@@ -17,11 +17,12 @@
 | **SSR** | ❌ | ✅ | ✅ | ❌ |
 | **CSS решение** | Ant Design | MUI System | PrimeVue + CSS | Vuetify + CSS |
 | **Типы** | `@/types` → `@news-portal/types` | `@/types` | `~/types` | `@/types` |
-| **Поиск** | FTS `/news` + умный `/search` + фильтр по дате | FTS `/news` + умный `/search` + фильтр по дате | FTS `/news` + умный `/search` + фильтр по дате | FTS `/news` + фильтр по дате |
+| **Поиск** | FTS `/news` + умный `/search` + фильтр по дате | FTS `/news` + умный `/search` + фильтр по дате | FTS `/news` + умный `/search` + фильтр по дате | FTS `/news` + умный `/search` + фильтр по дате |
+| **Главная `/`** | Hero + stats + карточки | Hero + stats + карточки | Сетка `NewsCard` с превью | **Газетный выпуск** (`HomeLayout`, только материалы с фото) |
 | **Лента `/news`** | Infinite scroll, full-width cards | Infinite scroll, full-width cards | Infinite scroll, `NewsListCard` | Infinite scroll, full-width cards |
 | **WS toast** | — | `news:published` / `news:pending` | — | — |
 | **Яндекс.Метрика** | ✅ prod | ✅ prod | ✅ prod | ✅ prod |
-| **Тесты** | Vitest + Playwright E2E | Jest + Playwright E2E | Vitest | Vitest (unit + stores + components) |
+| **Тесты** | Vitest + Playwright E2E | Jest + Playwright E2E | Vitest | Vitest + Playwright E2E (~122 unit + 9 E2E) |
 
 > 🔍 Подробнее: [search.md](search.md)
 
@@ -132,25 +133,41 @@ frontend-nuxt/
 - Стек: Vue 3, Pinia, Vuetify 4, Vite
 
 ### Особенности
-- Material Design (Vuetify)
-- Pinia для управления состоянием
-- Адаптивный сайдбар
-- Поддержка тёмной темы
-- Лента `/news`: `NewsListFilters` (popover), infinite scroll, full-width cards
+
+- Material Design (Vuetify 4) на **`/news`**, **`/search`**, профиле, админке
+- **Газетная главная `/`** — отдельный UI (не Vuetify-карточки):
+  - `HomeLayout` + компоненты `src/components/newspaper/*`
+  - Стили `src/assets/newspaper.css` (newsprint); тёмная «watch»-тема **только на главной** (`.newspaper-layout--watch`)
+  - На `/` Vuetify-theme принудительно `light`; переключатель в nav меняет newsprint ↔ watch
+  - Загрузка: `GET /api/news?hasImage=true&limit=15` через `useHomeNews()` (без клиентской фильтрации)
+  - Masthead со stats (`NewspaperMastheadStats`), lead + тизеры + колонки + «Коротко»
+  - Модалка материала: `NewspaperDetailDialog` (teleport — CSS-переменные задаются локально)
+  - Адаптивная вёрстка: mobile-first сетка nav/stats/issue
+- Лента **`/news`**: `MainLayout`, `NewsListFilters` (popover), infinite scroll, full-width cards
+- Умный поиск **`/search`**
+- Pinia, JWT, адаптивный сайдbar в `MainLayout`
 - **Яндекс.Метрика** (prod, `src/plugins/yandexMetrika.ts`)
 
 ### Структура
+
 ```
 frontend-vue/src/
-├── components/news/   # NewsCard, NewsListFilters, NewsDetailModal
+├── assets/newspaper.css       # газетная тема (только главная)
+├── components/
+│   ├── newspaper/             # Masthead, Nav, Teaser, Lead, Article, Brief, DetailDialog
+│   └── news/                  # NewsCard, NewsListFilters, NewsDetailModal (/news)
+├── composables/useHomeNews.ts # hasImage=true, stats, provide/inject
+├── constants/homeNews.ts      # HOME_NEWS_TARGET = 15
+├── layouts/
+│   ├── HomeLayout.vue         # газетная оболочка (/)
+│   └── MainLayout.vue         # Vuetify sidebar (остальные маршруты)
+├── pages/HomeView.vue         # вёрстка выпуска
 ├── plugins/yandexMetrika.ts
-├── pages/         # Страницы
-├── plugins/       # Плагины
-├── router/        # Vue Router
-├── services/      # API сервисы
-├── stores/        # Pinia stores
-├── types/         # Реэкспорт @news-portal/types
-└── utils/         # Утилиты
+├── App.vue                    # HomeLayout vs MainLayout + sync Vuetify theme
+├── router/
+├── services/
+├── stores/
+└── types/
 ```
 
 ## Переключение между фронтендами
