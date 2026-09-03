@@ -109,6 +109,24 @@ import { NewsStatus, type News } from '@/types/news';
 - Яндекс.Метрика (prod, счётчик 110884229)
 - SEO через @unhead/vue
 
+## 🧪 Тестирование
+
+```bash
+npm test              # Vitest, один прогон
+npm run test:watch    # watch-режим
+npm run test:ci       # CI
+```
+
+Структура `test/`:
+
+- `unit/` — утилиты (`formatDate`, категории, Metrika)
+- `stores/` — Pinia (`auth`, `news` с infinite scroll, `ui`)
+- `components/` — `NewsListFilters` (Vuetify stubs)
+- `fixtures/mocks.ts` — общие моки API-типов
+- `utils/mountWithProviders.ts` — mount с Pinia + Router
+
+Подробнее: [docs/testing.md](../docs/testing.md)
+
 ## 🐳 Docker
 
 ```text

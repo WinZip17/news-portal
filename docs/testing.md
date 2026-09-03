@@ -5,7 +5,7 @@
 ## Быстрые команды (корень репозитория)
 
 ```bash
-npm test                    # backend (Jest) + frontend (Vitest) + frontend-next (Jest)
+npm test                    # backend (Jest) + frontend (Vitest) + frontend-next (Jest) + frontend-nuxt + frontend-vue
 npm run test:backend        # только backend
 npm run test:frontend       # только frontend (Vitest, watch по умолчанию)
 npm run test:frontend-next  # только frontend-next (Jest, CI-режим)
@@ -114,10 +114,31 @@ npm run test:e2e:ui        # UI-режим (trace: on, страница видн
 
 ## Nuxt, Vue
 
-| Пакет | Команда | Стек |
-|-------|---------|------|
-| `frontend-vue` | `npm run test:unit` | Vitest |
-| `frontend-nuxt` | `npm run test:ci` | Vitest + `@nuxt/test-utils` (unit + stores/middleware) |
+| Пакет | Команда | Стек | Покрытие |
+|-------|---------|------|----------|
+| `frontend-vue` | `npm run test:ci` | Vitest + `@vue/test-utils` | utils, Pinia stores, `NewsListFilters` |
+| `frontend-nuxt` | `npm run test:ci` | Vitest + `@nuxt/test-utils` | unit + stores/middleware |
+
+### frontend-vue
+
+```bash
+cd frontend-vue
+npm test              # Vitest (один прогон)
+npm run test:watch    # watch-режим
+npm run test:ci       # CI
+```
+
+Структура:
+
+```text
+frontend-vue/test/
+├── setup.ts                 # jsdom polyfills (IntersectionObserver, matchMedia)
+├── fixtures/mocks.ts        # mockUser, mockNewsItem, mockNewsResponse
+├── utils/mountWithProviders.ts
+├── unit/                    # formatDate, getCategoryLabel, getCategoryColor, yandexMetrika
+├── stores/                  # auth, news (infinite scroll), ui
+└── components/              # NewsListFilters
+```
 
 ## CI и pre-commit
 
@@ -128,6 +149,8 @@ npm run lint
 npm run format:check
 npm run test:frontend -- --run   # или cd frontend && npm run test:ci
 npm run test:frontend-next       # при изменениях Next.js
+npm run test:frontend-nuxt       # при изменениях Nuxt
+npm run test:frontend-vue        # при изменениях Vue SPA
 npm run test:e2e:frontend        # при изменениях UI/E2E (React SPA)
 npm run test:e2e:frontend-next   # при изменениях UI/E2E (Next.js)
 ```

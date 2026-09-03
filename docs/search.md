@@ -127,7 +127,7 @@ GET /api/news?toDate=2026-08-19
 
 | Namespace | События | Где используется |
 |-----------|---------|------------------|
-| `/api/datetime` | `datetime` | футер **frontend-next** (`useServerDatetime`) |
+| `/api/datetime` | `datetime` | backend broadcast (демо WS; футер Next — локальное время браузера) |
 | `/api/news` | `news:published`, `news:pending` | toast **frontend-next** (`useNewsNotifications`) |
 
 Engine path: `/api/socket.io`. Типы: `NEWS_WS_EVENTS`, `NewsNotificationPayload` в `@news-portal/types`.

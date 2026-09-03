@@ -8,7 +8,7 @@ export function getCategoryColor(category: string): string {
     entertainment: 'pink',
     health: 'red',
     world: 'indigo',
-    other: 'grey',
+    other: 'grey'
   };
   return colors[category] || 'grey';
 }

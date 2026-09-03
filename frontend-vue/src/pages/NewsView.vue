@@ -26,14 +26,7 @@ const loaderRef = ref<HTMLElement | null>(null);
 
 let observer: IntersectionObserver | null = null;
 
-const hasActiveFilters = computed(
-  () =>
-    category.value !== 'all' ||
-    aiFilter.value !== 'all' ||
-    !!search.value ||
-    !!fromDate.value ||
-    !!toDate.value,
-);
+const hasActiveFilters = computed(() => category.value !== 'all' || aiFilter.value !== 'all' || !!search.value || !!fromDate.value || !!toDate.value);
 
 const categories = [
   { value: 'all', label: '📂 Все' },
@@ -44,7 +37,7 @@ const categories = [
   { value: 'sports', label: '⚽ Спорт' },
   { value: 'entertainment', label: '🎬 Развлечения' },
   { value: 'health', label: '🏥 Здоровье' },
-  { value: 'world', label: '🌍 Мир' },
+  { value: 'world', label: '🌍 Мир' }
 ];
 
 onMounted(() => {
@@ -72,7 +65,7 @@ function applyFilters() {
     isAiGenerated: aiFilter.value !== 'all' ? aiFilter.value === 'true' : undefined,
     fromDate: fromDate.value || undefined,
     toDate: toDate.value || undefined,
-    sortBy: sortBy.value as NewsFilter['sortBy'],
+    sortBy: sortBy.value as NewsFilter['sortBy']
   };
   newsStore.setFilter(filters);
   newsStore.fetchNews();
@@ -101,7 +94,7 @@ function setupObserver() {
         newsStore.loadMore();
       }
     },
-    { threshold: 0.1 },
+    { threshold: 0.1 }
   );
   observer.observe(loaderRef.value);
 }
@@ -113,7 +106,7 @@ function openNews(item: News) {
 
 useHead({
   title: 'Лента новостей',
-  meta: [{ name: 'description', content: 'Актуальные новости с фильтрацией по категориям.' }],
+  meta: [{ name: 'description', content: 'Актуальные новости с фильтрацией по категориям.' }]
 });
 </script>
 

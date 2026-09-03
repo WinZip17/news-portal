@@ -179,14 +179,7 @@ watch(page, loadUsers);
           <v-text-field v-model="editUser.lastName" label="Фамилия" density="compact" class="mb-2" />
           <v-select v-model="editUser.role" :items="roleOptions" item-title="title" item-value="value" label="Роль" density="compact" class="mb-2" />
           <v-switch v-model="editUser.isActive" label="Активен" color="primary" class="mb-2" />
-          <v-select
-            v-model="editUser.preferences.theme"
-            :items="themeOptions"
-            item-title="title"
-            item-value="value"
-            label="Тема"
-            density="compact"
-          />
+          <v-select v-model="editUser.preferences.theme" :items="themeOptions" item-title="title" item-value="value" label="Тема" density="compact" />
         </v-card-text>
         <v-card-actions>
           <v-spacer />

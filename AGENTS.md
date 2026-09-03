@@ -97,7 +97,7 @@ backend/src/modules/
 ## Тесты
 
 ```bash
-npm test                      # backend + React + Next + Nuxt
+npm test                      # backend + React + Next + Nuxt + Vue
 npm run test:e2e:frontend     # React Playwright
 npm run test:e2e              # backend E2E
 ```

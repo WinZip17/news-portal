@@ -23,20 +23,16 @@ const filtersMenuOpen = ref(false);
 const sortOptions = [
   { value: 'publishedAt', title: '🕒 По дате' },
   { value: 'views', title: '👁 По просмотрам' },
-  { value: 'likes', title: '❤️ По лайкам' },
+  { value: 'likes', title: '❤️ По лайкам' }
 ];
 
 const aiFilterOptions = [
   { value: 'all', title: '📋 Все' },
   { value: 'true', title: '🤖 AI-рерайт' },
-  { value: 'false', title: '📄 Оригиналы' },
+  { value: 'false', title: '📄 Оригиналы' }
 ];
 
-const secondaryFilterCount = computed(
-  () =>
-    [category.value !== 'all', aiFilter.value !== 'all', !!fromDate.value, !!toDate.value].filter(Boolean)
-      .length,
-);
+const secondaryFilterCount = computed(() => [category.value !== 'all', aiFilter.value !== 'all', !!fromDate.value, !!toDate.value].filter(Boolean).length);
 
 const selectMenuProps = { zIndex: 2500 };
 </script>
@@ -56,35 +52,13 @@ const selectMenuProps = { zIndex: 2500 };
         @click:clear="emit('search')"
       />
 
-      <v-select
-        v-model="sortBy"
-        :class="$style.sort"
-        :items="sortOptions"
-        density="compact"
-        hide-details
-        aria-label="Сортировка"
-      />
+      <v-select v-model="sortBy" :class="$style.sort" :items="sortOptions" density="compact" hide-details aria-label="Сортировка" />
 
       <div :class="$style.toolbarActions">
-        <v-menu
-          v-model="filtersMenuOpen"
-          :close-on-content-click="false"
-          location="bottom end"
-        >
+        <v-menu v-model="filtersMenuOpen" :close-on-content-click="false" location="bottom end">
           <template #activator="{ props: menuProps }">
-            <v-badge
-              :content="secondaryFilterCount"
-              :model-value="secondaryFilterCount > 0"
-              color="primary"
-            >
-              <v-btn
-                v-bind="menuProps"
-                :variant="secondaryFilterCount > 0 ? 'flat' : 'outlined'"
-                color="primary"
-                prepend-icon="mdi-filter"
-              >
-                Фильтры
-              </v-btn>
+            <v-badge :content="secondaryFilterCount" :model-value="secondaryFilterCount > 0" color="primary">
+              <v-btn v-bind="menuProps" :variant="secondaryFilterCount > 0 ? 'flat' : 'outlined'" color="primary" prepend-icon="mdi-filter"> Фильтры </v-btn>
             </v-badge>
           </template>
 
@@ -92,61 +66,28 @@ const selectMenuProps = { zIndex: 2500 };
             <v-card-text :class="$style.panelContent">
               <div :class="$style.field">
                 <span :class="$style.label">Категория</span>
-                <v-select
-                  v-model="category"
-                  :items="categories"
-                  item-value="value"
-                  item-title="label"
-                  density="compact"
-                  hide-details
-                  :menu-props="selectMenuProps"
-                />
+                <v-select v-model="category" :items="categories" item-value="value" item-title="label" density="compact" hide-details :menu-props="selectMenuProps" />
               </div>
 
               <div :class="$style.field">
                 <span :class="$style.label">Тип новости</span>
-                <v-select
-                  v-model="aiFilter"
-                  :items="aiFilterOptions"
-                  density="compact"
-                  hide-details
-                  :menu-props="selectMenuProps"
-                />
+                <v-select v-model="aiFilter" :items="aiFilterOptions" density="compact" hide-details :menu-props="selectMenuProps" />
               </div>
 
               <div :class="$style.field">
                 <span :class="$style.label">Дата от</span>
-                <v-text-field
-                  v-model="fromDate"
-                  type="date"
-                  density="compact"
-                  hide-details
-                />
+                <v-text-field v-model="fromDate" type="date" density="compact" hide-details />
               </div>
 
               <div :class="$style.field">
                 <span :class="$style.label">Дата до</span>
-                <v-text-field
-                  v-model="toDate"
-                  type="date"
-                  density="compact"
-                  hide-details
-                  :min="fromDate || undefined"
-                />
+                <v-text-field v-model="toDate" type="date" density="compact" hide-details :min="fromDate || undefined" />
               </div>
             </v-card-text>
           </v-card>
         </v-menu>
 
-        <v-btn
-          v-if="hasActiveFilters"
-          variant="outlined"
-          color="primary"
-          prepend-icon="mdi-filter-off"
-          @click="emit('reset')"
-        >
-          Сбросить
-        </v-btn>
+        <v-btn v-if="hasActiveFilters" variant="outlined" color="primary" prepend-icon="mdi-filter-off" @click="emit('reset')"> Сбросить </v-btn>
       </div>
     </div>
   </div>

@@ -118,12 +118,8 @@ watch(statusFilter, loadNews);
           <td>
             <div class="d-flex gap-1 flex-wrap">
               <template v-if="item.status === NewsStatus.PENDING">
-                <v-btn size="x-small" color="success" variant="tonal" prepend-icon="mdi-check-circle" @click="handleModerate(item.id, NewsStatus.PUBLISHED)">
-                  Опубликовать
-                </v-btn>
-                <v-btn size="x-small" color="error" variant="tonal" prepend-icon="mdi-close-circle" @click="handleModerate(item.id, NewsStatus.REJECTED)">
-                  Отклонить
-                </v-btn>
+                <v-btn size="x-small" color="success" variant="tonal" prepend-icon="mdi-check-circle" @click="handleModerate(item.id, NewsStatus.PUBLISHED)"> Опубликовать </v-btn>
+                <v-btn size="x-small" color="error" variant="tonal" prepend-icon="mdi-close-circle" @click="handleModerate(item.id, NewsStatus.REJECTED)"> Отклонить </v-btn>
               </template>
               <template v-if="item.status === NewsStatus.PUBLISHED">
                 <v-btn size="x-small" variant="tonal" @click="handleModerate(item.id, NewsStatus.ARCHIVED)">В архив</v-btn>

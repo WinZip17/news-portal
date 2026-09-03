@@ -21,7 +21,7 @@
 | **Лента `/news`** | Infinite scroll, full-width cards | Infinite scroll, full-width cards | Infinite scroll, `NewsListCard` | Infinite scroll, full-width cards |
 | **WS toast** | — | `news:published` / `news:pending` | — | — |
 | **Яндекс.Метрика** | ✅ prod | ✅ prod | ✅ prod | ✅ prod |
-| **Тесты** | Vitest + Playwright E2E | Jest + Playwright E2E | Vitest | Vitest (unit) |
+| **Тесты** | Vitest + Playwright E2E | Jest + Playwright E2E | Vitest | Vitest (unit + stores + components) |
 
 > 🔍 Подробнее: [search.md](search.md)
 
@@ -73,7 +73,7 @@ frontend/
 - **`/search`** — умный поиск (NL → `POST /api/news/smart-search`)
 - **`/news`** — FTS, фильтры (popover), infinite scroll, full-width cards
 - Toast-уведомления о новых/опубликованных новостях (WS `/api/news`, `NewsNotifications`)
-- Серверное время в футере (WebSocket `/api/datetime`, хук `useServerDatetime`)
+- Локальное время пользователя в футере (хук `useServerDatetime`)
 - **Яндекс.Метрика** (prod, `YandexMetrika.tsx`)
 - Клиентский layout отделён от серверного
 - CSS-in-JS через MUI
