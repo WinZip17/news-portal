@@ -24,7 +24,7 @@ test.describe('Login flow', () => {
     await page.getByRole('button', { name: 'Войти' }).click();
 
     await expect(page).toHaveURL('/');
-    await expect(page.getByRole('button', { name: 'Читать новости' })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Читать ленту/i })).toBeVisible();
   });
 
   test('shows API error for invalid credentials', async ({ page }) => {

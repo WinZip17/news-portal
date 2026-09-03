@@ -45,6 +45,7 @@ export const mockNewsItem: News = {
   likes: 2,
   source: 'Test Source',
   sourceUrl: 'https://example.com/news/1',
+  imageUrl: 'https://example.com/news/1.jpg',
   publishedAt: '2026-08-20T08:00:00.000Z',
   createdAt: '2026-08-20T08:00:00.000Z',
   updatedAt: '2026-08-20T08:00:00.000Z',

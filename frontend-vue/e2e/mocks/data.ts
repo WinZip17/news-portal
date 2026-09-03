@@ -38,6 +38,7 @@ export const mockNewsItem = {
   likes: 3,
   source: 'E2E Source',
   sourceUrl: 'https://example.com/news/1',
+  imageUrl: 'https://example.com/news/1.jpg',
   publishedAt: '2026-08-20T08:00:00.000Z',
   createdAt: '2026-08-20T08:00:00.000Z',
   updatedAt: '2026-08-20T08:00:00.000Z',
@@ -48,6 +49,24 @@ export const mockNewsResponse = {
   total: 1,
   page: 1,
   limit: 20,
+  totalPages: 1,
+};
+
+/** Набор новостей с фото для газетной главной в E2E */
+export function createMockNewsWithImages(count = 15) {
+  return Array.from({ length: count }, (_, i) => ({
+    ...mockNewsItem,
+    id: `news-${i + 1}`,
+    title: i === 0 ? mockNewsItem.title : `E2E новость ${i + 1}`,
+    imageUrl: `https://example.com/news/${i + 1}.jpg`,
+  }));
+}
+
+export const mockHomeNewsResponse = {
+  data: createMockNewsWithImages(15),
+  total: 15,
+  page: 1,
+  limit: 30,
   totalPages: 1,
 };
 
