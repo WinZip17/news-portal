@@ -179,9 +179,7 @@ describe('NewsService', () => {
     it('filters news with hasImage=true', async () => {
       await service.findAll({ hasImage: true });
 
-      expect(queryBuilder.andWhere).toHaveBeenCalledWith(
-        "news.imageUrl IS NOT NULL AND TRIM(news.imageUrl) <> ''",
-      );
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith("news.imageUrl IS NOT NULL AND TRIM(news.imageUrl) <> ''");
     });
 
     it('filters news with hasImage=false', async () => {
