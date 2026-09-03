@@ -12,6 +12,7 @@ import { DeduplicationService } from './deduplication.service';
 import { normalizeUrl } from '../../utils/normalizeUrl';
 import { AiRewriteResult, NewsCategory, NewsStatus, RssArticle } from '../../types';
 import { NewsGateway } from '../news/news.gateway';
+import { hasSufficientSourceText, isValidRewriteDraft, stripHtml } from './ai-rewrite.validation';
 
 @Injectable()
 export class AiService {
@@ -175,6 +176,11 @@ export class AiService {
 
     for (const article of uniqueArticles) {
       try {
+        if (!hasSufficientSourceText(article)) {
+          this.logger.warn(`Insufficient source text for "${article.title.substring(0, 80)}...", skipping rewrite`);
+          continue;
+        }
+
         // rewriteArticle должен вернуть draft, а не сохранять сам
         const draft = await this.rewriteArticle(article, selectedCategory);
 
@@ -328,40 +334,25 @@ export class AiService {
       const finalCategory = this.validateCategory(result.category) || category;
       const finalTags = Array.isArray(result.tags) && result.tags.length > 0 ? result.tags : article.categories || [];
 
-      // Валидация контента
-      const contentText = finalContent.replace(/<[^>]*>/g, '').trim();
-      if (contentText.length < 50) {
-        this.logger.warn(`Content too short (${contentText.length} chars): "${contentText.substring(0, 50)}..."`);
-        return null;
-      }
-
-      // Валидация заголовка
-      if (!finalTitle || finalTitle.includes('Контент находится в процессе генерации') || finalTitle.includes('Актуальные новости')) {
-        this.logger.warn(`Invalid title: "${finalTitle}"`);
-        return null;
-      }
-
-      // Валидация fallback-контента
-      if (contentText.includes('Контент находится в процессе генерации') || contentText.includes('временно недоступен')) {
-        this.logger.warn('Fallback content detected');
-        return null;
-      }
-
-      return {
+      const draft = {
         title: finalTitle,
         summary: finalSummary,
         content: finalContent,
         category: finalCategory,
         tags: finalTags,
       };
+
+      if (!isValidRewriteDraft(draft)) {
+        this.logger.warn(`Invalid AI rewrite result, skipping: "${finalTitle.substring(0, 80)}..."`);
+        return null;
+      }
+
+      return draft;
     } catch (error: any) {
       this.logger.error(`Failed to rewrite article: ${error.message}`);
 
       // Fallback: возвращаем оригинальную новость в более чистом виде
-      let cleanContent = article.content || article.summary || '';
-
-      cleanContent = cleanContent.replace(/<[^>]*>/g, '');
-      cleanContent = cleanContent.replace(/\s+/g, ' ').trim();
+      const cleanContent = stripHtml(article.content || article.summary || '');
 
       const paragraphs = cleanContent
         .split(/\.\s+/)
@@ -374,16 +365,20 @@ export class AiService {
         return null;
       }
 
-      return {
+      const fallbackDraft = {
         title: article.title.replace(/<[^>]*>/g, '').trim(),
-        summary: (article.summary || '')
-          .replace(/<[^>]*>/g, '')
-          .trim()
-          .substring(0, 200),
+        summary: stripHtml(article.summary || '').substring(0, 200),
         content: paragraphs || `<p>${cleanContent}</p>`,
         category,
         tags: article.categories || [],
       };
+
+      if (!isValidRewriteDraft(fallbackDraft)) {
+        this.logger.warn('Fallback rewrite result rejected by validation');
+        return null;
+      }
+
+      return fallbackDraft;
     }
   }
 
