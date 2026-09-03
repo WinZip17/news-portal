@@ -10,6 +10,14 @@
         option-value="value"
         @change="loadNews"
       />
+      <IconField class="search-field">
+        <InputIcon class="pi pi-search" />
+        <InputText
+          v-model="searchInput"
+          placeholder="Поиск по заголовку, описанию, тегам..."
+          @keyup.enter="applySearch"
+        />
+      </IconField>
     </div>
 
     <div v-if="newsStore.isLoading" class="loading-container">
@@ -174,6 +182,8 @@ const confirm = useConfirm();
 const { showSuccess, showError } = useAppToast();
 
 const statusFilter = ref('pending');
+const searchInput = ref('');
+const searchQuery = ref('');
 const viewDialog = ref(false);
 const selectedNews = ref<NewsItem | null>(null);
 const moderatingId = ref<string | null>(null);
@@ -193,9 +203,27 @@ onMounted(() => {
   loadNews();
 });
 
+watchDebounced(
+  searchInput,
+  (value) => {
+    searchQuery.value = value.trim();
+    loadNews();
+  },
+  { debounce: 300 },
+);
+
 function loadNews() {
-  newsStore.setFilter({ status: statusFilter.value as NewsStatus });
+  newsStore.setFilter({
+    status: statusFilter.value as NewsStatus,
+    page: 1,
+    ...(searchQuery.value ? { search: searchQuery.value } : { search: undefined }),
+  });
   newsStore.fetchNews();
+}
+
+function applySearch() {
+  searchQuery.value = searchInput.value.trim();
+  loadNews();
 }
 
 function getCategoryLabel(category: string): string {
@@ -373,7 +401,16 @@ function viewNews(news: NewsItem) {
 }
 
 .filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
   margin-bottom: 1.5rem;
+}
+
+.search-field {
+  flex: 1 1 280px;
+  max-width: 420px;
 }
 
 .loading-container {

@@ -47,6 +47,10 @@ export default function AdminPage() {
   const [editItem, setEditItem] = useState<News | User | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [newsSearch, setNewsSearch] = useState('');
+  const [newsSearchQuery, setNewsSearchQuery] = useState('');
+  const [superNewsSearch, setSuperNewsSearch] = useState('');
+  const [superNewsSearchQuery, setSuperNewsSearchQuery] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<{
     open: boolean;
     id: string;
@@ -60,12 +64,22 @@ export default function AdminPage() {
   const isSuperAdmin = user?.role === 'super_admin';
 
   useEffect(() => {
+    const timer = setTimeout(() => setNewsSearchQuery(newsSearch.trim()), 300);
+    return () => clearTimeout(timer);
+  }, [newsSearch]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setSuperNewsSearchQuery(superNewsSearch.trim()), 300);
+    return () => clearTimeout(timer);
+  }, [superNewsSearch]);
+
+  useEffect(() => {
     if (!accessToken) {
       router.push('/login');
       return;
     }
     loadData();
-  }, [accessToken, tab, newsStatusFilter, router]);
+  }, [accessToken, tab, newsStatusFilter, newsSearchQuery, superNewsSearchQuery, superTab, router]);
 
   const loadData = async () => {
     try {
@@ -75,6 +89,7 @@ export default function AdminPage() {
           limit: 50,
           sortBy: 'createdAt',
           sortOrder: 'DESC',
+          ...(newsSearchQuery ? { search: newsSearchQuery } : {}),
         });
         setNews(data.data);
       } else if (tab === 1) {
@@ -82,7 +97,12 @@ export default function AdminPage() {
         setUsers(res.data.data);
       } else if (tab === 2 && isSuperAdmin) {
         const [newsRes, usersRes] = await Promise.all([
-          newsService.getNews({ limit: 100, sortBy: 'createdAt', sortOrder: 'DESC' }),
+          newsService.getNews({
+            limit: 100,
+            sortBy: 'createdAt',
+            sortOrder: 'DESC',
+            ...(superNewsSearchQuery ? { search: superNewsSearchQuery } : {}),
+          }),
           api.get('/auth/users', { params: { limit: 100 } }),
         ]);
         setNews(newsRes.data);
@@ -162,6 +182,15 @@ export default function AdminPage() {
             <Tab label="Отклоненные" value={NewsStatus.REJECTED} />
             <Tab label="Архив" value={NewsStatus.ARCHIVED} />
           </Tabs>
+
+          <TextField
+            size="small"
+            fullWidth
+            placeholder="Поиск по заголовку, описанию, тегам..."
+            value={newsSearch}
+            onChange={(e) => setNewsSearch(e.target.value)}
+            sx={{ maxWidth: 420, mb: 2 }}
+          />
 
           <TableContainer component={Paper}>
             <Table size="small">
@@ -336,55 +365,67 @@ export default function AdminPage() {
           </Tabs>
 
           {superTab === 0 && (
-            <TableContainer component={Paper}>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Заголовок</TableCell>
-                    <TableCell>Категория</TableCell>
-                    <TableCell>Статус</TableCell>
-                    <TableCell>Дата</TableCell>
-                    <TableCell>Действия</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {news.map((item) => (
-                    <TableRow key={item.id} hover>
-                      <TableCell>{item.title}</TableCell>
-                      <TableCell>
-                        <Chip label={item.category} size="small" />
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          label={item.status}
-                          size="small"
-                          color={item.status === 'published' ? 'success' : 'warning'}
-                        />
-                      </TableCell>
-                      <TableCell>{new Date(item.createdAt).toLocaleDateString('ru-RU')}</TableCell>
-                      <TableCell>
-                        <Button
-                          size="small"
-                          onClick={() => {
-                            setEditItem(item);
-                            setModalOpen(true);
-                          }}
-                        >
-                          Изменить
-                        </Button>
-                        <Button
-                          size="small"
-                          color="error"
-                          onClick={() => handleDeleteClick(item.id, 'news')}
-                        >
-                          Удалить
-                        </Button>
-                      </TableCell>
+            <>
+              <TextField
+                size="small"
+                fullWidth
+                placeholder="Поиск по заголовку, описанию, тегам..."
+                value={superNewsSearch}
+                onChange={(e) => setSuperNewsSearch(e.target.value)}
+                sx={{ maxWidth: 420, mb: 2 }}
+              />
+              <TableContainer component={Paper}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Заголовок</TableCell>
+                      <TableCell>Категория</TableCell>
+                      <TableCell>Статус</TableCell>
+                      <TableCell>Дата</TableCell>
+                      <TableCell>Действия</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableHead>
+                  <TableBody>
+                    {news.map((item) => (
+                      <TableRow key={item.id} hover>
+                        <TableCell>{item.title}</TableCell>
+                        <TableCell>
+                          <Chip label={item.category} size="small" />
+                        </TableCell>
+                        <TableCell>
+                          <Chip
+                            label={item.status}
+                            size="small"
+                            color={item.status === 'published' ? 'success' : 'warning'}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          {new Date(item.createdAt).toLocaleDateString('ru-RU')}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            size="small"
+                            onClick={() => {
+                              setEditItem(item);
+                              setModalOpen(true);
+                            }}
+                          >
+                            Изменить
+                          </Button>
+                          <Button
+                            size="small"
+                            color="error"
+                            onClick={() => handleDeleteClick(item.id, 'news')}
+                          >
+                            Удалить
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </>
           )}
 
           {superTab === 1 && (

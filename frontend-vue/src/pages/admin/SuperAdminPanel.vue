@@ -28,6 +28,9 @@ const cronLoading = ref(false);
 const snackbar = ref(false);
 const snackbarMessage = ref('');
 const snackbarColor = ref<'success' | 'error'>('success');
+const searchInput = ref('');
+const searchQuery = ref('');
+let searchTimer: ReturnType<typeof setTimeout> | undefined;
 
 const tableOptions = [
   { title: 'Новости', value: 'news' },
@@ -63,7 +66,12 @@ function getRoleColor(role: string) {
 async function loadNews() {
   loading.value = true;
   try {
-    const response = await newsService.getNews({ limit: 100, sortBy: 'createdAt', sortOrder: 'DESC' });
+    const response = await newsService.getNews({
+      limit: 100,
+      sortBy: 'createdAt',
+      sortOrder: 'DESC',
+      ...(searchQuery.value ? { search: searchQuery.value } : {})
+    });
     news.value = response.data;
   } catch {
     showMessage('Ошибка загрузки', 'error');
@@ -214,6 +222,18 @@ onMounted(() => {
 });
 
 watch(table, loadTableData);
+watch(searchQuery, () => {
+  if (table.value === 'news') {
+    loadNews();
+  }
+});
+
+watch(searchInput, (value) => {
+  if (searchTimer) clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    searchQuery.value = value.trim();
+  }, 300);
+});
 </script>
 
 <template>
@@ -230,6 +250,18 @@ watch(table, loadTableData);
     </div>
 
     <v-progress-linear v-if="loading" indeterminate color="primary" class="mb-2" />
+
+    <v-text-field
+      v-if="table === 'news'"
+      v-model="searchInput"
+      class="mb-4"
+      density="compact"
+      clearable
+      hide-details
+      prepend-inner-icon="mdi-magnify"
+      placeholder="Поиск по заголовку, описанию, тегам..."
+      style="max-width: 420px"
+    />
 
     <v-table v-if="table === 'news'">
       <thead>

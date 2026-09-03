@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Tag, Space, Tabs, message, Popconfirm } from 'antd';
+import { Table, Button, Tag, Space, Tabs, message, Popconfirm, Input } from 'antd';
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
@@ -8,6 +8,7 @@ import {
   DeleteOutlined,
   UndoOutlined,
   InboxOutlined,
+  SearchOutlined,
 } from '@ant-design/icons';
 import { newsService } from '@/services/newsService.ts';
 import type { ColumnsType } from 'antd/es/table';
@@ -22,10 +23,20 @@ const NewsManagement: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<NewsStatus>(NewsStatus.PENDING);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [searchInput, setSearchInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchQuery(searchInput.trim());
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   useEffect(() => {
     loadNews();
-  }, [statusFilter, page]);
+  }, [statusFilter, page, searchQuery]);
 
   const loadNews = async () => {
     setLoading(true);
@@ -36,6 +47,7 @@ const NewsManagement: React.FC = () => {
         limit: PAGE_SIZE,
         sortBy: 'createdAt',
         sortOrder: 'DESC',
+        ...(searchQuery ? { search: searchQuery } : {}),
       });
       setNews(response.data);
       setTotal(response.total);
@@ -170,6 +182,14 @@ const NewsManagement: React.FC = () => {
   return (
     <div>
       <Tabs activeKey={statusFilter} onChange={handleStatusFilterChange} items={tabItems} />
+      <Input
+        allowClear
+        placeholder="Поиск по заголовку, описанию, тегам..."
+        prefix={<SearchOutlined />}
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+        style={{ maxWidth: 420, marginBottom: 16 }}
+      />
       <Table
         columns={columns}
         dataSource={news}

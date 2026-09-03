@@ -8,6 +8,9 @@ import { NewsStatus, type News } from '@/types';
 const news = ref<News[]>([]);
 const loading = ref(false);
 const statusFilter = ref<NewsStatus>(NewsStatus.PENDING);
+const searchInput = ref('');
+const searchQuery = ref('');
+let searchTimer: ReturnType<typeof setTimeout> | undefined;
 const snackbar = ref(false);
 const snackbarMessage = ref('');
 const snackbarColor = ref<'success' | 'error'>('success');
@@ -27,7 +30,8 @@ async function loadNews() {
       status: statusFilter.value,
       limit: 50,
       sortBy: 'createdAt',
-      sortOrder: 'DESC'
+      sortOrder: 'DESC',
+      ...(searchQuery.value ? { search: searchQuery.value } : {})
     });
     news.value = response.data;
   } catch {
@@ -65,6 +69,14 @@ async function handleDelete() {
 
 onMounted(loadNews);
 watch(statusFilter, loadNews);
+watch(searchQuery, loadNews);
+
+watch(searchInput, (value) => {
+  if (searchTimer) clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    searchQuery.value = value.trim();
+  }, 300);
+});
 </script>
 
 <template>
@@ -87,6 +99,17 @@ watch(statusFilter, loadNews);
         Архив
       </v-tab>
     </v-tabs>
+
+    <v-text-field
+      v-model="searchInput"
+      class="mb-4"
+      density="compact"
+      clearable
+      hide-details
+      prepend-inner-icon="mdi-magnify"
+      placeholder="Поиск по заголовку, описанию, тегам..."
+      style="max-width: 420px"
+    />
 
     <v-progress-linear v-if="loading" indeterminate color="primary" class="mb-2" />
 

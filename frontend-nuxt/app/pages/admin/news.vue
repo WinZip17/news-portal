@@ -11,6 +11,15 @@
       />
     </div>
 
+    <IconField class="search-field">
+      <InputIcon class="pi pi-search" />
+      <InputText
+        v-model="searchInput"
+        placeholder="Поиск по заголовку, описанию, тегам..."
+        @keyup.enter="applySearch"
+      />
+    </IconField>
+
     <DataTable :value="newsStore.news" :paginator="true" :rows="10" :loading="newsStore.isLoading">
       <Column field="title" header="Заголовок" :sortable="true" />
       <Column field="category" header="Категория" :sortable="true">
@@ -130,6 +139,8 @@ const { showSuccess, showError } = useAppToast();
 const newsDialog = ref(false);
 const editingNews = ref<NewsItem | null>(null);
 const isSaving = ref(false);
+const searchInput = ref('');
+const searchQuery = ref('');
 
 const newsForm = ref({
   title: '',
@@ -168,9 +179,31 @@ if (!authStore.isSuperAdmin) {
 }
 
 onMounted(() => {
-  newsStore.setFilter({ limit: 50 });
-  newsStore.fetchNews();
+  loadNews();
 });
+
+watchDebounced(
+  searchInput,
+  (value) => {
+    searchQuery.value = value.trim();
+    loadNews();
+  },
+  { debounce: 300 },
+);
+
+function loadNews() {
+  newsStore.setFilter({
+    limit: 50,
+    page: 1,
+    ...(searchQuery.value ? { search: searchQuery.value } : { search: undefined }),
+  });
+  newsStore.fetchNews();
+}
+
+function applySearch() {
+  searchQuery.value = searchInput.value.trim();
+  loadNews();
+}
 
 function getCategoryLabel(category: string): string {
   return useUtils().getCategoryLabel(category);
@@ -286,6 +319,13 @@ function confirmDelete(news: NewsItem) {
   font-size: 2rem;
   font-weight: 700;
   color: var(--p-text-color);
+}
+
+.search-field {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  margin-bottom: 1.5rem;
 }
 
 .news-form {

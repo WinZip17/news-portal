@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Tag, Space, Select, message, Popconfirm, Modal, Input, Switch } from 'antd';
-import { ReadOutlined, TeamOutlined, EditOutlined, DeleteOutlined, CrownOutlined, RocketOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import {
+  ReadOutlined,
+  TeamOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  CrownOutlined,
+  RocketOutlined,
+  ClockCircleOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
 import { newsService } from '@/services/newsService';
 import { userService } from '@/services/userService';
 import { News, NewsStatus, NewsCategory } from '@/types';
@@ -32,6 +41,16 @@ const SuperAdminPanel: React.FC = () => {
   const [cronModal, setCronModal] = useState(false);
   const [cronSchedule, setCronSchedule] = useState('0 5,18 * * *');
   const [cronLoading, setCronLoading] = useState(false);
+  const [searchInput, setSearchInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchQuery(searchInput.trim());
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   useEffect(() => {
     if (table === 'news') {
@@ -39,7 +58,7 @@ const SuperAdminPanel: React.FC = () => {
     } else {
       loadUsers();
     }
-  }, [table, page]);
+  }, [table, page, searchQuery]);
 
   const handleTableChange = (value: 'news' | 'users') => {
     setTable(value);
@@ -61,6 +80,7 @@ const SuperAdminPanel: React.FC = () => {
         limit: PAGE_SIZE,
         sortBy: 'createdAt',
         sortOrder: 'DESC',
+        ...(searchQuery ? { search: searchQuery } : {}),
       });
       setNews(response.data);
       setNewsTotal(response.total);
@@ -242,20 +262,30 @@ const SuperAdminPanel: React.FC = () => {
       </Space>
 
       {table === 'news' ? (
-        <Table
-          columns={newsColumns}
-          dataSource={news}
-          rowKey="id"
-          loading={loading}
-          scroll={{ x: 700 }}
-          pagination={{
-            current: page,
-            total: newsTotal,
-            pageSize: PAGE_SIZE,
-            onChange: setPage,
-            showSizeChanger: false,
-          }}
-        />
+        <>
+          <Input
+            allowClear
+            placeholder="Поиск по заголовку, описанию, тегам..."
+            prefix={<SearchOutlined />}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            style={{ maxWidth: 420, marginBottom: 16 }}
+          />
+          <Table
+            columns={newsColumns}
+            dataSource={news}
+            rowKey="id"
+            loading={loading}
+            scroll={{ x: 700 }}
+            pagination={{
+              current: page,
+              total: newsTotal,
+              pageSize: PAGE_SIZE,
+              onChange: setPage,
+              showSizeChanger: false,
+            }}
+          />
+        </>
       ) : (
         <Table
           columns={userColumns}
