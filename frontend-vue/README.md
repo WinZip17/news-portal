@@ -115,15 +115,23 @@ import { NewsStatus, type News } from '@/types/news';
 npm test              # Vitest, один прогон
 npm run test:watch    # watch-режим
 npm run test:ci       # CI
+npm run test:e2e      # Playwright E2E (9 тестов, порт 5174)
+npm run test:e2e:ui   # UI-режим Playwright
 ```
 
 Структура `test/`:
 
-- `unit/` — утилиты (`formatDate`, категории, Metrika)
+- `unit/` — утилиты (`formatDate`, категории, `formatAppliedFilters`, Metrika)
 - `stores/` — Pinia (`auth`, `news` с infinite scroll, `ui`)
-- `components/` — `NewsListFilters` (Vuetify stubs)
+- `services/` — `auth.service`, `news.service` (mock `apiClient`)
+- `router/` — guards: `requiresAuth`, `guest`, `requiresAdminAccess`
+- `components/` — `NewsListFilters`, `NewsCard`, `NewsDetailModal` (Vuetify stubs)
+- `layouts/` — `MainLayout` (навигация, тема, logout)
+- `pages/` — все основные страницы, включая `NotFoundView`
 - `fixtures/mocks.ts` — общие моки API-типов
 - `utils/mountWithProviders.ts` — mount с Pinia + Router
+
+E2E (`e2e/`): login, home modal, smart search, news feed — API мокается в браузере, backend не нужен.
 
 Подробнее: [docs/testing.md](../docs/testing.md)
 

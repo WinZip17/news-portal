@@ -24,10 +24,44 @@ const vuetifyStubs = {
     template: '<div class="v-badge"><slot /></div>',
   },
   VCard: {
-    template: '<div class="v-card"><slot /></div>',
+    template: '<div class="v-card" @click="$emit(\'click\')"><slot /></div>',
+  },
+  VCardItem: {
+    template: '<div class="v-card-item"><slot /></div>',
+  },
+  VCardTitle: {
+    template: '<div class="v-card-title"><slot /></div>',
+  },
+  VCardSubtitle: {
+    template: '<div class="v-card-subtitle"><slot /></div>',
+  },
+  VCardActions: {
+    template: '<div class="v-card-actions"><slot /></div>',
   },
   VCardText: {
     template: '<div class="v-card-text"><slot /></div>',
+  },
+  VAlert: {
+    template: '<div class="v-alert">{{ text }}</div>',
+    props: ['type', 'text', 'variant'],
+  },
+  VChip: {
+    template: '<span class="v-chip"><slot /></span>',
+    props: ['color', 'size', 'label', 'variant'],
+  },
+  VImg: {
+    template: '<img class="v-img" :src="src" />',
+    props: ['src', 'height', 'cover'],
+  },
+  VProgressCircular: {
+    template: '<div class="v-progress-circular" />',
+  },
+  VSnackbar: {
+    template: '<div v-if="modelValue" class="v-snackbar"><slot /></div>',
+    props: ['modelValue', 'timeout'],
+  },
+  VSpacer: {
+    template: '<span class="v-spacer" />',
   },
 };
 

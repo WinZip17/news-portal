@@ -1,0 +1,12 @@
+node_modules
+dist
+.git
+.env
+*.md
+test
+e2e
+playwright-report
+test-results
+coverage
+playwright.config.ts
+vitest.config.ts

@@ -1,6 +1,6 @@
 # 🧪 Тестирование
 
-В проекте используются unit/integration-тесты (Jest, Vitest) и E2E-тесты (Playwright для React SPA, Jest для backend).
+В проекте используются unit/integration-тесты (Jest, Vitest) и E2E-тесты (Playwright для React SPA, Next.js и Vue SPA; Jest для backend).
 
 ## Быстрые команды (корень репозитория)
 
@@ -12,6 +12,7 @@ npm run test:frontend-next  # только frontend-next (Jest, CI-режим)
 npm run test:e2e            # backend E2E (Jest + supertest)
 npm run test:e2e:frontend   # React SPA E2E (Playwright)
 npm run test:e2e:frontend-next   # Next.js E2E (Playwright)
+npm run test:e2e:frontend-vue    # Vue SPA E2E (Playwright)
 ```
 
 ## Backend (NestJS + Jest)
@@ -116,7 +117,7 @@ npm run test:e2e:ui        # UI-режим (trace: on, страница видн
 
 | Пакет | Команда | Стек | Покрытие |
 |-------|---------|------|----------|
-| `frontend-vue` | `npm run test:ci` | Vitest + `@vue/test-utils` | utils, Pinia stores, `NewsListFilters` |
+| `frontend-vue` | `npm run test:ci` | Vitest + `@vue/test-utils` | utils, Pinia stores, services, router guards, components, layouts, все основные pages |
 | `frontend-nuxt` | `npm run test:ci` | Vitest + `@nuxt/test-utils` | unit + stores/middleware |
 
 ### frontend-vue
@@ -135,10 +136,33 @@ frontend-vue/test/
 ├── setup.ts                 # jsdom polyfills (IntersectionObserver, matchMedia)
 ├── fixtures/mocks.ts        # mockUser, mockNewsItem, mockNewsResponse
 ├── utils/mountWithProviders.ts
-├── unit/                    # formatDate, getCategoryLabel, getCategoryColor, yandexMetrika
+├── unit/                    # formatDate, getCategoryLabel, getCategoryColor, formatAppliedFilters, yandexMetrika
 ├── stores/                  # auth, news (infinite scroll), ui
-└── components/              # NewsListFilters
+├── services/                # auth.service, news.service (mock apiClient)
+├── router/                  # beforeEach guards (auth, guest, admin)
+├── components/              # NewsListFilters, NewsCard, NewsDetailModal
+├── layouts/                 # MainLayout (навигация, тема, logout)
+└── pages/                   # HomeView, LoginView, RegisterView, SearchView, NewsView, ProfileView, NotFoundView
 ```
+
+### E2E (Playwright)
+
+```bash
+cd frontend-vue
+npm run test:e2e:install   # скачать Chromium (один раз)
+npm run test:e2e           # install chromium + прогон 9 тестов
+npm run test:e2e:ui        # UI-режим Playwright
+npm run test:e2e:report    # HTML-отчёт
+```
+
+Каталог `frontend-vue/e2e/`, dev-сервер на `127.0.0.1:5174` (отдельный порт от React), API мокается через `page.route` — backend не нужен.
+
+| Файл | Что проверяет |
+|------|----------------|
+| `e2e/login.spec.ts` | Валидация Vuetify, успешный вход, ошибка API |
+| `e2e/home-modal.spec.ts` | Модалка новости с главной |
+| `e2e/smart-search.spec.ts` | Умный поиск, примеры запросов |
+| `e2e/news.spec.ts` | Лента новостей и фильтры |
 
 ## CI и pre-commit
 
@@ -153,6 +177,7 @@ npm run test:frontend-nuxt       # при изменениях Nuxt
 npm run test:frontend-vue        # при изменениях Vue SPA
 npm run test:e2e:frontend        # при изменениях UI/E2E (React SPA)
 npm run test:e2e:frontend-next   # при изменениях UI/E2E (Next.js)
+npm run test:e2e:frontend-vue    # при изменениях UI/E2E (Vue SPA)
 ```
 
-Корневой `npm test` не запускает Playwright E2E — используйте `test:e2e:frontend` и `test:e2e:frontend-next`.
+Корневой `npm test` не запускает Playwright E2E — используйте `test:e2e:frontend`, `test:e2e:frontend-next` и `test:e2e:frontend-vue`.
