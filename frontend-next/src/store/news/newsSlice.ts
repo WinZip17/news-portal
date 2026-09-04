@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { newsService } from '@/services/newsService';
-import type { News, NewsResponse, NewsStats, SmartSearchResponse } from '@/types';
+import type { News, NewsResponse, NewsStats, SmartSearchResponse, NewsFilter } from '@/types';
 import { formatAppliedFilters } from '@/utils/formatAppliedFilters';
 
 interface FetchNewsArg {
-  params?: Record<string, string | number>;
+  params?: NewsFilter;
   append?: boolean;
 }
 
