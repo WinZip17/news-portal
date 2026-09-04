@@ -72,6 +72,7 @@ const loaderRef = ref<HTMLElement | null>(null);
 let observer: IntersectionObserver | null = null;
 
 await useAsyncData('news-page-data', async () => {
+  newsStore.resetFilter();
   await newsStore.fetchNews();
   return {
     newsCount: newsStore.news.length,

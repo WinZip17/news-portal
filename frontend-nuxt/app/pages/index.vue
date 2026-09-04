@@ -113,6 +113,13 @@ const stats = computed(() => newsStore.stats);
 const latestNews = computed(() => newsStore.news.slice(0, 6));
 
 await useAsyncData('home-page-data', async () => {
+  newsStore.setFilter({
+    page: 1,
+    limit: 6,
+    sortBy: 'publishedAt',
+    sortOrder: 'DESC',
+    hasImage: true,
+  });
   await Promise.all([newsStore.fetchStats(), newsStore.fetchNews()]);
   return {
     stats: newsStore.stats,

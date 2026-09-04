@@ -23,6 +23,7 @@ const Home: React.FC = () => {
     limit: 6,
     sortBy: 'publishedAt',
     sortOrder: 'DESC',
+    hasImage: true,
   });
 
   const news = data?.data ?? [];

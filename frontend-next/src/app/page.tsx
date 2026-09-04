@@ -43,7 +43,7 @@ export default function HomePage() {
   const { news, isLoading, stats, statsLoading, currentNews } = useAppSelector((s) => s.news);
 
   useEffect(() => {
-    dispatch(fetchNews({ params: { limit: 6 } }));
+    dispatch(fetchNews({ params: { limit: 6, hasImage: true } }));
     dispatch(fetchStats());
   }, [dispatch]);
 
