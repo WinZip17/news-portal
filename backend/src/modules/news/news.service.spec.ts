@@ -179,13 +179,19 @@ describe('NewsService', () => {
     it('filters news with hasImage=true', async () => {
       await service.findAll({ hasImage: true });
 
-      expect(queryBuilder.andWhere).toHaveBeenCalledWith("news.imageUrl IS NOT NULL AND TRIM(news.imageUrl) <> ''");
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith(
+        "news.imageUrl IS NOT NULL AND TRIM(news.imageUrl) <> '' AND news.imageUrl NOT LIKE :placeholderPrefix",
+        { placeholderPrefix: 'data:image/svg+xml;base64,%' },
+      );
     });
 
     it('filters news with hasImage=false', async () => {
       await service.findAll({ hasImage: false });
 
-      expect(queryBuilder.andWhere).toHaveBeenCalledWith("(news.imageUrl IS NULL OR TRIM(news.imageUrl) = '')");
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith(
+        "(news.imageUrl IS NULL OR TRIM(news.imageUrl) = '' OR news.imageUrl LIKE :placeholderPrefix)",
+        { placeholderPrefix: 'data:image/svg+xml;base64,%' },
+      );
     });
   });
 

@@ -13,6 +13,7 @@ import { normalizeUrl } from '../../utils/normalizeUrl';
 import { AiRewriteResult, NewsCategory, NewsStatus, RssArticle } from '../../types';
 import { NewsGateway } from '../news/news.gateway';
 import { hasSufficientSourceText, isValidRewriteDraft, stripHtml } from './ai-rewrite.validation';
+import { PLACEHOLDER_IMAGE_PREFIX } from '../news/news-image.utils';
 
 @Injectable()
 export class AiService {
@@ -392,7 +393,7 @@ export class AiService {
     // SVG иконки в base64 для каждой категории
     const icons: Record<string, string> = {
       [NewsCategory.TECHNOLOGY]:
-        'data:image/svg+xml;base64,' +
+        PLACEHOLDER_IMAGE_PREFIX +
         Buffer.from(
           `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
@@ -409,7 +410,7 @@ export class AiService {
         ).toString('base64'),
 
       [NewsCategory.POLITICS]:
-        'data:image/svg+xml;base64,' +
+        PLACEHOLDER_IMAGE_PREFIX +
         Buffer.from(
           `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
@@ -422,7 +423,7 @@ export class AiService {
         ).toString('base64'),
 
       [NewsCategory.ECONOMY]:
-        'data:image/svg+xml;base64,' +
+        PLACEHOLDER_IMAGE_PREFIX +
         Buffer.from(
           `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
@@ -436,7 +437,7 @@ export class AiService {
         ).toString('base64'),
 
       [NewsCategory.SCIENCE]:
-        'data:image/svg+xml;base64,' +
+        PLACEHOLDER_IMAGE_PREFIX +
         Buffer.from(
           `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
@@ -453,7 +454,7 @@ export class AiService {
         ).toString('base64'),
 
       [NewsCategory.SPORTS]:
-        'data:image/svg+xml;base64,' +
+        PLACEHOLDER_IMAGE_PREFIX +
         Buffer.from(
           `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
@@ -467,7 +468,7 @@ export class AiService {
         ).toString('base64'),
 
       [NewsCategory.ENTERTAINMENT]:
-        'data:image/svg+xml;base64,' +
+        PLACEHOLDER_IMAGE_PREFIX +
         Buffer.from(
           `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
@@ -480,7 +481,7 @@ export class AiService {
         ).toString('base64'),
 
       [NewsCategory.HEALTH]:
-        'data:image/svg+xml;base64,' +
+        PLACEHOLDER_IMAGE_PREFIX +
         Buffer.from(
           `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
@@ -493,7 +494,7 @@ export class AiService {
         ).toString('base64'),
 
       [NewsCategory.WORLD]:
-        'data:image/svg+xml;base64,' +
+        PLACEHOLDER_IMAGE_PREFIX +
         Buffer.from(
           `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">
@@ -507,7 +508,7 @@ export class AiService {
         ).toString('base64'),
 
       [NewsCategory.OTHER]:
-        'data:image/svg+xml;base64,' +
+        PLACEHOLDER_IMAGE_PREFIX +
         Buffer.from(
           `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none">

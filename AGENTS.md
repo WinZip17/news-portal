@@ -50,7 +50,7 @@ backend/src/modules/
 ## Поиск и фильтры ленты
 
 - `GET /api/news?search=&fromDate=&toDate=&category=&isAiGenerated=&hasImage=&tags=`
-- `hasImage=true|false` — фильтр по наличию непустого `imageUrl` (SQL: `TRIM(imageUrl) <> ''`)
+- `hasImage=true|false` — реальное изображение (исключаются SVG-заглушки `data:image/svg+xml;base64,` из AI)
 - FTS: PostgreSQL `search_vector` (title + summary + tags, `russian`)
 - `POST /api/news/smart-search` — NL → AI → `NewsFilter`
 

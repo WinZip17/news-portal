@@ -12,4 +12,8 @@ describe('hasNewsImage', () => {
     expect(hasNewsImage({ ...mockNewsItem, imageUrl: undefined })).toBe(false);
     expect(hasNewsImage({ ...mockNewsItem, imageUrl: '   ' })).toBe(false);
   });
+
+  it('returns false for category SVG placeholder', () => {
+    expect(hasNewsImage({ ...mockNewsItem, imageUrl: 'data:image/svg+xml;base64,abc' })).toBe(false);
+  });
 });

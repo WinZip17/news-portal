@@ -8,6 +8,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { NewsCategory, NewsFilter, NewsStatus } from '../../types';
 import { normalizeTagsFilter, resolveSortColumn, buildFtsSearchCondition, buildNewsDateRangeSql } from './news-search.utils';
+import { HAS_REAL_IMAGE_SQL, NO_REAL_IMAGE_SQL, PLACEHOLDER_LIKE_PATTERN } from './news-image.utils';
 import { NewsGateway } from './news.gateway';
 
 @Injectable()
@@ -59,9 +60,9 @@ export class NewsService {
       queryBuilder.andWhere('news.isAiGenerated = :isAiGenerated', { isAiGenerated });
     }
     if (hasImage === true) {
-      queryBuilder.andWhere("news.imageUrl IS NOT NULL AND TRIM(news.imageUrl) <> ''");
+      queryBuilder.andWhere(HAS_REAL_IMAGE_SQL, { placeholderPrefix: PLACEHOLDER_LIKE_PATTERN });
     } else if (hasImage === false) {
-      queryBuilder.andWhere("(news.imageUrl IS NULL OR TRIM(news.imageUrl) = '')");
+      queryBuilder.andWhere(NO_REAL_IMAGE_SQL, { placeholderPrefix: PLACEHOLDER_LIKE_PATTERN });
     }
     if (authorId) {
       queryBuilder.andWhere('news.authorId = :authorId', { authorId });

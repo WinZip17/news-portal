@@ -12,7 +12,7 @@
 | `tags` | Фильтр по тегам (один или несколько: `?tags=ai&tags=экономика` или `?tags=ai,экономика`) |
 | `category` | Категория (`politics`, `economy`, `technology`, …) |
 | `isAiGenerated` | `true` / `false` — только AI или только оригиналы |
-| `hasImage` | `true` / `false` — только материалы с непустым `imageUrl` |
+| `hasImage` | `true` / `false` — только материалы с реальным изображением (исключаются SVG-заглушки из AI-генерации) |
 | `fromDate`, `toDate` | Период публикации по календарной дате (`YYYY-MM-DD`). Параметры **необязательны** и работают **независимо** друг от друга: можно указать только начало, только конец или диапазон. `toDate` включает указанный день. Сравнение идёт по `publishedAt` в часовом поясе **Europe/Moscow** (как в UI `ru-RU`). |
 | `sortBy` | `publishedAt`, `views`, `likes`, `createdAt` |
 | `sortOrder` | `ASC` / `DESC` |

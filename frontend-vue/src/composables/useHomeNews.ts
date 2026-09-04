@@ -4,7 +4,9 @@ import type { News, NewsStats } from '@/types';
 import { HOME_NEWS_TARGET } from '@/constants/homeNews';
 
 export function hasNewsImage(item: News): boolean {
-  return Boolean(item.imageUrl?.trim());
+  const url = item.imageUrl?.trim();
+  if (!url) return false;
+  return !url.startsWith('data:image/svg+xml;base64,');
 }
 
 export function useHomeNews() {
