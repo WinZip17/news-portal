@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useNewsQuery } from '@/hooks/useNewsQuery';
 import { useNewsModal } from '@/hooks/useNewsModal.ts';
+import type { News } from '@news-portal/types';
 
 const { Title, Paragraph } = Typography;
 
@@ -27,6 +28,11 @@ const Home: React.FC = () => {
   });
 
   const news = data?.data ?? [];
+
+  const openNewsModal = (id: string, news: News) => {
+    news.views += 1;
+    openNews(id);
+  };
 
   return (
     <div>
@@ -99,7 +105,7 @@ const Home: React.FC = () => {
         ) : news.length > 0 ? (
           <Row gutter={[24, 24]}>
             {news.map((item) => (
-              <NewsCard key={item.id} item={item} openNews={openNews} />
+              <NewsCard key={item.id} item={item} openNews={(id) => openNewsModal(id, item)} />
             ))}
           </Row>
         ) : (

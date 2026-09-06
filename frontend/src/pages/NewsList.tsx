@@ -4,6 +4,7 @@ import { useNewsInfiniteQuery } from '@/hooks/useNewsQuery';
 import { useNewsModal } from '@/hooks/useNewsModal.ts';
 import { useNews } from '@/hooks/useNews';
 import { Helmet } from 'react-helmet-async';
+import type { News } from '@news-portal/types';
 
 const { Title, Text } = Typography;
 
@@ -36,7 +37,10 @@ const NewsList: React.FC = () => {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const hasActiveFilters = Object.keys(filters).length > 0;
-
+  const openNewsModal = (id: string, news: News) => {
+    news.views += 1;
+    openNews(id);
+  };
   return (
     <div style={{ maxWidth: 960, margin: '0 auto' }}>
       <Helmet>
@@ -75,7 +79,7 @@ const NewsList: React.FC = () => {
         <>
           <Row gutter={[16, 16]}>
             {news.map((item) => (
-              <NewsListCard key={item.id} item={item} openNews={openNews} />
+              <NewsListCard key={item.id} item={item} openNews={(id) => openNewsModal(id, item)} />
             ))}
           </Row>
           <div ref={loaderRef} style={{ textAlign: 'center', padding: '24px 0' }}>
