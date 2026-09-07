@@ -326,6 +326,7 @@ async function loadFavorites() {
 function openNewsDetail(id: string) {
   selectedNews.value = favorites.value.find((n) => n.id === id) || null;
   if (selectedNews.value) {
+    newsStore.incrementViews(selectedNews.value);
     detailModalVisible.value = true;
   }
 }

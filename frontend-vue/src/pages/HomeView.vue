@@ -29,6 +29,7 @@ const briefItems = computed(() => news.value.slice(10, 15));
 useHead({ title: 'Главный выпуск' });
 
 function openNews(item: News) {
+  item.views += 1;
   selectedNews.value = item;
   modalVisible.value = true;
 }
@@ -58,13 +59,7 @@ function articleDate(item: News) {
     <template v-else>
       <div class="newspaper-issue">
         <section v-if="teasers.length" class="newspaper-teasers" aria-label="На первой полосе">
-          <NewspaperTeaser
-            v-for="(item, idx) in teasers"
-            :key="item.id"
-            :item="item"
-            :index="idx + 2"
-            @click="openNews(item)"
-          />
+          <NewspaperTeaser v-for="(item, idx) in teasers" :key="item.id" :item="item" :index="idx + 2" @click="openNews(item)" />
         </section>
 
         <NewspaperLeadStory
@@ -76,14 +71,7 @@ function articleDate(item: News) {
         />
 
         <section v-if="columnArticles.length" class="newspaper-columns" aria-label="Полоса">
-          <NewspaperArticle
-            v-for="item in columnArticles"
-            :key="item.id"
-            :item="item"
-            :category-label="getCategoryLabel(item.category)"
-            :formatted-date="articleDate(item)"
-            @click="openNews(item)"
-          />
+          <NewspaperArticle v-for="item in columnArticles" :key="item.id" :item="item" :category-label="getCategoryLabel(item.category)" :formatted-date="articleDate(item)" @click="openNews(item)" />
         </section>
 
         <NewspaperBriefList v-if="briefItems.length" :items="briefItems" @select="openNews" />

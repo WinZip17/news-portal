@@ -66,6 +66,7 @@ function handleSearch() {
 }
 
 function openNews(item: News) {
+  item.views += 1;
   selectedNews.value = item;
   modalVisible.value = true;
 }

@@ -22,9 +22,25 @@ describe('newsSlice (mock API)', () => {
     store = createTestStore();
   });
 
-  it('setCurrentNews updates currentNews', () => {
-    store.dispatch(setCurrentNews(mockNewsItem));
+  it('setCurrentNews updates currentNews and increments views', async () => {
+    await store.dispatch(fetchNews({ params: { page: 1 } }));
+    const listed = store.getState().news.news[0];
+    expect(listed).toBeDefined();
+
+    store.dispatch(setCurrentNews(listed));
+
     expect(store.getState().news.currentNews?.id).toBe('news-1');
+    expect(store.getState().news.currentNews?.views).toBe(mockNewsItem.views + 1);
+    expect(store.getState().news.news[0]?.views).toBe(mockNewsItem.views + 1);
+  });
+
+  it('setCurrentNews(null) clears currentNews without changing list views', async () => {
+    await store.dispatch(fetchNews({ params: { page: 1 } }));
+    store.dispatch(setCurrentNews(store.getState().news.news[0]));
+    store.dispatch(setCurrentNews(null));
+
+    expect(store.getState().news.currentNews).toBeNull();
+    expect(store.getState().news.news[0]?.views).toBe(mockNewsItem.views + 1);
   });
 
   describe('fetchNews', () => {

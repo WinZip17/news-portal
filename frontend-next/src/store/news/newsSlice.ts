@@ -181,7 +181,13 @@ const newsSlice = createSlice({
   initialState,
   reducers: {
     setCurrentNews: (state, action: PayloadAction<News | null>) => {
-      state.currentNews = action.payload;
+      if (action.payload) {
+        const views = (action.payload.views || 0) + 1;
+        state.currentNews = { ...action.payload, views };
+        syncNewsInList(state, action.payload.id, { views });
+      } else {
+        state.currentNews = null;
+      }
       state.isLiked = false;
       state.isFavorited = false;
       state.currentNewsLoading = false;

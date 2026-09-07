@@ -7,6 +7,8 @@ defineProps<{
   categoryLabel: string;
   formattedDate: string;
 }>();
+
+defineEmits<{ click: [] }>();
 </script>
 
 <template>

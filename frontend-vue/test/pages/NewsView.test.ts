@@ -7,17 +7,18 @@ const getNewsMock = vi.fn();
 vi.mock('@/services/news.service', () => ({
   newsService: {
     getNews: (...args: unknown[]) => getNewsMock(...args),
-    getStats: vi.fn(),
-  },
+    getStats: vi.fn()
+  }
 }));
 
 vi.mock('@unhead/vue', () => ({
-  useHead: vi.fn(),
+  useHead: vi.fn()
 }));
 
 const newsCardStub = vi.hoisted(() => ({
   template: '<article class="news-card" @click="$emit(\'click\')">{{ item.title }}</article>',
   props: ['item', 'categoryColor', 'categoryLabel', 'formattedDate'],
+  emits: ['click']
 }));
 
 const newsListFiltersStub = vi.hoisted(() => ({
@@ -34,31 +35,22 @@ const newsListFiltersStub = vi.hoisted(() => ({
     </div>
   `,
   props: ['search', 'category', 'sortBy', 'aiFilter', 'fromDate', 'toDate', 'hasActiveFilters', 'categories'],
-  emits: [
-    'update:search',
-    'update:category',
-    'update:sortBy',
-    'update:aiFilter',
-    'update:fromDate',
-    'update:toDate',
-    'search',
-    'reset',
-  ],
+  emits: ['update:search', 'update:category', 'update:sortBy', 'update:aiFilter', 'update:fromDate', 'update:toDate', 'search', 'reset']
 }));
 
 vi.mock('@/components/news/NewsCard.vue', () => ({
-  default: newsCardStub,
+  default: newsCardStub
 }));
 
 vi.mock('@/components/news/NewsDetailModal.vue', () => ({
   default: {
     template: '<div class="news-detail-modal" />',
-    props: ['news'],
-  },
+    props: ['news']
+  }
 }));
 
 vi.mock('@/components/news/NewsListFilters.vue', () => ({
-  default: newsListFiltersStub,
+  default: newsListFiltersStub
 }));
 
 import NewsView from '@/pages/NewsView.vue';
@@ -74,19 +66,19 @@ const pageStubs = {
   VCardText: { template: '<div class="v-card-text"><slot /></div>' },
   VDialog: {
     template: '<div v-if="modelValue" class="v-dialog"><slot /></div>',
-    props: ['modelValue', 'maxWidth'],
+    props: ['modelValue', 'maxWidth']
   },
   VProgressCircular: {
     template: '<div class="v-progress-circular" />',
-    props: ['indeterminate', 'color', 'size'],
-  },
+    props: ['indeterminate', 'color', 'size']
+  }
 };
 
 let intersectionCallback: IntersectionObserverCallback | null = null;
 
 async function mountNewsView() {
   const wrapper = mountWithProviders(NewsView, {
-    global: { stubs: pageStubs },
+    global: { stubs: pageStubs }
   });
   await flushPromises();
   return wrapper;
@@ -99,10 +91,7 @@ async function applySearch(wrapper: ReturnType<typeof mountWithProviders>, value
 }
 
 async function triggerIntersection(isIntersecting = true) {
-  intersectionCallback?.(
-    [{ isIntersecting } as IntersectionObserverEntry],
-    {} as IntersectionObserver,
-  );
+  intersectionCallback?.([{ isIntersecting } as IntersectionObserverEntry], {} as IntersectionObserver);
   await flushPromises();
 }
 
@@ -110,7 +99,10 @@ describe('NewsView', () => {
   beforeEach(() => {
     setActivePinia(createPinia());
     getNewsMock.mockReset();
-    getNewsMock.mockResolvedValue(mockNewsResponse);
+    getNewsMock.mockResolvedValue({
+      ...mockNewsResponse,
+      data: [{ ...mockNewsItem }]
+    });
     intersectionCallback = null;
 
     class IntersectionObserverTestMock {
@@ -125,7 +117,7 @@ describe('NewsView', () => {
     Object.defineProperty(window, 'IntersectionObserver', {
       writable: true,
       configurable: true,
-      value: IntersectionObserverTestMock,
+      value: IntersectionObserverTestMock
     });
   });
 
@@ -144,15 +136,13 @@ describe('NewsView', () => {
       total: 0,
       page: 1,
       limit: 12,
-      totalPages: 0,
+      totalPages: 0
     });
 
     const wrapper = await mountNewsView();
     await applySearch(wrapper, 'missing');
 
-    expect(getNewsMock).toHaveBeenLastCalledWith(
-      expect.objectContaining({ search: 'missing', page: 1 }),
-    );
+    expect(getNewsMock).toHaveBeenLastCalledWith(expect.objectContaining({ search: 'missing', page: 1 }));
     expect(wrapper.text()).toContain('Ничего не найдено');
   });
 
@@ -162,7 +152,7 @@ describe('NewsView', () => {
       total: 0,
       page: 1,
       limit: 12,
-      totalPages: 0,
+      totalPages: 0
     });
 
     const wrapper = await mountNewsView();
@@ -178,7 +168,7 @@ describe('NewsView', () => {
         total: 0,
         page: 1,
         limit: 12,
-        totalPages: 0,
+        totalPages: 0
       })
       .mockResolvedValueOnce(mockNewsResponse);
 
@@ -191,22 +181,19 @@ describe('NewsView', () => {
 
     const store = useNewsStore();
     expect(store.filters.search).toBeUndefined();
-    expect(getNewsMock).toHaveBeenLastCalledWith(
-      expect.objectContaining({ page: 1, sortBy: 'publishedAt' }),
-    );
-    expect(getNewsMock.mock.calls.at(-1)?.[0]).not.toHaveProperty('search');
+    expect(getNewsMock).toHaveBeenLastCalledWith(expect.objectContaining({ page: 1, sortBy: 'publishedAt' }));
+    const lastCall = getNewsMock.mock.calls[getNewsMock.mock.calls.length - 1];
+    expect(lastCall?.[0]).not.toHaveProperty('search');
   });
 
   it('loads more news when loader intersects', async () => {
-    getNewsMock
-      .mockResolvedValueOnce({ ...mockNewsResponse, total: 2, totalPages: 2 })
-      .mockResolvedValueOnce({
-        data: [{ ...mockNewsItem, id: 'news-2', title: 'Вторая новость' }],
-        total: 2,
-        page: 2,
-        limit: 12,
-        totalPages: 2,
-      });
+    getNewsMock.mockResolvedValueOnce({ ...mockNewsResponse, total: 2, totalPages: 2 }).mockResolvedValueOnce({
+      data: [{ ...mockNewsItem, id: 'news-2', title: 'Вторая новость' }],
+      total: 2,
+      page: 2,
+      limit: 12,
+      totalPages: 2
+    });
 
     const wrapper = await mountNewsView();
     expect(wrapper.text()).toContain(mockNewsItem.title);
@@ -220,11 +207,14 @@ describe('NewsView', () => {
 
   it('opens news modal when card is clicked', async () => {
     const wrapper = await mountNewsView();
+    const store = useNewsStore();
+    const previousViews = store.news[0]?.views ?? 0;
 
     await wrapper.find('.news-card').trigger('click');
     await flushPromises();
 
     expect(wrapper.find('.v-dialog').exists()).toBe(true);
     expect(wrapper.find('.news-detail-modal').exists()).toBe(true);
+    expect(store.news[0]?.views).toBe(previousViews + 1);
   });
 });

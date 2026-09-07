@@ -147,6 +147,18 @@ describe('news store', () => {
     expect(store.news[0]?.likes).toBe(3);
   });
 
+  it('incrementViews bumps views on the item and matching list entry', () => {
+    const store = useNewsStore();
+    const listed = { ...mockNewsItem, views: 10 };
+    const selected = { ...mockNewsItem, views: 10 };
+    store.news = [listed];
+
+    store.incrementViews(selected);
+
+    expect(selected.views).toBe(11);
+    expect(store.news[0]?.views).toBe(11);
+  });
+
   it('fetchStats caches stats unless forced', async () => {
     mocks.newsServiceMock.getStats.mockResolvedValue(mockStats);
 

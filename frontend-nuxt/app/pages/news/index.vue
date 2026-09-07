@@ -172,6 +172,7 @@ function resetFilters(): void {
 function openNewsDetail(id: string): void {
   selectedNews.value = newsStore.news.find((n: NewsItem) => n.id === id) || null;
   if (selectedNews.value) {
+    newsStore.incrementViews(selectedNews.value);
     detailModalVisible.value = true;
   }
 }

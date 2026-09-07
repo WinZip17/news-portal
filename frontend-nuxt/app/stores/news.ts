@@ -149,6 +149,14 @@ export const useNewsStore = defineStore('news', () => {
     totalPages.value = 0;
   }
 
+  function incrementViews(item: NewsItem): void {
+    item.views = (item.views || 0) + 1;
+    const listed = news.value.find((n) => n.id === item.id);
+    if (listed && listed !== item) {
+      listed.views = item.views;
+    }
+  }
+
   return {
     news,
     currentNews,
@@ -171,5 +179,6 @@ export const useNewsStore = defineStore('news', () => {
     fetchStats,
     setFilter,
     resetFilter,
+    incrementViews,
   };
 });

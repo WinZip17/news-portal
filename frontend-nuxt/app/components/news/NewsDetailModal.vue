@@ -84,6 +84,7 @@
 
 <script setup lang="ts">
 import type { NewsItem, UserResponse } from '~/types';
+import { useNewsService } from '~/services/news.service.ts';
 
 const props = defineProps<{
   news: NewsItem | null;
@@ -98,7 +99,17 @@ const emit = defineEmits<{
 
 const authStore = useAuthStore();
 const newsStore = useNewsStore();
+const newsService = useNewsService();
 const { showSuccess, showWarning } = useAppToast();
+
+watch(
+  () => (props.visible && props.news?.id ? props.news.id : ''),
+  (id) => {
+    if (!id) return;
+    void newsService.getNewsById(id).catch(() => {});
+  },
+  { immediate: true },
+);
 
 const visible = computed({
   get: () => props.visible,

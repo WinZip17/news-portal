@@ -5,28 +5,29 @@ const smartSearchMock = vi.fn();
 
 vi.mock('@/services/news.service', () => ({
   newsService: {
-    smartSearch: (...args: unknown[]) => smartSearchMock(...args),
-  },
+    smartSearch: (...args: unknown[]) => smartSearchMock(...args)
+  }
 }));
 
 vi.mock('@unhead/vue', () => ({
-  useHead: vi.fn(),
+  useHead: vi.fn()
 }));
 
 const newsCardStub = vi.hoisted(() => ({
   template: '<article class="news-card" @click="$emit(\'click\')">{{ item.title }}</article>',
   props: ['item', 'categoryColor', 'categoryLabel', 'formattedDate'],
+  emits: ['click']
 }));
 
 vi.mock('@/components/news/NewsCard.vue', () => ({
-  default: newsCardStub,
+  default: newsCardStub
 }));
 
 vi.mock('@/components/news/NewsDetailModal.vue', () => ({
   default: {
     template: '<div class="news-detail-modal" />',
-    props: ['news'],
-  },
+    props: ['news']
+  }
 }));
 
 import SearchView from '@/pages/SearchView.vue';
@@ -44,24 +45,23 @@ const searchStubs = {
         @keydown="$emit('keydown', $event)"
       />
     `,
-    props: ['modelValue', 'label', 'placeholder', 'rows', 'density', 'autoGrow', 'hideDetails'],
+    props: ['modelValue', 'label', 'placeholder', 'rows', 'density', 'autoGrow', 'hideDetails']
   },
   VBtn: {
-    template:
-      '<button type="button" class="v-btn" :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-    props: ['color', 'prependIcon', 'loading', 'disabled'],
+    template: '<button type="button" class="v-btn" :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+    props: ['color', 'prependIcon', 'loading', 'disabled']
   },
   VChip: {
     template: '<button type="button" class="v-chip" @click="$emit(\'click\')"><slot /></button>',
-    props: ['variant'],
+    props: ['variant']
   },
   VRow: { template: '<div class="v-row"><slot /></div>' },
   VCol: { template: '<div class="v-col"><slot /></div>', props: ['cols'] },
   VSkeletonLoader: { template: '<div class="v-skeleton-loader" />', props: ['type'] },
   VDialog: {
     template: '<div v-if="modelValue" class="v-dialog"><slot /></div>',
-    props: ['modelValue', 'maxWidth'],
-  },
+    props: ['modelValue', 'maxWidth']
+  }
 };
 
 const smartSearchResponse = {
@@ -71,12 +71,12 @@ const smartSearchResponse = {
   limit: 20,
   totalPages: 1,
   source: 'ai' as const,
-  appliedFilters: { search: 'AI новости' },
+  appliedFilters: { search: 'AI новости' }
 };
 
 async function mountSearch() {
   const wrapper = mountWithProviders(SearchView, {
-    global: { stubs: searchStubs },
+    global: { stubs: searchStubs }
   });
   await flushPromises();
   return wrapper;
@@ -136,7 +136,7 @@ describe('SearchView', () => {
       limit: 20,
       totalPages: 0,
       source: 'fallback' as const,
-      appliedFilters: { search: 'пусто' },
+      appliedFilters: { search: 'пусто' }
     });
 
     const wrapper = await mountSearch();
@@ -158,6 +158,9 @@ describe('SearchView', () => {
   });
 
   it('opens news modal when result card is clicked', async () => {
+    const item = { ...mockNewsItem, views: 10 };
+    smartSearchMock.mockResolvedValue({ ...smartSearchResponse, data: [item] });
+
     const wrapper = await mountSearch();
     await runSearch(wrapper, 'AI новости');
 
@@ -166,5 +169,6 @@ describe('SearchView', () => {
 
     expect(wrapper.find('.v-dialog').exists()).toBe(true);
     expect(wrapper.find('.news-detail-modal').exists()).toBe(true);
+    expect(item.views).toBe(11);
   });
 });

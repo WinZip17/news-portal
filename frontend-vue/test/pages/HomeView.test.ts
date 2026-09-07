@@ -11,12 +11,12 @@ vi.mock('@/services/news.service', () => ({
   newsService: {
     getNews: (...args: unknown[]) => getNewsMock(...args),
     getStats: (...args: unknown[]) => getStatsMock(...args),
-    getNewsById: (...args: unknown[]) => getNewsByIdMock(...args),
-  },
+    getNewsById: (...args: unknown[]) => getNewsByIdMock(...args)
+  }
 }));
 
 vi.mock('@unhead/vue', () => ({
-  useHead: vi.fn(),
+  useHead: vi.fn()
 }));
 
 import HomeLayout from '@/layouts/HomeLayout.vue';
@@ -28,8 +28,8 @@ import { mountWithProviders } from '../utils/mountWithProviders';
 const layoutStubs = {
   VDialog: {
     template: '<div v-if="modelValue" class="v-dialog" role="dialog"><slot /></div>',
-    props: ['modelValue', 'maxWidth'],
-  },
+    props: ['modelValue', 'maxWidth']
+  }
 };
 
 function createNewsWithImages(count: number) {
@@ -37,7 +37,7 @@ function createNewsWithImages(count: number) {
     ...mockNewsItem,
     id: `news-${i + 1}`,
     title: `Новость ${i + 1}`,
-    imageUrl: `https://example.com/${i + 1}.jpg`,
+    imageUrl: `https://example.com/${i + 1}.jpg`
   }));
 }
 
@@ -48,8 +48,8 @@ function createHomeRouter(): Router {
       { path: '/', name: 'home', component: HomeView },
       { path: '/login', name: 'login', component: { template: '<div>Login</div>' } },
       { path: '/register', name: 'register', component: { template: '<div>Register</div>' } },
-      { path: '/news', name: 'news', component: { template: '<div>News</div>' } },
-    ],
+      { path: '/news', name: 'news', component: { template: '<div>News</div>' } }
+    ]
   });
 }
 
@@ -67,7 +67,7 @@ async function mountHomePage() {
   const wrapper = mountWithProviders(HomeLayout, {
     router,
     slots: { default: '<RouterView />' },
-    global: { stubs: layoutStubs },
+    global: { stubs: layoutStubs }
   });
   await flushPromises();
   return { wrapper, router };
@@ -87,7 +87,7 @@ describe('HomeView (newspaper)', () => {
       total: 15,
       page: 1,
       limit: 30,
-      totalPages: 1,
+      totalPages: 1
     });
   });
 
@@ -123,8 +123,8 @@ describe('HomeView (newspaper)', () => {
         limit: 15,
         sortBy: 'publishedAt',
         sortOrder: 'DESC',
-        hasImage: true,
-      }),
+        hasImage: true
+      })
     );
     expect(getStatsMock).toHaveBeenCalled();
     expect(wrapper.text()).toContain('Новость 1');
@@ -135,9 +135,7 @@ describe('HomeView (newspaper)', () => {
   it('navigates to news feed from nav', async () => {
     const { wrapper, router } = await mountHomePage();
 
-    const lentaButton = wrapper
-      .findAll('.newspaper-nav button.newspaper-link')
-      .find((btn) => btn.text().includes('Лента'));
+    const lentaButton = wrapper.findAll('.newspaper-nav button.newspaper-link').find((btn) => btn.text().includes('Лента'));
     await lentaButton!.trigger('click');
     await flushPromises();
 
@@ -152,6 +150,7 @@ describe('HomeView (newspaper)', () => {
 
     expect(wrapper.find('.v-dialog').exists()).toBe(true);
     expect(wrapper.text()).toContain(mockNewsItem.title);
+    expect(getNewsByIdMock).toHaveBeenCalled();
   });
 
   it('shows empty state when no news with images', async () => {
@@ -160,7 +159,7 @@ describe('HomeView (newspaper)', () => {
       total: 0,
       page: 1,
       limit: 15,
-      totalPages: 0,
+      totalPages: 0
     });
 
     const { wrapper } = await mountHomePage();

@@ -83,6 +83,7 @@ const exampleQueries = [
 ];
 
 const newsService = useNewsService();
+const newsStore = useNewsStore();
 const { showError } = useAppToast();
 
 const query = ref('');
@@ -147,6 +148,7 @@ function handleSearch() {
 function openNewsDetail(id: string) {
   selectedNews.value = news.value.find((item) => item.id === id) || null;
   if (selectedNews.value) {
+    newsStore.incrementViews(selectedNews.value);
     detailModalVisible.value = true;
   }
 }

@@ -130,6 +130,7 @@ await useAsyncData('home-page-data', async () => {
 function openNewsDetail(id: string) {
   selectedNews.value = newsStore.news.find((n: NewsItem) => n.id === id) || null;
   if (selectedNews.value) {
+    newsStore.incrementViews(selectedNews.value);
     detailModalVisible.value = true;
   }
 }
