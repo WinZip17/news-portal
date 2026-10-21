@@ -4,6 +4,17 @@ import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ensureDatabaseSchema } from './database/ensure-schema';
 
+/** ENABLE_SWAGGER=true|1|yes → on; false|0|no → off; unset → on outside production. */
+function isSwaggerEnabled(): boolean {
+  const raw = process.env.ENABLE_SWAGGER?.trim().toLowerCase();
+  if (raw === undefined || raw === '') {
+    return process.env.NODE_ENV !== 'production';
+  }
+  if (['true', '1', 'yes'].includes(raw)) return true;
+  if (['false', '0', 'no'].includes(raw)) return false;
+  return process.env.NODE_ENV !== 'production';
+}
+
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
@@ -37,42 +48,46 @@ async function bootstrap() {
     // Префикс API
     app.setGlobalPrefix('api');
 
-    // Swagger настройка
-    const config = new DocumentBuilder()
-      .setTitle('📰 News Portal API')
-      .setDescription('API для новостного портала с AI-генерацией контента')
-      .setVersion('1.0')
-      .addTag('Auth', 'Аутентификация и авторизация')
-      .addTag('News', 'Управление новостями')
-      .addTag('AI', 'Ai генерация')
-      .addBearerAuth(
-        {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-          name: 'JWT',
-          description: 'Введите JWT токен',
-          in: 'header',
+    const swaggerEnabled = isSwaggerEnabled();
+    if (swaggerEnabled) {
+      const config = new DocumentBuilder()
+        .setTitle('📰 News Portal API')
+        .setDescription('API для новостного портала с AI-генерацией контента')
+        .setVersion('1.0')
+        .addTag('Auth', 'Аутентификация и авторизация')
+        .addTag('News', 'Управление новостями')
+        .addTag('AI', 'Ai генерация')
+        .addBearerAuth(
+          {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+            name: 'JWT',
+            description: 'Введите JWT токен',
+            in: 'header',
+          },
+          'JWT-auth',
+        )
+        .addServer('http://localhost:3001', 'Локальный сервер')
+        .addServer('https://short-news.ru/', 'Продакшн сервер')
+        .build();
+
+      const document = SwaggerModule.createDocument(app, config);
+
+      SwaggerModule.setup('api/docs', app, document, {
+        swaggerOptions: {
+          persistAuthorization: true,
+          docExpansion: 'none',
+          filter: true,
+          showRequestDuration: true,
         },
-        'JWT-auth',
-      )
-      .addServer('http://localhost:3001', 'Локальный сервер')
-      .addServer('https://short-news.ru/', 'Продакшн сервер')
-      .build();
-
-    const document = SwaggerModule.createDocument(app, config);
-
-    SwaggerModule.setup('api/docs', app, document, {
-      swaggerOptions: {
-        persistAuthorization: true,
-        docExpansion: 'none',
-        filter: true,
-        showRequestDuration: true,
-      },
-      customSiteTitle: 'News Portal API Documentation',
-      customCss: '.swagger-ui .topbar { display: none }',
-      customfavIcon: 'https://nestjs.com/img/favicon.png',
-    });
+        customSiteTitle: 'News Portal API Documentation',
+        customCss: '.swagger-ui .topbar { display: none }',
+        customfavIcon: 'https://nestjs.com/img/favicon.png',
+      });
+    } else {
+      logger.log('Swagger disabled (ENABLE_SWAGGER)');
+    }
 
     const port = process.env.PORT || 3001;
 
@@ -80,7 +95,9 @@ async function bootstrap() {
 
     logger.log(`Application is running on: http://localhost:${port}`);
     logger.log(`API: http://localhost:${port}/api`);
-    logger.log(`Swagger docs: http://localhost:${port}/api/docs`);
+    if (swaggerEnabled) {
+      logger.log(`Swagger docs: http://localhost:${port}/api/docs`);
+    }
   } catch (error) {
     logger.error('Failed to start application:', error.message);
     console.error(error);

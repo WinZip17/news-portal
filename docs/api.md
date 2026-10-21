@@ -63,8 +63,8 @@ TypeScript-контракты запросов и ответов описаны 
 | Метод | Путь | Описание |
 |-------|------|----------|
 | GET | /api/health | Проверка работоспособности |
-| GET | /api/docs | Swagger документация |
-| GET | /api/docs-json | Swagger JSON |
+| GET | /api/docs | Swagger документация (если `ENABLE_SWAGGER=true`) |
+| GET | /api/docs-json | Swagger JSON (если `ENABLE_SWAGGER=true`) |
 | GET | /api/news/sitemap.xml | Sitemap для поисковиков |
 | GET | /api/metrics | Prometheus метрики |
 
